@@ -1,0 +1,1 @@
+This is a space for my notes. They'll be sporadic, haphazard in their level of detail but I aim for them to be regular and consitently updated log of topics of interest or distraction. 

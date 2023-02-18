@@ -1,0 +1,41 @@
+project:
+  type: website
+
+execute:
+  freeze: auto
+
+website:
+  title: "Examined Algorithms"
+  description: The personal website of Nathaniel Forde
+  reader-mode: true
+  navbar:
+    left:
+      - text: Blog
+        href: blog.qmd
+      - text: Projects
+        href: opensource.qmd
+      - text: Talks
+        href: talks.qmd
+      - icon: github
+        href: https://github.com/
+      - icon: twitter
+        href: https://twitter.com
+
+  
+  sidebar:
+    title: Notes
+    pinned: true
+    collapse-level: 1
+    style: docked
+    contents: notes/**
+
+format:
+  html:
+    theme: [litera]
+    css:
+      - styles.css
+    toc: true
+
+
+
+

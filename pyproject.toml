@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "examined-algorithms"
+version = "0.1.0"
+description = "A blog site for Nathaniel Forde"
+authors = ["Nathaniel <NathanielF@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "examined_algorithms"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pymc = "5.00"
+jupyter = "1.0.0"
+ipykernel = "6.0.0"
+statsmodels = "^0.13.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,47 @@
+---
+title: "Nathaniel Forde's Personal Site"
+image: flammarion.jpg
+about:
+  template: trestles
+  links:
+    - text: Blog
+      href: blog.qmd 
+    - icon: twitter
+      text: Twitter
+      href: https://twitter.com/forde_nathaniel
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/nathaniel-forde-2477a265/
+    - icon: github
+      text: Github
+      href: https://github.com/NathanielF
+
+---
+
+Nathaniel Forde is a Data Scientist at Personio. 
+
+## Recent Experience
+
+- Personio | Senior Data Scientist | December 2021 - present|
+
+- PyMC | Open SourceContributor | November 2021 - Present|
+
+- CarTrawler | Data Scientist (R & D) | November 2019 - December 2021
+
+- Paddy Power/Betfair | Senior Insights Analyst | February 2018 - November 2019
+
+- Guy Carpenter | Software Developer - Catastrophic Risk |April 2017 - February 2018
+
+- Marsh | Data Analyst - Global Data Quality | May 2015 - April 2017
+
+## Education
+
+- University of Amsterdam, | Amsterdam, The Netherlands |
+Msc in Mathematical Logic | Sept 2011 - June 2013
+
+- Trinity College Dublin | Dublin, Ireland | 
+MPhil in Philosophy | Sept 2009 - June 2011
+
+- University College Dublin | Dublin, Ireland |
+BA in Liberal Arts | Sept 2005 - June 2009
+

@@ -1,0 +1,11 @@
+---
+title: "Tenuous Relations and Timeseries Analysis"
+author: "Nathaniel Forde"
+date: "2023-02-04"
+categories: [news, code, analysis]
+image: "image.jpg"
+keep-ipynb: true
+self-contained: true
+execute: 
+  enabled: true
+---

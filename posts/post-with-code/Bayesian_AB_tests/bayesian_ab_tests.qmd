@@ -1,0 +1,205 @@
+---
+title: "Bayesian Estimation and the Histogram Approximation"
+author: "Nathaniel Forde"
+date: "2022-08-15"
+categories: ["probability", "experiments", "bayesian-AB-tests", "histogram-trick"]
+image: "mixture.png"
+keep-ipynb: true
+self-contained: true
+execute: 
+  enabled: true
+---
+
+Imagine you're pretty confident of your recent bet. All the other gamblers at the table have taken the other side of the bet. Just for fun, assume all other gamblers in the casino have bet against you. The game is in the first quarter and things are looking good, but how do you evaluate now whether you should hedge your bets before final quarter is called? This kind of scenario is typical in an imbalanced A/B test where we haven't randomised the samples, and we're letting it ride based entirely on vibes. Maybe you've released a change to production but only exposed two clients to the new changes. How do you evaluate the impact of your change?
+
+# Bayesian A/B testing in an imperfect World
+
+You have at least 2 problems here. On the one hand you're trusting your prior belief and small data. On the other side is a huge mass of data. Moving past the fear, the huge data is a problem more of implementation than one of principle, since Bayesian inference tends to scale poorly with massive amounts of data. The first problem is one of principle. 
+
+How do we make sound inference without trying to control for confounders through randomisation? But assume your hands are tied, you can't guarantee perfect randomness in selection criteria. You still have to make a call with limited information. Perhaps you'd like to apply simple Bootstrapping estimation of the uncertainty in the parameters, but can't because of the low volumes of data on one branch. 
+
+There are now two benefits to going with a Bayesian methodology here. One is the flexibility of the modelling paradigm it offers and the second primary feature is the ability to inject our prior information to weigh against the data on the undersampled arm of our experiment. This is a form of principled inference based on knowledge of the situation. No form of inference guarantees perfectly correct results. How to do we address the second problem? Bayesianism doesn't scale, right!?
+
+## Mixture Models and Histogram Trick
+
+Lets make the issues a little more concrete. Imagine you're trying to evaluate a bi-modal distribution of loading times on a website after a new feature is turned on. This distribution has two peaks: (1) represents healthy load times and the other (2) represents unhealthy load times during periods of high activity. Here we can see the distributions of load times on each arm of the experiment. On the treatment arm we have 2000 records and on the control arm we have 7,000,000.
+
+![bi_modal](bi_modal.png)
+
+We have a very imbalanced data on each arm. However because we have a large stock of historic data regarding the loading times at peak and off peak, we're prepared to ascribe a set of priors to estimate the impact of our new feature on the treamtment arm, can we do the same for the control arm?
+
+### What kind of Model?
+
+Often we observe a data generating process which is likely the combination of a number of distinct processes. The overall distribution is known as a mixture distribution and there are some tools in the Bayesian workflow to help identify the manner in which these distinct processes are combined and the relative weight we should ascribe to each.
+
+Bayesian modelling in general requires extensive MCMC simulation and as the data scales up there is a proportional impact on the fitting time of the model. This becomes infeasible with large data such as website performance data measured in the nanosecond. However there is a neat treat to approximate learning the Bayesian posterior from massive data - as discussed here:
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Want to run Bayesian A/B tests at serious scale? Check out how <a href="https://twitter.com/ferrine96?ref_src=twsrc%5Etfw">@ferrine96</a> and I did this for one of <a href="https://twitter.com/pymc_labs?ref_src=twsrc%5Etfw">@pymc_labs</a>&#39; clients.<a href="https://t.co/cJJPH7X0UZ">https://t.co/cJJPH7X0UZ</a> <a href="https://t.co/BnLNtENzam">pic.twitter.com/BnLNtENzam</a></p>&mdash; Dr Benjamin Vincent (@inferencelab) <a href="https://twitter.com/inferencelab/status/1558046236451774466?ref_src=twsrc%5Etfw">August 12, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+Instead of learning from the raw data, we learn from a histogram approximation which buckets our data into n-quantiles (however many required) and weights the observations to be drawn from that quantile in proportion to the number of observations seen in the raw data within that range.
+
+### Testing the Histogram Trick on a Mixture Model
+
+Drum up some fake data
+
+```python
+
+sample = pd.Series(np.random.normal(0, .8, 6000))
+sample = pd.concat([sample, pd.Series(np.random.gumbel(2, 1.2, 4000))])
+
+sample1 = pd.Series(np.random.normal(0.3, .8, 6000))
+sample1 = pd.concat([sample, pd.Series(np.random.gumbel(1.8, 1.2, 4000))])
+
+fig, ax = plt.subplots()
+ax.hist(sample, alpha=0.9, edgecolor='black', color='slateblue', label='Treatment')
+ax.hist(sample1, alpha=0.25, edgecolor='black', color='skyblue', label='Control')
+ax.legend()
+
+```
+
+![fake](fake.png)
+
+First we'll estimate the model using the standard PYMC mcmc sampling method and then we'll show how to do the same using the histogram trick. After seeing that the histogram trick preserves sound inference we'll apply it to our big data problem and estimate our bi-modal loading time distribution. 
+
+### The Standard Bayesian Approach
+We fit a Normal and Gumbel mixture distribution for our fake data using the standard method
+
+```python
+
+with pm.Model() as model_mix:
+    # First set of priors for our treatment group
+    w = pm.Dirichlet('w', a=np.array([1, 1]))  # 2 mixture weights
+    mu = pm.Normal("mu", 0, 1)
+    mu1 = pm.Normal("mu1", 2, 1)
+    sd = pm.HalfNormal('sd', 1)
+    sd1 = pm.HalfNormal('sd1', 1)
+
+    components = [
+        pm.Normal.dist(mu=mu, sigma=sd),
+        pm.Gumbel.dist(mu=mu1, beta=sd1),
+    ]
+
+    # Second set of priors for our Control group
+    w1 = pm.Dirichlet('w1', a=np.array([1, 1]))  # 2 mixture weights
+    m = pm.Normal("m", 0, 1)
+    m1 = pm.Normal("m1", 2, 1)
+    s = pm.HalfNormal('s', 1)
+    s1 = pm.HalfNormal('s1', 1)
+
+    components1 = [
+        pm.Normal.dist(mu=m, sigma=s),
+        pm.Gumbel.dist(mu=m1, beta=s1),
+    ]
+
+    # Likelihood for our Treatment group
+    mix = pm.Mixture('mix', w=w, comp_dists=components,
+        observed=np.array(sample))
+
+    # Likelihood for our Control group
+    mix1 = pm.Mixture('mix1', w=w1, comp_dists=components1,
+        observed=np.array(sample1))
+
+    idata_mix = pm.sample(draws=1000, cores=1)
+    idata_mix.extend(pm.sample_posterior_predictive(idata_mix))
+
+```
+### The Histogram Trick
+
+Now when we wish to fit the same model using the Histogram trick, the code is similar but we change the likelihoods:
+
+```python
+
+    pot = pmx.distributions.histogram_approximation(
+        "pot", pm.Mixture.dist(w=w, comp_dists=components),
+        observed=np.array(sample), n_quantiles=1000)
+
+    pot = pmx.distributions.histogram_approximation(
+        "pot1", pm.Mixture.dist(w=w1, comp_dists=components1),
+        observed=np.array(sample1), n_quantiles=1000)
+
+    idata_mix_approx = pm.sample(draws=5000, cores=1)
+
+
+```
+
+Under the hood the histogram trick is a pm.Potential, and as such the implementation cannot make use of the standard posterior predictive sampling. But we can do a manual work-around to achieve the same results, by sampling from the posterior draws on the parameters which determine the shape of our model. Even better it fits *very* fast!!
+
+```python
+## Extract uncertainty in parameters from our posterior
+gen_df = pd.DataFrame({'mu': idata_mix_approx.stack(sample=["chain", "draw"]).posterior['mu'], 
+                'sd': idata_mix_approx.stack(sample=["chain", "draw"]).posterior['sd'], 
+                 'mu1': idata_mix_approx.stack(sample=["chain", "draw"]).posterior['mu1'], 
+                  'sd1': idata_mix_approx.stack(sample=["chain", "draw"]).posterior['sd1'],
+                  'm': idata_mix_approx.stack(sample=["chain", "draw"]).posterior['m'], 
+                's': idata_mix_approx.stack(sample=["chain", "draw"]).posterior['s'], 
+                 'm1': idata_mix_approx.stack(sample=["chain", "draw"]).posterior['m1'], 
+                  's1': idata_mix_approx.stack(sample=["chain", "draw"]).posterior['s1']
+                  })
+
+## Generate samples from each mixture component for treatment and control groups
+gen_df['y_T'] = gen_df.apply(lambda x: np.random.normal(x['mu'], x['sd'], 1)[0], axis=1)
+gen_df['y1_T'] = gen_df.apply(lambda x: np.random.gumbel(x['mu1'], x['sd1'], 1)[0], axis=1)
+gen_df['y_C'] = gen_df.apply(lambda x: np.random.normal(x['m'], x['s'], 1)[0], axis=1)
+gen_df['y1_C'] = gen_df.apply(lambda x: np.random.gumbel(x['m1'], x['s1'], 1)[0], axis=1)
+
+## Extract expected weights from each component
+weights_T = idata_mix_approx.stack(sample=['chain', 'draw']).posterior['w'].mean(axis=1).to_dataframe()
+weights_C = idata_mix_approx.stack(sample=['chain', 'draw']).posterior['w1'].mean(axis=1).to_dataframe()
+
+## Combine to recover a predictive distribution for our data
+mix_posterior_y_T = pd.concat([gen_df['y_T'].sample(frac=weights_T['w'][0]), 
+                           gen_df['y1_T'].sample(frac=weights_T['w'][1])])
+
+mix_posterior_y_C = pd.concat([gen_df['y_C'].sample(frac=weights_C['w1'][0]), 
+                           gen_df['y1_C'].sample(frac=weights_C['w1'][1])])
+
+```
+### Plotting the Fits
+
+With these quantities in place we can plot the predictions of both models against the distribution of the raw data.
+
+```python
+
+fig, axs = plt.subplots(3, 1, figsize=(10, 18))
+axs = axs.flatten()
+axs[0].hist(sample, density=True, alpha=0.4, label='Treatment Data', color='slateblue', bins=50, edgecolor='black')
+axs[0].hist(mix_posterior_y_T, density=True, label='Predicted Approx', histtype='step', linewidth=4, color='cyan', bins=50)
+axs[0].hist(idata_mix.stack(sample=['chain', 'draw']).posterior_predictive['mix'].to_dataframe()['mix'], density=True, label='Predicted Mixture', histtype='step', linewidth=4, color='black', bins=50)
+axs[0].legend()
+axs[0].set_title("Mixture Model Posterior Predictive Fit:  \n Approx and Full Bayesian for Treatment", fontsize=15)
+axs[1].hist(sample1, density=True, alpha=0.4, label='Control Data',edgecolor='black', 
+color='skyblue', bins=50)
+axs[1].hist(mix_posterior_y_C, density=True, label='Predicted Approx', histtype='step', linewidth=4, color='cyan', bins=50)
+axs[1].hist(idata_mix.stack(sample=['chain', 'draw']).posterior_predictive['mix1'].to_dataframe()['mix1'], density=True, label='Predicted Mixture', histtype='step', linewidth=4, color='black', bins=50)
+axs[1].legend()
+axs[1].set_title("Mixture Model Posterior Predictive Fit:  \n Approx and Full Bayesian for Control", fontsize=15)
+
+xs, ys, patches = axs[2].hist(idata_mix.stack(sample=['chain', 'draw']).posterior_predictive['mix'].to_dataframe()['mix'], density=True, label='Predicted Treatment Mixture', histtype='step', linewidth=4, color='black', bins=50)
+axs[2].axvspan(2.5, 10, clip_path=patches[0], color='slateblue', label='Proportion > 2.5 Treatment')
+
+xs1, ys1, patches1 =axs[2].hist(idata_mix.stack(sample=['chain', 'draw']).posterior_predictive['mix1'].to_dataframe()['mix1'], density=True, label='Predicted Control Mixture', histtype='step', linewidth=4, color='grey', bins=50)
+axs[2].axvspan(2.5, 10, clip_path=patches1[0], color='red', alpha=0.25, label='Proportion > 2.5 Control')
+axs[2].set_title("Posterior Predictive Distribution \n Treatment V Control", fontsize=15)
+axs[2].legend();
+
+```
+
+![fake](histogram_fit.png)
+
+Here we can see how the histogram trick properly captures the shape of the distribution as well as the model estimated using the standard likelihood.
+
+## Do we Push to Production?
+
+Having established that the method works well, we can apply a similar model (not shown) to our load times data and recover results for our A/B test. We can see here that the mixture model recovers a nice fit to the observed mixture distribution. Better it ran **really, really fast**, even with over 7,000,000 records.
+
+![fake](components.png)
+
+We can also now quantify what proportion of the mixture distribution has shifted from the Gumbel component to the Lognormal component of the distribution, and hence how healthy our loading time distribution is predicted to be if we apply the treatment. We can formulate more precise measures of effect using the estimated mixture posterior distributions, but these cursory plots are at least directionally positive. 
+
+![fake](ppc.png)
+
+It looks like we should make our change and hold our nerve! If we need to make a call now the data we have suggests we should!
+
+## Conclusion
+
+We've seen here a concrete example of some innovative tooling that the PYMC team is developing to help scale Bayesian inference in industry. I hope i've given a clean example of you might use this form of inference to interrogate questions of improvemnt in imbalanced A/B style experiemnts. Feedback or pushback welcome!?

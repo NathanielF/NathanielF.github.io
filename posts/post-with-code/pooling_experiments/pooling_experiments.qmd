@@ -1,0 +1,23 @@
+---
+date: "2022-07-22T10:19:36Z"
+title: "Pooling Information in PYMC"
+categories: ["probability", "experiments", "bayesian-AB-tests", "hierarchical-model"]
+image: "growth.png"
+---
+
+
+Two heads are better than one and fools rarely differ. It's an old trope. A tension to be navigated everytime we combine information across different sources. Can we trust the aggregate opinion? If we poll the masses do the summary statistics measure a common source of variation or represent an crass abstraction over individual particulars? But if we do trust the sources, how far can we generalise from the historic record? 
+
+## Pooling Information in A/B tests
+
+In this post we'll explore one way of examining this question within a Bayesian framework analysing the results of repeated A/B tests. We'll proceed by translating the Stan model Demetri's [blog](https://dpananos.github.io/posts/2022-07-20-pooling-experiments/) into the PYMC framework.
+
+
+
+<iframe width="100%" height=1000 name="iframe" src="nathaniel_forde_pooling.html" ></iframe>
+
+
+
+## Generalising from Small Data
+
+The modelling approach demonstrated here is a nice technique for placing planning decisions in context. While we might debate the nature of the uncertainty for expected Lift across N-experiments, the Bayesian framework allows us to encode more or less generous assumptions in the model. Do we want to preclude large outliers from our experimental forecasts? Maybe use a more restrictive prior on the mu-metric parameter. Either way, decisions have to be made. At least with this approach we can be transparent about the data from which we are extrapolating. As we accumulate more and more experimental data we will get a better traction on the expected cumulative lift curves. One complication we'll consider in the future involves how the performance of the team may change over time as more engineers are added to the team, or seniority increases. 

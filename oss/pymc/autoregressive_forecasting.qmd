@@ -1,0 +1,11 @@
+---
+title: "Autoregressive Forecasting in PyMC"
+author: "Nathaniel Forde"
+date: "2022-08-15"
+categories: ["probability", "pymc", "autoregressive"]
+image: "autoregressive_forecast.png"
+---
+
+# Autoregressive Forecasting in PyMC
+
+This project stemmed from a gap in the PyMC documentation around how to use a fitted auto-regressive model to make forecasts about the future state of the world. 
