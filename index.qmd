@@ -1,6 +1,7 @@
 ---
-title: "Nathaniel Forde's Personal Site"
-image: flammarion.jpg
+title: "Welcome to Examined Algorithms!"
+subtitle: "Nathaniel Forde's Personal Website"
+image: profile_photo.jpeg
 about:
   template: trestles
   links:
@@ -18,30 +19,34 @@ about:
 
 ---
 
-Nathaniel Forde is a Data Scientist at Personio. 
+# Intro
 
-## Recent Experience
+Welcome to my site! 
 
-- Personio | Senior Data Scientist | December 2021 - present|
+You'll find a range of writings on data science, philosophy, statistics and sound inference more generally. Hopefully, something useful mixed in too! 
 
-- PyMC | Open SourceContributor | November 2021 - Present|
+## Bio
 
-- CarTrawler | Data Scientist (R & D) | November 2019 - December 2021
+I'm a data scientist specialising in probabilistic modelling for the study of risk and causal inference. I have experience in model development, deployment, multivariate testing and monitoring. 
 
-- Paddy Power/Betfair | Senior Insights Analyst | February 2018 - November 2019
+I'm interested in questions of inference and measurement in the face of natural variation and confounding. 
 
-- Guy Carpenter | Software Developer - Catastrophic Risk |April 2017 - February 2018
+My academic background is in mathematical logic and philosophy where I mostly imagined possible worlds and modal logics. 
 
-- Marsh | Data Analyst - Global Data Quality | May 2015 - April 2017
+:::{.panel-tabset}
+# Recent Experience
 
-## Education
+- Personio | Senior Data Scientist | December 2021 - Present 
+  - Working with Product and Engineering to measure risk and quantify impact. 
 
-- University of Amsterdam, | Amsterdam, The Netherlands |
-Msc in Mathematical Logic | Sept 2011 - June 2013
+- PyMC | Open Source Contributor | November 2021 - Present
+  - Helping to document some of the more esoteric applications of Bayesian modelling in PyMC.
 
-- Trinity College Dublin | Dublin, Ireland | 
-MPhil in Philosophy | Sept 2009 - June 2011
 
-- University College Dublin | Dublin, Ireland |
-BA in Liberal Arts | Sept 2005 - June 2009
+# Past Experience
+
+ <embed width="100%" height="800" type="application/pdf" src="/resume/Nathaniel_Forde_CV.pdf">
+
+
+:::
 

@@ -3,6 +3,7 @@ date: "2022-07-22T10:19:36Z"
 title: "Pooling Information in PYMC"
 categories: ["probability", "experiments", "bayesian-AB-tests", "hierarchical-model"]
 image: "growth.png"
+draft: true
 ---
 
 
@@ -11,6 +12,22 @@ Two heads are better than one and fools rarely differ. It's an old trope. A tens
 ## Pooling Information in A/B tests
 
 In this post we'll explore one way of examining this question within a Bayesian framework analysing the results of repeated A/B tests. We'll proceed by translating the Stan model Demetri's [blog](https://dpananos.github.io/posts/2022-07-20-pooling-experiments/) into the PYMC framework.
+
+
+```{python}
+
+import pymc as pm
+import bambi as bmb
+import pandas as pd
+import arviz as az
+from bambi.plots import plot_cap
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import stats
+
+```
+
+
 
 
 

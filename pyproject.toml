@@ -12,6 +12,7 @@ pymc = "5.00"
 jupyter = "1.0.0"
 ipykernel = "6.0.0"
 statsmodels = "^0.13.5"
+bambi = "^0.10.0"
 
 
 [build-system]

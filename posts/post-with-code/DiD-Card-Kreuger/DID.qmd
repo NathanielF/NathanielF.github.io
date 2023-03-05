@@ -72,12 +72,12 @@ The result here is, by traditional economic logic, surprising in that they "find
 
 ```{python}
 fig, ax = plt.subplots()
-ax.plot(['Before', 'After'], [pivot.iloc[0]['PA'],  pivot.iloc[1]['PA']], label='Pennsylvania')
-ax.plot(['Before', 'After'], [pivot.iloc[0]['NJ'],  pivot.iloc[1]['NJ']],label='New Jersey')
+ax.plot(['Before', 'After'], [pivot.iloc[0]['PA'],  pivot.iloc[1]['PA']], '-o', label='Pennsylvania')
+ax.plot(['Before', 'After'], [pivot.iloc[0]['NJ'],  pivot.iloc[1]['NJ']],'-o', label='New Jersey')
 ax.plot(['Before', 'After'], [pivot.iloc[0]['NJ'],  pivot.iloc[2]['PA'] +pivot.iloc[0]['NJ']], '--', color='darkorange', label='New Jersey Counterfactual')
+ax.set_title("Visualising the Counterfactual")
+ax.plot((1, 1), (18, 21), '--', color='grey', label='treatment effect')
 ax.legend()
-ax.set_title("Visualising the Counterfactual");
-
 ```
 
 ## A Persuasive Design
@@ -155,4 +155,54 @@ stargazer.render_html()
 
 ```
 
-The effect is consisteny across the model specification. 
+The effect is consisteny across the model specification. This is evidence of a robust effect. What happens if we look at a different outcome variable? Does the change in policy impact the price of the meal by location?
+
+
+```{python}
+
+
+temp = df_ck[['price', 'northj', 'centralj', 'pa1', 'pa2', 'time', 'treatment', 'chain', 'state', 'co_owned']].dropna()
+temp[['chain_1', 'chain_2', 'chain_3', 'chain_4']] = pd.get_dummies(temp['chain'])
+model_0 = smf.ols(formula='price ~ state + time + treatment', data=temp).fit()
+model_1 = smf.ols(formula='price ~ state + time + chain_1 + chain_2 + chain_3 + treatment', data=temp).fit()
+model_2 = smf.ols(formula='price ~ centralj + pa1 + pa2 + time + treatment', data=temp).fit()
+
+model_3 = smf.ols(formula='price ~ centralj + pa1 + pa2 + time + chain_1 + chain_2 + chain_3 + treatment', data=temp).fit()
+
+model_4 = smf.ols(formula='price ~ centralj + pa1 + pa2 + time + chain_1 + chain_2 + chain_3 + co_owned + treatment', data=temp).fit()
+
+stargazer = Stargazer([model_0, model_1, model_2, model_3])
+stargazer.render_html()
+
+```
+
+## Impact on Consumers?
+
+The effects on price of a meal is much more stable and seemingly not impacted in the same degree as we saw in employment numbers. In fact the effects seem close to negligible. This contextual information suggests that the increased wages have not lead (in the same timeframe) to extra costs for the consumer. 
+
+```{python}
+
+fig, axs = plt.subplots(1, 2, figsize=(10, 7))
+axs = axs.flatten()
+before = df_ck[df_ck['time'] == 0]
+after = df_ck[df_ck['time'] == 1]
+axs[0].hist(before[before['state'] == 0]['price'], alpha=0.4, bins=20, density=True, ec='black', label='Pennsylvania Before')
+axs[0].hist(before[before['state'] == 1]['price'], alpha=0.4, bins=20, density=True, ec='black', label='New Jersey Before')
+axs[0].set_xlabel("Price per Meal in $")
+axs[0].legend()
+axs[1].hist(after[after['state'] == 0]['price'], alpha=0.4, bins=15, density=True, ec='black', label='Pennsylvania After')
+axs[1].hist(after[after['state'] == 1]['price'], alpha=0.4, bins=15, density=True, ec='black', label='New Jersey After')
+axs[1].set_xlabel("Price per Meal in $")
+axs[1].legend()
+axs[1].set_title("Price Distribution After")
+axs[0].set_title("Price Distribution Before");
+
+
+```
+
+
+It is this combination of details that made the Card and Kreuger study surprising and impactful. There is a clear quasi-experimental design, a compelling narrative and a counter-intuitive conclusion. The methodology almost seems too simple, too straightforward. Much of the plausibility of the inferences gets bundled into the contrast between the treatment group and our pseudo-control. So far we've avoided precise mathematical statement of the DiD estimator, but being more precise allows us to say something about when this estimation technique can go wrong. 
+
+## When DiD goes Wrong
+
+$$\widehat{\delta}^{2\times 2}_{kU} = \bigg(E\big[Y_k  | Post\big] - E\big[Y_k  | Pre\big]\bigg)- \bigg(E\big[Y_U  | Post\big] - E\big[Y_U  | Pre\big]\bigg)$$

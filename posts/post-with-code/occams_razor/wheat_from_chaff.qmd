@@ -137,7 +137,7 @@ prior_spec = {'a':[0, 0.5], 'b'[0, 3]}
 
 The parameter estimates drawn from the posterior distributions show that the data is sufficient to swamp the priors and give good estimates of the true coefficients, even with flat priors. 
 
-<img src="flat_priors_post.png" alt="drawing"/>
+<img src="flat_priors_post.png" width=50% alt="drawing"/>
 
 This suggests that the process of Bayesian updating makes a good compromise between our priors and the likelihood. The principle of maximum entropy can be extended to the process of Bayesian updating where we view the problem as one of minimising the divergence between our prior and posterior. This measure of relative entropy is also known as KL Divergence. 
 
