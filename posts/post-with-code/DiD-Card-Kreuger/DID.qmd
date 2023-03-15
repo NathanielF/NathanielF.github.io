@@ -135,7 +135,7 @@ axs[0].set_title("Employed Distribution Before");
 
 ## Robustness to Controls
 
-The robustness of the effect might, in principle, be moderated or refined by other factors. So it's worth exploring the parameter fits for a variety of models. First we recover the simple differences-in-differences control using, and then for other subsequent moodels we add controls for the the location, food chain and whether the restaurant is co-owned. All models recover effectively the same estimate for the interaction term of state over time, which is our differences-in-differences estimate. 
+The robustness of the effect might, in principle, be moderated or refined by other factors. So it's worth exploring the parameter fits for a variety of models. First we recover the simple differences-in-differences control using regression, and then for other subsequent moodels we add controls for the the location, food chain and whether the restaurant is co-owned. All models recover effectively the same estimate for the interaction term of state over time, which is our differences-in-differences estimate. 
 
 ```{python}
 
@@ -205,4 +205,218 @@ It is this combination of details that made the Card and Kreuger study surprisin
 
 ## When DiD goes Wrong
 
-$$\widehat{\delta}^{2\times 2}_{kU} = \bigg(E\big[Y_k  | Post\big] - E\big[Y_k  | Pre\big]\bigg)- \bigg(E\big[Y_U  | Post\big] - E\big[Y_U  | Pre\big]\bigg)$$
+Following Scott Cunningham's presentation we can view the simple 2x2 DiD estimate as follows
+
+$$\widehat{\delta}^{2\times 2}_{tC} = \bigg(E\big[Y_t  | Post\big] - E\big[Y_t  | Pre\big]\bigg)- \bigg(E\big[Y_C  | Post\big] - E\big[Y_C  | Pre\big]\bigg)$$
+
+which  is equivalent to: 
+
+$$ \begin{align}
+&\widehat{\delta}^{2\times 2}_{tC} = \underbrace{E\big[Y^1_t  | Post\big] - E\big[Y^0_t | Post\big]}_{\text{ATT}} \\
+&+\Big[\underbrace{E\big[Y^0_t | Post\big] - E\big[Y^0_t | Pre\big] \Big] - \Big[E\big[Y^0_C  | Post\big] - E\big[Y_C^0 | Pre\big] }_{\text{Non-parallel trends bias in $2\times 2$ case}} \Big]
+\end{align}
+$$
+
+which implies that we can extract that the average treatment effect on the treated (ATT) can be estimated just so long as the bias due to the parallel trends zeros out. In our applied case this amounts to the following
+
+$$
+\begin{align}
+&\widehat{\delta}^{2\times 2}_{NJ,PA} = \underbrace{E\big[Y^1_{NJ} | Post\big] - E\big[Y^0_{NJ} | Post\big]}_{\text{ATT}} \\
+&+ \Big[\underbrace{E\big[Y^0_{NJ} | Post\big] - E\big[Y^0_{NJ} | Pre\big] \Big]-\Big[E\big[Y^0_{PA} | Post\big] - E\big[Y_{PA}^0 | Pre\big] }_{\text{Non-parallel trends bias}} \Big]
+\end{align}
+$$
+
+which is to say that the causal impact discovered by a DiD design is valid just when for both states there would have been a parrallel trend, under the counterfactual, where the treatment had not been applied to New Jersey, i.e. had the treatment not been applied then the differences between the states would have remained stable. 
+
+### Testing the Parallel Trends Assumption
+
+We'll examine a larger data set discussed by Scott Cunningham in his *Causal Inference: The Mixtape*. The point is to see how to measure the similarity of the trends prior to an intervention. The rhetorical move in a differences in differences design is heavily reliant on how compelling you can make the counterfactual claim.
+
+```{python}
+
+abortion = pd.read_csv('abortion_mixtape.csv')
+abortion = abortion[~pd.isnull(abortion.lnr)]
+abortion = abortion[abortion.bm15==1]
+
+fig, ax = plt.subplots(figsize=(10, 6))
+for i in abortion['fip'].unique():
+  temp = abortion[abortion['fip'] == i]
+  temp.set_index('year', inplace=True)
+  ax.plot(temp['lnr'], color='grey', alpha=0.1)
+ax.set_title("Trajectories by Individual State")
+ax.plot(abortion.pivot('year', 'fip', 'lnr').mean(axis=1), color='darkblue',  label='Overall Average')
+ax.plot(abortion[abortion['repeal'] == 0].pivot('year', 'fip', 'lnr').mean(axis=1), label='Average in Non Repeal States', color='slateblue')
+ax.plot(abortion[abortion['repeal'] == 1].pivot('year', 'fip', 'lnr').mean(axis=1), label='Average in Repeal States', color='royalblue')
+ax.axvline(1992, color='black', linestyle='--')
+ax.legend();
+```
+
+
+## Fitting Regressions to Evaluate Event Studies
+
+We want now to measure the efficacy of the treatment as a function of each time point while controlling for other factors.
+
+```{python}
+
+formula = (
+    "lnr ~ C(repeal)*C(year) + C(fip)"
+    " + acc + ir + pi + alcohol + crack + poverty + income + ur"
+)
+
+formula_1 = (
+    "lnr ~ C(repeal)*C(year) + C(fip)"
+    " + acc + ir + pi + alcohol + crack"
+)
+
+formula_2 = (
+    "lnr ~ C(repeal)*C(year) + C(fip)"
+)
+
+reg = (
+    smf
+    .wls(formula, data=abortion, weights=abortion.totpop.values)
+    .fit(
+        cov_type='cluster', 
+        cov_kwds={'groups': abortion.fip.values}, 
+        method='pinv'
+        )
+)
+
+reg1 = (
+    smf
+    .wls(formula_1, data=abortion, weights=abortion.totpop.values)
+    .fit(
+        cov_type='cluster', 
+        cov_kwds={'groups': abortion.fip.values}, 
+        method='pinv'
+        )
+)
+
+reg2 = (
+    smf
+    .wls(formula_2, data=abortion, weights=abortion.totpop.values)
+    .fit(
+        cov_type='cluster', 
+        cov_kwds={'groups': abortion.fip.values}, 
+        method='pinv'
+        )
+)
+
+
+stargazer = Stargazer([reg, reg1, reg2])
+stargazer
+
+
+```
+
+Using these regressions we can plot the interaction effect of treatment and time. If the DiD design is to be plausible we should see a change in the effect at the point of the treatment date. 
+
+```{python}
+
+def make_regression_plot(reg):
+  abortion_plot = pd.DataFrame(
+      {
+          'sd': reg.bse['C(repeal)[T.1.0]:C(year)[T.1986.0]':'C(repeal)[T.1.0]:C(year)[T.2000.0]'],
+          'mean': reg.params['C(repeal)[T.1.0]:C(year)[T.1986.0]':'C(repeal)[T.1.0]:C(year)[T.2000.0]'],
+          'year': np.arange(1986, 2001)
+      })
+  abortion_plot['lb'] = abortion_plot['mean'] - abortion_plot['sd']*1.96
+  abortion_plot['ub'] = abortion_plot['mean'] + abortion_plot['sd']*1.96
+  abortion_plot.set_index('year', inplace=True)
+  return abortion_plot
+
+
+abortion_plot = make_regression_plot(reg)
+abortion_plot1 = make_regression_plot(reg1)
+abortion_plot2 = make_regression_plot(reg2)
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(abortion_plot['mean'], 'o', color='blue')[0]
+ax.vlines(x=abortion_plot.index, ymin=abortion_plot['lb'], ymax=abortion_plot['ub'], color='blue')
+ax.plot(abortion_plot1['mean'], 'o', color='red')[0]
+ax.vlines(x=abortion_plot1.index, ymin=abortion_plot1['lb'], ymax=abortion_plot1['ub'], color='red', alpha=0.5)
+
+ax.plot(abortion_plot2['mean'], 'o', color='green')[0]
+ax.vlines(x=abortion_plot2.index, ymin=abortion_plot2['lb'], ymax=abortion_plot2['ub'], color='green', alpha=0.5)
+
+ax.set_ylabel("Interaction Coefficient")
+ax.set_title("Event Studies with Multiple Regression Specifications")
+ax.axvline(1992, color='black', linestyle='--');
+
+```
+
+We can see here how the temporal points before the introduction of Roe show an effect on the interaction coefficeint. Which rises towards 0 after Roe just so long as we control for the independent effects of extra covariates. 
+
+## Fitting a Placebo Model
+
+We can further test this design if we model the effects of time on a placebo group at the same time. Here we'll take as a placebo group a cohort of a greater age, where the effect of Roe is less likely to have an impact on the rates of gonorrhea in the cohort. In this way we have a kind of pseudo placebo group for our treatment. 
+
+```{python}
+abortion = pd.read_csv('abortion_mixtape.csv')
+abortion = abortion[~pd.isnull(abortion.lnr)]
+abortion['yr'] = 0
+abortion.loc[(abortion.younger==1) & (abortion.repeal==1), 'yr'] = 1
+
+abortion['wm'] = 0
+abortion.loc[(abortion.wht==1) & (abortion.male==1), 'wm'] = 1
+
+abortion['wf'] = 0
+abortion.loc[(abortion.wht==1) & (abortion.male==0), 'wf'] = 1
+
+abortion['bm'] = 0
+abortion.loc[(abortion.wht==0) & (abortion.male==1), 'bm'] = 1
+
+abortion['bf'] = 0
+abortion.loc[(abortion.wht==0) & (abortion.male==0), 'bf'] = 1
+
+
+abortion_filt = abortion[(abortion.bm==1) & (abortion.age.isin([15,25]))]
+abortion_filt
+
+```
+
+The benefit to allowing for a placebo factor is to test how the effect should remain pretty static in the group for which the treatment is unlikey to have an effect. This strengthens the claim that the parrallel trends assumption holds. 
+
+```{python}
+
+
+pivot = abortion_filt.groupby(['repeal', 'younger', 'year'])['lnr'].mean().reset_index()
+pivot = pivot.pivot(['year', 'younger'], 'repeal', 'lnr')
+pivot = pd.concat([pivot.T, pivot.T.diff()]).dropna()
+display(pivot)
+fig, axs = plt.subplots(1, 2, figsize=(10, 6))
+axs = axs.flatten()
+diff = pivot.iloc[2].reset_index().pivot('year', 'younger', 1.0)
+diff.plot(kind='barh', ax=axs[0])
+diff['diff'] = diff[0] - diff[1]
+diff[['diff']].plot(kind='barh', ax=axs[1])
+axs[0].set_title("Diff by Treatment by Year and Placebo")
+axs[1].set_title("Diff in Diff by Treatment by Year")
+
+```
+
+This type of placebo design can be specified using a complex regression equation relying on interaction terms as before with the simpler DiD design, but now we also include interactions for the placebo group. 
+
+```{python}
+
+reg = (
+    smf
+    .wls("""lnr ~ C(repeal)*C(year) + C(younger)*C(repeal) + C(younger)*C(year) + 
+C(yr)*C(year) + C(fip)*t + acc + ir + pi + alcohol + crack + poverty + income + ur""", 
+        data=abortion_filt, weights=abortion_filt.totpop.values)
+    .fit(
+        cov_type='cluster', 
+        cov_kwds={'groups': abortion_filt.fip.values}, 
+        method='pinv')
+)
+
+abortion_plot = make_regression_plot(reg)
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(abortion_plot['mean'], 'o', color='blue')[0]
+ax.vlines(x=abortion_plot.index, ymin=abortion_plot['lb'], ymax=abortion_plot['ub'], color='blue')
+ax.set_title("Event Study with DDD design \n adding interactions with younger cohort");
+
+
+
+```
