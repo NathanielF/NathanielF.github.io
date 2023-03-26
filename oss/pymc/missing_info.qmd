@@ -7,3 +7,11 @@ image: "missing_data.png"
 ---
 
 # Missing Data Imputation and Employee Survey Data
+
+In this project I demonstrate the technique of imputation for missing data using both the standard frequentist approach full information maximum likelihod and a more nuanced Bayesian method of chained equations. 
+
+The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/case_studies/Missing_Data_Imputation.html) or downloaded as notebook [here](Missing_Data_Imputation.html)
+
+The notebook demonstates these techniques applied to employee satisfaction data. In particular we show how Bayesian hierarchical methods can be used to help predict missing data values across various teams within an organisation based on the observed values andt the characteristics of the team dynamics which drove the observed data. 
+
+![Deviations from the Grand Mean by Team](missing_data_deviation.png)

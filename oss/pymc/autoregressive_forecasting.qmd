@@ -8,4 +8,10 @@ image: "autoregressive_forecast.png"
 
 # Autoregressive Forecasting in PyMC
 
-This project stemmed from a gap in the PyMC documentation around how to use a fitted auto-regressive model to make forecasts about the future state of the world. 
+This project stemmed from a gap in the PyMC documentation around how to use a fitted auto-regressive model to make forecasts about the future state of the world. In this project I demonstrate how fit and make predictictions with bayesian structural timeseries models. 
+
+The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/time_series/Forecasting_with_structural_timeseries.html) or downloaded as notebook [here](Forecasting_with_structural_timeseries_orig.html)
+
+The notebook demonstates these techniques applied to a series of fake data building in complexity as we add more structure.
+
+![Forecasting](autoregressive_forecast.png)
