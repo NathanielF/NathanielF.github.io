@@ -14,6 +14,7 @@ ipykernel = "6.0.0"
 statsmodels = "^0.13.5"
 bambi = "^0.10.0"
 linearmodels = "^4.27"
+dynamax = "^0.1.0"
 
 
 [build-system]

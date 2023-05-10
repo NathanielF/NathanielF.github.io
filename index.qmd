@@ -3,7 +3,7 @@ title: "Welcome to Examined Algorithms!"
 subtitle: "Nathaniel Forde's Personal Website"
 image: profile_photo.jpeg
 about:
-  template: solana
+  template: trestles
   links:
     - text: Blog
       href: blog.qmd 

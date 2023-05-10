@@ -1,0 +1,213 @@
+---
+title: "State Space Models and Irish Weather"
+author: "Nathaniel Forde"
+date: "2022-08-15"
+categories: ["probability", "state space", "ireland"]
+keep-ipynb: true
+self-contained: true
+draft: true
+execute: 
+  enabled: true
+jupyter: python3
+---
+
+## State Space models
+
+Station Name: PHOENIX PARK
+Station Height: 48 M 
+Latitude:53.364  ,Longitude: -6.350
+
+
+date:  -  Date and Time (utc)
+rain:  -  Precipitation Amount (mm)	  
+temp:  -  Air Temperature (C)	
+wetb:  -  Wet Bulb Temperature (C)
+dewpt: -  Dew Point Temperature (C)
+vappr: -  Vapour Pressure (hPa)		                 
+rhum:  -  Relative Humidity (%) 
+msl:   -  Mean Sea Level Pressure (hPa)
+ind:   -  Indicator
+
+```{python}
+import pandas as pd
+from matplotlib import pyplot as plt
+import numpy as np
+from matplotlib import cm
+from jax.nn import one_hot
+import jax.random as jr
+
+
+```
+
+
+```{python}
+
+df = pd.read_csv('irish_weather/hly175.csv')
+df['date'] = pd.to_datetime(df['date'])
+df['year'] = df['date'].dt.year
+df.set_index('date', inplace=True)
+
+def convert_float(col):
+    parsed = []
+    for i in range(len(df[col])):
+        try:
+            parsed.append(float(df.iloc[i][col]))
+        except Exception as e:
+            parsed.append(np.nan)
+    return parsed
+
+df['temp'] = convert_float('temp')
+df['rain'] = convert_float('rain')
+df['wetb'] = convert_float('wetb')
+
+df.head()
+```
+
+
+```{python}
+
+fig, axs = plt.subplots(3, 1, figsize=(20, 20))
+axs = axs.flatten()
+for y in df['year'].unique():
+    temp = df[df['year'] == y].reset_index().sort_values('date')
+    axs[0].plot(temp['temp'], label=f'Year {y}', alpha=0.4)
+    axs[1].plot(temp['rain'], label=f'Year {y}', alpha=0.4)
+    axs[2].plot(temp['wetb'], label=f'Year {y}', alpha=0.4)
+axs[0].set_title("Annual Air Temperature: C")
+axs[1].set_title("Annual Rain Fall")
+axs[0].set_xticks([])
+axs[1].set_xticks([])
+axs[1].legend()
+
+```
+
+
+```{python}
+from jax import vmap
+
+df_2020 = df[df['year'] == 2020]
+emissions = df_2020["temp"].to_numpy()
+emissions
+
+emissions = np.atleast_2d(emissions).T
+emissions
+
+
+
+```
+
+
+
+```{python}
+from dynamax.hidden_markov_model import CategoricalHMM, GaussianHMM
+
+true_num_states = 2
+emission_dim = 1
+key = jr.PRNGKey(0)
+
+hmm = GaussianHMM(true_num_states, emission_dim)
+params, props = hmm.initialize(key=key, method="kmeans", emissions=emissions)
+
+
+```
+
+
+```{python}
+
+params, lps = hmm.fit_em(params, props, emissions, num_iters=100)
+params
+
+```
+
+```{python}
+
+most_likely_states = hmm.most_likely_states(params, emissions)
+most_likely_states
+
+```
+
+```{python}
+
+plt.plot(np.arange(most_likely_states.shape[0]), most_likely_states)
+
+```
+
+
+```{python}
+
+fig, axs = plt.subplots(3,1, figsize=(16,10))
+colours = cm.rainbow(np.linspace(0, 1, 4))
+
+for i, (ax, colour) in enumerate(zip(axs, colours)):
+    # Use fancy indexing to plot data in each state.
+    mask = most_likely_states == i
+    #ax.plot(hist.reset_index()["Date"].iloc[mask], hist["Close"].iloc[mask], ".-", c=colour)
+    ax.plot(df_2020.index[mask], df_2020["temp"].to_numpy()[mask],  ".-", c=colour)
+    ax.set_title("{0}th hidden state".format(i))
+
+    # Format the ticks.
+
+    ax.grid(True)
+
+axs[2].plot(df_2020['temp'])
+
+```
+
+
+```{python}
+
+num_timesteps = 365
+
+fig, axs = plt.subplots(2, 1, figsize=(10, 6))
+axs = axs.flatten()
+for i in range(5):
+    true_states, emissions_samples = hmm.sample(params, jr.PRNGKey(i), num_timesteps)
+    axs[0].plot(emissions_samples)
+    axs[0].set_title("Samples from HMM")
+    axs[1].set_title("Samples States from HMM")
+    axs[1].plot(true_states)
+
+```
+
+
+```{python}
+
+posterior = hmm.filter(params, emissions)
+print(f"marginal likelihood: {posterior.marginal_loglik: .2f}")
+print(f"posterior.filtered_probs.shape: {posterior.filtered_probs.shape}")
+
+```
+
+
+```{python}
+
+def plot_posterior_probs(probs, states, title=""):
+    plt.imshow(states[None, :], extent=(0, num_timesteps, 0, 1), 
+               interpolation="none", aspect="auto", cmap="Greys", alpha=0.25)
+    plt.plot(probs[:, 1])   # probability of the loaded state (z=1)
+    plt.xlabel("time")
+    plt.ylabel("p(summer)")
+    plt.ylim(0, 1)
+    plt.title(title)
+
+plot_posterior_probs(posterior.filtered_probs, true_states,
+                     title="Filtering Distribution")
+
+```
+
+
+```{python}
+
+posterior_smooth = hmm.smoother(params, emissions)
+print(f"posterior.smoothed_probs.shape: {posterior_smooth.smoothed_probs.shape}")
+
+
+```
+
+```{python}
+
+plot_posterior_probs(posterior_smooth.smoothed_probs, true_states,
+                     title="Smoothing Distribution")
+
+
+```

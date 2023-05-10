@@ -8,7 +8,7 @@ image: "reliability_cdf.png"
 
 # Reliability Statistics and Calibrated Prediction
 
-This project was inspired by the need to apply survival analysis techniques in software engineering to predict and quantify the failure time distribution of software products. The focus was on parameteric modelling of failure distributionss and the notion of calibrated predictions of failure times. 
+This project was inspired by the need to apply survival analysis techniques in software engineering to predict and quantify the failure time distribution of software products. The focus was on parameteric modelling of failure distributions and the notion of calibrated predictions of failure times. 
 
 
 The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/case_studies/reliability_and_calibrated_prediction.html) or downloaded as notebook [here](reliability_and_calibrated_prediction_orig.html)

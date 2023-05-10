@@ -1,0 +1,17 @@
+---
+title: "Longitudinal Models in PyMC"
+author: "Nathaniel Forde"
+date: "2023-04-10"
+categories: ["probability", "pymc", "longitudinal models"]
+image: "longitudinal_models_pic.png"
+---
+
+# Longitudinal Analysis of Growth Trajectories
+
+In this project I outline the strategy of using multi-level or hierarchical Bayesian models to evaluate the growth trajectories of individuals, and estimate the between individual effects.
+
+The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/case_studies/longitudinal_models.html).
+
+The notebook demonstates these techniques applied to data of youth alcohol consuption. and behaviourial data. In particular we show how Bayesian hierarchical methods can be used to help characterise the manner in which different factors such can influence an individual's trajectory and why it's important to understand the sources of variation in such growth trajectories.
+
+![Within and Between Individual Trajectories](longitudinal_models_pic.png)

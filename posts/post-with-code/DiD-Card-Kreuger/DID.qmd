@@ -8,6 +8,7 @@ image: "Diff_in_Diff.png"
 self-contained: true
 execute: 
   enabled: true
+jupyter: python3
 ---
 
 There is a voluminous literature about how to measure causal impact using the differences-in-differences technique. It includes multiple controversies over how the technique can be applied to panel data with the problems of time-varying heterogeneity. These are fraught and varied issues, and we'll elide them for now. 
@@ -424,7 +425,7 @@ ax.set_title("Event Study with DDD design \n adding interactions with younger co
 
 ```
 
-We can test the diff in diff model seperately to show how there is a less pronounced effect for these two groups with the older group providing evidence againat the hypothesis of a parabolic like treatment effect. 
+We can test the diff in diff model seperately to show how there is a less pronounced effect for these two groups with the older group providing evidence against the hypothesis of a parabolic like treatment effect. 
 
 ```{python}
 abortion = pd.read_csv('abortion_mixtape.csv')
