@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+.DS_Store
+_site/
+_freeze/
+*.json
+
+/.quarto/
+.
+/.luarc.json
