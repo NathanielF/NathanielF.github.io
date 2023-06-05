@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Nathaniel Forde">
+<meta name="dcterms.date" content="2021-08-01">
+
+<title>Examined Algorithms - Psi, Replication and Bayesian Evidence</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Examined Algorithms</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../blog.html">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../opensource.html">
+ <span class="menu-text">Open Source Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../talks.html">
+ <span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-reader-toggle nav-link" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Psi, Replication and Bayesian Evidence</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title d-none d-lg-block">Psi, Replication and Bayesian Evidence</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">replication_crisis</div>
+                <div class="quarto-category">bayesian</div>
+                <div class="quarto-category">hypothesis_tests</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Nathaniel Forde </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">August 1, 2021</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Uncertain Things.html" class="sidebar-item-text sidebar-link">Uncertain Things</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Logic</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Logic/Introduction - Logic Topics.html" class="sidebar-item-text sidebar-link">Introduction - Logic Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Philosophy</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Philosophy/Introduction - Philosophy Topics.html" class="sidebar-item-text sidebar-link">Introduction - Philosophy Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Statistics</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Statistics/Introduction - Statistics Topics.html" class="sidebar-item-text sidebar-link">Introduction - Statistics Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#a-flavour-of-the-rigour" id="toc-a-flavour-of-the-rigour" class="nav-link active" data-scroll-target="#a-flavour-of-the-rigour">A Flavour of the Rigour</a>
+  <ul class="collapse">
+  <li><a href="#did-anything-go-wrong" id="toc-did-anything-go-wrong" class="nav-link" data-scroll-target="#did-anything-go-wrong">Did anything go wrong?</a></li>
+  </ul></li>
+  <li><a href="#bayesian-logic-of-evidence" id="toc-bayesian-logic-of-evidence" class="nav-link" data-scroll-target="#bayesian-logic-of-evidence">Bayesian Logic of Evidence</a>
+  <ul class="collapse">
+  <li><a href="#early-stopping" id="toc-early-stopping" class="nav-link" data-scroll-target="#early-stopping">Early Stopping</a></li>
+  <li><a href="#evidence-for-psi" id="toc-evidence-for-psi" class="nav-link" data-scroll-target="#evidence-for-psi">Evidence for Psi</a></li>
+  <li><a href="#updating-belief-always-a-choice-not-a-necessity" id="toc-updating-belief-always-a-choice-not-a-necessity" class="nav-link" data-scroll-target="#updating-belief-always-a-choice-not-a-necessity">Updating Belief: Always a Choice not a Necessity</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>Daryl Bem did not literally explode peoples brains, but his proofs of the possibility shook psychology to the core. In a short and precise paper <em>Feeling the Future</em> Bem set out to show that there was good evidence for the existence of human pre-cognition. Paradoxical as it sounds he succeeded. His research coincided with the burgeoning realisation that there was a replication crisis in psychology, yet he presented his work as invitation to further replication. A tension between careful rigour and fantastical speculation characterised the work, provoking anxiety in others that spurred better explanations and increased rigour in the psychological sciences.</p>
+<section id="a-flavour-of-the-rigour" class="level2">
+<h2 class="anchored" data-anchor-id="a-flavour-of-the-rigour">A Flavour of the Rigour</h2>
+<p>We won’t delve into each of the experiments, but it’s worth recalling something of the attention to detail and Bem’s effort to avoid easy refutation. Fundamentally his methods mirror the best practice of the day. He chooses an experimental paradigm of accepted research and adapts or invert it to test for the presence of <em>psi</em>, the catch all term denoting foresight and pre-cognitive ability. The most evocative of these experiments asked 100 participants to pick amongst two curtains where a picture will appear behind one of the two. The choice of curtain and the content of the picture was assigned in a random fashion, although a proportion of the pictures were selected to match the particpant’s sexual orientation. The theory was that some adaptive trait of the human organism would be primed to notice sexually stimulating possibilities in the near future. Success was measured against the benchmark of 50% accuracy.</p>
+<p>The randomisation algorithm relied on a combination of methods using both software and a physical ramdomisation device to mitigate the risk that participants could either (i) intuit some pattern in the order of selection or (ii) manipulate the selection by psychokinesis. The randomising devices were then also run through the experiment to ensure that each guess achieved no greater accuracy than the benchmark 50%. Finally, each individual was measured on a scale of extraversion (a suspected correlate of <em>psi</em>) and tested. The results were tabulated and evaluated using standard parametric and non-parametric measures of statistical significance. The results showed a (technically) significant divergence from the null-hypothesis (53% accuracy) on the erotic stimuli, suggesting some evidence of pre-cognitive ability. The effect was pronounced in the extraverted participants who achieved 57% accurate predictions of where the image would be displayed. This was one of nine experiments he ran, of which eight returned suggestive evidence for <em>psi</em></p>
+<section id="did-anything-go-wrong" class="level3">
+<h3 class="anchored" data-anchor-id="did-anything-go-wrong">Did anything go wrong?</h3>
+<p>What if anything was Bem’s mistake? One diagnosis of the problem rests on the inherent weakness of hypothesis testing as a confirmatory device. The null-hypothesis mechanism aims to reject theories if the data is substantially incompatible with expectation. So phrased the burden of proof is massive. Even granting Bem his results, the nine experiments have to be weighed against the cumulative evidence of experience. With this constraint the evidence seems slight and is (at best) an invitation to replication. If we’re less generous we can question fine-graining of the results. Notice how specific the nature of the effect in particular group of people for a particular variety of stimuli. We can fairly wonder if the results hold up to replication but also how the results were achieved. What part of the data was obtained in process of exploration versus experiement? This is commonly called the file-drawer problem - so named for the speculative number of unsuccessful analyses that were filed away instead of published.</p>
+<p>The emphasis on hypothesis testing and significant results leads to problems clearly outlined by <a href="https://nathanielf.github.io/post/theoretical_risks_meehl/"> Meehl </a>, but there are more particular problems with Bem’s analysis nicely brought out by a Bayesian perspective on the data.</p>
+</section>
+</section>
+<section id="bayesian-logic-of-evidence" class="level2">
+<h2 class="anchored" data-anchor-id="bayesian-logic-of-evidence">Bayesian Logic of Evidence</h2>
+<p>Following the presentation of Lee &amp; Wagenmakers in their <em>Bayesian Cognitive Modeling</em> we consider some problems with Bem’s methods.</p>
+<section id="early-stopping" class="level3">
+<h3 class="anchored" data-anchor-id="early-stopping">Early Stopping</h3>
+<p>The first suggestion is that the results may be due to a somewhat haphazard approach to ending an experiment. They posit that there is suspicious relationship between the sample size and observed effect size. The evaluation of the hypothesis is Bayesian - they seek to assess the probability of a correlation given the observed values i.e.&nbsp;Bem’s results:</p>
+<p><span class="math display">\[ \overbrace{p(C | O)}^{posterior} = \dfrac{\overbrace{p( C )}^{prior}\overbrace{p(O | C)}^{likelihood}}{\underbrace{\int_{i}^{N} p(O |C_{i})}_{evidence}} \]</span></p>
+<p>The observed values are suggestive of a relationship:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="NegativeRelation.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Negative Relationship</figcaption><p></p>
+</figure>
+</div>
+<p>On the hypothesis that there is some artifact of Bem’s process either deliberate or unintentional that influences the data, we want to see what the data suggests is the most likely value for their correlation. A strong anti-correlation is suggestive that the sample sizes are picked when the results support Bem’s conclusion.</p>
+<p>The Bayesian paradigm of reasoning is especially nice for this kind of problem as it forces you to express your prior credence in the question at hand. In this case we want to say what our beliefs about the correlation between effect size and sample size would be were we to condition on Bem’s observations. To incorporate our prior beliefs we build a generative model of our observed values as draws from a bivariate normal distribution with inverse gamma distributions over the variance terms and the correlation term <span class="math inline">\(r\)</span> enters the model as:</p>
+<p><span class="math display">\[ MvNormal([\mu_1, \mu_2],  \begin{bmatrix} \sigma_1^{2} , &amp; r\sigma_1\sigma_2  \newline r\sigma_1\sigma_2 &amp; ,  \sigma_2^{2}  \end{bmatrix}^{-1}) = MvNormal( \overrightarrow{\mu}, \Sigma^{-1} ) \]</span></p>
+<p>We’ll set a fairly open ended flat prior allowing any possible value for correlation. Updating on the observed results will generate a view of the likely value. First look at the code, then we’ll unpack it a little.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="generative_model.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Generative Model</figcaption><p></p>
+</figure>
+</div>
+<p>This can be implemented efficiently using the PYMC3 package in python. The posterior distribution is constructed by looping over samples from the joint distribution of this system.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pm.Model() <span class="im">as</span> model1:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># r∼Uniform(−1,1) flat prior for correlation value</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> pm.Uniform(<span class="st">"r"</span>, lower<span class="op">=-</span><span class="dv">1</span>, upper<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># μ1,μ2∼Gaussian(0,.001)  priors for the bivaraite gaussian means</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    mu <span class="op">=</span> pm.Normal(<span class="st">"mu"</span>, mu<span class="op">=</span><span class="dv">0</span>, tau<span class="op">=</span><span class="fl">0.001</span>, shape<span class="op">=</span>n2)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># σ1,σ2∼InvSqrtGamma(.001,.001) prior for the bivariate sigma terms</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    lambda1 <span class="op">=</span> pm.Gamma(<span class="st">"lambda1"</span>, alpha<span class="op">=</span><span class="fl">0.001</span>, beta<span class="op">=</span><span class="fl">0.001</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    lambda2 <span class="op">=</span> pm.Gamma(<span class="st">"lambda2"</span>, alpha<span class="op">=</span><span class="fl">0.001</span>, beta<span class="op">=</span><span class="fl">0.001</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    sigma1 <span class="op">=</span> pm.Deterministic(<span class="st">"sigma1"</span>, <span class="dv">1</span> <span class="op">/</span> np.sqrt(lambda1))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    sigma2 <span class="op">=</span> pm.Deterministic(<span class="st">"sigma2"</span>, <span class="dv">1</span> <span class="op">/</span> np.sqrt(lambda2))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    cov <span class="op">=</span> pm.Deterministic(</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"cov"</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        tt.stacklists(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            [[lambda1 <span class="op">**</span> <span class="op">-</span><span class="dv">1</span>, r <span class="op">*</span> sigma1 <span class="op">*</span> sigma2], [r <span class="op">*</span> sigma1 <span class="op">*</span> sigma2, lambda2 <span class="op">**</span> <span class="op">-</span><span class="dv">1</span>]]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    tau1 <span class="op">=</span> pm.Deterministic(<span class="st">"tau1"</span>, tt.nlinalg.matrix_inverse(cov))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The liklihood term - distribution of parameter conditional on the data</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    yd <span class="op">=</span> pm.MvNormal(<span class="st">"yd"</span>, mu<span class="op">=</span>mu, tau<span class="op">=</span>tau1, observed<span class="op">=</span>y)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    trace1 <span class="op">=</span> pm.sample()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>There is quite alot in that. The key points are to note that we are estimating the joint distribution of multiple parameters (<span class="math inline">\(\overrightarrow{\mu}, \Sigma\)</span>) at once:</p>
+<p><span class="math display">\[ p(\overrightarrow{\mu}, \Sigma | y) = \underbrace{p(\overrightarrow{\mu}) | \Sigma, y)}_{\text{conditional mean}}\cdot p(\Sigma | y) = \overbrace{p(\Sigma |\overrightarrow{\mu}, y)}^{\text{conditional cov}} \cdot p(\overrightarrow{\mu} | y) \]</span></p>
+<p>In the case of estimating a normal distribution with unknown mean and unknown variance both conditional quantities need to be estimated, so it helps that the inverse Gamma distribution is conjugate prior distribution for <span class="math inline">\(\Sigma\)</span>. A conjugate prior relationship makes it easier to compute a posterior for particular families of probability distributions.</p>
+<p><span class="math display">\[ \text{Conjugate Relation : } prior_{fam}^{f(x)} \mapsto_{likelihood}  posterior_{fam}^{f(x + n)} \]</span></p>
+<p>The bounded gamma variable is technically “improper” in that it can exceed 1, but taking the inverse squareroot transform is common practice to specify a conjugate prior for <span class="math inline">\(\Sigma\)</span> in the multivariate normal distribution. The conjugate prior for <span class="math inline">\(\overrightarrow{\mu}\)</span> is similarly a normally distributed variable.</p>
+<p><span class="math display">\[ p(\overrightarrow{\mu} | y, \Sigma) \sim MvNormal(\overrightarrow{\mu}_{0}, \Sigma_{0}) \]</span> <span class="math display">\[ p(\Sigma | y , \overrightarrow{\mu}) \sim InvSqrtGamma(\alpha, \beta) \]</span></p>
+<p>Using this fact we can iteratively sample from both the conditional distributions of both parameters based on the observations <span class="math inline">\(y\)</span> and feed the sample values through the likelihood for function for the overall multivariate normal expressed as:</p>
+<p><span class="math display">\[ p (y | \overrightarrow{\mu}, \Sigma) = (2 \pi)^{\frac{-2}{2}} \vert \Sigma \vert^{\frac{-1}{2}} exp\Big(-(y - \overrightarrow{\mu})^{'} \Sigma^{-1}(y - \overrightarrow{\mu})/2 \Big) \]</span></p>
+<p>which in turn is used to calculate the posterior values of the joint parameters conditional on the data. This method is called Gibbs Sampling and constructs the posterior distribution from our data. The implementation of this process in Pymc3 allows us to recover the marginal distribution of the correlation coefficient <span class="math inline">\(r\)</span> from the range of samples.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the marginal distribution of the correlation term</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>az.plot_trace(trace1, var_names<span class="op">=</span>[<span class="st">"r"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="CorrelationCoef.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Correlation Plot</figcaption><p></p>
+</figure>
+</div>
+<p>The results decisively show that the data implies a strong relationship between effect size and sample size, that merits some suspicion.</p>
+</section>
+<section id="evidence-for-psi" class="level3">
+<h3 class="anchored" data-anchor-id="evidence-for-psi">Evidence for Psi</h3>
+<p>It’s one thing to question the methodological missteps of the paper, but it’s quite another thing to try and evaluate the basic claim of Bem’s paper. How does his evidence contribute to our belief in the occurence of psi. Even though he arrays a list of 9 experiments with suggestive evidence. It’s possible that each represents a statistical fluke - a better test for the existence of <em>psi</em> would involve measuring consistent performance over a number of trials. This is exactly what Wagenmaker’s research attempted when trying to replicate Bem’s results. He repeated Bem’s original experiments and another analogous task measuring performance on both both tasks. The darker the square, the more participants in the cross-section.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="performance.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Consistent performance</figcaption><p></p>
+</figure>
+</div>
+<p>This plot does not suggest any strong relation between performance over the tests. Since we want to evaluate the correlation of performance on both tests, we would like to evaluate if the data suggests a positive correlation in the posterior distribution. Performance on the test is simply the count of correct answers for each participant on each experiment. We’ll model this as a Binomial distribution. As before we treat our observed guesses as driven by draws from a bivariate normal distribution which is “filtered” through a probit transform. A probit transform like the logistic transform converts a continuous variable into a symmetrical bi-furcated distribution which allows us to model our choices.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> phi(x):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># probit transform</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> pm.math.erf(x <span class="op">/</span> pm.math.sqrt(<span class="dv">2</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pm.Model() <span class="im">as</span> model2:</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># r∼Uniform(−1,1)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> pm.Uniform(<span class="st">"r"</span>, lower<span class="op">=</span><span class="dv">0</span>, upper<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># μ1,μ2∼Gaussian(0,.001)</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    mu <span class="op">=</span> pm.Normal(<span class="st">"mu"</span>, mu<span class="op">=</span><span class="dv">0</span>, tau<span class="op">=</span><span class="fl">0.001</span>, shape<span class="op">=</span>n2)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># σ1,σ2∼InvSqrtGamma(.001,.001)</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    lambda1 <span class="op">=</span> pm.Gamma(<span class="st">"lambda1"</span>, alpha<span class="op">=</span><span class="fl">0.001</span>, beta<span class="op">=</span><span class="fl">0.001</span>, testval<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    lambda2 <span class="op">=</span> pm.Gamma(<span class="st">"lambda2"</span>, alpha<span class="op">=</span><span class="fl">0.001</span>, beta<span class="op">=</span><span class="fl">0.001</span>, testval<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    sigma1 <span class="op">=</span> pm.Deterministic(<span class="st">"sigma1"</span>, <span class="dv">1</span> <span class="op">/</span> np.sqrt(lambda1))</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    sigma2 <span class="op">=</span> pm.Deterministic(<span class="st">"sigma2"</span>, <span class="dv">1</span> <span class="op">/</span> np.sqrt(lambda2))</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    cov <span class="op">=</span> pm.Deterministic(</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"cov"</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        tt.stacklists(</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            [[lambda1 <span class="op">**</span> <span class="op">-</span><span class="dv">1</span>, r <span class="op">*</span> sigma1 <span class="op">*</span> sigma2], [r <span class="op">*</span> sigma1 <span class="op">*</span> sigma2, lambda2 <span class="op">**</span> <span class="op">-</span><span class="dv">1</span>]]</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    tau1 <span class="op">=</span> pm.Deterministic(<span class="st">"tau1"</span>, tt.nlinalg.matrix_inverse(cov))</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    thetai <span class="op">=</span> pm.MvNormal(<span class="st">"thetai"</span>, mu<span class="op">=</span>mu, tau<span class="op">=</span>tau1, shape<span class="op">=</span>(n, n2))</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    theta <span class="op">=</span> phi(thetai)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">#likelihood</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    kij <span class="op">=</span> pm.Binomial(<span class="st">"kij"</span>, p<span class="op">=</span>theta, n<span class="op">=</span>Nt, observed<span class="op">=</span>xobs)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    trace2 <span class="op">=</span> pm.sample()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This looks like an analogous model, and in some respects it is, but note what the multivariate gaussian is modelling. In this model it’s an expression of the latent mental process that drives the performance each task. This flexibility is a virtue which emphasises the versatility of thinking through the underlying probabilistic phenomena. We have a suite of models apt to describe a range of processes if we’re creative enough to use them. More, we’ve been able to use these models to incorporate our information about the phenomena - the structure of the relationship and the admissable range of values.</p>
+<blockquote class="blockquote">
+<p>“As soon as we look at the nature of inference at this many-moves-ahead level of perception, our attitude toward probability theory and the proper way to use it in science becomes almost diametrically opposite to that expounded in most current textbooks. We need have no fear of making shaky calculations on inadequate knowledge; for if our predictions are indeed wrong, then we shall have an opportunity to improve that knowledge, an opportunity that would have been lost had we been too timid to make the calculations. Instead of fearing wrong predictions, we look eagerly for them; it is only when predictions based on our present knowledge fail that probability theory leads us to fundamental new knowledge.” - E.T. Jaynes <em>Bayesian Methods</em></p>
+</blockquote>
+<p>Based on these results we should predict poor future performance since, as expected, the correlation between the performance on both tasks is very slight.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>az.plot_trace(trace2, var_names<span class="op">=</span>[<span class="st">"r"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ability_corr.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Posterior for relation between performance on both tests</figcaption><p></p>
+</figure>
+</div>
+<p>Definitely not promising evidence of aptitude in the studied group.</p>
+</section>
+<section id="updating-belief-always-a-choice-not-a-necessity" class="level3">
+<h3 class="anchored" data-anchor-id="updating-belief-always-a-choice-not-a-necessity">Updating Belief: Always a Choice not a Necessity</h3>
+<p>But notice the way we’ve used the same updating mechanism in both cases but to different ends. In the first case we’ve updated on a flat prior and reasoned to the conclusion as a kind of reductio ad absurdum. We intuitively reject the hypothesis that effect size should be anti-correlated with sample size and when Bem’s results suggests the opposite, we take it as evidence against his theory. In the second case, more exploratory, we genuinely don’t know how the performance over the two tests should be related but for Bem’s results to stand they need to be positive. Conditioning on the experimental observations we learn what the expected correlation is to be and deny the presence of <em>psi</em>. Will Bem update his beliefs in the same manner? As with any argument we can always question the premises, but the Bayesian methodology has a simple consistency going for it. It’s an explicit and appealing form of analysis, which even if wrong is interesting for how it enables us to learn from the error.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Bem’s paper is an unsettling reminder that rigour comes in many forms and even witha good faith effort exactitude is not always enough to prevent error. In this case the Bayesian perspective provides a solid critique and proves itself a valuable lens with which to evaluate reliability of performance. More generally the explicit nature of Bayesian modelling and the careful manner in which you specify your prior expectations is appealing. Allowing for a more nuanced weighing of evidence than available through a simplistic binary of hypothesis testing.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

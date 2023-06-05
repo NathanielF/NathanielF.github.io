@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Nathaniel Forde">
+<meta name="dcterms.date" content="2021-01-22">
+
+<title>Examined Algorithms - Factor Analysis and Construct Validity in Psychology</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Examined Algorithms</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../blog.html">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../opensource.html">
+ <span class="menu-text">Open Source Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../talks.html">
+ <span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-reader-toggle nav-link" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Factor Analysis and Construct Validity in Psychology</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title d-none d-lg-block">Factor Analysis and Construct Validity in Psychology</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">construct_validity</div>
+                <div class="quarto-category">significance_tests</div>
+                <div class="quarto-category">factor analysis</div>
+                <div class="quarto-category">replicability</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Nathaniel Forde </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 22, 2021</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Uncertain Things.html" class="sidebar-item-text sidebar-link">Uncertain Things</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Logic</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Logic/Introduction - Logic Topics.html" class="sidebar-item-text sidebar-link">Introduction - Logic Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Philosophy</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Philosophy/Introduction - Philosophy Topics.html" class="sidebar-item-text sidebar-link">Introduction - Philosophy Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Statistics</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Statistics/Introduction - Statistics Topics.html" class="sidebar-item-text sidebar-link">Introduction - Statistics Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#meehls-problems-plaguing-psychology" id="toc-meehls-problems-plaguing-psychology" class="nav-link active" data-scroll-target="#meehls-problems-plaguing-psychology">Meehl’s Problems Plaguing Psychology</a></li>
+  <li><a href="#the-recipe-open-concepts-and-context-sensitive-stocastologicals" id="toc-the-recipe-open-concepts-and-context-sensitive-stocastologicals" class="nav-link" data-scroll-target="#the-recipe-open-concepts-and-context-sensitive-stocastologicals">The Recipe: Open Concepts and Context Sensitive Stocastologicals</a></li>
+  <li><a href="#open-concepts-and-factor-analysis" id="toc-open-concepts-and-factor-analysis" class="nav-link" data-scroll-target="#open-concepts-and-factor-analysis">Open Concepts and Factor Analysis</a>
+  <ul class="collapse">
+  <li><a href="#estimating-the-latent-factor-values" id="toc-estimating-the-latent-factor-values" class="nav-link" data-scroll-target="#estimating-the-latent-factor-values">Estimating the latent factor values</a></li>
+  </ul></li>
+  <li><a href="#weighing-the-hypothesis" id="toc-weighing-the-hypothesis" class="nav-link" data-scroll-target="#weighing-the-hypothesis">Weighing the Hypothesis</a></li>
+  <li><a href="#factor-reliability-an-example-in-code." id="toc-factor-reliability-an-example-in-code." class="nav-link" data-scroll-target="#factor-reliability-an-example-in-code.">Factor Reliability: An Example in Code.</a></li>
+  <li><a href="#generalisability-and-replicability" id="toc-generalisability-and-replicability" class="nav-link" data-scroll-target="#generalisability-and-replicability">Generalisability and Replicability</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>In a prescient paper in the 1970s Paul Meehl wrote about the lack of cumulative success in the psychologocial sciences, and how this should be attributed to poor methodology rather than the sheer difficulty of the subject. He elaborates an impressive list of problems for modeling any psychological process. Common themes criss-cross the list and interact with one another in ways which could make you despair for the discipline. So it is, I think, somewhat surprising that Meehl locates the main problem not in the subject, but in the method of significance testing.</p>
+<p>We’ll narrow our focus shortly, but first consider the breadth of the issues.</p>
+<section id="meehls-problems-plaguing-psychology" class="level2">
+<h2 class="anchored" data-anchor-id="meehls-problems-plaguing-psychology">Meehl’s Problems Plaguing Psychology</h2>
+<table class="table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 73%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Problem</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Response-Classification Problem</td>
+<td>Difficulty attributing mental process to observed behaviour</td>
+</tr>
+<tr class="even">
+<td>Situation-Taxonomy Problem</td>
+<td>Difficulty isolating the stimulus from rough description of environment</td>
+</tr>
+<tr class="odd">
+<td>Unit of Measurement</td>
+<td>Choice of scale e.g.&nbsp;ratio or interval, continuous or discrete</td>
+</tr>
+<tr class="even">
+<td>Individual Differences</td>
+<td>Common psychological dispositions arise from idiosyncratic mixture of influences</td>
+</tr>
+<tr class="odd">
+<td>Polygenetic Hereditry</td>
+<td>Common psychological dispositions have complex causal roots</td>
+</tr>
+<tr class="even">
+<td>Divergent Causality</td>
+<td>Very sensitive to initial conditions, slight differences at source result in large differences in outcomes</td>
+</tr>
+<tr class="odd">
+<td>Idiographic Problem</td>
+<td>Often relates to the specific discovery of facts rather than generalisable laws</td>
+</tr>
+<tr class="even">
+<td>Unknown Critical Events</td>
+<td>Paucity of medical history or local context</td>
+</tr>
+<tr class="odd">
+<td>Nuisance Variables</td>
+<td>Difficulty deciphering wealth of related variables</td>
+</tr>
+<tr class="even">
+<td>Feedback Loops</td>
+<td>Interventions lead to changing behaviour, disrupting the study</td>
+</tr>
+<tr class="odd">
+<td>AutoCatalytic Processes</td>
+<td>Individual influences on their own psychological disposition during tests</td>
+</tr>
+<tr class="even">
+<td>Random Walk</td>
+<td>Differences in dispositional response often due to random flux, rather than different causal influence</td>
+</tr>
+<tr class="odd">
+<td>Sheer Number of Variables</td>
+<td>Cumulative influence of small random-drift can have decisive impact on the psychological disposition</td>
+</tr>
+<tr class="even">
+<td>Importance of Cultural Factors</td>
+<td>Weight of an individual variable may vary with cultural context</td>
+</tr>
+<tr class="odd">
+<td>Context-Dependent Stochastilogicals</td>
+<td>Any derived rule of behaviour is likely only probabilisitic and subject to contextual variation.</td>
+</tr>
+<tr class="even">
+<td>Open Concepts</td>
+<td>Latent psychological factors under study “evolve” as we include/remove indicative measures</td>
+</tr>
+<tr class="odd">
+<td>Intentionality, Purpose and Meaning</td>
+<td>Purpose drives behaviour and changes in behaviour</td>
+</tr>
+<tr class="even">
+<td>Rule Governance</td>
+<td>People follow rules influencing their behaviour</td>
+</tr>
+<tr class="odd">
+<td>Uniquely Human Events &amp; Powers</td>
+<td>There are some behaviours which have no animal/ape analogies to compare. Limiting data</td>
+</tr>
+<tr class="even">
+<td>Ethical Constraints on Research</td>
+<td>Constraints on some decisive testing methodologies due to ethical abuses.</td>
+</tr>
+</tbody>
+</table>
+<p>We’re going to focus on two of the problems that most clearly relate the issue of significance testing: <strong>open concepts, context-dependent stochastilogicals</strong>. These issues are tightly coupled with the ability to falsify psychological hypotheses since they both serve as reasons to doubt contrary evidence and therefore deny us a decisive rejection of our hypotheses even when they conflict with observable data. This difficulty directly undermines the paradigm of null-hypothesis testing in psychology, since they imply that we are incapable of placing the null under severe scrutiny.</p>
+</section>
+<section id="the-recipe-open-concepts-and-context-sensitive-stocastologicals" class="level2">
+<h2 class="anchored" data-anchor-id="the-recipe-open-concepts-and-context-sensitive-stocastologicals">The Recipe: Open Concepts and Context Sensitive Stocastologicals</h2>
+<p>The ugly word “stochastological” is to be contrasted with the, perhaps more familar but also pompous, notion of a nomological inference - one which is valid by appeal to a wholly general law.</p>
+<p><span class="math display">\[ \text{(Nomological): } \forall x(Fx \rightarrow Gx) \]</span></p>
+<p>Meehl argues that the idiosyncratic and individual specific patterns of causation in psychology short-circuit any appeals to over-arching rules. Even when we can consistently measure a disposition common across individuals, the nature of the observed patterns support probabilistic inference not law-like generalisations. Even then the underlying probabilities are liable to change with the context. You might be prone to defer to authority in 9 of 10 cases, but always exhibit knee jerk refusal when prompted by a political opponent.</p>
+<p><span class="math display">\[ \text{(Stochastic): }  \underbrace{P(Gx | Fx) \geq 0.90}_{context = c} \]</span></p>
+<p>Combine this issue with contingencies of measurement and the dynamic nature of the scales, and we have a recipe for undermining any null-hypothsis significance test. Consider iteritive model building which tests for predictive aspects of some latent factor, say risk-aversion, on performance at a related task. Say the factor was initially derived from a set of observational measures:</p>
+<p><span class="math display">\[ \underbrace{ feature4,  \overbrace{ \text{ feature5, } \overbrace{feature1 , feature2, feature3 }^{\text{initial feature measures}}}^{\text{final feature measures}}}_{\text{Intuitive Concept}} \twoheadrightarrow \text{Construct} \]</span></p>
+<p>Now each iteration was designed to test the imagined psychological constructand the features are observational traits associated with risk-taking. Each additional feature seemed reasonable at time. We may even have gotten better predictive accuracy. But the model build and the changing measurements raises question over what we’re constructing and whether it truly “captures” the pre-theoretical psychological concept.</p>
+<p>Now we have a measure of risk-aversion and we try to render an intuitive hypothesis mathematically precise with respect to our construct. This is itself an art, but for the moment assume we can state <span class="math inline">\((H)\)</span>. Since the hypothesis test is supposed to infer the falsity of the assumptions from evidence contrary to the main hypothesis i.e.&nbsp;if when assuming the hypothesis and our auxilary commitments (regarding measurement and context) we find evidence inconsistent with our expectations, then we should reject the hypothesis! In practice the hypothesis is ussually far more entrenched in the minds of the experimenters than the extensive auxillary commitments, so we normally seek the source of predictive error in mistakes made than with the key hypothesis.</p>
+<p><span class="math display">\[ (H \wedge A) \rightarrow O , \neg O \vdash \neg (H \wedge A) \text{ ....so not A}\]</span></p>
+<p>In this way we preserve the hypothesis and remove it from exposure to a strict test of its accuracy. This experiment is really only validating the consistency of the data with a nebulous range of auxilary commitments, and as such allows the experimenter to move the goal-posts almost at whim.</p>
+<p>Meehl concedes that there may be some justification for this procedure if we would grant that <span class="math inline">\((H)\)</span> has in some sense a greater “verisimilitude” than the auxilary commitments. Psychology differs from other disciplines in that the objects of measurement and the manner of measurement are not tightly bound. The truth “content” of claims about measurement of length, for instance, stand or fall with claims about the measurement instrument - they are so intimately connected that the measurement apparatus is almost definitional. You might object that appeals to versimilitude in some way puts the cart before the horse. We’re designing an experiement to test <span class="math inline">\((H)\)</span>, how can we presume it’s truth in testing!? This is fair but only points to difficulty of making <span class="math inline">\((H)\)</span> precise and the distance between mental phenomena and our measurement of it</p>
+</section>
+<section id="open-concepts-and-factor-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="open-concepts-and-factor-analysis">Open Concepts and Factor Analysis</h2>
+<p>If we’re lucky we have a clear idea of how to measure the psychological phenomenon of interest and you can devise a survey to capture the details. If instead you just have some data and you think there might be a latent factor driving the observations, then the the factor analysis effectively tries to group the observed variable by their correlations. The underlying statistical model for <span class="math inline">\(m\)</span> factors states:</p>
+<div class="theorem" data-text="The Factor Model">
+<p>Assume the model <span class="math display">\[\mathbf{X} = \mathbf{\mu}^{p \times 1}  + \mathbf{L}^{p \times m} \mathbf{F}^{m \times 1} +\epsilon^{p \times 1} \]</span></p>
+<p>where <span class="math inline">\(\mathbf{X}\)</span> is our data matrix recording the observational data while <span class="math inline">\(\mu\)</span> is the mean vector with entries for each column in <span class="math inline">\(\mathbf{X}\)</span>. So our observational data is deemed a function modifying the multivariate mean as a linear function of latent factors <span class="math inline">\(\mathbf{F}\)</span> with factor loadings <span class="math inline">\(l_{i, j} \in \mathbf{L}\)</span>, for each of the observed variables <span class="math inline">\(i\)</span> and for each <span class="math inline">\(j\)</span> of the <span class="math inline">\(m\)</span> factors.</p>
+<p>The model assumes <span class="math inline">\(\mathbf{F}\)</span> and <span class="math inline">\(\epsilon\)</span> are independent and <span class="math inline">\(E(\mathbf{F}) = \mathbf{0}, Cov(\mathbf{F}) = \mathbf{I}\)</span> In addition note that <span class="math inline">\(E(\epsilon) = \mathbf{0}\)</span> and <span class="math inline">\(Cov(\epsilon) = \Psi\)</span> where <span class="math inline">\(\Psi\)</span> is a diagonal matrix.</p>
+<p>Then we can show that <span class="math display">\[Cov(\mathbf{X}) = \mathbf{LL}^{'} + \Psi\]</span></p>
+</div>
+<p>That’s a bit abstract, but the point is just that each factor is a linear construct of the observed data, and we can choose how many constructs to build. An important consequence of this fact is that we can express the variance of each observed feature in terms of the loadings and a random variance, so if we can explain a high portion of their variance in a low number of factors we can be reasonably sure that the dimensional reduction remains representative of the diversity in the original data set.</p>
+<p><span class="math display">\[ Var(X_i) = \underbrace{l_{i, j}^{2} + l_{i, 2}^{2} ... l_{i, m}^{2}}\_{communalities} + \psi_{i}\]</span></p>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span><span class="math display">\[ (\mathbf{X} - \mu) = (\mathbf{L}\mathbf{F} + \epsilon)\]</span> <span class="math display">\[ \Rightarrow (\mathbf{X} - \mu)(\mathbf{X} - \mu)^{'} = (\mathbf{L}\mathbf{F} + \epsilon)(\mathbf{L}\mathbf{F} + \epsilon)^{'}\]</span> <span class="math display">\[ = (\mathbf{L}\mathbf{F} + \epsilon)((\mathbf{L}\mathbf{F})^{'} + \epsilon^{'}) \]</span> <span class="math display">\[ = \mathbf{L}\mathbf{F}(\mathbf{L}\mathbf{F})^{'} + \epsilon(\mathbf{L}\mathbf{F})^{'} + \mathbf{L}\mathbf{F}\epsilon^{'} + \epsilon\epsilon^{'}\]</span> <span class="math display">\[ \Rightarrow E((\mathbf{X} - \mu)(\mathbf{X} - \mu)^{'}) = E( (\mathbf{L}\mathbf{F} + \epsilon)(\mathbf{L}\mathbf{F} + \epsilon)^{'})\]</span> <span class="math display">\[ \Rightarrow Cov(\mathbf{X}) = \mathbf{L}E(\mathbf{F}\mathbf{F}^{'})\mathbf{L}^{'} + E(\epsilon\mathbf{F}^{'})\mathbf{L}^{'} + \mathbf{L}E(\mathbf{F}\epsilon^{'}) + E(\epsilon\epsilon^{'}) \]</span> <span class="math display">\[ = \mathbf{L}\mathbf{L}^{'} + \Psi \]</span></p>
+</div>
+<section id="estimating-the-latent-factor-values" class="level3">
+<h3 class="anchored" data-anchor-id="estimating-the-latent-factor-values">Estimating the latent factor values</h3>
+<p>Various techniques can be applied to estimate the loadings <span class="math inline">\(\mathbf{L}\)</span> based on a strategic decomposition of sample covariance matrix to derive the principal factors. The typical technique is to use the eigenvalue decomposition, but a maximum likelihood method is also feasible. It is another question altogeher for how to estimate the factor scores <span class="math inline">\(f_{j} \in \mathbf{F}\)</span> from our derived factor loadings.</p>
+<p>This is a two step, where we base an estimate on a set of prior estimates. One or more latent factors are assumed, observable features postulated to be related are grouped and from these we derive a recipe for constructing the latent factor as a composite of the observed features. From this recipe, we can then by a process of optimisation derive estimates for the values of the latent feature. We won’t dwell on the details here, but I want to stress the level of abstraction! When it comes to test the hypotheses about the underlying psychological phenomenon, this method has certain mathematical appeal but it is not above question. It is these kind of contingencies: the bespoke assumptions of the model, but correlation and covariance relationship between the observed features and richness of the data required to discover the expected values of <span class="math inline">\(\mathbf{L}, \mathbf{f}_j\)</span> respectively, coupled with the difficulty of interpreting the factors in light of the original psychological concept, that undermine cumulative progress in psychology.</p>
+</section>
+</section>
+<section id="weighing-the-hypothesis" class="level2">
+<h2 class="anchored" data-anchor-id="weighing-the-hypothesis">Weighing the Hypothesis</h2>
+<p>These observations suggest that the notion construct validity is not easily resolved and as such our initial hypotheses are plagued by innumerable auxilary commitments. It is with these considerations in mind that Paul Meehl can write:</p>
+<blockquote class="blockquote">
+<p>“<em>[T]he almost universal reliance on merely refutng the null hypothesis as the standard method for corroborating substantive theories in the soft areas is a terrible mistake, is basically unsound, poor scientific strategy and one of the worst things that ever happened in theory of psychology</em>” - Theoretical Risks and Tabular Asteriks, Sir Karl, Sir Ronald and the Slow Progress of Soft Psychology</p>
+</blockquote>
+<p>The accumulation of auxilary commitments makes the cumulative confirmation of substantive psychological theory proportionaly unlikely. At best we may get lucky in some cases, but the character of the object under study is so dynamic that simple significance tests are next to useless. The “distance” between the latent factor and our measurement of it supply an almost endless set of auxilary commitments which can come under pressure when evaluating a given hypothesis.</p>
+<p>But there is a tension since difficulty of measurement does not necessarily undermine the theory. In particular, there are theory’s which have a high degree of intuitive plausibility (“verisimilitude”) but escape our ability to properly measure. Any measurement construct is at best an attempted proxy. There are some historic measures of construct validity such as Cronbach’s alpha which at least test for a directional consistency in the observed features.</p>
+</section>
+<section id="factor-reliability-an-example-in-code." class="level2">
+<h2 class="anchored" data-anchor-id="factor-reliability-an-example-in-code.">Factor Reliability: An Example in Code.</h2>
+<iframe width="90%" height="1000" overflow-x="scroll" ,="" name="iframe" src="TheoreticalRisks_Meehl.html" scrolling="yes"></iframe>
+</section>
+<section id="generalisability-and-replicability" class="level1">
+<h1>Generalisability and Replicability</h1>
+<p>We’ve seen a brief example of factor analysis, an attempt to derive a psychological construct from observable data. We’ve shown how to deploy a measure of the factor’s reliability in the Cronbach alpha measurement. But we’ve only really shown that some features co-vary together, or show some degree of correlation. This alone is too quick and dirty to support any inference to the reality of the latent factor. At this height of abstraction it’s hard to see how any appeals to “versimilitude” could even get off the ground. Meehl’s scepticism about significance testing in this domain might even have been too generous.</p>
+<p>But his framing is valuable. The problem stated suggests a rephrasal where we test a theory for replicability over a range of admissable auxilary and contextual commitments. Holding one fixed as we vary the other in a genuine exercise of exploratory experiementation.</p>
+<p><span class="math display">\[ \forall i \forall j \Bigg( T \wedge A_{i} \wedge C_{j} \Rightarrow O \Bigg) \]</span></p>
+<p>This emphasis concedes the difficulty of the subject and makes it explicit over the testing routine. Plausibility can then accrue to theory in a more gradual fashion as appropriate to the difficulties of the subject.</p>
+<ul>
+<li><a href="../../../notebooks/TheoreticalRisks_Meehl.ipynb" download="">Download Jupyter Notebook: Factor Analysis and Cronbach’s Alpha</a></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

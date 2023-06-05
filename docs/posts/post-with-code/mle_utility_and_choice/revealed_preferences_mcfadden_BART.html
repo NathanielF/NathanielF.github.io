@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Nathaniel Forde">
+
+<title>Examined Algorithms – revealed_preferences_mcfadden_bart</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Examined Algorithms</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../blog.html">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../opensource.html">
+ <span class="menu-text">Open Source Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../talks.html">
+ <span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-reader-toggle nav-link" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Uncertain Things.html" class="sidebar-item-text sidebar-link">Uncertain Things</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Logic</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Logic/Introduction - Logic Topics.html" class="sidebar-item-text sidebar-link">Introduction - Logic Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Philosophy</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Philosophy/Introduction - Philosophy Topics.html" class="sidebar-item-text sidebar-link">Introduction - Philosophy Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Statistics</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/Statistics/Introduction - Statistics Topics.html" class="sidebar-item-text sidebar-link">Introduction - Statistics Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#revealed-preference" id="toc-revealed-preference" class="nav-link active" data-scroll-target="#revealed-preference">Revealed Preference</a>
+  <ul class="collapse">
+  <li><a href="#the-problem-modelling-discrete-choice-by-latent-utility-metrics" id="toc-the-problem-modelling-discrete-choice-by-latent-utility-metrics" class="nav-link" data-scroll-target="#the-problem-modelling-discrete-choice-by-latent-utility-metrics">The Problem: Modelling Discrete Choice by Latent Utility Metrics</a></li>
+  <li><a href="#maximum-likelihood-fits-over-candidate-distributions" id="toc-maximum-likelihood-fits-over-candidate-distributions" class="nav-link" data-scroll-target="#maximum-likelihood-fits-over-candidate-distributions">Maximum Likelihood Fits over Candidate Distributions</a></li>
+  <li><a href="#mcfaddans-bart-discrete-choice-model" id="toc-mcfaddans-bart-discrete-choice-model" class="nav-link" data-scroll-target="#mcfaddans-bart-discrete-choice-model">McFaddan’s BART Discrete Choice Model</a></li>
+  <li><a href="#an-example-in-two-products-two-models" id="toc-an-example-in-two-products-two-models" class="nav-link" data-scroll-target="#an-example-in-two-products-two-models">An Example in Two Products &amp; Two Models</a></li>
+  <li><a href="#generalising-to-multiple-choices-the-multinomial-distribution" id="toc-generalising-to-multiple-choices-the-multinomial-distribution" class="nav-link" data-scroll-target="#generalising-to-multiple-choices-the-multinomial-distribution">Generalising to Multiple choices: The Multinomial Distribution</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> stats</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize_scalar, minimize</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> Latex</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> stargazer.stargazer <span class="im">import</span> Stargazer</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This notebook is a python port of some of the code in “Learning Microeconometrics with R” by Christopher P Adams. It corresponds to the blog post: https://nathanielf.github.io//post/mle_utility_and_choice/</p>
+<section id="revealed-preference" class="level1">
+<h1>Revealed Preference</h1>
+<p><strong>Revealed Preference Axiom </strong> If there are two choices, A and B, and we observe a person choose A, then her utility from A is greater than her utility from B.</p>
+<p>So in a simple binary case we can estimate the utility from differences expresed over the purchase prices.When <span class="math inline">\(A\)</span> is purchased over <span class="math inline">\(B\)</span> we know that</p>
+<p><span class="math display">\[ u_A - p_A &lt; u_B - p_B \]</span></p>
+<p>Normalising to a particular reference price, say B, We set <span class="math inline">\(p = p_A - p_B\)</span> and <span class="math inline">\(utility = u_A - u_B\)</span></p>
+<div class="cell" data-execution_count="191">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">3</span>, N)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.sort(u)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>p_B <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Share cases where utility is positive i.e. where A is chosen</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>np.mean(u <span class="op">-</span> p_B <span class="op">&gt;</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="191">
+<pre><code>0.236</code></pre>
+</div>
+</div>
+<p>This is a simple example of where we can use assumptions of revealed preference and a hypothetical range of utility</p>
+<div class="cell" data-execution_count="609">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Random distribution of price points</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>, N)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>share_empirical <span class="op">=</span> np.zeros(shape<span class="op">=</span>(<span class="bu">len</span>(p), <span class="dv">1</span>))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>share_theoretical <span class="op">=</span> np.zeros(shape<span class="op">=</span>(<span class="bu">len</span>(p), <span class="dv">1</span>))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>ecdf <span class="op">=</span> ECDF(u)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(p)):</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># share of market with a positive utility for A over B at a given price point</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    share_empirical[i] <span class="op">=</span> np.mean(u<span class="op">-</span>p[i] <span class="op">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the Empirical cdf fro U</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>share_theoretical <span class="op">=</span> <span class="dv">1</span><span class="op">-</span>ecdf(u)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">'share_empirical'</span>: share_empirical.flatten(), <span class="st">'p'</span>: p}).plot(x<span class="op">=</span><span class="st">'share_empirical'</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                                                                          y<span class="op">=</span><span class="st">'p'</span>, kind<span class="op">=</span><span class="st">"scatter"</span>, </span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                                                                          title<span class="op">=</span><span class="st">"Price by Estimated Shares"</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">'share_theoretical'</span>: share_theoretical.flatten(), <span class="st">'u'</span>:u }).plot(x<span class="op">=</span><span class="st">'share_theoretical'</span>, </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                                                                                             y<span class="op">=</span><span class="st">'u'</span>, kind<span class="op">=</span><span class="st">"scatter"</span>, </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                                                                                title<span class="op">=</span><span class="st">"Utility by Theoretical Shares"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="609">
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x149dc7198&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="revealed_preferences_mcfadden_BART_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="revealed_preferences_mcfadden_BART_files/figure-html/cell-4-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<p>However in both cases we made use of the fact that we knew the distribution of the utilities</p>
+<section id="the-problem-modelling-discrete-choice-by-latent-utility-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="the-problem-modelling-discrete-choice-by-latent-utility-metrics">The Problem: Modelling Discrete Choice by Latent Utility Metrics</h2>
+<p>Some assumptions about the form of the utility distribution are crucial as our modeling efforts will go wrong if we know nothing about the latent utilities. We assume that the latent utility can be expressed as by the revealed preferences i.e.&nbsp;as the share or proportion of choices made by the customers.</p>
+<p>The utility is some function of product and consumer’s properties, perhaps mostly driven by price</p>
+<p><span class="math display">\[ utility = \mathbf{X'}\beta + e\]</span></p>
+<p>and market share is an expression of that utility <span class="math display">\[ demand_A = utility_{A} &gt; 0 \]</span></p>
+<p>In a choice context we’re trying to determine if the implicit utility measure is sufficient to drive a purchase, and as such OLS models are inappropriate</p>
+<div class="cell" data-execution_count="602">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="op">-</span><span class="dv">3</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, N)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>consumer_desc <span class="op">=</span> np.random.uniform(<span class="dv">3</span>, <span class="dv">1</span>, N)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>consumer_desc1 <span class="op">=</span> np.random.uniform(<span class="dv">2</span>, <span class="dv">5</span>, N)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>utility <span class="op">=</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">3</span><span class="op">*</span>consumer_desc <span class="op">+</span> <span class="op">-</span><span class="dv">4</span><span class="op">*</span>consumer_desc1 <span class="op">+</span> e</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">## Predicting choice over two options</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>demand_A <span class="op">=</span> utility <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> pd.DataFrame({<span class="st">'product_desc'</span>: consumer_desc, <span class="st">'product_desc1'</span>: consumer_desc1})</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> sm.add_constant(X)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>lm1 <span class="op">=</span> sm.OLS(demand_A,X)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>lm1_results <span class="op">=</span> lm1.fit()</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(lm1_results.summary())</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">round</span>(lm1_results.params, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.200
+Model:                            OLS   Adj. R-squared:                  0.198
+Method:                 Least Squares   F-statistic:                     124.5
+Date:                Sat, 20 Feb 2021   Prob (F-statistic):           5.42e-49
+Time:                        16:01:07   Log-Likelihood:                 58.448
+No. Observations:                1000   AIC:                            -110.9
+Df Residuals:                     997   BIC:                            -96.17
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+=================================================================================
+                    coef    std err          t      P&gt;|t|      [0.025      0.975]
+---------------------------------------------------------------------------------
+const             0.2095      0.040      5.291      0.000       0.132       0.287
+product_desc      0.1120      0.013      8.939      0.000       0.087       0.137
+product_desc1    -0.1045      0.008    -12.630      0.000      -0.121      -0.088
+==============================================================================
+Omnibus:                      472.919   Durbin-Watson:                   1.983
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1999.877
+Skew:                           2.298   Prob(JB):                         0.00
+Kurtosis:                       8.183   Cond. No.                         23.8
+==============================================================================
+
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+const            0.20953
+product_desc     0.11204
+product_desc1   -0.10449
+dtype: float64</code></pre>
+</div>
+</div>
+<p>This stems from the fact that we’re’trying to estimate a conditional probability over a binary choice not a continuous measure. The revealed preference assumption says that we can predict the purchase if the utility of good is positive.</p>
+<p><span class="math display">\[Pr(demand_A = 1) = utility &gt; 0 \]</span> <span class="math display">\[= Pr(\mathbf{X'}\beta + e &gt; 0) \]</span> <span class="math display">\[ = Pr(e &gt; - \mathbf{X'}\beta ) \]</span> <span class="math display">\[ = 1 - F(\mathbf{X'}\beta ) \]</span></p>
+<p>where <span class="math inline">\(F\)</span> is the distribution of the unobserved random variable <span class="math inline">\(e\)</span>. The challenge is using the correct distribution as this feeds the method of statistical estimation of the parameters <span class="math inline">\(\beta\)</span></p>
+</section>
+<section id="maximum-likelihood-fits-over-candidate-distributions" class="level2">
+<h2 class="anchored" data-anchor-id="maximum-likelihood-fits-over-candidate-distributions">Maximum Likelihood Fits over Candidate Distributions</h2>
+<p>There are a number of candidate distributions which might serve to replace <span class="math inline">\(F\)</span> and estimate the share of purchases</p>
+<div class="cell" data-execution_count="603">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_binomial_dist(params, <span class="op">*</span>args):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> params[<span class="dv">0</span>]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    p_hat <span class="op">=</span> args[<span class="dv">0</span>]</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> args[<span class="dv">1</span>]</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>((p_hat<span class="op">*</span>N)<span class="op">*</span>np.log(p) <span class="op">+</span> (<span class="dv">1</span><span class="op">-</span>p_hat)<span class="op">*</span>N<span class="op">*</span>np.log(<span class="dv">1</span><span class="op">-</span>(p)))</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> minimize(log_binomial_dist, x0 <span class="op">=</span> [<span class="fl">.1</span>], args <span class="op">=</span>(<span class="fl">.34</span>, <span class="dv">100</span>), bounds <span class="op">=</span> ((<span class="dv">0</span>, <span class="fl">.99</span>),))</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(res)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      fun: 64.10354778811556
+ hess_inv: &lt;1x1 LbfgsInvHessProduct with dtype=float64&gt;
+      jac: array([0.])
+  message: b'CONVERGENCE: NORM_OF_PROJECTED_GRADIENT_&lt;=_PGTOL'
+     nfev: 16
+      nit: 6
+     njev: 8
+   status: 0
+  success: True
+        x: array([0.33999999])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="604">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ll_ols(params, <span class="op">*</span>args):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    X, y <span class="op">=</span> args[<span class="dv">0</span>], args[<span class="dv">1</span>]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> [params[<span class="dv">0</span>], params[<span class="dv">1</span>], params[<span class="dv">2</span>]]</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    mu, sd, <span class="op">=</span> params[<span class="dv">3</span>], params[<span class="dv">4</span>]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> (y <span class="op">-</span> X.dot(beta)) <span class="op">/</span> sd</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    log_lik <span class="op">=</span> <span class="op">-</span><span class="bu">sum</span>(np.log(stats.norm.pdf(z)) <span class="op">-</span> np.log(sd))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_lik</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.normal(<span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">1000</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.random.normal(<span class="dv">6</span>, <span class="dv">1</span>, <span class="dv">1000</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> np.random.uniform(<span class="dv">2</span>, <span class="dv">7</span>, <span class="dv">1000</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="fl">.3</span><span class="op">*</span>x <span class="op">+</span> <span class="dv">5</span><span class="op">*</span>x1 <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1000</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> pd.DataFrame({<span class="st">'consumer_desc'</span>: x, <span class="st">'consumer_desc1'</span>: x1})</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> sm.add_constant(X1)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> minimize(ll_ols, x0 <span class="op">=</span>[<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>], method <span class="op">=</span> <span class="st">'Nelder-Mead'</span>, args <span class="op">=</span>(X1, y))</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> final_simplex: (array([[1.27170093, 0.28846111, 4.97078397, 2.33608166, 0.98080792],
+       [1.27163611, 0.28845751, 4.97079439, 2.33611095, 0.98081281],
+       [1.27179597, 0.28845924, 4.97076792, 2.33606271, 0.98080085],
+       [1.27178217, 0.28845315, 4.97077749, 2.33606068, 0.98081083],
+       [1.2716755 , 0.28844586, 4.97079715, 2.33609652, 0.98080788],
+       [1.27174903, 0.28845715, 4.97077654, 2.33606353, 0.98081551]]), array([1399.55005084, 1399.55005089, 1399.55005094, 1399.55005095,
+       1399.55005095, 1399.55005106]))
+           fun: 1399.5500508414766
+       message: 'Optimization terminated successfully.'
+          nfev: 384
+           nit: 238
+        status: 0
+       success: True
+             x: array([1.27170093, 0.28846111, 4.97078397, 2.33608166, 0.98080792])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="605">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_probit_dist(params, <span class="op">*</span>args):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    X, y <span class="op">=</span> args[<span class="dv">0</span>], args[<span class="dv">1</span>]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> [params[<span class="dv">0</span>], params[<span class="dv">1</span>], params[<span class="dv">2</span>]]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    mu, sd, <span class="op">=</span> params[<span class="dv">3</span>], params[<span class="dv">4</span>]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    Xb <span class="op">=</span> X.dot(beta)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>y<span class="op">-</span><span class="dv">1</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    log_lik <span class="op">=</span> np.log(stats.norm.cdf(q<span class="op">*</span>Xb))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span><span class="bu">sum</span>(log_lik)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">### Optimise the probit model for determining the parameters required toe estimate the underlying utility</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">### True values of the parameters 2, 3, -4</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> minimize(log_probit_dist, x0 <span class="op">=</span>[<span class="dv">0</span>, <span class="dv">0</span> ,<span class="dv">0</span> , <span class="dv">0</span>, <span class="dv">1</span>], args <span class="op">=</span>(X, demand_A), options<span class="op">=</span>{<span class="st">'disp'</span>: <span class="va">True</span>})</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 94.044202
+         Iterations: 17
+         Function evaluations: 108
+         Gradient evaluations: 18
+      fun: 94.04420183563171
+ hess_inv: array([[ 0.72799404, -0.03552851, -0.26060106,  0.        ,  0.        ],
+       [-0.03552851,  0.09513159, -0.08023828,  0.        ,  0.        ],
+       [-0.26060106, -0.08023828,  0.18756252,  0.        ,  0.        ],
+       [ 0.        ,  0.        ,  0.        ,  1.        ,  0.        ],
+       [ 0.        ,  0.        ,  0.        ,  0.        ,  1.        ]])
+      jac: array([ 3.81469727e-06, -9.53674316e-06,  0.00000000e+00,  0.00000000e+00,
+        0.00000000e+00])
+  message: 'Optimization terminated successfully.'
+     nfev: 108
+      nit: 17
+     njev: 18
+   status: 0
+  success: True
+        x: array([ 2.14197608,  2.42768647, -3.51990129,  0.        ,  1.        ])</code></pre>
+</div>
+</div>
+<p>These estimates are still incorrect but an awful lot closer than the fits achieved by the ols model in the first section. We can validate the above optimisation against the inbuilt model of statsmodels</p>
+<div class="cell" data-execution_count="606">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>probit_mod <span class="op">=</span> sm.Probit(demand_A, X)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>probit_res <span class="op">=</span> probit_mod.fit()</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>probit_margeff <span class="op">=</span> probit_res.get_margeff()</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Parameters: '</span>, probit_res.params)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Marginal effects: '</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(probit_margeff.summary())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 0.094044
+         Iterations 10
+Parameters:  const            2.141972
+product_desc     2.427687
+product_desc1   -3.519900
+dtype: float64
+Marginal effects: 
+       Probit Marginal Effects       
+=====================================
+Dep. Variable:                      y
+Method:                          dydx
+At:                           overall
+=================================================================================
+                   dy/dx    std err          z      P&gt;|z|      [0.025      0.975]
+---------------------------------------------------------------------------------
+product_desc      0.1285      0.011     12.137      0.000       0.108       0.149
+product_desc1    -0.1863      0.015    -12.674      0.000      -0.215      -0.157
+=================================================================================</code></pre>
+</div>
+</div>
+</section>
+<section id="mcfaddans-bart-discrete-choice-model" class="level2">
+<h2 class="anchored" data-anchor-id="mcfaddans-bart-discrete-choice-model">McFaddan’s BART Discrete Choice Model</h2>
+<p>The idea is a generalisation of the above to estimate the difference in utilities across multiple products.</p>
+<p><span class="math display">\[ U_{i,j} = \mathbf{X'}_{i, j}\beta + v_{i,j} \]</span></p>
+<p>where the each individual’s <span class="math inline">\(i\)</span> utility for a given good <span class="math inline">\(j\)</span> is expressed as a linear weighted function of the product characteristics <span class="math inline">\(\mathbf{X}\)</span>. Since we need to predict demand based on utility we’re really interested in estimating the differnce in utility</p>
+<p><span class="math display">\[U_{i,A} &gt; U_{i, B} \]</span></p>
+<p>just when</p>
+<p><span class="math display">\[ \mathbf{X'}_{i, A}\beta + v_{i,A} &gt; \mathbf{X'}_{i, B}\beta + v_{i,B}\]</span></p>
+<p>or</p>
+<p><span class="math display">\[  v_{i,A} -  v_{i,B} &gt; - (\mathbf{X'}_{i, A}  - \mathbf{X'}_{i, B})\beta \]</span></p>
+<p>but then the probability of demand is just</p>
+<p><span class="math display">\[Pr(demand_A = 1 | \mathbf{X'}_{i, A}, \mathbf{X'}_{i, B}) = Pr\Bigg( v_{i,A} -  v_{i,B} &gt; - (\mathbf{X'}_{i, A}  - \mathbf{X'}_{i, B})\beta \Bigg) \]</span> <span class="math display">\[ = Pr\Bigg( -v_{i,A} -  v_{i,B} &lt; (\mathbf{X'}_{i, A}  - \mathbf{X'}_{i, B})\beta \Bigg) \]</span> <span class="math display">\[ = F\Bigg( (\mathbf{X'}_{i, A}  - \mathbf{X'}_{i, B})\beta \Bigg) \]</span></p>
+</section>
+<section id="an-example-in-two-products-two-models" class="level2">
+<h2 class="anchored" data-anchor-id="an-example-in-two-products-two-models">An Example in Two Products &amp; Two Models</h2>
+<div class="cell" data-execution_count="553">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>X_A <span class="op">=</span> sm.add_constant(np.random.rand(N,<span class="dv">2</span>))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>X_B <span class="op">=</span> sm.add_constant(np.random.rand(N, <span class="dv">2</span>))</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>beta <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="op">-</span><span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#probit we only need one normal error term since sums of normals are normal</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, N)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> (X_A.dot(beta) <span class="op">-</span> X_B.dot(beta)) <span class="op">+</span> v <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>X_diff <span class="op">=</span> X_A <span class="op">-</span> X_B</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>X_diff[:, <span class="dv">0</span>] <span class="op">=</span>  <span class="dv">1</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>X_diff <span class="op">=</span> pd.DataFrame(X_diff, columns<span class="op">=</span>[<span class="st">'const'</span>, <span class="st">'product_desc'</span>, <span class="st">'product_desc1'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Again we can try two classification algorithms which attempt to characterise the error terms <span class="math inline">\(v_{1}, v_{2}\)</span> that the McFaddan model assumes</p>
+<div class="cell" data-execution_count="554">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>probit_mod <span class="op">=</span> sm.Probit(y, X_diff)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>probit_res <span class="op">=</span> probit_mod.fit()</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>probit_margeff <span class="op">=</span> probit_res.get_margeff()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 0.426413
+         Iterations 6</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="555">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>v1 <span class="op">=</span> np.random.weibull(<span class="dv">1</span>, N)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>v2 <span class="op">=</span> np.random.weibull(<span class="dv">1</span>, N)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> (X_A.dot(beta) <span class="op">-</span> X_B.dot(beta)) <span class="op">+</span> (v1 <span class="op">-</span> v2) <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>logit_mod <span class="op">=</span> sm.Logit(y, X_diff)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>logit_res <span class="op">=</span> logit_mod.fit()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>logit_margeff <span class="op">=</span> logit_res.get_margeff()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 0.499093
+         Iterations 6</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="560">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>stargazer <span class="op">=</span> Stargazer([probit_res, logit_res])</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>stargazer.custom_columns([<span class="st">'Probit Model'</span>, <span class="st">'Logit Model'</span>], [<span class="dv">1</span>, <span class="dv">1</span>])</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#stargazer.add_custom_notes([str(probit_margeff.summary()), str(logit_margeff.summary())])</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>HTML(stargazer.render_html())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="560">
+
+<table style="text-align:center"><tbody><tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="2"><em>Dependent variable:y</em></td></tr><tr><td style="text-align:left"></td></tr><tr><td></td><td colspan="1">Probit Model</td><td colspan="1">Logit Model</td></tr><tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td></tr><tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">const</td><td>-0.255<sup></sup></td><td>-0.049<sup></sup></td></tr><tr><td style="text-align:left"></td><td>(0.156)</td><td>(0.246)</td></tr><tr><td style="text-align:left">product_desc</td><td>-1.491<sup>***</sup></td><td>-2.157<sup>***</sup></td></tr><tr><td style="text-align:left"></td><td>(0.445)</td><td>(0.690)</td></tr><tr><td style="text-align:left">product_desc1</td><td>2.964<sup>***</sup></td><td>3.833<sup>***</sup></td></tr><tr><td style="text-align:left"></td><td>(0.578)</td><td>(0.888)</td></tr><tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align: left">Observations</td><td>100</td><td>100</td></tr><tr><td style="text-align: left">R<sup>2</sup></td><td></td><td></td></tr><tr><td style="text-align: left">Adjusted R<sup>2</sup></td><td></td><td></td></tr><tr><td style="text-align: left">Residual Std. Error</td><td>1.000 (df=97)</td><td>1.000 (df=97)</td></tr><tr><td style="text-align: left">F Statistic</td><td><sup></sup> (df=2; 97)</td><td><sup></sup> (df=2; 97)</td></tr><tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align: left">Note:</td>
+ <td colspan="2" style="text-align: right">
+  <sup>*</sup>p&lt;0.1;
+  <sup>**</sup>p&lt;0.05;
+  <sup>***</sup>p&lt;0.01
+ </td></tr></tbody></table>
+</div>
+</div>
+</section>
+<section id="generalising-to-multiple-choices-the-multinomial-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="generalising-to-multiple-choices-the-multinomial-distribution">Generalising to Multiple choices: The Multinomial Distribution</h2>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">100</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> [<span class="dv">0</span>,<span class="dv">0</span>]</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>cov <span class="op">=</span> [[<span class="dv">1</span>, rho], [rho, <span class="dv">1</span>]]</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># u is N*2</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.random.multivariate_normal(mu, cov, <span class="dv">1000</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span>(N,<span class="dv">2</span>)) <span class="co">#np.random.rand(N,2)</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span>(N,<span class="dv">2</span>)) <span class="co">#np.random.rand(N,2)</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>U <span class="op">=</span> <span class="op">-</span><span class="dv">1</span> <span class="op">+</span> <span class="op">-</span><span class="dv">3</span><span class="op">*</span>x1 <span class="op">+</span> <span class="dv">4</span><span class="op">*</span>x2 <span class="op">+</span> u</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.zeros(shape<span class="op">=</span>(N, <span class="dv">2</span>))</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>y[:,<span class="dv">0</span>] <span class="op">=</span> ((U[:,<span class="dv">0</span>] <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">&amp;</span> (U[:,<span class="dv">0</span>] <span class="op">&gt;</span> U[:,<span class="dv">1</span>]))</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>y[:,<span class="dv">1</span>] <span class="op">=</span> (U[:,<span class="dv">1</span>] <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;</span> (U[:,<span class="dv">1</span>] <span class="op">&gt;</span> U[:,<span class="dv">0</span>]))</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>W1 <span class="op">=</span> pd.DataFrame({<span class="st">'x1'</span>:x1[:,<span class="dv">0</span>], <span class="st">'x2'</span>:x2[:,<span class="dv">0</span>]})</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>W2 <span class="op">=</span> pd.DataFrame({<span class="st">'x1'</span>:x1[:,<span class="dv">1</span>], <span class="st">'x2'</span>:x2[:,<span class="dv">1</span>]})</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 542.609688
+         Iterations: 185
+         Function evaluations: 338</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code> final_simplex: (array([[-1.74855767, -5.18018459,  7.07552039],
+       [-1.74856002, -5.18016799,  7.07549515],
+       [-1.74856866, -5.18022325,  7.07555337],
+       [-1.74862589, -5.18016727,  7.07561422]]), array([542.60968847, 542.60968847, 542.60968848, 542.60968848]))
+           fun: 542.6096884689198
+       message: 'Optimization terminated successfully.'
+          nfev: 338
+           nit: 185
+        status: 0
+       success: True
+             x: array([-1.74855767, -5.18018459,  7.07552039])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="190">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>y_full <span class="op">=</span> np.ones(shape<span class="op">=</span>(N<span class="op">*</span><span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>class_1 <span class="op">=</span> np.where(((U[:,<span class="dv">0</span>] <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">&amp;</span> (U[:,<span class="dv">0</span>] <span class="op">&gt;</span> U[:,<span class="dv">1</span>])), <span class="st">'class_1'</span>, <span class="st">'class_0'</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>class_2 <span class="op">=</span> np.where((U[:,<span class="dv">1</span>] <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;</span> (U[:,<span class="dv">1</span>] <span class="op">&gt;</span> U[:,<span class="dv">0</span>])), <span class="st">'class_2'</span>, <span class="st">'class_0'</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>y_full <span class="op">=</span> np.append(class_1, class_2)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>W_full <span class="op">=</span> sm.add_constant(W1.append(W2)).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>mn_logit <span class="op">=</span> sm.MNLogit(y_full, W_full)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>mn_logit_res <span class="op">=</span> mn_logit.fit()</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>mn_logit_res.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 0.630391
+         Iterations 7</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="190">
+
+<table class="simpletable">
+<caption>MNLogit Regression Results</caption>
+<tbody><tr>
+  <th>Dep. Variable:</th>           <td>y</td>        <th>  No. Observations:  </th>   <td>  2000</td>  
+</tr>
+<tr>
+  <th>Model:</th>                <td>MNLogit</td>     <th>  Df Residuals:      </th>   <td>  1994</td>  
+</tr>
+<tr>
+  <th>Method:</th>                 <td>MLE</td>       <th>  Df Model:          </th>   <td>     4</td>  
+</tr>
+<tr>
+  <th>Date:</th>            <td>Thu, 25 Feb 2021</td> <th>  Pseudo R-squ.:     </th>   <td>0.2924</td>  
+</tr>
+<tr>
+  <th>Time:</th>                <td>21:23:52</td>     <th>  Log-Likelihood:    </th>  <td> -1260.8</td> 
+</tr>
+<tr>
+  <th>converged:</th>             <td>True</td>       <th>  LL-Null:           </th>  <td> -1781.9</td> 
+</tr>
+<tr>
+  <th>Covariance Type:</th>     <td>nonrobust</td>    <th>  LLR p-value:       </th> <td>2.587e-224</td>
+</tr>
+</tbody></table>
+<table class="simpletable">
+<tbody><tr>
+  <th>y=class_1</th>    <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P&gt;|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>const</th>     <td>   -2.6666</td> <td>    0.219</td> <td>  -12.201</td> <td> 0.000</td> <td>   -3.095</td> <td>   -2.238</td>
+</tr>
+<tr>
+  <th>x1</th>        <td>   -4.7724</td> <td>    0.315</td> <td>  -15.143</td> <td> 0.000</td> <td>   -5.390</td> <td>   -4.155</td>
+</tr>
+<tr>
+  <th>x2</th>        <td>    6.2800</td> <td>    0.360</td> <td>   17.461</td> <td> 0.000</td> <td>    5.575</td> <td>    6.985</td>
+</tr>
+<tr>
+  <th>y=class_2</th>    <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P&gt;|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>const</th>     <td>   -2.7293</td> <td>    0.212</td> <td>  -12.865</td> <td> 0.000</td> <td>   -3.145</td> <td>   -2.313</td>
+</tr>
+<tr>
+  <th>x1</th>        <td>   -4.4876</td> <td>    0.299</td> <td>  -15.004</td> <td> 0.000</td> <td>   -5.074</td> <td>   -3.901</td>
+</tr>
+<tr>
+  <th>x2</th>        <td>    6.4438</td> <td>    0.348</td> <td>   18.497</td> <td> 0.000</td> <td>    5.761</td> <td>    7.127</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<div class="cell" data-execution_count="192">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> softmax</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cdf(W, beta):</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    Wb <span class="op">=</span> np.dot(W, beta)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    eXB <span class="op">=</span> np.exp(Wb)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    eXB <span class="op">=</span> eXB <span class="op">/</span>eXB.<span class="bu">sum</span>(<span class="dv">1</span>)[:, <span class="va">None</span>]</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> eXB</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> take_log(probs):</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    epsilon <span class="op">=</span> <span class="fl">1e-20</span> </span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.log(probs)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calc_ll(logged, d):</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    ll <span class="op">=</span> d <span class="op">*</span> logged</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ll</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ll_mn_logistic(params, <span class="op">*</span>args):</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>    y, W, n_params, n_classes <span class="op">=</span> args[<span class="dv">0</span>], args[<span class="dv">1</span>], args[<span class="dv">2</span>], args[<span class="dv">3</span>]</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> [params[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(params))]</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.array(beta).reshape(n_params, <span class="op">-</span><span class="dv">1</span>, order<span class="op">=</span><span class="st">'F'</span>)</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    beta[:,<span class="dv">0</span>] <span class="op">=</span> [<span class="dv">0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, n_params)]</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">## onehot_encode</span></span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> pd.get_dummies(y, prefix<span class="op">=</span><span class="st">'Flag'</span>).to_numpy()</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>    probs <span class="op">=</span> cdf(W, beta)</span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>    logged <span class="op">=</span> take_log(probs)</span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>    ll <span class="op">=</span> calc_ll(logged, d)</span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>np.<span class="bu">sum</span>(ll)</span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a>n_params <span class="op">=</span> <span class="dv">3</span> </span>
+<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a>n_classes <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.random.rand(<span class="dv">3</span>,<span class="dv">3</span>).flatten()</span>
+<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a><span class="co">#probs = ll_mn_logistic(list(z), *[y_full, W_full, n_params, n_classes])</span></span>
+<span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-38"><a href="#cb27-38" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> minimize(ll_mn_logistic, x0 <span class="op">=</span>z, args <span class="op">=</span>(y_full, W_full, n_params, n_classes), </span>
+<span id="cb27-39"><a href="#cb27-39" aria-hidden="true" tabindex="-1"></a>             options<span class="op">=</span>{<span class="st">'disp'</span>: <span class="va">True</span>, <span class="st">'maxiter'</span>:<span class="dv">1000</span>})</span>
+<span id="cb27-40"><a href="#cb27-40" aria-hidden="true" tabindex="-1"></a>res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: 1260.782799
+         Iterations: 21
+         Function evaluations: 470
+         Gradient evaluations: 47</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="192">
+<pre><code>      fun: 1260.782798764732
+ hess_inv: array([[ 1.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+         0.        ,  0.        ,  0.        ,  0.        ],
+       [ 0.        ,  1.        ,  0.        ,  0.        ,  0.        ,
+         0.        ,  0.        ,  0.        ,  0.        ],
+       [ 0.        ,  0.        ,  1.        ,  0.        ,  0.        ,
+         0.        ,  0.        ,  0.        ,  0.        ],
+       [ 0.        ,  0.        ,  0.        ,  0.15840199,  0.05230628,
+        -0.24846581,  0.08569624, -0.08026449, -0.11217585],
+       [ 0.        ,  0.        ,  0.        ,  0.05230628,  0.05960721,
+        -0.11533024,  0.03950015, -0.02890953, -0.06618335],
+       [ 0.        ,  0.        ,  0.        , -0.24846581, -0.11533024,
+         0.42805566, -0.14239161,  0.11728476,  0.20865474],
+       [ 0.        ,  0.        ,  0.        ,  0.08569624,  0.03950015,
+        -0.14239161,  0.0776523 , -0.03556134, -0.10565188],
+       [ 0.        ,  0.        ,  0.        , -0.08026449, -0.02890953,
+         0.11728476, -0.03556134,  0.07906259,  0.01257425],
+       [ 0.        ,  0.        ,  0.        , -0.11217585, -0.06618335,
+         0.20865474, -0.10565188,  0.01257425,  0.18307424]])
+      jac: array([0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 3.05175781e-05,
+       1.52587891e-05, 0.00000000e+00, 3.05175781e-05, 3.05175781e-05,
+       3.05175781e-05])
+  message: 'Desired error not necessarily achieved due to precision loss.'
+     nfev: 470
+      nit: 21
+     njev: 47
+   status: 2
+  success: False
+        x: array([ 0.09640129,  0.00798646,  0.70648002, -2.66658562, -4.77244682,
+        6.27997417, -2.72927898, -4.48757328,  6.44379724])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="193">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>bart_data <span class="op">=</span> pd.read_csv(<span class="st">'../data_files/mcfaddan_bart.csv'</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>bart_data.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="193">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>HOUSEID</th>
+      <th>TRAVDAY</th>
+      <th>SAMPSTRAT</th>
+      <th>HOMEOWN</th>
+      <th>HHSIZE</th>
+      <th>HHVEHCNT</th>
+      <th>HHFAMINC</th>
+      <th>PC</th>
+      <th>SPHONE</th>
+      <th>TAB</th>
+      <th>...</th>
+      <th>SMPLSRCE</th>
+      <th>WTHHFIN</th>
+      <th>HBHUR</th>
+      <th>HTHTNRNT</th>
+      <th>HTPPOPDN</th>
+      <th>HTRESDN</th>
+      <th>HTEEMPDN</th>
+      <th>HBHTNRNT</th>
+      <th>HBPPOPDN</th>
+      <th>HBRESDN</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>30000007</td>
+      <td>2</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>5</td>
+      <td>7</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>...</td>
+      <td>2</td>
+      <td>187.314320</td>
+      <td>T</td>
+      <td>50</td>
+      <td>1500</td>
+      <td>750</td>
+      <td>750</td>
+      <td>20</td>
+      <td>750</td>
+      <td>300</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>30000008</td>
+      <td>5</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>8</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>...</td>
+      <td>2</td>
+      <td>69.513032</td>
+      <td>R</td>
+      <td>5</td>
+      <td>300</td>
+      <td>300</td>
+      <td>150</td>
+      <td>5</td>
+      <td>300</td>
+      <td>300</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>30000012</td>
+      <td>5</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>10</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>2</td>
+      <td>79.419586</td>
+      <td>C</td>
+      <td>80</td>
+      <td>17000</td>
+      <td>17000</td>
+      <td>5000</td>
+      <td>60</td>
+      <td>17000</td>
+      <td>7000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>30000019</td>
+      <td>5</td>
+      <td>3</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>3</td>
+      <td>1</td>
+      <td>5</td>
+      <td>5</td>
+      <td>...</td>
+      <td>2</td>
+      <td>279.143588</td>
+      <td>S</td>
+      <td>40</td>
+      <td>300</td>
+      <td>300</td>
+      <td>150</td>
+      <td>50</td>
+      <td>750</td>
+      <td>300</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>30000029</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>5</td>
+      <td>2</td>
+      <td>5</td>
+      <td>1</td>
+      <td>...</td>
+      <td>2</td>
+      <td>103.240304</td>
+      <td>S</td>
+      <td>40</td>
+      <td>1500</td>
+      <td>750</td>
+      <td>750</td>
+      <td>40</td>
+      <td>1500</td>
+      <td>750</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 58 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="371">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'CHOICE'</span>] <span class="op">=</span> np.nan</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'CHOICE'</span>] <span class="op">=</span> np.where(bart_data[<span class="st">'CAR'</span>]<span class="op">==</span><span class="dv">1</span>, <span class="st">'car'</span>, bart_data[<span class="st">'CHOICE'</span>])</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'CHOICE'</span>] <span class="op">=</span> np.where(bart_data[<span class="st">'BUS'</span>]<span class="op">==</span><span class="dv">1</span>, <span class="st">'bus'</span>, bart_data[<span class="st">'CHOICE'</span>])</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'CHOICE'</span>] <span class="op">=</span> np.where(bart_data[<span class="st">'TRAIN'</span>]<span class="op">==</span><span class="dv">1</span>, <span class="st">'rail'</span>, bart_data[<span class="st">'CHOICE'</span>])</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'car1'</span>] <span class="op">=</span> bart_data[<span class="st">'CHOICE'</span>] <span class="op">==</span> <span class="st">'car'</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'train1'</span>] <span class="op">=</span> bart_data[<span class="st">'CHOICE'</span>] <span class="op">==</span> <span class="st">'rail'</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'home'</span>] <span class="op">=</span> np.where(bart_data[<span class="st">'HOMEOWN'</span>] <span class="op">==</span> <span class="dv">1</span>, <span class="dv">1</span>, np.nan)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'home'</span>] <span class="op">=</span> np.where(bart_data[<span class="st">'HOMEOWN'</span>] <span class="op">&gt;</span> <span class="dv">1</span>, <span class="dv">0</span>, bart_data[<span class="st">'home'</span>])</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'income'</span>] <span class="op">=</span> np.where(bart_data[<span class="st">'HHFAMINC'</span>] <span class="op">&gt;</span> <span class="dv">0</span>, bart_data[<span class="st">'HHFAMINC'</span>], np.nan)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'density'</span>] <span class="op">=</span> np.where(bart_data[<span class="st">'HTPPOPDN'</span>]<span class="op">==-</span><span class="dv">9</span>, np.nan, bart_data[<span class="st">'HTPPOPDN'</span>]<span class="op">/</span><span class="dv">1000</span>)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>bart_data[<span class="st">'urban1'</span>] <span class="op">=</span> bart_data[<span class="st">'URBAN'</span>]<span class="op">==</span><span class="dv">1</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> bart_data[(bart_data[<span class="st">'WRKCOUNT'</span>] <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">&amp;</span> ((bart_data[<span class="st">'MSACAT'</span>] <span class="op">==</span> <span class="dv">1</span>) <span class="op">|</span> (bart_data[<span class="st">'MSACAT'</span>] <span class="op">==</span> <span class="dv">2</span>))]</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>y[<span class="st">'rail'</span>] <span class="op">=</span> y[<span class="st">'RAIL'</span>] <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>y[<span class="st">'row_sum'</span>] <span class="op">=</span> y[[<span class="st">'car1'</span>,<span class="st">'train1'</span>,<span class="st">'home'</span>,<span class="st">'HHSIZE'</span>,<span class="st">'income'</span>, <span class="st">'urban1'</span>,<span class="st">'density'</span>,<span class="st">'MSACAT'</span>, <span class="st">'rail'</span>]].<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>) <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/nathanielforde/.local/lib/python3.6/site-packages/ipykernel_launcher.py:13: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  del sys.path[0]
+/Users/nathanielforde/.local/lib/python3.6/site-packages/ipykernel_launcher.py:14: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  </code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="371">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>HOUSEID</th>
+      <th>TRAVDAY</th>
+      <th>SAMPSTRAT</th>
+      <th>HOMEOWN</th>
+      <th>HHSIZE</th>
+      <th>HHVEHCNT</th>
+      <th>HHFAMINC</th>
+      <th>PC</th>
+      <th>SPHONE</th>
+      <th>TAB</th>
+      <th>...</th>
+      <th>HBRESDN</th>
+      <th>CHOICE</th>
+      <th>car1</th>
+      <th>train1</th>
+      <th>home</th>
+      <th>income</th>
+      <th>density</th>
+      <th>urban1</th>
+      <th>rail</th>
+      <th>row_sum</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>30000008</td>
+      <td>5</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>8</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>...</td>
+      <td>300</td>
+      <td>car</td>
+      <td>True</td>
+      <td>False</td>
+      <td>1.0</td>
+      <td>8.0</td>
+      <td>0.3</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>30000085</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>9</td>
+      <td>1</td>
+      <td>1</td>
+      <td>4</td>
+      <td>...</td>
+      <td>17000</td>
+      <td>nan</td>
+      <td>False</td>
+      <td>False</td>
+      <td>1.0</td>
+      <td>9.0</td>
+      <td>17.0</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>30000130</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+      <td>5</td>
+      <td>-9</td>
+      <td>1</td>
+      <td>-9</td>
+      <td>...</td>
+      <td>17000</td>
+      <td>rail</td>
+      <td>False</td>
+      <td>True</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>30.0</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>30000144</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>3</td>
+      <td>0</td>
+      <td>5</td>
+      <td>5</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>3000</td>
+      <td>bus</td>
+      <td>False</td>
+      <td>False</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>30000145</td>
+      <td>5</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>7</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3000</td>
+      <td>car</td>
+      <td>True</td>
+      <td>False</td>
+      <td>0.0</td>
+      <td>7.0</td>
+      <td>7.0</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>129674</th>
+      <td>40794087</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>5</td>
+      <td>2</td>
+      <td>-9</td>
+      <td>-9</td>
+      <td>...</td>
+      <td>3000</td>
+      <td>car</td>
+      <td>True</td>
+      <td>False</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>7.0</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>129688</th>
+      <td>40794241</td>
+      <td>3</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>6</td>
+      <td>1</td>
+      <td>1</td>
+      <td>5</td>
+      <td>...</td>
+      <td>3000</td>
+      <td>car</td>
+      <td>True</td>
+      <td>False</td>
+      <td>1.0</td>
+      <td>6.0</td>
+      <td>7.0</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>129690</th>
+      <td>40794260</td>
+      <td>5</td>
+      <td>2</td>
+      <td>1</td>
+      <td>4</td>
+      <td>1</td>
+      <td>11</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>...</td>
+      <td>1500</td>
+      <td>car</td>
+      <td>True</td>
+      <td>False</td>
+      <td>1.0</td>
+      <td>11.0</td>
+      <td>3.0</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>129693</th>
+      <td>40794294</td>
+      <td>5</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>10</td>
+      <td>1</td>
+      <td>1</td>
+      <td>5</td>
+      <td>...</td>
+      <td>7000</td>
+      <td>car</td>
+      <td>True</td>
+      <td>False</td>
+      <td>1.0</td>
+      <td>10.0</td>
+      <td>7.0</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>129695</th>
+      <td>50515573</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>10</td>
+      <td>1</td>
+      <td>1</td>
+      <td>5</td>
+      <td>...</td>
+      <td>17000</td>
+      <td>nan</td>
+      <td>False</td>
+      <td>False</td>
+      <td>1.0</td>
+      <td>10.0</td>
+      <td>30.0</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+<p>39057 rows × 67 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="372">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> [<span class="st">"car1"</span>,<span class="st">"train1"</span>,<span class="st">"home"</span>,<span class="st">"HHSIZE"</span>,<span class="st">"income"</span>,<span class="st">"urban1"</span>,<span class="st">"density"</span>, <span class="st">'rail'</span>, <span class="st">'CHOICE'</span>]</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>y_focus <span class="op">=</span> y[features]</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>y_focus.dropna(inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>y_focus <span class="op">=</span> y_focus[y_focus[<span class="st">'CHOICE'</span>] <span class="op">!=</span> <span class="st">'nan'</span>]</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>y_focus[features].groupby(<span class="st">'rail'</span>).mean().T</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/nathanielforde/.local/lib/python3.6/site-packages/ipykernel_launcher.py:3: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  This is separate from the ipykernel package so we can avoid doing imports until</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="372">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>rail</th>
+      <th>False</th>
+      <th>True</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>car1</th>
+      <td>0.973861</td>
+      <td>0.877925</td>
+    </tr>
+    <tr>
+      <th>train1</th>
+      <td>0.010036</td>
+      <td>0.096610</td>
+    </tr>
+    <tr>
+      <th>home</th>
+      <td>0.749231</td>
+      <td>0.730127</td>
+    </tr>
+    <tr>
+      <th>HHSIZE</th>
+      <td>2.462420</td>
+      <td>2.487870</td>
+    </tr>
+    <tr>
+      <th>income</th>
+      <td>7.054552</td>
+      <td>7.518840</td>
+    </tr>
+    <tr>
+      <th>urban1</th>
+      <td>0.869753</td>
+      <td>0.910272</td>
+    </tr>
+    <tr>
+      <th>density</th>
+      <td>4.661936</td>
+      <td>7.559076</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="563">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>y_focus[features <span class="op">+</span> [<span class="st">'CHOICE'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="563">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>home</th>
+      <th>HHSIZE</th>
+      <th>income</th>
+      <th>urban1</th>
+      <th>density</th>
+      <th>CHOICE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>1.0</td>
+      <td>2</td>
+      <td>8.0</td>
+      <td>False</td>
+      <td>0.3</td>
+      <td>car</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>1.0</td>
+      <td>2</td>
+      <td>5.0</td>
+      <td>True</td>
+      <td>30.0</td>
+      <td>rail</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>0.0</td>
+      <td>3</td>
+      <td>5.0</td>
+      <td>True</td>
+      <td>3.0</td>
+      <td>bus</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>0.0</td>
+      <td>2</td>
+      <td>7.0</td>
+      <td>True</td>
+      <td>7.0</td>
+      <td>car</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>1.0</td>
+      <td>3</td>
+      <td>11.0</td>
+      <td>True</td>
+      <td>1.5</td>
+      <td>car</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>129667</th>
+      <td>1.0</td>
+      <td>2</td>
+      <td>8.0</td>
+      <td>False</td>
+      <td>0.3</td>
+      <td>car</td>
+    </tr>
+    <tr>
+      <th>129674</th>
+      <td>0.0</td>
+      <td>1</td>
+      <td>5.0</td>
+      <td>True</td>
+      <td>7.0</td>
+      <td>car</td>
+    </tr>
+    <tr>
+      <th>129688</th>
+      <td>1.0</td>
+      <td>2</td>
+      <td>6.0</td>
+      <td>True</td>
+      <td>7.0</td>
+      <td>car</td>
+    </tr>
+    <tr>
+      <th>129690</th>
+      <td>1.0</td>
+      <td>4</td>
+      <td>11.0</td>
+      <td>True</td>
+      <td>3.0</td>
+      <td>car</td>
+    </tr>
+    <tr>
+      <th>129693</th>
+      <td>1.0</td>
+      <td>2</td>
+      <td>10.0</td>
+      <td>True</td>
+      <td>7.0</td>
+      <td>car</td>
+    </tr>
+  </tbody>
+</table>
+<p>34043 rows × 6 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="586">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Without Rail</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>y_focus_nr <span class="op">=</span> y_focus[y_focus[<span class="st">'rail'</span>] <span class="op">==</span> <span class="dv">0</span>]</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>y_focus_r <span class="op">=</span> y_focus[y_focus[<span class="st">'rail'</span>] <span class="op">==</span> <span class="dv">1</span>]</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>logit_mod_nr <span class="op">=</span> sm.Logit(np.array(y_focus_nr[<span class="st">'car1'</span>]), </span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>                       sm.add_constant(y_focus_nr[[<span class="st">"home"</span>,<span class="st">"HHSIZE"</span>,<span class="st">"income"</span>,<span class="st">"urban1"</span>,<span class="st">"density"</span>]]).astype(<span class="bu">float</span>))</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>logit_res_nr <span class="op">=</span> logit_mod_nr.fit()</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>logit_margeff_nr <span class="op">=</span> logit_res_nr.get_margeff()</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>logit_mod_r <span class="op">=</span> sm.Logit(np.array(y_focus_r[<span class="st">'car1'</span>]), </span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>                       sm.add_constant(y_focus_r[[<span class="st">"home"</span>,<span class="st">"HHSIZE"</span>,<span class="st">"income"</span>,<span class="st">"urban1"</span>,<span class="st">"density"</span>]]).astype(<span class="bu">float</span>))</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>logit_res_r <span class="op">=</span> logit_mod_r.fit()</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>logit_margeff_r <span class="op">=</span> logit_res.get_margeff()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 0.114130
+         Iterations 9
+Optimization terminated successfully.
+         Current function value: 0.300803
+         Iterations 7</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="587">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>stargazer <span class="op">=</span> Stargazer([logit_res_nr, logit_res_r])</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>stargazer.custom_columns([<span class="st">'Probability of Car - No Rail'</span>, <span class="st">'Probability of Car -Rail'</span>], [<span class="dv">1</span>, <span class="dv">1</span>])</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co">#stargazer.add_custom_notes([str(probit_margeff.summary()), str(logit_margeff.summary())])</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>HTML(stargazer.render_html())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="587">
+
+<table style="text-align:center"><tbody><tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="2"><em>Dependent variable:y</em></td></tr><tr><td style="text-align:left"></td></tr><tr><td></td><td colspan="1">Probability of Car - No Rail</td><td colspan="1">Probability of Car -Rail</td></tr><tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td></tr><tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">HHSIZE</td><td>-0.018<sup></sup></td><td>0.050<sup>*</sup></td></tr><tr><td style="text-align:left"></td><td>(0.033)</td><td>(0.026)</td></tr><tr><td style="text-align:left">const</td><td>3.775<sup>***</sup></td><td>3.506<sup>***</sup></td></tr><tr><td style="text-align:left"></td><td>(0.270)</td><td>(0.211)</td></tr><tr><td style="text-align:left">density</td><td>-0.055<sup>***</sup></td><td>-0.109<sup>***</sup></td></tr><tr><td style="text-align:left"></td><td>(0.008)</td><td>(0.003)</td></tr><tr><td style="text-align:left">home</td><td>0.633<sup>***</sup></td><td>0.498<sup>***</sup></td></tr><tr><td style="text-align:left"></td><td>(0.095)</td><td>(0.071)</td></tr><tr><td style="text-align:left">income</td><td>0.133<sup>***</sup></td><td>-0.068<sup>***</sup></td></tr><tr><td style="text-align:left"></td><td>(0.019)</td><td>(0.013)</td></tr><tr><td style="text-align:left">urban1</td><td>-1.160<sup>***</sup></td><td>-0.312<sup>*</sup></td></tr><tr><td style="text-align:left"></td><td>(0.246)</td><td>(0.187)</td></tr><tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align: left">Observations</td><td>22,419</td><td>11,624</td></tr><tr><td style="text-align: left">R<sup>2</sup></td><td></td><td></td></tr><tr><td style="text-align: left">Adjusted R<sup>2</sup></td><td></td><td></td></tr><tr><td style="text-align: left">Residual Std. Error</td><td>1.000 (df=22413)</td><td>1.000 (df=11618)</td></tr><tr><td style="text-align: left">F Statistic</td><td><sup></sup> (df=5; 22413)</td><td><sup></sup> (df=5; 11618)</td></tr><tr><td colspan="3" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align: left">Note:</td>
+ <td colspan="2" style="text-align: right">
+  <sup>*</sup>p&lt;0.1;
+  <sup>**</sup>p&lt;0.05;
+  <sup>***</sup>p&lt;0.01
+ </td></tr></tbody></table>
+</div>
+</div>
+<div class="cell" data-execution_count="591">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>MN_logit_mod_r <span class="op">=</span> sm.MNLogit(np.array(y_focus_r[<span class="st">'CHOICE'</span>]), </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>                       y_focus_r[[<span class="st">"home"</span>,<span class="st">"HHSIZE"</span>,<span class="st">"income"</span>,<span class="st">"urban1"</span>,<span class="st">"density"</span>]].astype(<span class="bu">float</span>))</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>MN_logit_res_r <span class="op">=</span> MN_logit_mod_r.fit()</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>MN_logit_res_r.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 0.387108
+         Iterations 8</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="591">
+
+<table class="simpletable">
+<caption>MNLogit Regression Results</caption>
+<tbody><tr>
+  <th>Dep. Variable:</th>           <td>y</td>        <th>  No. Observations:  </th>   <td> 11624</td>  
+</tr>
+<tr>
+  <th>Model:</th>                <td>MNLogit</td>     <th>  Df Residuals:      </th>   <td> 11614</td>  
+</tr>
+<tr>
+  <th>Method:</th>                 <td>MLE</td>       <th>  Df Model:          </th>   <td>     8</td>  
+</tr>
+<tr>
+  <th>Date:</th>            <td>Mon, 01 Mar 2021</td> <th>  Pseudo R-squ.:     </th>   <td>0.1071</td>  
+</tr>
+<tr>
+  <th>Time:</th>                <td>23:06:01</td>     <th>  Log-Likelihood:    </th>  <td> -4499.7</td> 
+</tr>
+<tr>
+  <th>converged:</th>             <td>True</td>       <th>  LL-Null:           </th>  <td> -5039.6</td> 
+</tr>
+<tr>
+  <th>Covariance Type:</th>     <td>nonrobust</td>    <th>  LLR p-value:       </th> <td>9.100e-228</td>
+</tr>
+</tbody></table>
+<table class="simpletable">
+<tbody><tr>
+   <th>y=car</th>     <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P&gt;|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>home</th>    <td>    1.0460</td> <td>    0.128</td> <td>    8.159</td> <td> 0.000</td> <td>    0.795</td> <td>    1.297</td>
+</tr>
+<tr>
+  <th>HHSIZE</th>  <td>    0.2411</td> <td>    0.046</td> <td>    5.234</td> <td> 0.000</td> <td>    0.151</td> <td>    0.331</td>
+</tr>
+<tr>
+  <th>income</th>  <td>    0.2235</td> <td>    0.021</td> <td>   10.829</td> <td> 0.000</td> <td>    0.183</td> <td>    0.264</td>
+</tr>
+<tr>
+  <th>urban1</th>  <td>    1.7447</td> <td>    0.150</td> <td>   11.619</td> <td> 0.000</td> <td>    1.450</td> <td>    2.039</td>
+</tr>
+<tr>
+  <th>density</th> <td>   -0.0847</td> <td>    0.006</td> <td>  -13.677</td> <td> 0.000</td> <td>   -0.097</td> <td>   -0.073</td>
+</tr>
+<tr>
+  <th>y=rail</th>     <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P&gt;|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>home</th>    <td>    0.3757</td> <td>    0.140</td> <td>    2.689</td> <td> 0.007</td> <td>    0.102</td> <td>    0.650</td>
+</tr>
+<tr>
+  <th>HHSIZE</th>  <td>   -0.0495</td> <td>    0.051</td> <td>   -0.973</td> <td> 0.331</td> <td>   -0.149</td> <td>    0.050</td>
+</tr>
+<tr>
+  <th>income</th>  <td>    0.1658</td> <td>    0.022</td> <td>    7.466</td> <td> 0.000</td> <td>    0.122</td> <td>    0.209</td>
+</tr>
+<tr>
+  <th>urban1</th>  <td>   -0.0949</td> <td>    0.167</td> <td>   -0.569</td> <td> 0.569</td> <td>   -0.422</td> <td>    0.232</td>
+</tr>
+<tr>
+  <th>density</th> <td>    0.0202</td> <td>    0.007</td> <td>    3.107</td> <td> 0.002</td> <td>    0.007</td> <td>    0.033</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<div class="cell" data-execution_count="566">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>n_params <span class="op">=</span> <span class="dv">5</span> </span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>n_classes <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.random.rand(n_params,n_classes).flatten()</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> minimize(ll_mn_logistic, x0 <span class="op">=</span>z, args <span class="op">=</span>(y_focus_r[<span class="st">'CHOICE'</span>], </span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>                                             y_focus_r[[<span class="st">"home"</span>,<span class="st">"HHSIZE"</span>,<span class="st">"income"</span>,<span class="st">"urban1"</span>,<span class="st">"density"</span>]].astype(<span class="bu">float</span>), n_params, n_classes), </span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>             options<span class="op">=</span>{<span class="st">'disp'</span>: <span class="va">True</span>, <span class="st">'maxiter'</span>:<span class="dv">1000</span>})</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: 4499.748263
+         Iterations: 33
+         Function evaluations: 896
+         Gradient evaluations: 56</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="566">
+<pre><code>      fun: 4499.748263266686
+ hess_inv: array([[ 1.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+       [ 0.00000000e+00,  1.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+       [ 0.00000000e+00,  0.00000000e+00,  1.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         1.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  1.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  2.49790461e-02,
+         1.22239651e-02, -1.08077892e-03, -4.52948507e-02,
+         9.24499328e-04,  2.18160612e-02,  1.53707043e-02,
+        -2.13296546e-03, -3.42635201e-02,  5.36330909e-04],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  1.22239651e-02,
+         8.71917753e-03, -1.06847160e-03, -2.23203076e-02,
+         3.46191120e-04,  1.19746027e-02,  1.05025079e-02,
+        -1.74296384e-03, -1.65180529e-02,  1.47031357e-04],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00, -1.08077892e-03,
+        -1.06847160e-03,  4.43252403e-04,  1.14187551e-03,
+        -5.55280050e-05, -8.98456837e-04, -1.17483721e-03,
+         4.60854131e-04,  6.94275713e-04, -3.43435221e-05],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00, -4.52948507e-02,
+        -2.23203076e-02,  1.14187551e-03,  8.77146917e-02,
+        -1.70194689e-03, -4.37327155e-02, -2.84783896e-02,
+         3.45189389e-03,  6.85283602e-02, -1.05179786e-03],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  9.24499328e-04,
+         3.46191120e-04, -5.55280050e-05, -1.70194689e-03,
+         6.40830138e-05,  8.65122620e-04,  4.47609224e-04,
+        -8.69531233e-05, -1.35865208e-03,  4.78235451e-05],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  2.18160612e-02,
+         1.19746027e-02, -8.98456837e-04, -4.37327155e-02,
+         8.65122620e-04,  2.42731374e-02,  1.45500604e-02,
+        -2.32279638e-03, -3.32914355e-02,  5.72986223e-04],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  1.53707043e-02,
+         1.05025079e-02, -1.17483721e-03, -2.84783896e-02,
+         4.47609224e-04,  1.45500604e-02,  1.36673618e-02,
+        -2.18820823e-03, -2.15013079e-02,  1.87660290e-04],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00, -2.13296546e-03,
+        -1.74296384e-03,  4.60854131e-04,  3.45189389e-03,
+        -8.69531233e-05, -2.32279638e-03, -2.18820823e-03,
+         7.07813187e-04,  1.90500574e-03, -5.20898364e-05],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00, -3.42635201e-02,
+        -1.65180529e-02,  6.94275713e-04,  6.85283602e-02,
+        -1.35865208e-03, -3.32914355e-02, -2.15013079e-02,
+         1.90500574e-03,  6.33830924e-02, -1.09402475e-03],
+       [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  5.36330909e-04,
+         1.47031357e-04, -3.43435221e-05, -1.05179786e-03,
+         4.78235451e-05,  5.72986223e-04,  1.87660290e-04,
+        -5.20898364e-05, -1.09402475e-03,  5.33476436e-05]])
+      jac: array([ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+        0.00000000e+00,  6.10351562e-05, -6.10351562e-05, -6.10351562e-05,
+        0.00000000e+00, -1.83105469e-04,  6.10351562e-05,  2.44140625e-04,
+        3.66210938e-04,  6.10351562e-05,  4.88281250e-04])
+  message: 'Desired error not necessarily achieved due to precision loss.'
+     nfev: 896
+      nit: 33
+     njev: 56
+   status: 2
+  success: False
+        x: array([ 0.98480009,  0.00651008,  0.0863602 ,  0.13983792,  0.32455478,
+        1.04604352,  0.24109143,  0.22348356,  1.74469334, -0.08468886,
+        0.3757215 , -0.04946345,  0.16579691, -0.09489807,  0.02024353])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="551">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>MN_logit_mod_r <span class="op">=</span> sm.MNLogit(np.array(y_focus_r[<span class="st">'CHOICE'</span>]), </span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>                       y_focus_r[[<span class="st">"home"</span>,<span class="st">"HHSIZE"</span>,<span class="st">"income"</span>,<span class="st">"urban1"</span>,<span class="st">"density"</span>]].astype(<span class="bu">float</span>))</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>MN_logit_res_r <span class="op">=</span> MN_logit_mod_r.fit()</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>MN_logit_res_r.summary()</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>nr <span class="op">=</span> y_focus_nr[[<span class="st">'home'</span>, <span class="st">'HHSIZE'</span>, <span class="st">'income'</span>, <span class="st">'urban1'</span>, <span class="st">'density'</span>, <span class="st">'rail'</span>]].astype(<span class="bu">float</span>)</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> y_focus_r[[<span class="st">'home'</span>, <span class="st">'HHSIZE'</span>, <span class="st">'income'</span>, <span class="st">'urban1'</span>, <span class="st">'density'</span>, <span class="st">'rail'</span>]].astype(<span class="bu">float</span>)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>full <span class="op">=</span> y_focus[[<span class="st">'home'</span>, <span class="st">'HHSIZE'</span>, <span class="st">'income'</span>, <span class="st">'urban1'</span>, <span class="st">'density'</span>, <span class="st">'rail'</span>]].astype(<span class="bu">float</span>)</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>nr_nd <span class="op">=</span> nr</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>nr_nd[<span class="st">'density'</span>] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>nr_d <span class="op">=</span> nr</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>nr_d[<span class="st">'density'</span>] <span class="op">=</span> r[<span class="st">'density'</span>].mean()</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>full_d <span class="op">=</span> full</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>full_d[full_d[<span class="st">'rail'</span>] <span class="op">==</span> <span class="dv">0</span>][<span class="st">'density'</span>] <span class="op">=</span> r[<span class="st">'density'</span>].mean()</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> MN_logit_res_r.predict(full.drop(<span class="st">'rail'</span>, axis<span class="op">=</span><span class="dv">1</span>)).mean()</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> pd.DataFrame(res).T</span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>res.columns <span class="op">=</span> [<span class="st">'Bus'</span>, <span class="st">'Car'</span>, <span class="st">'Train'</span>]</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>res.<span class="bu">round</span>(<span class="dv">3</span>) <span class="op">*</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/nathanielforde/.local/lib/python3.6/site-packages/ipykernel_launcher.py:9: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  if __name__ == '__main__':</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="551">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Bus</th>
+      <th>Car</th>
+      <th>Train</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2.7</td>
+      <td>88.5</td>
+      <td>8.8</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
