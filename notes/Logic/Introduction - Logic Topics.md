@@ -1,0 +1,1 @@
+The idea is that this section will serve to capture any and all notes on topics in logic -mathematical, philosophical or any style in between. 

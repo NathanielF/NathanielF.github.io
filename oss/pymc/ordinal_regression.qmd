@@ -1,0 +1,17 @@
+---
+title: "Ordinal Regression Models in PyMC"
+author: "Nathaniel Forde"
+date: "2023-06-01"
+categories: ["probability", "pymc", "ordinal regression", "likert scales"]
+image: "Latent_ordinal_scales.png"
+---
+
+# Ordinal Models of Regression
+
+In this project I outline the strategy of latent variable ordinal regression Bayesian models to evaluate the categorical choice on Likert like scales. The main theme of the work is to try and articulate the modelling approach to survey data, comparing the risk of model misspecification to the assumed metric based analysis of ordinal response variables. 
+
+The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/generalized_linear_models/GLM-ordinal-regression.html) and downloaded [here](GLM-ordinal-regression.html)
+
+The notebook demonstates these techniques applied to simulated manager engagement evaluations and applied to rotten tomatoes movie ratings data. In particular we show how a latent variable formulate can help characterise the manner in which different factors such as working from home, salary can influence an individual's ordinal rating response and why it's important to understand the sources of variation in such responses.
+
+![Latent and Explicit Ratings](Latent_ordinal_scales.png)

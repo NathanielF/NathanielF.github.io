@@ -12,7 +12,7 @@ website:
     left:
       - text: Blog
         href: blog.qmd
-      - text: Projects
+      - text: Open Source Projects
         href: opensource.qmd
       - text: Talks
         href: talks.qmd
