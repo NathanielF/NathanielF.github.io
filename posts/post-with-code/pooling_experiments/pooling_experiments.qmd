@@ -4,6 +4,7 @@ title: "Pooling Information in PYMC"
 categories: ["probability", "experiments", "bayesian-AB-tests", "hierarchical-model"]
 image: "growth.png"
 draft: true
+jupyter: python3
 ---
 
 
