@@ -27,7 +27,7 @@ from stargazer.stargazer import Stargazer
 
 ## The Data
 
-The data from the Card and Krueger study reports measures of employement by location in bordering states of New Jersey and Pennsylvania afer April 1st, 1992 when New Jersey’s minimum wage rose from $4.25 to $5.05 per hour. The interest is in the effect of the different state policies relating to minimum wage. There is juncture in time after which New Jersey enacts a minimum wage policy which is anticipated to have a meaningful negative impact on employment figures. 
+The data from the Card and Krueger study reports measures of employement by location in bordering states of New Jersey and Pennsylvania afer April 1st, 1992 when New Jersey’s minimum wage rose from $4.25 to $5.05 per hour. Our interest is in the effect of the different state policies relating to minimum wage. There is a juncture in time after which New Jersey enacts a minimum wage policy which is anticipated to have a meaningful negative impact on employment figures. Differences in Differences is a quasi-experimental design intended to capture this effect.
 
 ```{python}
 # Load the Data from the minumum wage study
@@ -69,7 +69,7 @@ pivot
 
 ```
 
-The result here is, by traditional economic logic, surprising in that they "find no indication that the rise in the minimum wage reduced employment." The above table reports the raw differences in average employment per restaurant. That's it. That's the quasi-experiemntal design that launched a thousand imitations. 
+The result here is by traditional economic logic surprising. It's surprising in that they "find no indication that the rise in the minimum wage reduced employment." When we might anticipate a negative reaction from their employers. The above table reports the raw differences in average employment per restaurant. That's it. That's the quasi-experiemntal design that launched a thousand imitations. Visually the change is striking. 
 
 ```{python}
 fig, ax = plt.subplots()
@@ -81,9 +81,10 @@ ax.plot((1, 1), (18, 21), '--', color='grey', label='treatment effect')
 ax.legend()
 ```
 
+
 ## A Persuasive Design
 
-It's not just a simple table. The paper was compelling precisely because the design was persuasive, and the Pennsylvania's future is a plausible representation of New Jersey's counterfactual future. 
+It's not just a simple table. The paper was compelling precisely because the design was persuasive, and the Pennsylvania's future is a plausible representation of New Jersey's counterfactual future. The anticipated trajectory of the two states was plausible before the intervention, so the argument goes that the observed difference is plausible estimate of the causal effect. 
 
 ```{python}
 fig, axs = plt.subplots(1, 2, figsize=(10, 7))
@@ -136,7 +137,7 @@ axs[0].set_title("Employed Distribution Before");
 
 ## Robustness to Controls
 
-The robustness of the effect might, in principle, be moderated or refined by other factors. So it's worth exploring the parameter fits for a variety of models. First we recover the simple differences-in-differences control using regression, and then for other subsequent moodels we add controls for the the location, food chain and whether the restaurant is co-owned. All models recover effectively the same estimate for the interaction term of state over time, which is our differences-in-differences estimate. 
+The robustness of the effect might, in principle, be moderated or refined by other factors. So it's worth exploring the parameter fits for a variety of models. First we recover the simple differences-in-differences control using regression, and then for other subsequent moodels we add controls for the the location, food chain and whether the restaurant is co-owned. All models recover effectively the same estimate for the interaction term of state over time, which is just our differences-in-differences estimate as seen in the above table.  
 
 ```{python}
 
@@ -156,7 +157,7 @@ stargazer.render_html()
 
 ```
 
-The effect is consisteny across the model specification. This is evidence of a robust effect. What happens if we look at a different outcome variable? Does the change in policy impact the price of the meal by location?
+The effect is consisteny across the model specification. This is evidence of a robust effect. What happens if we look at a different outcome variable? Does the change in policy impact the price of the meal by location? We'll model this now too. 
 
 
 ```{python}
@@ -256,13 +257,15 @@ Scott wants to test a prediction of the literature that this intervention should
 
 > In 1986, only one cohort (the 1971 cohort) was treated and only in the repeal states. Therefore, we should see small declines in gonorrhea incidence among 15-year-olds in 1986 relative to Roe states. In 1987, two cohorts in our data are treated in the repeal states relative to Roe, so we should see larger effects in absolute value than we saw in 1986. But from 1988 to 1991, we should at most see only three net treated cohorts in the repeal states because starting in 1988, the Roe state cohorts enter and begin erasing those differences. Starting in 1992, the effects should get smaller in absolute value until 1992, beyond which there should be no difference between repeal and Roe states.
 
-Implying that the tratment effect should result in a growth trajectory with a distinctive shape. 
+Implying that the tratment effect should result in a growth trajectory with a distinctive shape. We can evaluate the staggered roll out of the by policy by using a complicated regression model which accounts for the delayed effects and treatment effects measured at successive points in time. 
 
 ## Fitting Regressions to Evaluate Event Studies
 
-We want now to measure the efficacy of the treatment as a function of each time point while controlling for other factors. This can be achieved using a regression model specification for the DiD model which measures the impact at each time-point. The point to keep in mind is that this process measures the same thing as  the simpler DiD estimate above, but here our interaction of group and time effects occurs across multiple time points. This is a significant step-up in complexity of the regression modelling common in econometric approaches. Much of the sophistication in econometric-style causal inference stems from a thorough understanding of OLS estimation strategies and creative uses of the properties of these estimators. 
+We want now to measure the efficacy of the treatment as a function of each time point while controlling for other factors. This can be achieved using a regression model specification for the DiD model which measures the impact at each time-point. The point to keep in mind is that this process measures the same thing as the simpler DiD estimate above, but here our interaction of group and time effects occurs across multiple time points. This is a significant step-up in complexity of the regression modelling common in econometric approaches. Much of the sophistication in econometric-style causal inference stems from a thorough understanding of OLS estimation strategies and creative uses of the properties of these estimators. 
 
 We will specify three distinct model specifications and assess the inferences available on each of the core parameters. Each model will contain the interaction effect terms of time (`year`) and treatment (`repeal`) and we will use the individual estimates to plot the graduated effect of the policy program. We will include progressively fewer control variables to show how different model specifications change the story. 
+
+We use a weighted least squares approach with clusters by location. 
 
 ```{python}
 
@@ -354,9 +357,9 @@ ax.axhline(0);
 
 ```
 
-We can see here how the temporal points before the introduction of Roe show an effect on the interaction coefficient. Which rises towards 0 after Roe just so long as we control for the independent effects of extra covariates. This suggests some evidence for the contention that the change in legislation will alter the parabolic trajectory. 
+We can see here how the temporal points before the introduction of Roe show an effect on the interaction coefficient. Which rises towards 0 after Roe just so long as we control for the independent effects of extra covariates. This suggests some evidence for the contention that the change in legislation will alter the parabolic trajectory as anticipated by theory.
 
-## Fitting a Placebo Model
+## Fitting a Placebo Model for Critique
 
 We can further test this design if we model the effects of time on a placebo group at the same time. Here we'll take as a placebo group a cohort of a greater age, where the effect of Roe is less likely to have an impact on the rates of gonorrhea in the cohort. In this way we have a kind of pseudo placebo group for our treatment. I've used similar approaches in work to analyse speed improvements made to in-app pages that were exposed to a certain treatment effects compared against pseudo treatment groups that we deemed less likely to be impacted by the implemented change.
 
@@ -384,7 +387,7 @@ abortion_filt
 
 ```
 
-The benefit to allowing for a placebo factor is to test how the effect should remain pretty static in the group for which the treatment is unlikey to have an effect. This can strengthen or weaken the plausibility of the claim that the parrallel trends assumption holds. 
+The benefit to allowing for a placebo factor is to test how the effect should remain pretty static in the group for which the treatment is unlikey to have an effect. This can strengthen or weaken the plausibility of the claim that the parrallel trends assumption holds. In a regression context we want to interact the effect of `year`, `repeal` and `younger`. 
 
 ```{python}
 
@@ -404,7 +407,7 @@ axs[1].set_title("Diff in Diff by Treatment by Year")
 
 ```
 
-From the simple contrast above, evidence of a treatment effect seems mixed with both positive and negative effects centered on zero in the post treatment years. This type of placebo design can be specified using a complex regression equation. The equation relies on interaction terms as before with the simpler DiD design, but now we also include interactions for the placebo group. 
+From the simple contrast above, evidence of a treatment effect seems mixed with both positive and negative effects centered on zero in the post treatment years. This type of placebo design can be specified using a complex regression equation. The equation relies on interaction terms as before with the simpler DiD design, but now we also include interactions for the placebo group. This is occasionally called a triple differenced design.
 
 ```{python}
 
