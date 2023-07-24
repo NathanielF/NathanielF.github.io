@@ -3,6 +3,7 @@ title: "Tenuous Relations and Timeseries Analysis"
 author: "Nathaniel Forde"
 date: "2023-02-04"
 categories: [bayesian, VAR, timeseries analysis]
+image: "aggregations.png"
 ---
 
 # Hierarchical Bayesian VARs 

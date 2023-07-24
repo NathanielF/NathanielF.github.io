@@ -157,7 +157,7 @@ stargazer.render_html()
 
 ```
 
-The effect is consisteny across the model specification. This is evidence of a robust effect. What happens if we look at a different outcome variable? Does the change in policy impact the price of the meal by location? We'll model this now too. 
+The effect is consistent across the model specification. This is evidence of a robust effect. What happens if we look at a different outcome variable? Does the change in policy impact the price of the meal by location? We'll model this now too. 
 
 
 ```{python}

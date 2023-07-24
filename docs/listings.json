@@ -14,12 +14,14 @@
       "/posts/post-with-code/spatial_correlation/spatial_correlation.html",
       "/posts/post-with-code/occams_razor/wheat_from_chaff.html",
       "/posts/post-with-code/bayesian_model_comparison/bayes_decision.html",
-      "/posts/post-with-code/mle_utility_and_choice/mle_utility_and_choice.html"
+      "/posts/post-with-code/mle_utility_and_choice/mle_utility_and_choice.html",
+      "/posts/post-with-code/theoretical_risks_meehl/theoretical_risks_meehl.html"
     ]
   },
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/pymc/discrete_choice.html",
       "/oss/pymc/ordinal_regression.html",
       "/oss/pymc/longitudinal_models.html",
       "/oss/pymc/missing_info.html",
@@ -37,7 +39,8 @@
       "/posts/post-with-code/spatial_correlation/spatial_correlation.html",
       "/posts/post-with-code/occams_razor/wheat_from_chaff.html",
       "/posts/post-with-code/bayesian_model_comparison/bayes_decision.html",
-      "/posts/post-with-code/mle_utility_and_choice/mle_utility_and_choice.html"
+      "/posts/post-with-code/mle_utility_and_choice/mle_utility_and_choice.html",
+      "/posts/post-with-code/theoretical_risks_meehl/theoretical_risks_meehl.html"
     ]
   }
 ]

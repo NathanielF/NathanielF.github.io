@@ -1,0 +1,16 @@
+---
+title: "Discrete Choice Models in PyMC"
+author: "Nathaniel Forde"
+date: "2023-07-15"
+categories: ["probability", "pymc", "discrete choice", "subjective utility" ]
+image: "discrete_choice_individuals.png"
+---
+
+
+## Discrete Choice and Subjective Utility
+
+In this project I demonstrated how to fit a discrete choice models using random utility components in PyMC. I applied these types of model to micro-econometric data over product choice to estimate market share and the correlation among good within an market. 
+
+The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/generalized_linear_models/GLM-discrete-choice_models.html) or downloaded as notebook [here](GLM-discrete-choice_models.html)
+
+![Discrete Choice](discrete_choice_individuals.png)
