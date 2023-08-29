@@ -2,6 +2,7 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/utility_and_choice/discrete_choice_and_utility.html",
       "/talks/tenuous_relations/first_talk.html"
     ]
   },
@@ -21,6 +22,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/causalpy/instrumental_variables.html",
       "/oss/pymc/discrete_choice.html",
       "/oss/pymc/ordinal_regression.html",
       "/oss/pymc/longitudinal_models.html",

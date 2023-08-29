@@ -1,0 +1,354 @@
+---
+title: "Product Choice Models and Subjective Utility"
+subtitle: "Dublin Data Science"
+author: "Nathaniel Forde"
+format: 
+    revealjs:
+         theme: simple
+categories: [bayesian, discrete choice, ]
+image: "images/individual_heterogeniety.png"
+---
+
+## Agenda
+- A Little History
+- A Naive Utilty Model
+- An Augmented Model
+- Adding Correlation Structure
+- Counterfactual Reasoning
+- Individual Heterogenous Utility
+
+## McFadden and BART
+
+> "Transport projects involve sinking money
+in expensive capital investments, which
+have a long life and wide repercussions.
+There is no escape from the attempt both
+to estimate the demand for their services
+over twenty or thirty years and to assess
+their repercussions on the economy as a
+whole." 
+- Denys Munby, Transport, 1968 "
+
+![Bay Area Rapid Transit](images/bart.jpg)
+
+## Reveal Preference and Predicting Demand
+
+- The assumption of *revealed preference* theory is that if a person chooses A over B then their subjective utility for A is greater than for B. 
+
+- Survey data estimated about 15% of users would adopt the newly introduced BART system. McFadden's random utility model estimated 6%. 
+
+- He was right. 
+
+## General Applicability of Choice Problems
+
+- Choice of Policy
+- Choice of Brand
+- Choice of School
+- Choice of Car
+
+## Choice: The Data
+
+Gas Central Heating and Electrical Central Heating
+described by their cost of installation and operation. 
+
+
+
+| choice_id | chosen | ic_gc | oc_gc | ...   | oc_ec |
+|-----------|--------|-------|-------|-------|-------|
+| 1         | gc     | 866   | 200   | ...   | 542   |
+| 2         | ec     | 802   | 195   | ...   | 510   |
+| 3         | er     | 759   | 203   | ...   | 495   |
+| 4         | gr     | 789   | 220   | ...   | 502   |
+
+## Choice: A Naive Model
+
+Let there be five goods described by their cost of installation and operation. 
+
+$$ \begin{split} \overbrace{\begin{pmatrix}
+\color{green}{u_{gc}}   \\
+\color{green}{u_{gr}}   \\
+\color{green}{u_{ec}}   \\
+\color{green}{u_{er}}   \\
+\color{green}{u_{hp}}   \\
+\end{pmatrix}}^{utility} =  \begin{pmatrix}
+gc_{ic} & gc_{oc}  \\
+gr_{ic} & gr_{oc}  \\
+ec_{ic} & ec_{oc}  \\
+er_{ic} & er_{oc}  \\
+hp_{ic} & hp_{oc}  \\
+\end{pmatrix} \overbrace{\begin{pmatrix}
+\color{blue}{\beta_{ic}}   \\
+\color{blue}{\beta_{oc}}   \\
+\end{pmatrix}}^{parameters}  \end{split}
+$$
+
+
+## Choice: A Naive Model
+
+ The utility calculation is fundamentally comparative. 
+$$ \begin{split} \begin{pmatrix}
+\color{green}{u_{gc}}   \\
+\color{green}{u_{gr}}   \\
+\color{green}{u_{ec}}   \\
+\color{green}{u_{er}}   \\
+\color{red}{\overbrace{0}^{\text{outside good}}}   \\
+\end{pmatrix} =  \begin{pmatrix}
+gc_{ic} & gc_{oc}  \\
+gr_{ic} & gr_{oc}  \\
+ec_{ic} & ec_{oc}  \\
+er_{ic} & er_{oc}  \\
+\color{red}{0} & \color{red}{0} \\
+\end{pmatrix} \begin{pmatrix}
+\color{blue}{\beta_{ic}}   \\
+\color{blue}{\beta_{oc}}   \\
+\end{pmatrix}  \end{split}
+$$
+
+We zero out one category in the data set to represent the "outside good" for comparison.
+
+## Choice: A Naive Model
+Utility determines choice probability of choice:
+
+$$\text{softmax}(\color{green}{u})_{j} = \frac{\exp(\color{green}{u_{j}})}{\sum_{q=1}^{J}\exp(\color{green}{u_{q}})}$$
+
+choices determine market share where:
+
+$$ s_{j}(\mathbf{\color{blue}{\beta}}) = P(\color{green}{u_{j}} > \color{green}{u_{k}}; ∀k ̸= j) $$
+
+## Choice: Estimation
+
+The model is traditionally estimated with maximum likelihood caclulations
+
+$$  L(\color{blue}{\beta}) = \prod s_{j}(\mathbf{\color{blue}{\beta}}) $$
+
+or taking the log:
+
+$$  l(\color{blue}{\beta}) = \sum log(s_{j}(\mathbf{\color{blue}{\beta}})) $$
+$$ \text{ We find: } \underset{\color{blue}{\beta}}{\mathrm{argmax}} \text{ } l(\color{blue}{\beta}) $$
+
+## Choice: Bayesian Estimation
+
+To evaluate the integrals in the Bayesian model we use MCMC
+
+$$\underbrace{\color{blue}{\beta}}_{\text{prior draws}} \sim Normal(0, 1) $$
+
+$$ \underbrace{p(\color{blue}{\beta} | D)}_{\text{posterior draws}} = \frac{p(\mathbb{\color{blue}{\beta}})p(D | \color{blue}{\beta} )}{\int_{i}^{n} p(D | \mathbf{\color{blue}{\beta_{i}}})p(\mathbf{\color{blue}{\beta_{i}}}) } $$
+
+
+## The Naive Model in Code
+
+```{python}
+# | eval: false
+# | echo: true
+
+with pm.Model(coords=coords) as model_1:
+    ## Priors for the Beta Coefficients
+    beta_ic = pm.Normal("beta_ic", 0, 1)
+    beta_oc = pm.Normal("beta_oc", 0, 1)
+
+    ## Construct Utility matrix and Pivot
+    u0 = beta_ic * wide_heating_df["ic.ec"] + beta_oc * wide_heating_df["oc.ec"]
+    u1 = beta_ic * wide_heating_df["ic.er"] + beta_oc * wide_heating_df["oc.er"]
+    u2 = beta_ic * wide_heating_df["ic.gc"] + beta_oc * wide_heating_df["oc.gc"]
+    u3 = beta_ic * wide_heating_df["ic.gr"] + beta_oc * wide_heating_df["oc.gr"]
+    u4 = np.zeros(N)  # Outside Good
+    s = pm.math.stack([u0, u1, u2, u3, u4]).T
+
+    ## Apply Softmax Transform
+    p_ = pm.Deterministic("p", pm.math.softmax(s, axis=1), dims=("obs", "alts_probs"))
+
+    ## Likelihood
+    choice_obs = pm.Categorical("y_cat", p=p_, observed=observed, dims="obs")
+
+```
+
+## Interpreting the Model Coefficients
+The beta coefficients in the mode are interpreted as drivers of utility. However, the precision in these latent terms is relative to the variance of **unobserved** factors.
+
+The scale is not fixed, but the ratio $\frac{\beta_{ic}}{\beta_{oc}}$ is invariant.
+
+![Rate of Substitution](images/rate_of_substitution.png)
+
+
+## Model Posterior Predictive Fits
+The model fit fails to recapture the observed data points
+
+![Model Fit](images/naive_model_fit.png)
+
+
+## Augmenting the Model: Product Specific Intercepts
+
+$$
+\begin{split}
+\begin{pmatrix}
+\color{red}{u_{gc}} \\ 
+\color{purple}{u_{gr}} \\
+\color{orange}{u_{ec}} \\
+\color{teal}{u_{er}} \\
+0
+\end{pmatrix}
+= 
+\begin{pmatrix}
+  \color{red}{\alpha_{gc}} + \color{blue}{\beta_{ic}}gc_{ic} + \color{blue}{\beta_{oc}}gc_{oc} \\
+  \color{purple}{\alpha_{gr}} + \color{blue}{\beta_{ic}}gr_{ic} + \color{blue}{\beta_{oc}}gr_{oc}  \\
+  \color{orange}{\alpha_{ec}} + \color{blue}{\beta_{ic}}ec_{ic} + \color{blue}{\beta_{oc}}ec_{oc}  \\
+  \color{teal}{\alpha_{er}} + \color{blue}{\beta_{ic}}er_{ic} + \color{blue}{\beta_{oc}}er_{oc}  \\
+   0 + 0 + 0
+\end{pmatrix}
+\end{split}
+$$
+
+
+## Augmenting the Model:
+
+```{python}
+
+#| eval: false
+#| echo: true
+
+with pm.Model(coords=coords) as model_2:
+    ## Priors for the Beta Coefficients
+    beta_ic = pm.Normal("beta_ic", 0, 1)
+    beta_oc = pm.Normal("beta_oc", 0, 1)
+    alphas = pm.Normal("alpha", 0, 1, dims="alts_intercepts")
+
+    ## Construct Utility matrix and Pivot using an intercept per alternative
+    u0 = alphas[0] + beta_ic * wide_heating_df["ic.ec"] + beta_oc * wide_heating_df["oc.ec"]
+    u1 = alphas[1] + beta_ic * wide_heating_df["ic.er"] + beta_oc * wide_heating_df["oc.er"]
+    u2 = alphas[2] + beta_ic * wide_heating_df["ic.gc"] + beta_oc * wide_heating_df["oc.gc"]
+    u3 = alphas[3] + beta_ic * wide_heating_df["ic.gr"] + beta_oc * wide_heating_df["oc.gr"]
+    u4 = np.zeros(N)  # Outside Good
+    s = pm.math.stack([u0, u1, u2, u3, u4]).T
+
+    ## Apply Softmax Transform
+    p_ = pm.Deterministic("p", pm.math.softmax(s, axis=1), dims=("obs", "alts_probs"))
+
+    ## Likelihood
+    choice_obs = pm.Categorical("y_cat", p=p_, observed=observed, dims="obs")
+
+```
+
+## Augmenting the Model:
+
+![Model Structure](images/augmented_model_graph.svg)
+
+## Augmenting the Model: Posterior Predictions
+
+![Model Fit](images/augmented_fit.png)
+
+## Adding Correlation Structure
+
+$$ \alpha_{i} \sim Normal(\mathbf{0}, \Sigma) $$
+
+$$
+\begin{split}
+\begin{pmatrix}
+\color{red}{u_{gc}} \\ 
+\color{purple}{u_{gr}} \\
+\color{orange}{u_{ec}} \\
+\color{teal}{u_{er}} \\
+0
+\end{pmatrix}
+= 
+\begin{pmatrix}
+  \color{red}{\alpha_{gc}} + \color{blue}{\beta_{ic}}gc_{ic} + \color{blue}{\beta_{oc}}gc_{oc} \\
+  \color{purple}{\alpha_{gr}} + \color{blue}{\beta_{ic}}gr_{ic} + \color{blue}{\beta_{oc}}gr_{oc}  \\
+  \color{orange}{\alpha_{ec}} + \color{blue}{\beta_{ic}}ec_{ic} + \color{blue}{\beta_{oc}}ec_{oc}  \\
+  \color{teal}{\alpha_{er}} + \color{blue}{\beta_{ic}}er_{ic} + \color{blue}{\beta_{oc}}er_{oc}  \\
+   0 + 0 + 0
+\end{pmatrix}
+\end{split}
+$$
+
+## Adding Correlation Structure
+
+```{python}
+#| eval: false
+#| echo: true
+
+with pm.Model(coords=coords) as model_3:
+    beta_ic = pm.Normal("beta_ic", 0, 1)
+    beta_oc = pm.Normal("beta_oc", 0, 1)
+
+    beta_income = pm.Normal("beta_income", 0, 1 dims="alts_intercepts")
+
+    chol, corr, stds = pm.LKJCholeskyCov(
+        "chol", n=4, eta=2.0, 
+        sd_dist=pm.Exponential.dist(1.0, shape=4)
+    )
+    alphas = pm.MvNormal("alpha", mu=0, chol=chol, dims="alts_intercepts")
+
+    u0 = (
+        alphas[0]
+        + beta_ic * wide_heating_df["ic.gc"]
+        + beta_oc * wide_heating_df["oc.gc"]
+        + beta_income[0] * wide_heating_df["income"]
+    )
+    u1 = (
+        alphas[1]
+        + beta_ic * wide_heating_df["ic.gc"]
+        + beta_oc * wide_heating_df["oc.gc"]
+        + beta_income[1] * wide_heating_df["income"]
+    )
+    u2 = (
+        alphas[2]
+        + beta_ic * wide_heating_df["ic.gc"]
+        + beta_oc * wide_heating_df["oc.gc"]
+        + beta_income[2] * wide_heating_df["income"]
+    )
+    u3 = (
+        alphas[3]
+        + beta_ic * wide_heating_df["ic.gr"]
+        + beta_oc * wide_heating_df["oc.gr"]
+        + beta_income[3] * wide_heating_df["income"]
+    )
+    u4 = np.zeros(N)  # pivot
+    s = pm.math.stack([u0, u1, u2, u3, u4]).T
+
+    p_ = pm.Deterministic("p", pm.math.softmax(s, axis=1), dims=("obs", "alts_probs"))
+    choice_obs = pm.Categorical("y_cat", p=p_, observed=observed, dims="obs")
+
+
+
+
+```
+
+## Adding Correlation Structure
+
+
+![Correlation Structure](images/correlation_structure.svg)
+
+
+## Counterfactual Reasoning
+
+With a fitted PyMC model we can reset the values for the input data and regenerate the posterior predictive distribution. 
+
+```{python}
+#| eval: false
+#| echo: true
+
+
+with model_3:
+    # update values of predictors with new 20% price increase in operating costs for electrical options
+    pm.set_data({"oc_ec": wide_heating_df["oc.ec"] * 1.2, "oc_er": wide_heating_df["oc.er"] * 1.2})
+    # use the updated values and predict outcomes and probabilities:
+    idata_new_policy = pm.sample_posterior_predictive(
+        idata_m3,
+        var_names=["p", "y_cat"],
+        return_inferencedata=True,
+        predictions=True,
+        extend_inferencedata=False,
+        random_seed=100,
+    )
+
+idata_new_policy
+
+
+
+
+```
+
+
+## Counterfactual Reasoning
+
+![Counterfactual Shares](images/counterfactual_shares.png)

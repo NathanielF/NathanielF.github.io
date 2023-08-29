@@ -1,0 +1,14 @@
+---
+title: "Bayesian IV Regression in CausalPy"
+author: "Nathaniel Forde"
+date: "2023-08-15"
+categories: ["regression", "instrumental variables", "causal inference" ]
+image: "iv_reg.png"
+---
+
+# Instrumental Variable Regression
+
+In this project I sought to add the functionality for bayesian instrumental variable analysis to the [CausalPy](https://causalpy.readthedocs.io/en/latest/) package. I adapted the work of Juan Orduz to contribute the base classes to the package and demonstrated how these classes can be used to esitmate instrumental regression by replicating the results of an Acemologu paper on the efficacy of political institutions. The demonstration can be seen [here](https://causalpy.readthedocs.io/en/latest/notebooks/iv_pymc.html)
+
+
+![Comparison with OLS](iv_reg.png)

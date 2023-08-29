@@ -71,7 +71,7 @@ ul.task-list li input[type="checkbox"] {
     const options = {
       valueNames: ['listing-date','listing-title','listing-reading-time','listing-description','listing-categories','listing-image',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
+      searchColumns: ["listing-date","listing-title","listing-author","listing-subtitle","listing-image","listing-description","listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -215,7 +215,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VAR">VAR <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bayesian">bayesian <span class="quarto-category-count">(1)</span></div><div class="category" data-category="timeseries analysis">timeseries analysis <span class="quarto-category-count">(1)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="VAR">VAR <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bayesian">bayesian <span class="quarto-category-count">(2)</span></div><div class="category" data-category="discrete choice">discrete choice <span class="quarto-category-count">(1)</span></div><div class="category" data-category="timeseries analysis">timeseries analysis <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
@@ -249,7 +249,42 @@ ul.task-list li input[type="checkbox"] {
     </div>
 </div>
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="bayesian,VAR,timeseries analysis" data-listing-date-sort="1675468800000" data-listing-file-modified-sort="1690231221291" data-listing-reading-time-sort="0.025">
+<div class="quarto-post image-right" data-index="0" data-categories="bayesian,discrete choice" data-listing-file-modified-sort="1693342335209" data-listing-reading-time-sort="7.35">
+<div class="thumbnail">
+<p><a href="./talks/utility_and_choice/discrete_choice_and_utility.html"> <img src="./talks/utility_and_choice/images/individual_heterogeniety.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./talks/utility_and_choice/discrete_choice_and_utility.html">
+<h3 class="no-anchor listing-title">
+Product Choice Models and Subjective Utility
+</h3>
+<div class="listing-subtitle">
+Dublin Data Science
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
+bayesian
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('discrete choice'); return false;">
+discrete choice
+</div>
+</div>
+<a href="./talks/utility_and_choice/discrete_choice_and_utility.html">
+<div class="listing-description">
+
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./talks/utility_and_choice/discrete_choice_and_utility.html">
+<div class="listing-reading-time">
+7 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-categories="bayesian,VAR,timeseries analysis" data-listing-date-sort="1675468800000" data-listing-file-modified-sort="1693169762810" data-listing-reading-time-sort="0.025">
 <div class="thumbnail">
 <p><a href="./talks/tenuous_relations/first_talk.html"> <img src="./talks/tenuous_relations/aggregations.png" class="thumnail-image"> </a></p>
 </div>
@@ -259,7 +294,7 @@ ul.task-list li input[type="checkbox"] {
 Tenuous Relations and Timeseries Analysis
 </h3>
 <div class="listing-subtitle">
-
+Berlin Timeseries
 </div>
 </a>
 <div class="listing-categories">

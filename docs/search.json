@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\n\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nProduct Choice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\n7 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -578,7 +578,7 @@
     "href": "opensource.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nDiscrete Choice Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\ndiscrete choice\n\n\nsubjective utility\n\n\n \n\n\n\n\nJul 15, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nOrdinal Regression Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nordinal regression\n\n\nlikert scales\n\n\n \n\n\n\n\nJun 1, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nLongitudinal Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nlongitudinal models\n\n\n \n\n\n\n\nApr 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data Imputation in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nmissing_data\n\n\nimputation\n\n\n \n\n\n\n\nFeb 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nReliability Statistics in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\ntime-to-failure\n\n\ncalibration\n\n\n \n\n\n\n\nJan 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian Vector Autoregressive Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nautoregressive\n\n\nhierarchical_models\n\n\n \n\n\n\n\nDec 15, 2022\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nAutoregressive Forecasting in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nautoregressive\n\n\n \n\n\n\n\nAug 15, 2022\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nBayesian IV Regression in CausalPy\n\n\n\n\n\n\n\nregression\n\n\ninstrumental variables\n\n\ncausal inference\n\n\n \n\n\n\n\nAug 15, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\ndiscrete choice\n\n\nsubjective utility\n\n\n \n\n\n\n\nJul 15, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nOrdinal Regression Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nordinal regression\n\n\nlikert scales\n\n\n \n\n\n\n\nJun 1, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nLongitudinal Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nlongitudinal models\n\n\n \n\n\n\n\nApr 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data Imputation in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nmissing_data\n\n\nimputation\n\n\n \n\n\n\n\nFeb 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nReliability Statistics in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\ntime-to-failure\n\n\ncalibration\n\n\n \n\n\n\n\nJan 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian Vector Autoregressive Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nautoregressive\n\n\nhierarchical_models\n\n\n \n\n\n\n\nDec 15, 2022\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nAutoregressive Forecasting in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nautoregressive\n\n\n \n\n\n\n\nAug 15, 2022\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "blog.html",
@@ -586,5 +586,229 @@
     "title": "Examined Algorithms",
     "section": "",
     "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nDifferences in Differences\n\n\n\n\n\n\n\ncard-kreuger\n\n\ncausal-inference\n\n\ndiff-in-diff\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n17 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian Estimation and the Histogram Approximation\n\n\n\n\n\n\n\nprobability\n\n\nexperiments\n\n\nbayesian-AB-tests\n\n\nhistogram-trick\n\n\n\n\n\n\n\n\n\n\n\nAug 15, 2022\n\n\n9 min\n\n\n\n\n\n\n  \n\n\n\n\nPsi, Replication and Bayesian Evidence\n\n\n\n\n\n\n\nreplication_crisis\n\n\nbayesian\n\n\nhypothesis_tests\n\n\n\n\n\n\n\n\n\n\n\nAug 1, 2021\n\n\n11 min\n\n\n\n\n\n\n  \n\n\n\n\nGaussian Processes and Inferred Networks\n\n\nThis post describes the idea of spatial correlation outlined using a gaussian process model\n\n\n\n\nprobability\n\n\ninformation\n\n\noptimisation\n\n\nspatial correlation\n\n\ngaussian_process\n\n\n\n\n\n\n\n\n\n\n\nJun 22, 2021\n\n\n7 min\n\n\n\n\n\n\n  \n\n\n\n\nWheat from Chaff: Maximum Entropy and Information\n\n\n\n\n\n\n\nentropy\n\n\ninformation\n\n\njaynes\n\n\npriors\n\n\n\n\n\n\n\n\n\n\n\nMar 22, 2021\n\n\n9 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian Decisions & Model Comparison\n\n\n\n\n\n\n\nmodel_evaluation\n\n\nlikelihood_ratio_tests\n\n\nloss_ratios\n\n\n\n\n\n\n\n\n\n\n\nMar 22, 2021\n\n\n15 min\n\n\n\n\n\n\n  \n\n\n\n\nTrains, Planes …Utility and Maximum Likelihood\n\n\n\n\n\n\n\nmle\n\n\nrevealed preference\n\n\nlog-likelihood\n\n\nutility\n\n\n\n\n\n\n\n\n\n\n\nFeb 21, 2021\n\n\n15 min\n\n\n\n\n\n\n  \n\n\n\n\nFactor Analysis and Construct Validity in Psychology\n\n\n\n\n\n\n\nconstruct_validity\n\n\nsignificance_tests\n\n\nfactor analysis\n\n\nreplicability\n\n\n\n\n\n\n\n\n\n\n\nJan 22, 2021\n\n\n15 min\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#getting-up",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#getting-up",
+    "title": "Discrete Choice Models in PyMC",
+    "section": "Getting up",
+    "text": "Getting up\n\nTurn off alarm\nGet out of bed"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#types-of-problem-to-solve",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#types-of-problem-to-solve",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Types of Problem to Solve",
+    "text": "Types of Problem to Solve\n\nChoice of Policy\nChoice of Brand\nChoice of School\nChoice of Car"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-statistical-model",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-statistical-model",
+    "title": "Discrete Choice Models in PyMC",
+    "section": "Choice: A Statistical Model",
+    "text": "Choice: A Statistical Model\nLet there be five goods described by their cost of installation and operation.\n\\[ \\begin{split} \\begin{pmatrix}\nu_{gc}   \\\\\nu_{gr}   \\\\\nu_{ec}   \\\\\nu_{er}   \\\\\nu_{hp}   \\\\\n\\end{pmatrix} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\nhp_{ic} & hp_{oc}  \\\\\n\\end{pmatrix} \\begin{pmatrix}\n\\beta_{ic}   \\\\\n\\beta_{oc}   \\\\\n\\end{pmatrix}  \\end{split}\n\\]\nWe want to estimate how a linear combination of their attributes determines their utility."
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-statistical-model-1",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-statistical-model-1",
+    "title": "Discrete Choice Models in PyMC",
+    "section": "Choice: A Statistical Model",
+    "text": "Choice: A Statistical Model\nUtility determines choice probability:\n\\[\\text{softmax}(u)_{j} = \\frac{\\exp(u_{j})}{\\sum_{q=1}^{J}\\exp(u_{q})}\\]\nchoices determine market share where:\n\\[ s_{j}(\\mathbf{\\beta}) = P(u_{j} > u_{k}; ∀k ̸= j) \\]"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-the-data",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-the-data",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Choice: The Data",
+    "text": "Choice: The Data\nGas Central Heating and Electrical Central Heating described by their cost of installation and operation.\n\n\n\nchoice_id\nchosen\nic_gc\noc_gc\n…\noc_ec\n\n\n\n\n1\ngc\n866\n200\n…\n542\n\n\n2\nec\n802\n195\n…\n510\n\n\n3\ner\n759\n203\n…\n495\n\n\n4\ngr\n789\n220\n…\n502"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#a-too-simple-model",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#a-too-simple-model",
+    "title": "Discrete Choice Models in PyMC",
+    "section": "A Too Simple Model",
+    "text": "A Too Simple Model\n\nwith pm.Model(coords=coords) as model_1:\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    ## Construct Utility matrix and Pivot\n    u0 = beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-who-is-choosing",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-who-is-choosing",
+    "title": "Discrete Choice Models in PyMC",
+    "section": "Choice: Who is Choosing?",
+    "text": "Choice: Who is Choosing?\n\nMutually exclusive discrete choice\nMultiple Agents in distinct choice scenarios"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-estimation",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-estimation",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Choice: Estimation",
+    "text": "Choice: Estimation\nThe model is traditionally estimated with maximum likelihood caclulations\n\\[  L(\\color{blue}{\\beta}) = \\prod s_{j}(\\mathbf{\\color{blue}{\\beta}}) \\]\nor taking the log:\n\\[  l(\\color{blue}{\\beta}) = \\sum log(s_{j}(\\mathbf{\\color{blue}{\\beta}})) \\] \\[ \\text{ We find: } \\underset{\\color{blue}{\\beta}}{\\mathrm{argmax}} \\text{ } l(\\color{blue}{\\beta}) \\]"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Choice: A Naive Model",
+    "text": "Choice: A Naive Model\nLet there be five goods described by their cost of installation and operation.\n\\[ \\begin{split} \\overbrace{\\begin{pmatrix}\n\\color{green}{u_{gc}}   \\\\\n\\color{green}{u_{gr}}   \\\\\n\\color{green}{u_{ec}}   \\\\\n\\color{green}{u_{er}}   \\\\\n\\color{green}{u_{hp}}   \\\\\n\\end{pmatrix}}^{utility} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\nhp_{ic} & hp_{oc}  \\\\\n\\end{pmatrix} \\overbrace{\\begin{pmatrix}\n\\color{blue}{\\beta_{ic}}   \\\\\n\\color{blue}{\\beta_{oc}}   \\\\\n\\end{pmatrix}}^{parameters}  \\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model-1",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model-1",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Choice: A Naive Model",
+    "text": "Choice: A Naive Model\nThe utility calculation is fundamentally comparative. \\[ \\begin{split} \\begin{pmatrix}\n\\color{green}{u_{gc}}   \\\\\n\\color{green}{u_{gr}}   \\\\\n\\color{green}{u_{ec}}   \\\\\n\\color{green}{u_{er}}   \\\\\n\\color{red}{\\overbrace{0}^{\\text{outside good}}}   \\\\\n\\end{pmatrix} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\n\\color{red}{0} & \\color{red}{0} \\\\\n\\end{pmatrix} \\begin{pmatrix}\n\\color{blue}{\\beta_{ic}}   \\\\\n\\color{blue}{\\beta_{oc}}   \\\\\n\\end{pmatrix}  \\end{split}\n\\]\nWe zero out one category in the data set to represent the “outside good” for comparison."
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#the-naive-model-in-code",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#the-naive-model-in-code",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "The Naive Model in Code",
+    "text": "The Naive Model in Code\n\nwith pm.Model(coords=coords) as model_1:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    ## Construct Utility matrix and Pivot\n    u0 = beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model-2",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model-2",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Choice: A Naive Model",
+    "text": "Choice: A Naive Model\nUtility determines choice probability of choice:\n\\[\\text{softmax}(\\color{green}{u})_{j} = \\frac{\\exp(\\color{green}{u_{j}})}{\\sum_{q=1}^{J}\\exp(\\color{green}{u_{q}})}\\]\nchoices determine market share where:\n\\[ s_{j}(\\mathbf{\\color{blue}{\\beta}}) = P(\\color{green}{u_{j}} > \\color{green}{u_{k}}; ∀k ̸= j) \\]"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#what-are-we-missing",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#what-are-we-missing",
+    "title": "Discrete Choice Models in PyMC",
+    "section": "What are we missing?",
+    "text": "What are we missing?"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-bayesian-estimation",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-bayesian-estimation",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Choice: Bayesian Estimation",
+    "text": "Choice: Bayesian Estimation\nTo evaluate the integrals in the Bayesian model we use MCMC\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#does-the-model-fit",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#does-the-model-fit",
+    "title": "Discrete Choice Models in PyMC",
+    "section": "Does the Model Fit?",
+    "text": "Does the Model Fit?"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#interpreting-the-model-coefficients",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#interpreting-the-model-coefficients",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Interpreting the Model Coefficients",
+    "text": "Interpreting the Model Coefficients\nThe beta coefficients in the mode are interpreted as drivers of utility. However, the precision in these latent terms is relative to the variance of unobserved factors.\nThe scale is not fixed, but the ratio \\(\\frac{\\beta_{ic}}{\\beta_{oc}}\\) is invariant.\n\nRate of Substitution"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#model-posterior-predictive-fits",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#model-posterior-predictive-fits",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Model Posterior Predictive Fits",
+    "text": "Model Posterior Predictive Fits\nThe model fit fails to recapture the observed data points\n\nModel Fit"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-product-specific-intercepts",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-product-specific-intercepts",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Augmenting the Model: Product Specific Intercepts",
+    "text": "Augmenting the Model: Product Specific Intercepts\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Augmenting the Model:",
+    "text": "Augmenting the Model:\n\nwith pm.Model(coords=coords) as model_2:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n\n    ## Construct Utility matrix and Pivot using an intercept per alternative\n    u0 = alphas[0] + beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = alphas[1] + beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = alphas[2] + beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = alphas[3] + beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-1",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-1",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Augmenting the Model:",
+    "text": "Augmenting the Model:\n\nModel Structure"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-posterior-predictions",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-posterior-predictions",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Augmenting the Model: Posterior Predictions",
+    "text": "Augmenting the Model: Posterior Predictions\n\nModel Fit"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#agenda",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#agenda",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Agenda",
+    "text": "Agenda\n\nA Little History\nA Naive Utilty Model\nAn Augmented Model\nAdding Correlation Structure\nCounterfactual Reasoning\nIndividual Heterogenous Utility"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\n\\[ \\alpha_{i} \\sim Normal(\\mathbf{0}, \\Sigma) \\]\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html",
+    "title": "Discrete Choice Models in PyMC",
+    "section": "",
+    "text": "A Naive Utilty Model\nAn Augmented Model\nAdding Correlation Structure\nCounterfactual Reasoning\nIndividual Heterogenous Utility"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-1",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-1",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\n\nwith pm.Model(coords=coords) as model_3:\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    beta_income = pm.Normal(\"beta_income\", 0, 1 dims=\"alts_intercepts\")\n\n    chol, corr, stds = pm.LKJCholeskyCov(\n        \"chol\", n=4, eta=2.0, \n        sd_dist=pm.Exponential.dist(1.0, shape=4)\n    )\n    alphas = pm.MvNormal(\"alpha\", mu=0, chol=chol, dims=\"alts_intercepts\")\n\n    u0 = (\n        alphas[0]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[0] * wide_heating_df[\"income\"]\n    )\n    u1 = (\n        alphas[1]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[1] * wide_heating_df[\"income\"]\n    )\n    u2 = (\n        alphas[2]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[2] * wide_heating_df[\"income\"]\n    )\n    u3 = (\n        alphas[3]\n        + beta_ic * wide_heating_df[\"ic.gr\"]\n        + beta_oc * wide_heating_df[\"oc.gr\"]\n        + beta_income[3] * wide_heating_df[\"income\"]\n    )\n    u4 = np.zeros(N)  # pivot\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-2",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-2",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\n\nCorrelation Structure"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\nWith a fitted PyMC model we can reset the values for the input data and regenerate the posterior predictive distribution.\n\nwith model_3:\n    # update values of predictors with new 20% price increase in operating costs for electrical options\n    pm.set_data({\"oc_ec\": wide_heating_df[\"oc.ec\"] * 1.2, \"oc_er\": wide_heating_df[\"oc.er\"] * 1.2})\n    # use the updated values and predict outcomes and probabilities:\n    idata_new_policy = pm.sample_posterior_predictive(\n        idata_m3,\n        var_names=[\"p\", \"y_cat\"],\n        return_inferencedata=True,\n        predictions=True,\n        extend_inferencedata=False,\n        random_seed=100,\n    )\n\nidata_new_policy"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning-1",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning-1",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\n\n\nCounterfactual Shares"
+  },
+  {
+    "objectID": "oss/causalpy/instrumental_variables.html",
+    "href": "oss/causalpy/instrumental_variables.html",
+    "title": "Bayesian IV Regression in CausalPy",
+    "section": "",
+    "text": "Instrumental Variable Regression\nIn this project I sought to add the functionality for bayesian instrumental variable analysis to the CausalPy package. I adapted the work of Juan Orduz to contribute the base classes to the package and demonstrated how these classes can be used to esitmate instrumental regression by replicating the results of an Acemologu paper on the efficacy of political institutions. The demonstration can be seen here\n\n\n\nComparison with OLS"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#mcfadden-and-bart",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#mcfadden-and-bart",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "McFadden and BART",
+    "text": "McFadden and BART\n\n“Transport projects involve sinking money in expensive capital investments, which have a long life and wide repercussions. There is no escape from the attempt both to estimate the demand for their services over twenty or thirty years and to assess their repercussions on the economy as a whole.” - Denys Munby, Transport, 1968 ”\n\n\nBay Area Rapid Transit"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#reveal-preference-and-predicting-demand",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#reveal-preference-and-predicting-demand",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Reveal Preference and Predicting Demand",
+    "text": "Reveal Preference and Predicting Demand\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their subjective utility for A is greater than for B.\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\nHe was right."
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#general-applicability-of-choice-problems",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#general-applicability-of-choice-problems",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "General Applicability of Choice Problems",
+    "text": "General Applicability of Choice Problems\n\nChoice of Policy\nChoice of Brand\nChoice of School\nChoice of Car"
   }
 ]

@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nathaniel Forde">
-<meta name="dcterms.date" content="2023-02-04">
+<meta name="dcterms.date" content="2023-08-15">
 
-<title>Examined Algorithms - Tenuous Relations and Timeseries Analysis</title>
+<title>Examined Algorithms - Bayesian IV Regression in CausalPy</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -116,7 +116,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Tenuous Relations and Timeseries Analysis</h1>
+      <h1 class="quarto-secondary-nav-title">Bayesian IV Regression in CausalPy</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -188,7 +188,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#hierarchical-bayesian-vars" id="toc-hierarchical-bayesian-vars" class="nav-link active" data-scroll-target="#hierarchical-bayesian-vars">Hierarchical Bayesian VARs</a></li>
+  <li><a href="#instrumental-variable-regression" id="toc-instrumental-variable-regression" class="nav-link active" data-scroll-target="#instrumental-variable-regression">Instrumental Variable Regression</a></li>
   </ul>
 </nav>
     </div>
@@ -197,12 +197,11 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Tenuous Relations and Timeseries Analysis</h1>
-<p class="subtitle lead">Berlin Timeseries</p>
+<h1 class="title d-none d-lg-block">Bayesian IV Regression in CausalPy</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">bayesian</div>
-    <div class="quarto-category">VAR</div>
-    <div class="quarto-category">timeseries analysis</div>
+    <div class="quarto-category">regression</div>
+    <div class="quarto-category">instrumental variables</div>
+    <div class="quarto-category">causal inference</div>
   </div>
   </div>
 
@@ -220,7 +219,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 4, 2023</p>
+      <p class="date">August 15, 2023</p>
     </div>
   </div>
   
@@ -230,9 +229,15 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="hierarchical-bayesian-vars" class="level1">
-<h1>Hierarchical Bayesian VARs</h1>
-<embed width="100%" height="800" type="application/pdf" src="tenuous_relations_presenation.pdf">
+<section id="instrumental-variable-regression" class="level1">
+<h1>Instrumental Variable Regression</h1>
+<p>In this project I sought to add the functionality for bayesian instrumental variable analysis to the <a href="https://causalpy.readthedocs.io/en/latest/">CausalPy</a> package. I adapted the work of Juan Orduz to contribute the base classes to the package and demonstrated how these classes can be used to esitmate instrumental regression by replicating the results of an Acemologu paper on the efficacy of political institutions. The demonstration can be seen <a href="https://causalpy.readthedocs.io/en/latest/notebooks/iv_pymc.html">here</a></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="iv_reg.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Comparison with OLS</figcaption><p></p>
+</figure>
+</div>
 
 
 </section>
