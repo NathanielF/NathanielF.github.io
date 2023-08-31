@@ -802,13 +802,20 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#reveal-preference-and-predicting-demand",
     "title": "Product Choice Models and Subjective Utility",
     "section": "Reveal Preference and Predicting Demand",
-    "text": "Reveal Preference and Predicting Demand\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their subjective utility for A is greater than for B.\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\nHe was right."
+    "text": "Reveal Preference and Predicting Demand\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their subjective utility for A is greater than for B.\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\nHe was right.\nCopernican Shift: He estimated utility to predict choice."
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#general-applicability-of-choice-problems",
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#general-applicability-of-choice-problems",
     "title": "Product Choice Models and Subjective Utility",
     "section": "General Applicability of Choice Problems",
-    "text": "General Applicability of Choice Problems\n\nChoice of Policy\nChoice of Brand\nChoice of School\nChoice of Car"
+    "text": "General Applicability of Choice Problems\n\nThese models offer the possibility of predicting choice in diverse domains: policy, consumer brand, school, car and partners.\nQuestion: What are the attributes that drive these choices? How well are they measurable?\nQuestion: How do changes in these attributes influence the predicted market demand for these choices?"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#revealed-preference-and-predicting-demand",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#revealed-preference-and-predicting-demand",
+    "title": "Product Choice Models and Subjective Utility",
+    "section": "Revealed Preference and Predicting Demand",
+    "text": "Revealed Preference and Predicting Demand\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their subjective utility for A is greater than for B.\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\nHe was right.\nCopernican Shift: He estimated utility to predict choice."
   }
 ]
