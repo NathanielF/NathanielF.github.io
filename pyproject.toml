@@ -9,7 +9,7 @@ packages = [{include = "examined_algorithms"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 pandas = "1.5.3"
-pymc = "5.00"
+pymc = "^5.7.0"
 jupyter = "1.0.0"
 ipykernel = "6.0.0"
 statsmodels = "^0.13.5"
@@ -17,6 +17,8 @@ bambi = "^0.10.0"
 linearmodels = "^4.27"
 dynamax = "^0.1.0"
 stargazer = "^0.0.5"
+numpyro = "^0.13.0"
+jax = "^0.4.14"
 
 
 [build-system]

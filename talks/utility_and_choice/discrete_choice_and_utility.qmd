@@ -1,22 +1,39 @@
 ---
-title: "Product Choice Models and Subjective Utility"
+title: "Choice Models and Subjective Utility"
 subtitle: "Dublin Data Science"
-author: "Nathaniel Forde"
+author: 
+    - name: Nathaniel Forde
+      affiliations: Data Science @ Personio
 format: 
     revealjs:
-         theme: simple
-categories: [bayesian, discrete choice, ]
+         theme: [default, clean.scss]
+categories: [bayesian, discrete choice]
 image: "images/individual_heterogeniety.png"
+date: last-modified
 ---
 
-## Agenda
-- A Little History
-- A Naive Utilty Model
-- An Augmented Model
-- Adding Correlation Structure
-- Counterfactual Reasoning
-- Individual Heterogenous Utility
 
+
+## Agenda
+::: {.fragment .fade-in}
+- A Little History
+::: 
+::: {.fragment .fade-in}
+- A Naive Utilty Model
+:::
+::: {.fragment .fade-in}
+- An Augmented Model
+:::
+::: {.fragment .fade-in}
+- Adding Correlation Structure
+:::
+::: {.fragment .fade-in}
+- Counterfactual Reasoning
+:::
+::: {.fragment .fade-in}
+- Individual Heterogenous Utility
+:::
+ 
 ## McFadden and BART
 
 > "Transport projects involve sinking money
@@ -32,20 +49,30 @@ whole."
 ![Bay Area Rapid Transit](images/bart.jpg)
 
 ## Revealed Preference and Predicting Demand
-
+::: {.fragment .fade-in}
 - The assumption of *revealed preference* theory is that if a person chooses A over B then their subjective utility for A is greater than for B. 
-
+:::
+::: {.fragment .fade-in}
 - Survey data estimated about 15% of users would adopt the newly introduced BART system. McFadden's random utility model estimated 6%. 
-
+:::
+::: {.fragment .fade-in}
 - He was right. 
-
+:::
+::: {.fragment .fade-in}
 - __Copernican Shift__: He estimated utility to predict choice. 
+::: 
 
 ## General Applicability of Choice Problems
-
+::: {.fragment .fade-in}
  - These models offer the possibility of predicting choice in diverse domains: policy, consumer brand, school, car and partners. 
+:::
+::: {.fragment .fade-in}
  - __Question__: What are the attributes that drive these choices? How well are they measurable?
+:::
+
+::: {.fragment .fade-in}
  - __Question__: How do changes in these attributes influence the predicted market demand for these choices?
+:::
 
 ## Choice: The Data
 
@@ -62,6 +89,7 @@ described by their cost of installation and operation.
 | 4         | gr     | 789   | 220   | ...   | 502   |
 
 ## Choice: A Naive Model
+### Underspecified Utilities
 
 Let there be five goods described by their cost of installation and operation. 
 
@@ -105,7 +133,7 @@ er_{ic} & er_{oc}  \\
 \end{pmatrix}  \end{split}
 $$
 
-We zero out one category in the data set to represent the "outside good" for comparison.
+We zero out one category in the data set to represent the "outside good" for comparison. Similar to dummy variables in Regression, this is required for the model to be identified.
 
 ## Choice: A Naive Model
 Utility determines choice probability of choice:
@@ -127,6 +155,8 @@ or taking the log:
 $$  l(\color{blue}{\beta}) = \sum log(s_{j}(\mathbf{\color{blue}{\beta}})) $$
 $$ \text{ We find: } \underset{\color{blue}{\beta}}{\mathrm{argmax}} \text{ } l(\color{blue}{\beta}) $$
 
+
+
 ## Choice: Bayesian Estimation
 
 To evaluate the integrals in the Bayesian model we use MCMC
@@ -138,10 +168,7 @@ $$ \underbrace{p(\color{blue}{\beta} | D)}_{\text{posterior draws}} = \frac{p(\m
 
 ## The Naive Model in Code
 
-```{python}
-# | eval: false
-# | echo: true
-
+```{.python code-line-numbers="|2-4|6-13"}
 with pm.Model(coords=coords) as model_1:
     ## Priors for the Beta Coefficients
     beta_ic = pm.Normal("beta_ic", 0, 1)
@@ -164,9 +191,10 @@ with pm.Model(coords=coords) as model_1:
 ```
 
 ## Interpreting the Model Coefficients
+### Rate of Substitution
 The beta coefficients in the mode are interpreted as drivers of utility. However, the precision in these latent terms is relative to the variance of **unobserved** factors.
 
-The scale is not fixed, but the ratio $\frac{\beta_{ic}}{\beta_{oc}}$ is invariant.
+The utility scale is not fixed, but the ratio $\frac{\beta_{ic}}{\beta_{oc}}$ is invariant.
 
 ![Rate of Substitution](images/rate_of_substitution.png)
 
@@ -177,7 +205,8 @@ The model fit fails to recapture the observed data points
 ![Model Fit](images/naive_model_fit.png)
 
 
-## Augmenting the Model: Product Specific Intercepts
+## Augmenting the Model: 
+### Product Specific Intercepts
 
 $$
 \begin{split}
@@ -202,11 +231,7 @@ $$
 
 ## Augmenting the Model:
 
-```{python}
-
-#| eval: false
-#| echo: true
-
+```{.python code-line-numbers="|5-5|6-13"}
 with pm.Model(coords=coords) as model_2:
     ## Priors for the Beta Coefficients
     beta_ic = pm.Normal("beta_ic", 0, 1)
@@ -233,11 +258,13 @@ with pm.Model(coords=coords) as model_2:
 
 ![Model Structure](images/augmented_model_graph.svg)
 
-## Augmenting the Model: Posterior Predictions
+## Augmenting the Model 
+### Posterior Predictions
 
 ![Model Fit](images/augmented_fit.png)
 
 ## Adding Correlation Structure
+### Dependence in Market Share
 
 $$ \alpha_{i} \sim Normal(\mathbf{0}, \Sigma) $$
 
@@ -263,10 +290,7 @@ $$
 
 ## Adding Correlation Structure
 
-```{python}
-#| eval: false
-#| echo: true
-
+```{.python code-line-numbers="|6-12|13-18|"}
 with pm.Model(coords=coords) as model_3:
     beta_ic = pm.Normal("beta_ic", 0, 1)
     beta_oc = pm.Normal("beta_oc", 0, 1)
@@ -309,20 +333,23 @@ with pm.Model(coords=coords) as model_3:
     p_ = pm.Deterministic("p", pm.math.softmax(s, axis=1), dims=("obs", "alts_probs"))
     choice_obs = pm.Categorical("y_cat", p=p_, observed=observed, dims="obs")
 
-
-
-
 ```
-
 ## Adding Correlation Structure
 
 
 ![Correlation Structure](images/correlation_structure.svg)
 
+## Counterfactual Reasoning
+### From Probability to Causation
+
+> "[C]ontrary to the views of a number of pessimistic statisticians and philosophers you can get from probabilities to causes after all.  Not always, not even ussually - but in just the right circumstances and with just the right kind of starting information, it is in principle possible."  - Nancy Cartwright in _Nature's Capacities and their Measurement_ 
+
 
 ## Counterfactual Reasoning
 
 With a fitted PyMC model we can reset the values for the input data and regenerate the posterior predictive distribution. 
+
+- What would the market share be like if prices for electrical systems increased 20%?
 
 ```{python}
 #| eval: false
@@ -353,3 +380,7 @@ idata_new_policy
 ## Counterfactual Reasoning
 
 ![Counterfactual Shares](images/counterfactual_shares.png)
+
+
+## Individual Heterogenous Utility
+### Hierarchical Structure 

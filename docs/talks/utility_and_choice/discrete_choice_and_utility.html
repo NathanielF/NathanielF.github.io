@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.2.335">
 
   <meta name="author" content="Nathaniel Forde">
-  <title>Examined Algorithms - Product Choice Models and Subjective Utility</title>
+  <title>Examined Algorithms - Choice Models and Subjective Utility</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -388,7 +388,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Product Choice Models and Subjective Utility</h1>
+  <h1 class="title">Choice Models and Subjective Utility</h1>
   <p class="subtitle">Dublin Data Science</p>
 
 <div class="quarto-title-authors">
@@ -396,20 +396,46 @@
 <div class="quarto-title-author-name">
 Nathaniel Forde 
 </div>
-</div>
+        <p class="quarto-title-affiliation">
+            Data Science @ Personio
+          </p>
+    </div>
 </div>
 
+  <p class="date">9/13/23</p>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
+<div class="fragment fade-in">
 <ul>
 <li>A Little History</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
 <li>A Naive Utilty Model</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
 <li>An Augmented Model</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
 <li>Adding Correlation Structure</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
 <li>Counterfactual Reasoning</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
 <li>Individual Heterogenous Utility</li>
 </ul>
+</div>
 </section>
 <section id="mcfadden-and-bart" class="slide level2">
 <h2>McFadden and BART</h2>
@@ -420,20 +446,44 @@ Nathaniel Forde
 <img data-src="images/bart.jpg" class="r-stretch quarto-figure-center"><p class="caption">Bay Area Rapid Transit</p></section>
 <section id="revealed-preference-and-predicting-demand" class="slide level2">
 <h2>Revealed Preference and Predicting Demand</h2>
+<div class="fragment fade-in">
 <ul>
-<li><p>The assumption of <em>revealed preference</em> theory is that if a person chooses A over B then their subjective utility for A is greater than for B.</p></li>
-<li><p>Survey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.</p></li>
-<li><p>He was right.</p></li>
-<li><p><strong>Copernican Shift</strong>: He estimated utility to predict choice.</p></li>
+<li>The assumption of <em>revealed preference</em> theory is that if a person chooses A over B then their subjective utility for A is greater than for B.</li>
 </ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Survey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>He was right.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li><strong>Copernican Shift</strong>: He estimated utility to predict choice.</li>
+</ul>
+</div>
 </section>
 <section id="general-applicability-of-choice-problems" class="slide level2">
 <h2>General Applicability of Choice Problems</h2>
+<div class="fragment fade-in">
 <ul>
 <li>These models offer the possibility of predicting choice in diverse domains: policy, consumer brand, school, car and partners.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
 <li><strong>Question</strong>: What are the attributes that drive these choices? How well are they measurable?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
 <li><strong>Question</strong>: How do changes in these attributes influence the predicted market demand for these choices?</li>
 </ul>
+</div>
 </section>
 <section id="choice-the-data" class="slide level2">
 <h2>Choice: The Data</h2>
@@ -487,6 +537,7 @@ Nathaniel Forde
 </section>
 <section id="choice-a-naive-model" class="slide level2">
 <h2>Choice: A Naive Model</h2>
+<h3 id="underspecified-utilities">Underspecified Utilities</h3>
 <p>Let there be five goods described by their cost of installation and operation.</p>
 <p><span class="math display">\[ \begin{split} \overbrace{\begin{pmatrix}
 \color{green}{u_{gc}}   \\
@@ -525,7 +576,7 @@ er_{ic} &amp; er_{oc}  \\
 \color{blue}{\beta_{oc}}   \\
 \end{pmatrix}  \end{split}
 \]</span></p>
-<p>We zero out one category in the data set to represent the “outside good” for comparison.</p>
+<p>We zero out one category in the data set to represent the “outside good” for comparison. Similar to dummy variables in Regression, this is required for the model to be identified.</p>
 </section>
 <section id="choice-a-naive-model-2" class="slide level2">
 <h2>Choice: A Naive Model</h2>
@@ -549,8 +600,7 @@ er_{ic} &amp; er_{oc}  \\
 </section>
 <section id="the-naive-model-in-code" class="slide level2">
 <h2>The Naive Model in Code</h2>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_1:</span>
+<div class="sourceCode" id="cb1" data-code-line-numbers="|2-4|6-13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_1:</span>
 <span id="cb1-2"><a href="#cb1-2"></a>    <span class="co">## Priors for the Beta Coefficients</span></span>
 <span id="cb1-3"><a href="#cb1-3"></a>    beta_ic <span class="op">=</span> pm.Normal(<span class="st">"beta_ic"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb1-4"><a href="#cb1-4"></a>    beta_oc <span class="op">=</span> pm.Normal(<span class="st">"beta_oc"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
@@ -568,12 +618,12 @@ er_{ic} &amp; er_{oc}  \\
 <span id="cb1-16"><a href="#cb1-16"></a></span>
 <span id="cb1-17"><a href="#cb1-17"></a>    <span class="co">## Likelihood</span></span>
 <span id="cb1-18"><a href="#cb1-18"></a>    choice_obs <span class="op">=</span> pm.Categorical(<span class="st">"y_cat"</span>, p<span class="op">=</span>p_, observed<span class="op">=</span>observed, dims<span class="op">=</span><span class="st">"obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 </section>
 <section id="interpreting-the-model-coefficients" class="slide level2">
 <h2>Interpreting the Model Coefficients</h2>
+<h3 id="rate-of-substitution">Rate of Substitution</h3>
 <p>The beta coefficients in the mode are interpreted as drivers of utility. However, the precision in these latent terms is relative to the variance of <strong>unobserved</strong> factors.</p>
-<p>The scale is not fixed, but the ratio <span class="math inline">\(\frac{\beta_{ic}}{\beta_{oc}}\)</span> is invariant.</p>
+<p>The utility scale is not fixed, but the ratio <span class="math inline">\(\frac{\beta_{ic}}{\beta_{oc}}\)</span> is invariant.</p>
 
 <img data-src="images/rate_of_substitution.png" class="r-stretch quarto-figure-center"><p class="caption">Rate of Substitution</p></section>
 <section id="model-posterior-predictive-fits" class="slide level2">
@@ -581,8 +631,9 @@ er_{ic} &amp; er_{oc}  \\
 <p>The model fit fails to recapture the observed data points</p>
 
 <img data-src="images/naive_model_fit.png" class="r-stretch quarto-figure-center"><p class="caption">Model Fit</p></section>
-<section id="augmenting-the-model-product-specific-intercepts" class="slide level2">
-<h2>Augmenting the Model: Product Specific Intercepts</h2>
+<section id="augmenting-the-model" class="slide level2">
+<h2>Augmenting the Model:</h2>
+<h3 id="product-specific-intercepts">Product Specific Intercepts</h3>
 <p><span class="math display">\[
 \begin{split}
 \begin{pmatrix}
@@ -603,10 +654,9 @@ er_{ic} &amp; er_{oc}  \\
 \end{split}
 \]</span></p>
 </section>
-<section id="augmenting-the-model" class="slide level2">
+<section id="augmenting-the-model-1" class="slide level2">
 <h2>Augmenting the Model:</h2>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_2:</span>
+<div class="sourceCode" id="cb2" data-code-line-numbers="|5-5|6-13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_2:</span>
 <span id="cb2-2"><a href="#cb2-2"></a>    <span class="co">## Priors for the Beta Coefficients</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>    beta_ic <span class="op">=</span> pm.Normal(<span class="st">"beta_ic"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb2-4"><a href="#cb2-4"></a>    beta_oc <span class="op">=</span> pm.Normal(<span class="st">"beta_oc"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
@@ -625,18 +675,19 @@ er_{ic} &amp; er_{oc}  \\
 <span id="cb2-17"><a href="#cb2-17"></a></span>
 <span id="cb2-18"><a href="#cb2-18"></a>    <span class="co">## Likelihood</span></span>
 <span id="cb2-19"><a href="#cb2-19"></a>    choice_obs <span class="op">=</span> pm.Categorical(<span class="st">"y_cat"</span>, p<span class="op">=</span>p_, observed<span class="op">=</span>observed, dims<span class="op">=</span><span class="st">"obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 </section>
-<section id="augmenting-the-model-1" class="slide level2">
+<section id="augmenting-the-model-2" class="slide level2">
 <h2>Augmenting the Model:</h2>
 
 <img data-src="images/augmented_model_graph.svg" class="r-stretch quarto-figure-center"><p class="caption">Model Structure</p></section>
-<section id="augmenting-the-model-posterior-predictions" class="slide level2">
-<h2>Augmenting the Model: Posterior Predictions</h2>
+<section id="augmenting-the-model-3" class="slide level2">
+<h2>Augmenting the Model</h2>
+<h3 id="posterior-predictions">Posterior Predictions</h3>
 
 <img data-src="images/augmented_fit.png" class="r-stretch quarto-figure-center"><p class="caption">Model Fit</p></section>
 <section id="adding-correlation-structure" class="slide level2">
 <h2>Adding Correlation Structure</h2>
+<h3 id="dependence-in-market-share">Dependence in Market Share</h3>
 <p><span class="math display">\[ \alpha_{i} \sim Normal(\mathbf{0}, \Sigma) \]</span></p>
 <p><span class="math display">\[
 \begin{split}
@@ -660,8 +711,7 @@ er_{ic} &amp; er_{oc}  \\
 </section>
 <section id="adding-correlation-structure-1" class="slide level2">
 <h2>Adding Correlation Structure</h2>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_3:</span>
+<div class="sourceCode" id="cb3" data-code-line-numbers="|6-12|13-18|"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_3:</span>
 <span id="cb3-2"><a href="#cb3-2"></a>    beta_ic <span class="op">=</span> pm.Normal(<span class="st">"beta_ic"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb3-3"><a href="#cb3-3"></a>    beta_oc <span class="op">=</span> pm.Normal(<span class="st">"beta_oc"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb3-4"><a href="#cb3-4"></a></span>
@@ -702,7 +752,6 @@ er_{ic} &amp; er_{oc}  \\
 <span id="cb3-39"><a href="#cb3-39"></a></span>
 <span id="cb3-40"><a href="#cb3-40"></a>    p_ <span class="op">=</span> pm.Deterministic(<span class="st">"p"</span>, pm.math.softmax(s, axis<span class="op">=</span><span class="dv">1</span>), dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"alts_probs"</span>))</span>
 <span id="cb3-41"><a href="#cb3-41"></a>    choice_obs <span class="op">=</span> pm.Categorical(<span class="st">"y_cat"</span>, p<span class="op">=</span>p_, observed<span class="op">=</span>observed, dims<span class="op">=</span><span class="st">"obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 </section>
 <section id="adding-correlation-structure-2" class="slide level2">
 <h2>Adding Correlation Structure</h2>
@@ -710,8 +759,18 @@ er_{ic} &amp; er_{oc}  \\
 <img data-src="images/correlation_structure.svg" class="r-stretch quarto-figure-center"><p class="caption">Correlation Structure</p></section>
 <section id="counterfactual-reasoning" class="slide level2">
 <h2>Counterfactual Reasoning</h2>
+<h3 id="from-probability-to-causation">From Probability to Causation</h3>
+<blockquote>
+<p>“[C]ontrary to the views of a number of pessimistic statisticians and philosophers you can get from probabilities to causes after all. Not always, not even ussually - but in just the right circumstances and with just the right kind of starting information, it is in principle possible.” - Nancy Cartwright in <em>Nature’s Capacities and their Measurement</em></p>
+</blockquote>
+</section>
+<section id="counterfactual-reasoning-1" class="slide level2">
+<h2>Counterfactual Reasoning</h2>
 <p>With a fitted PyMC model we can reset the values for the input data and regenerate the posterior predictive distribution.</p>
-<div class="cell" data-execution_count="4">
+<ul>
+<li>What would the market share be like if prices for electrical systems increased 20%?</li>
+</ul>
+<div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="cf">with</span> model_3:</span>
 <span id="cb4-2"><a href="#cb4-2"></a>    <span class="co"># update values of predictors with new 20% price increase in operating costs for electrical options</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a>    pm.set_data({<span class="st">"oc_ec"</span>: wide_heating_df[<span class="st">"oc.ec"</span>] <span class="op">*</span> <span class="fl">1.2</span>, <span class="st">"oc_er"</span>: wide_heating_df[<span class="st">"oc.er"</span>] <span class="op">*</span> <span class="fl">1.2</span>})</span>
@@ -728,11 +787,15 @@ er_{ic} &amp; er_{oc}  \\
 <span id="cb4-14"><a href="#cb4-14"></a>idata_new_policy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="counterfactual-reasoning-1" class="slide level2">
+<section id="counterfactual-reasoning-2" class="slide level2">
 <h2>Counterfactual Reasoning</h2>
 
+<img data-src="images/counterfactual_shares.png" class="r-stretch quarto-figure-center"><p class="caption">Counterfactual Shares</p></section>
+<section id="individual-heterogenous-utility" class="slide level2">
+<h2>Individual Heterogenous Utility</h2>
+<h3 id="hierarchical-structure">Hierarchical Structure</h3>
 
-<img data-src="images/counterfactual_shares.png" class="r-stretch quarto-figure-center"><p class="caption">Counterfactual Shares</p><div class="footer footer-default">
+<div class="footer footer-default">
 
 </div>
 </section>
