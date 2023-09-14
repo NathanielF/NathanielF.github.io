@@ -402,7 +402,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">9/13/23</p>
+  <p class="date">9/14/23</p>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
@@ -446,6 +446,9 @@ Nathaniel Forde
 <img data-src="images/bart.jpg" class="r-stretch quarto-figure-center"><p class="caption">Bay Area Rapid Transit</p></section>
 <section id="revealed-preference-and-predicting-demand" class="slide level2">
 <h2>Revealed Preference and Predicting Demand</h2>
+<h3 id="self-centred-utility-maximisers">Self Centred Utility Maximisers</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
 <div class="fragment fade-in">
 <ul>
 <li>The assumption of <em>revealed preference</em> theory is that if a person chooses A over B then their subjective utility for A is greater than for B.</li>
@@ -461,17 +464,21 @@ Nathaniel Forde
 <li>He was right.</li>
 </ul>
 </div>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/copernicus-drawing.png" width="300" height="300"></p>
 <div class="fragment fade-in">
 <ul>
-<li><strong>Copernican Shift</strong>: He estimated utility to predict choice.</li>
+<li><strong>Copernican Shift</strong>: He estimated utility to predict choice, rather than infer utility from choice.</li>
 </ul>
+</div>
+</div>
 </div>
 </section>
 <section id="general-applicability-of-choice-problems" class="slide level2">
 <h2>General Applicability of Choice Problems</h2>
 <div class="fragment fade-in">
 <ul>
-<li>These models offer the possibility of predicting choice in diverse domains: policy, consumer brand, school, car and partners.</li>
+<li>These models offer the possibility of predicting choice in diverse domains: <span class="alert">policy</span>, <span class="blueviolet">brand</span>, <span class="green">school</span>, <span class="blue">car</span> and <span class="magenta">partners</span>.</li>
 </ul>
 </div>
 <div class="fragment fade-in">
@@ -600,7 +607,7 @@ er_{ic} &amp; er_{oc}  \\
 </section>
 <section id="the-naive-model-in-code" class="slide level2">
 <h2>The Naive Model in Code</h2>
-<div class="sourceCode" id="cb1" data-code-line-numbers="|2-4|6-13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_1:</span>
+<div class="sourceCode" id="cb1" data-code-line-numbers="|2-4|6-13|17-20|"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_1:</span>
 <span id="cb1-2"><a href="#cb1-2"></a>    <span class="co">## Priors for the Beta Coefficients</span></span>
 <span id="cb1-3"><a href="#cb1-3"></a>    beta_ic <span class="op">=</span> pm.Normal(<span class="st">"beta_ic"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb1-4"><a href="#cb1-4"></a>    beta_oc <span class="op">=</span> pm.Normal(<span class="st">"beta_oc"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
@@ -622,10 +629,20 @@ er_{ic} &amp; er_{oc}  \\
 <section id="interpreting-the-model-coefficients" class="slide level2">
 <h2>Interpreting the Model Coefficients</h2>
 <h3 id="rate-of-substitution">Rate of Substitution</h3>
+<div class="columns">
+<div class="column" style="width:40%;">
 <p>The beta coefficients in the mode are interpreted as drivers of utility. However, the precision in these latent terms is relative to the variance of <strong>unobserved</strong> factors.</p>
 <p>The utility scale is not fixed, but the ratio <span class="math inline">\(\frac{\beta_{ic}}{\beta_{oc}}\)</span> is invariant.</p>
-
-<img data-src="images/rate_of_substitution.png" class="r-stretch quarto-figure-center"><p class="caption">Rate of Substitution</p></section>
+</div><div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/rate_of_substitution.png"></p>
+<p></p><figcaption>Rate of Substitution</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 <section id="model-posterior-predictive-fits" class="slide level2">
 <h2>Model Posterior Predictive Fits</h2>
 <p>The model fit fails to recapture the observed data points</p>
@@ -757,45 +774,185 @@ er_{ic} &amp; er_{oc}  \\
 <h2>Adding Correlation Structure</h2>
 
 <img data-src="images/correlation_structure.svg" class="r-stretch quarto-figure-center"><p class="caption">Correlation Structure</p></section>
-<section id="counterfactual-reasoning" class="slide level2">
+<section id="counterfactual-reasoning" class="slide level2 smaller">
 <h2>Counterfactual Reasoning</h2>
 <h3 id="from-probability-to-causation">From Probability to Causation</h3>
 <blockquote>
 <p>“[C]ontrary to the views of a number of pessimistic statisticians and philosophers you can get from probabilities to causes after all. Not always, not even ussually - but in just the right circumstances and with just the right kind of starting information, it is in principle possible.” - Nancy Cartwright in <em>Nature’s Capacities and their Measurement</em></p>
 </blockquote>
+<blockquote>
+<p>“One of the functions of theoretical economics is to provide fully articulated artificial economic systems that can serve as laboratories in which policies that would be prohibitively expensive to experiment with in actual economies can be tested out at a much lower cost” - Mary Morgan quoted in <em>Hunting Causes and Using Them</em></p>
+</blockquote>
 </section>
-<section id="counterfactual-reasoning-1" class="slide level2">
+<section id="counterfactual-reasoning-1" class="slide level2 smaller">
 <h2>Counterfactual Reasoning</h2>
-<p>With a fitted PyMC model we can reset the values for the input data and regenerate the posterior predictive distribution.</p>
+<h3 id="ceteris-paribus-laws">Ceteris Paribus Laws</h3>
+<p>With a fitted PyMC model we can <strong>counterfactually</strong> reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.</p>
 <ul>
 <li>What would the market share be like if prices for electrical systems increased 20%?</li>
 </ul>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="cf">with</span> model_3:</span>
-<span id="cb4-2"><a href="#cb4-2"></a>    <span class="co"># update values of predictors with new 20% price increase in operating costs for electrical options</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>    pm.set_data({<span class="st">"oc_ec"</span>: wide_heating_df[<span class="st">"oc.ec"</span>] <span class="op">*</span> <span class="fl">1.2</span>, <span class="st">"oc_er"</span>: wide_heating_df[<span class="st">"oc.er"</span>] <span class="op">*</span> <span class="fl">1.2</span>})</span>
-<span id="cb4-4"><a href="#cb4-4"></a>    <span class="co"># use the updated values and predict outcomes and probabilities:</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>    idata_new_policy <span class="op">=</span> pm.sample_posterior_predictive(</span>
-<span id="cb4-6"><a href="#cb4-6"></a>        idata_m3,</span>
-<span id="cb4-7"><a href="#cb4-7"></a>        var_names<span class="op">=</span>[<span class="st">"p"</span>, <span class="st">"y_cat"</span>],</span>
-<span id="cb4-8"><a href="#cb4-8"></a>        return_inferencedata<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-9"><a href="#cb4-9"></a>        predictions<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-10"><a href="#cb4-10"></a>        extend_inferencedata<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb4-11"><a href="#cb4-11"></a>        random_seed<span class="op">=</span><span class="dv">100</span>,</span>
-<span id="cb4-12"><a href="#cb4-12"></a>    )</span>
-<span id="cb4-13"><a href="#cb4-13"></a></span>
-<span id="cb4-14"><a href="#cb4-14"></a>idata_new_policy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb4" data-code-line-numbers="|3-5|"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a> <span class="co"># update values of predictors with new 20% </span></span>
+<span id="cb4-2"><a href="#cb4-2"></a> <span class="co"># price increase in operating costs for electrical options</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="cf">with</span> model_3:</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    pm.set_data({<span class="st">"oc_ec"</span>: wide_heating_df[<span class="st">"oc.ec"</span>] <span class="op">*</span> <span class="fl">1.2</span>, </span>
+<span id="cb4-5"><a href="#cb4-5"></a>                 <span class="st">"oc_er"</span>: wide_heating_df[<span class="st">"oc.er"</span>] <span class="op">*</span> <span class="fl">1.2</span>})</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="co"># use the updated values and predict outcomes and probabilities:</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>    idata_new_policy <span class="op">=</span> pm.sample_posterior_predictive(</span>
+<span id="cb4-8"><a href="#cb4-8"></a>        idata_m3,</span>
+<span id="cb4-9"><a href="#cb4-9"></a>        var_names<span class="op">=</span>[<span class="st">"p"</span>, <span class="st">"y_cat"</span>],</span>
+<span id="cb4-10"><a href="#cb4-10"></a>        return_inferencedata<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-11"><a href="#cb4-11"></a>        predictions<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-12"><a href="#cb4-12"></a>        extend_inferencedata<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb4-13"><a href="#cb4-13"></a>        random_seed<span class="op">=</span><span class="dv">100</span>,</span>
+<span id="cb4-14"><a href="#cb4-14"></a>    )</span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a>idata_new_policy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="counterfactual-reasoning-2" class="slide level2">
 <h2>Counterfactual Reasoning</h2>
 
 <img data-src="images/counterfactual_shares.png" class="r-stretch quarto-figure-center"><p class="caption">Counterfactual Shares</p></section>
+<section id="counterfactual-reasoning-3" class="slide level2">
+<h2>Counterfactual Reasoning</h2>
+<h3 id="interventions-and-conditionalisation">Interventions and Conditionalisation</h3>
+<div class="columns">
+<div class="column" style="width:40%;">
+<ul>
+<li>There is a sharp distinction between conditional probability distributions and probability under intervention</li>
+<li>In <a href="https://www.pymc.io/projects/examples/en/latest/causal_inference/interventional_distribution.html#interventions-and-the-operatorname-do-operator">PyMC</a> you can implement the <strong>do-operator</strong> to intervene on the graph that represents your data generating process.</li>
+</ul>
+</div><div class="column" style="width:60%;">
+<p><img data-src="images/sprinkler.png"></p>
+</div>
+</div>
+</section>
 <section id="individual-heterogenous-utility" class="slide level2">
 <h2>Individual Heterogenous Utility</h2>
-<h3 id="hierarchical-structure">Hierarchical Structure</h3>
+<h3 id="repeated-choice-and-hierarchical-structure">Repeated Choice and Hierarchical Structure</h3>
+<table>
+<thead>
+<tr class="header">
+<th>person_id</th>
+<th>choice_id</th>
+<th>chosen</th>
+<th>nabisco_price</th>
+<th>keebler_price</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>nabisco</td>
+<td>3.40</td>
+<td>2.00</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>2</td>
+<td>nabisco</td>
+<td>3.45</td>
+<td>2.50</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>3</td>
+<td>keebler</td>
+<td>3.60</td>
+<td>2.70</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1</td>
+<td>keebler</td>
+<td>3.48</td>
+<td>2.20</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2</td>
+<td>keebler</td>
+<td>3.30</td>
+<td>2.25</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="individual-heterogenous-utility-1" class="slide level2">
+<h2>Individual Heterogenous Utility</h2>
+<p><span class="math display">\[
+\begin{split}
+\begin{pmatrix}
+\color{red}{u_{i, nb}} \\
+\color{purple}{u_{i, kb}} \\
+\color{orange}{u_{i, sun}} \\
+0
+\end{pmatrix}
+=
+\begin{pmatrix}
+  (\color{red}{\alpha_{nb}} + \sum_{i}^{K}\beta_{i}) + \color{blue}{\beta_{p}}p_{nb} + \color{green}{\beta_{disp}}d_{nb} \\
+  (\color{purple}{\alpha_{kb}} + \sum_{i}^{K}\beta_{i}) +  \color{blue}{\beta_{p}}p_{kb} + \color{green}{\beta_{disp}}d_{kb}  \\
+  (\color{orange}{\alpha_{sun}}  + \sum_{i}^{K}\beta_{i})  + \color{blue}{\beta_{p}}p_{sun} + \color{green}{\beta_{disp}}d_{sun}  \\
+   0 + 0 + 0
+\end{pmatrix}
+\end{split}
+\]</span></p>
+</section>
+<section id="individual-heterogenous-utility-2" class="slide level2">
+<h2>Individual Heterogenous Utility</h2>
+<h3 id="in-code">In Code</h3>
+<div class="sourceCode" id="cb5" data-code-line-numbers="|9-11|13-17|"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_4:</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    beta_feat <span class="op">=</span> pm.TruncatedNormal(<span class="st">"beta_feat"</span>, <span class="dv">0</span>, <span class="dv">1</span>, upper<span class="op">=</span><span class="dv">10</span>, lower<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    beta_disp <span class="op">=</span> pm.TruncatedNormal(<span class="st">"beta_disp"</span>, <span class="dv">0</span>, <span class="dv">1</span>, upper<span class="op">=</span><span class="dv">10</span>, lower<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a>    <span class="co">## Stronger Prior on Price to ensure </span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>    <span class="co">## an increase in price negatively impacts utility</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>    beta_price <span class="op">=</span> pm.TruncatedNormal(<span class="st">"beta_price"</span>, <span class="dv">0</span>, <span class="dv">1</span>, upper<span class="op">=</span><span class="dv">0</span>, lower<span class="op">=-</span><span class="dv">10</span>)</span>
+<span id="cb5-8"><a href="#cb5-8"></a>    alphas <span class="op">=</span> pm.Normal(<span class="st">"alpha"</span>, <span class="dv">0</span>, <span class="dv">1</span>, dims<span class="op">=</span><span class="st">"alts_intercepts"</span>)</span>
+<span id="cb5-9"><a href="#cb5-9"></a>    beta_individual <span class="op">=</span> pm.Normal(<span class="st">"beta_individual"</span>, <span class="dv">0</span>, <span class="fl">0.05</span>,</span>
+<span id="cb5-10"><a href="#cb5-10"></a>     dims<span class="op">=</span>(<span class="st">"individuals"</span>, <span class="st">"alts_intercepts"</span>))</span>
+<span id="cb5-11"><a href="#cb5-11"></a></span>
+<span id="cb5-12"><a href="#cb5-12"></a>    u0 <span class="op">=</span> (</span>
+<span id="cb5-13"><a href="#cb5-13"></a>        (alphas[<span class="dv">0</span>] <span class="op">+</span> beta_individual[person_indx, <span class="dv">0</span>])</span>
+<span id="cb5-14"><a href="#cb5-14"></a>        <span class="op">+</span> beta_disp <span class="op">*</span> c_df[<span class="st">"disp.sunshine"</span>]</span>
+<span id="cb5-15"><a href="#cb5-15"></a>        <span class="op">+</span> beta_feat <span class="op">*</span> c_df[<span class="st">"feat.sunshine"</span>]</span>
+<span id="cb5-16"><a href="#cb5-16"></a>        <span class="op">+</span> beta_price <span class="op">*</span> c_df[<span class="st">"price.sunshine"</span>]</span>
+<span id="cb5-17"><a href="#cb5-17"></a>    )</span>
+<span id="cb5-18"><a href="#cb5-18"></a>    u1 <span class="op">=</span> (</span>
+<span id="cb5-19"><a href="#cb5-19"></a>        (alphas[<span class="dv">1</span>] <span class="op">+</span> beta_individual[person_indx, <span class="dv">1</span>])</span>
+<span id="cb5-20"><a href="#cb5-20"></a>        <span class="op">+</span> beta_disp <span class="op">*</span> c_df[<span class="st">"disp.keebler"</span>]</span>
+<span id="cb5-21"><a href="#cb5-21"></a>        <span class="op">+</span> beta_feat <span class="op">*</span> c_df[<span class="st">"feat.keebler"</span>]</span>
+<span id="cb5-22"><a href="#cb5-22"></a>        <span class="op">+</span> beta_price <span class="op">*</span> c_df[<span class="st">"price.keebler"</span>]</span>
+<span id="cb5-23"><a href="#cb5-23"></a>    )</span>
+<span id="cb5-24"><a href="#cb5-24"></a>    u2 <span class="op">=</span> (</span>
+<span id="cb5-25"><a href="#cb5-25"></a>        (alphas[<span class="dv">2</span>] <span class="op">+</span> beta_individual[person_indx, <span class="dv">2</span>])</span>
+<span id="cb5-26"><a href="#cb5-26"></a>        <span class="op">+</span> beta_disp <span class="op">*</span> c_df[<span class="st">"disp.nabisco"</span>]</span>
+<span id="cb5-27"><a href="#cb5-27"></a>        <span class="op">+</span> beta_feat <span class="op">*</span> c_df[<span class="st">"feat.nabisco"</span>]</span>
+<span id="cb5-28"><a href="#cb5-28"></a>        <span class="op">+</span> beta_price <span class="op">*</span> c_df[<span class="st">"price.nabisco"</span>]</span>
+<span id="cb5-29"><a href="#cb5-29"></a>    )</span>
+<span id="cb5-30"><a href="#cb5-30"></a>    u3 <span class="op">=</span> np.zeros(N)  <span class="co"># Outside Good</span></span>
+<span id="cb5-31"><a href="#cb5-31"></a>    s <span class="op">=</span> pm.math.stack([u0, u1, u2, u3]).T</span>
+<span id="cb5-32"><a href="#cb5-32"></a>    <span class="co"># Reconstruct the total data</span></span>
+<span id="cb5-33"><a href="#cb5-33"></a></span>
+<span id="cb5-34"><a href="#cb5-34"></a>    <span class="co">## Apply Softmax Transform</span></span>
+<span id="cb5-35"><a href="#cb5-35"></a>    p_ <span class="op">=</span> pm.Deterministic(<span class="st">"p"</span>, pm.math.softmax(s, axis<span class="op">=</span><span class="dv">1</span>), dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"alts_probs"</span>))</span>
+<span id="cb5-36"><a href="#cb5-36"></a></span>
+<span id="cb5-37"><a href="#cb5-37"></a>    <span class="co">## Likelihood</span></span>
+<span id="cb5-38"><a href="#cb5-38"></a>    choice_obs <span class="op">=</span> pm.Categorical(<span class="st">"y_cat"</span>, p<span class="op">=</span>p_, observed<span class="op">=</span>observed, dims<span class="op">=</span><span class="st">"obs"</span>)</span>
+<span id="cb5-39"><a href="#cb5-39"></a></span>
+<span id="cb5-40"><a href="#cb5-40"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="individual-heterogenous-utility-3" class="slide level2">
+<h2>Individual Heterogenous Utility</h2>
+<h3 id="recovered-posterior-predictive-distribution">Recovered Posterior Predictive Distribution</h3>
 
-<div class="footer footer-default">
+<img data-src="images/nabisco_fit.png" class="r-stretch"></section>
+<section id="individual-heterogenous-utility-4" class="slide level2">
+<h2>Individual Heterogenous Utility</h2>
+<h3 id="individual-preference">Individual Preference</h3>
+
+
+<img data-src="images/heterogenous_preference.webp" class="r-stretch"><div class="footer footer-default">
 
 </div>
 </section>

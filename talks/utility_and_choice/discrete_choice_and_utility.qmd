@@ -49,22 +49,35 @@ whole."
 ![Bay Area Rapid Transit](images/bart.jpg)
 
 ## Revealed Preference and Predicting Demand
+### Self Centred Utility Maximisers 
+
+:::: {.columns}
+::: {.column width="50%"}
 ::: {.fragment .fade-in}
 - The assumption of *revealed preference* theory is that if a person chooses A over B then their subjective utility for A is greater than for B. 
 :::
+
 ::: {.fragment .fade-in}
 - Survey data estimated about 15% of users would adopt the newly introduced BART system. McFadden's random utility model estimated 6%. 
 :::
 ::: {.fragment .fade-in}
 - He was right. 
 :::
+:::
+
+::: {.column width="50%"}
+![](images/copernicus-drawing.png){width="300" height="300"} 
+
 ::: {.fragment .fade-in}
-- __Copernican Shift__: He estimated utility to predict choice. 
-::: 
+- __Copernican Shift__: He estimated utility to predict choice, rather than infer utility from choice. 
+:::  
+:::
+
+:::
 
 ## General Applicability of Choice Problems
 ::: {.fragment .fade-in}
- - These models offer the possibility of predicting choice in diverse domains: policy, consumer brand, school, car and partners. 
+ - These models offer the possibility of predicting choice in diverse domains: [policy]{.alert}, [brand]{.blueviolet}, [school]{.green}, [car]{.blue} and [partners]{.magenta}. 
 :::
 ::: {.fragment .fade-in}
  - __Question__: What are the attributes that drive these choices? How well are they measurable?
@@ -168,7 +181,7 @@ $$ \underbrace{p(\color{blue}{\beta} | D)}_{\text{posterior draws}} = \frac{p(\m
 
 ## The Naive Model in Code
 
-```{.python code-line-numbers="|2-4|6-13"}
+```{.python code-line-numbers="|2-4|6-13|17-20|"}
 with pm.Model(coords=coords) as model_1:
     ## Priors for the Beta Coefficients
     beta_ic = pm.Normal("beta_ic", 0, 1)
@@ -192,12 +205,20 @@ with pm.Model(coords=coords) as model_1:
 
 ## Interpreting the Model Coefficients
 ### Rate of Substitution
+:::: {.columns}
+::: {.column width="40%"}
 The beta coefficients in the mode are interpreted as drivers of utility. However, the precision in these latent terms is relative to the variance of **unobserved** factors.
 
 The utility scale is not fixed, but the ratio $\frac{\beta_{ic}}{\beta_{oc}}$ is invariant.
 
-![Rate of Substitution](images/rate_of_substitution.png)
+:::
 
+::: {.column width="60%"}
+
+![Rate of Substitution](images/rate_of_substitution.png)
+:::
+
+:::
 
 ## Model Posterior Predictive Fits
 The model fit fails to recapture the observed data points
@@ -339,26 +360,27 @@ with pm.Model(coords=coords) as model_3:
 
 ![Correlation Structure](images/correlation_structure.svg)
 
-## Counterfactual Reasoning
+## Counterfactual Reasoning  {.smaller}
 ### From Probability to Causation
 
 > "[C]ontrary to the views of a number of pessimistic statisticians and philosophers you can get from probabilities to causes after all.  Not always, not even ussually - but in just the right circumstances and with just the right kind of starting information, it is in principle possible."  - Nancy Cartwright in _Nature's Capacities and their Measurement_ 
 
+> "One of the functions of theoretical economics is to provide fully articulated artificial economic systems that can serve as laboratories in which policies that would be prohibitively expensive to experiment with in actual economies can be tested out at a much lower cost" - Mary Morgan quoted in _Hunting Causes and Using Them_
 
-## Counterfactual Reasoning
 
-With a fitted PyMC model we can reset the values for the input data and regenerate the posterior predictive distribution. 
+## Counterfactual Reasoning  {.smaller}
+### Ceteris Paribus Laws
+
+With a fitted PyMC model we can __counterfactually__ reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.
 
 - What would the market share be like if prices for electrical systems increased 20%?
 
-```{python}
-#| eval: false
-#| echo: true
-
-
+```{.python code-line-numbers="|3-5|"}
+ # update values of predictors with new 20% 
+ # price increase in operating costs for electrical options
 with model_3:
-    # update values of predictors with new 20% price increase in operating costs for electrical options
-    pm.set_data({"oc_ec": wide_heating_df["oc.ec"] * 1.2, "oc_er": wide_heating_df["oc.er"] * 1.2})
+    pm.set_data({"oc_ec": wide_heating_df["oc.ec"] * 1.2, 
+                 "oc_er": wide_heating_df["oc.er"] * 1.2})
     # use the updated values and predict outcomes and probabilities:
     idata_new_policy = pm.sample_posterior_predictive(
         idata_m3,
@@ -370,10 +392,6 @@ with model_3:
     )
 
 idata_new_policy
-
-
-
-
 ```
 
 
@@ -381,6 +399,114 @@ idata_new_policy
 
 ![Counterfactual Shares](images/counterfactual_shares.png)
 
+## Counterfactual Reasoning
+### Interventions and Conditionalisation
+
+:::: {.columns}
+::: {.column width="40%"}
+- There is a sharp distinction between conditional probability distributions and probability under intervention
+- In [PyMC](https://www.pymc.io/projects/examples/en/latest/causal_inference/interventional_distribution.html#interventions-and-the-operatorname-do-operator) you can implement the __do-operator__ to intervene on the graph that represents your data generating process.
+:::
+
+::: {.column width="60%"}
+![](images/sprinkler.png)
+
+:::
+
+
+:::
+
 
 ## Individual Heterogenous Utility
-### Hierarchical Structure 
+### Repeated Choice and Hierarchical Structure 
+
+| person_id | choice_id | chosen  | nabisco_price | keebler_price |
+|-----------|-----------|---------|---------------|---------------|
+| 1         | 1         | nabisco | 3.40          | 2.00          |
+| 1         | 2         | nabisco | 3.45          | 2.50          |
+| 1         | 3         | keebler | 3.60          | 2.70          |
+| 2         | 1         | keebler | 3.48          | 2.20          |
+| 2         | 2         | keebler | 3.30          | 2.25          |
+
+
+## Individual Heterogenous Utility
+
+$$
+\begin{split}
+\begin{pmatrix}
+\color{red}{u_{i, nb}} \\ 
+\color{purple}{u_{i, kb}} \\
+\color{orange}{u_{i, sun}} \\
+0
+\end{pmatrix}
+= 
+\begin{pmatrix}
+  (\color{red}{\alpha_{nb}} + \sum_{i}^{K}\beta_{i}) + \color{blue}{\beta_{p}}p_{nb} + \color{green}{\beta_{disp}}d_{nb} \\
+  (\color{purple}{\alpha_{kb}} + \sum_{i}^{K}\beta_{i}) +  \color{blue}{\beta_{p}}p_{kb} + \color{green}{\beta_{disp}}d_{kb}  \\
+  (\color{orange}{\alpha_{sun}}  + \sum_{i}^{K}\beta_{i})  + \color{blue}{\beta_{p}}p_{sun} + \color{green}{\beta_{disp}}d_{sun}  \\
+   0 + 0 + 0
+\end{pmatrix}
+\end{split}
+$$
+
+
+## Individual Heterogenous Utility
+### In Code 
+```{.python code-line-numbers="|9-11|13-17|"}
+
+with pm.Model(coords=coords) as model_4:
+    beta_feat = pm.TruncatedNormal("beta_feat", 0, 1, upper=10, lower=0)
+    beta_disp = pm.TruncatedNormal("beta_disp", 0, 1, upper=10, lower=0)
+    ## Stronger Prior on Price to ensure 
+    ## an increase in price negatively impacts utility
+    beta_price = pm.TruncatedNormal("beta_price", 0, 1, upper=0, lower=-10)
+    alphas = pm.Normal("alpha", 0, 1, dims="alts_intercepts")
+    beta_individual = pm.Normal("beta_individual", 0, 0.05,
+     dims=("individuals", "alts_intercepts"))
+
+    u0 = (
+        (alphas[0] + beta_individual[person_indx, 0])
+        + beta_disp * c_df["disp.sunshine"]
+        + beta_feat * c_df["feat.sunshine"]
+        + beta_price * c_df["price.sunshine"]
+    )
+    u1 = (
+        (alphas[1] + beta_individual[person_indx, 1])
+        + beta_disp * c_df["disp.keebler"]
+        + beta_feat * c_df["feat.keebler"]
+        + beta_price * c_df["price.keebler"]
+    )
+    u2 = (
+        (alphas[2] + beta_individual[person_indx, 2])
+        + beta_disp * c_df["disp.nabisco"]
+        + beta_feat * c_df["feat.nabisco"]
+        + beta_price * c_df["price.nabisco"]
+    )
+    u3 = np.zeros(N)  # Outside Good
+    s = pm.math.stack([u0, u1, u2, u3]).T
+    # Reconstruct the total data
+
+    ## Apply Softmax Transform
+    p_ = pm.Deterministic("p", pm.math.softmax(s, axis=1), dims=("obs", "alts_probs"))
+
+    ## Likelihood
+    choice_obs = pm.Categorical("y_cat", p=p_, observed=observed, dims="obs")
+
+
+
+```
+
+
+## Individual Heterogenous Utility
+### Recovered Posterior Predictive Distribution
+
+![](images/nabisco_fit.png)
+
+
+## Individual Heterogenous Utility
+### Individual Preference
+
+![](images/heterogenous_preference.webp)
+
+
+## Conclusion

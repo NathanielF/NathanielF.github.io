@@ -103,6 +103,22 @@ $selection-bg: #26351c !default;
   color: $accent2;
 }
 
+.blueviolet {
+  color: blueviolet
+}
+
+.green {
+  color: darkgreen
+}
+
+.blue {
+  color: blue
+}
+
+.magenta {
+  color: magenta
+}
+
 .fg {
   color: var(--col, $jet);
 }
