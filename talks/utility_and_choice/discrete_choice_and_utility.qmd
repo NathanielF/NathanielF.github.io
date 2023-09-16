@@ -87,6 +87,46 @@ whole."
  - __Question__: How do changes in these attributes influence the predicted market demand for these choices?
 :::
 
+## Note on Model Evaluation
+
+:::: {.columns}
+::: {.column width="40%"}
+::: {.fragment .fade-in}
+![](images/dgp.png)
+:::
+
+:::
+
+::: {.column width="60%"}
+
+::: {.fragment .fade-in}
+![](images//ml_models.png)
+:::
+
+:::
+:::
+
+## Note on Model Evaluation
+
+:::: {.columns}
+::: {.column width="60%"}
+::: {.fragment .fade-in}
+![](images/one_dim.png)
+:::
+
+:::
+
+::: {.column width="40%"}
+
+::: {.fragment .fade-in}
+![Bayesian Models aim to replicate the DGP holistically](images/vitruvian.png)
+:::
+
+:::
+:::
+
+
+
 ## Choice: The Data
 
 Gas Central Heating and Electrical Central Heating

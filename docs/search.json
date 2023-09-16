@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 14, 2023\n\n\n11 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 16, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -887,5 +887,47 @@
     "title": "Choice Models and Subjective Utility",
     "section": "Individual Heterogenous Utility",
     "text": "Individual Heterogenous Utility\nIndividual Preference"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-bayesian-models",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-bayesian-models",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Note on Evaluating Bayesian Models",
+    "text": "Note on Evaluating Bayesian Models"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#conclusion",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#conclusion",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Conclusion",
+    "text": "Conclusion"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Note on Evaluating Models",
+    "text": "Note on Evaluating Models"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models-1",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models-1",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Note on Evaluating Models",
+    "text": "Note on Evaluating Models\n\n\n\n\n\n\n\n\n\n\nBayesian Models aim to replicate the DGP holistically"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-model-evaluation",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-model-evaluation",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Note on Model Evaluation",
+    "text": "Note on Model Evaluation"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-model-evaluation-1",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-model-evaluation-1",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Note on Model Evaluation",
+    "text": "Note on Model Evaluation\n\n\n\n\n\n\n\n\n\n\nBayesian Models aim to replicate the DGP holistically"
   }
 ]
