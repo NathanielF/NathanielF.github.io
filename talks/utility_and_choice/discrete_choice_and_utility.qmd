@@ -33,6 +33,8 @@ date: last-modified
 ::: {.fragment .fade-in}
 - Individual Heterogenous Utility
 :::
+
+# History and Background
  
 ## McFadden and BART
 
@@ -127,7 +129,7 @@ whole."
 :::
 :::
 
-
+# Applied Example: Naive Model
 
 ## Choice: The Data
 
@@ -267,6 +269,7 @@ The model fit fails to recapture the observed data points
 
 ![Model Fit](images/naive_model_fit.png)
 
+# Augmenting the Model
 
 ## Augmenting the Model: 
 ### Product Specific Intercepts
@@ -399,8 +402,9 @@ with pm.Model(coords=coords) as model_3:
 ```
 ## Adding Correlation Structure
 
-
 ![Correlation Structure](images/correlation_structure.svg)
+
+# Counterfactual Questions and Graph Manipulations
 
 ## Counterfactual Reasoning  {.smaller}
 ### From Probability to Causation
@@ -458,6 +462,7 @@ idata_new_policy
 
 :::
 
+# Hierarchical Variations on the Theme
 
 ## Individual Heterogenous Utility
 ### Repeated Choice and Hierarchical Structure 
@@ -548,7 +553,29 @@ with pm.Model(coords=coords) as model_4:
 ## Individual Heterogenous Utility
 ### Individual Preference
 
+::: {.columns}
+::: {.column width="60%"}
 ![](images/heterogenous_preference.webp)
+:::
 
 
-## Conclusion
+::: {.column width="40%"}
+- Individual preferences can be derived from the model in this manner. 
+- The relationship between preferences over the product offering can be seen too
+:::
+:::
+
+
+## Conclusion  {.smaller}
+### The World in the Model
+
+We've seen a series of models, each one expanding on the last. 
+
+- Models articulate the relevant structure of the world. 
+- They serve as microscopes. Simulations are tools to interrogate reality.
+- Bayesian Discrete choice models help us interrogate actors and their motivations under uncertainty.
+- PyMC enables us to easily build and experiment with those models. 
+
+> "Models... [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression" - Mary Morgan in _The World in the Model_
+
+

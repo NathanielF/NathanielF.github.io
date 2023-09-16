@@ -725,7 +725,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-1",
     "title": "Choice Models and Subjective Utility",
     "section": "Augmenting the Model:",
-    "text": "Augmenting the Model:\nwith pm.Model(coords=coords) as model_2:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n\n    ## Construct Utility matrix and Pivot using an intercept per alternative\n    u0 = alphas[0] + beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = alphas[1] + beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = alphas[2] + beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = alphas[3] + beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+    "text": "Augmenting the Model:\nProduct Specific Intercepts\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-posterior-predictions",
@@ -837,14 +837,14 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-2",
     "title": "Choice Models and Subjective Utility",
     "section": "Augmenting the Model:",
-    "text": "Augmenting the Model:\n\nModel Structure"
+    "text": "Augmenting the Model:\nwith pm.Model(coords=coords) as model_2:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n\n    ## Construct Utility matrix and Pivot using an intercept per alternative\n    u0 = alphas[0] + beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = alphas[1] + beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = alphas[2] + beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = alphas[3] + beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-3",
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-3",
     "title": "Choice Models and Subjective Utility",
-    "section": "Augmenting the Model",
-    "text": "Augmenting the Model\nPosterior Predictions\n\nModel Fit"
+    "section": "Augmenting the Model:",
+    "text": "Augmenting the Model:\n\nModel Structure"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#self-centred-utility",
@@ -886,7 +886,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-4",
     "title": "Choice Models and Subjective Utility",
     "section": "Individual Heterogenous Utility",
-    "text": "Individual Heterogenous Utility\nIndividual Preference"
+    "text": "Individual Heterogenous Utility\nIndividual Preference\n\n\n\n\n\nIndividual preferences can be derived from the model in this manner.\nThe relationship between preferences over the product offering can be seen too"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-bayesian-models",
@@ -900,7 +900,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#conclusion",
     "title": "Choice Models and Subjective Utility",
     "section": "Conclusion",
-    "text": "Conclusion"
+    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels articulate the relevant structure of the world.\nThey serve as microscopes. Simulations are tools to interrogate reality.\nBayesian Discrete choice models help us interrogate actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models",
@@ -929,5 +929,12 @@
     "title": "Choice Models and Subjective Utility",
     "section": "Note on Model Evaluation",
     "text": "Note on Model Evaluation\nReplicating the Super Soldier Program\n\n\n\n\n\n\n\n\n\n\nBayesian Models aim to replicate the DGP holistically"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-4",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-4",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Augmenting the Model",
+    "text": "Augmenting the Model\nPosterior Predictions\n\nModel Fit"
   }
 ]

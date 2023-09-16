@@ -437,6 +437,11 @@ Nathaniel Forde
 </ul>
 </div>
 </section>
+<section>
+<section id="history-and-background" class="title-slide slide level1 center">
+<h1>History and Background</h1>
+
+</section>
 <section id="mcfadden-and-bart" class="slide level2">
 <h2>McFadden and BART</h2>
 <blockquote>
@@ -526,6 +531,11 @@ Nathaniel Forde
 </div>
 </div>
 </div>
+</section></section>
+<section>
+<section id="applied-example-naive-model" class="title-slide slide level1 center">
+<h1>Applied Example: Naive Model</h1>
+
 </section>
 <section id="choice-the-data" class="slide level2">
 <h2>Choice: The Data</h2>
@@ -682,8 +692,13 @@ er_{ic} &amp; er_{oc}  \\
 <h2>Model Posterior Predictive Fits</h2>
 <p>The model fit fails to recapture the observed data points</p>
 
-<img data-src="images/naive_model_fit.png" class="r-stretch quarto-figure-center"><p class="caption">Model Fit</p></section>
-<section id="augmenting-the-model" class="slide level2">
+<img data-src="images/naive_model_fit.png" class="r-stretch quarto-figure-center"><p class="caption">Model Fit</p></section></section>
+<section>
+<section id="augmenting-the-model" class="title-slide slide level1 center">
+<h1>Augmenting the Model</h1>
+
+</section>
+<section id="augmenting-the-model-1" class="slide level2">
 <h2>Augmenting the Model:</h2>
 <h3 id="product-specific-intercepts">Product Specific Intercepts</h3>
 <p><span class="math display">\[
@@ -706,7 +721,7 @@ er_{ic} &amp; er_{oc}  \\
 \end{split}
 \]</span></p>
 </section>
-<section id="augmenting-the-model-1" class="slide level2">
+<section id="augmenting-the-model-2" class="slide level2">
 <h2>Augmenting the Model:</h2>
 <div class="sourceCode" id="cb2" data-code-line-numbers="|5-5|6-13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_2:</span>
 <span id="cb2-2"><a href="#cb2-2"></a>    <span class="co">## Priors for the Beta Coefficients</span></span>
@@ -728,11 +743,11 @@ er_{ic} &amp; er_{oc}  \\
 <span id="cb2-18"><a href="#cb2-18"></a>    <span class="co">## Likelihood</span></span>
 <span id="cb2-19"><a href="#cb2-19"></a>    choice_obs <span class="op">=</span> pm.Categorical(<span class="st">"y_cat"</span>, p<span class="op">=</span>p_, observed<span class="op">=</span>observed, dims<span class="op">=</span><span class="st">"obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="augmenting-the-model-2" class="slide level2">
+<section id="augmenting-the-model-3" class="slide level2">
 <h2>Augmenting the Model:</h2>
 
 <img data-src="images/augmented_model_graph.svg" class="r-stretch quarto-figure-center"><p class="caption">Model Structure</p></section>
-<section id="augmenting-the-model-3" class="slide level2">
+<section id="augmenting-the-model-4" class="slide level2">
 <h2>Augmenting the Model</h2>
 <h3 id="posterior-predictions">Posterior Predictions</h3>
 
@@ -808,7 +823,12 @@ er_{ic} &amp; er_{oc}  \\
 <section id="adding-correlation-structure-2" class="slide level2">
 <h2>Adding Correlation Structure</h2>
 
-<img data-src="images/correlation_structure.svg" class="r-stretch quarto-figure-center"><p class="caption">Correlation Structure</p></section>
+<img data-src="images/correlation_structure.svg" class="r-stretch quarto-figure-center"><p class="caption">Correlation Structure</p></section></section>
+<section>
+<section id="counterfactual-questions-and-graph-manipulations" class="title-slide slide level1 center">
+<h1>Counterfactual Questions and Graph Manipulations</h1>
+
+</section>
 <section id="counterfactual-reasoning" class="slide level2 smaller">
 <h2>Counterfactual Reasoning</h2>
 <h3 id="from-probability-to-causation">From Probability to Causation</h3>
@@ -860,6 +880,11 @@ er_{ic} &amp; er_{oc}  \\
 <p><img data-src="images/sprinkler.png"></p>
 </div>
 </div>
+</section></section>
+<section>
+<section id="hierarchical-variations-on-the-theme" class="title-slide slide level1 center">
+<h1>Hierarchical Variations on the Theme</h1>
+
 </section>
 <section id="individual-heterogenous-utility" class="slide level2">
 <h2>Individual Heterogenous Utility</h2>
@@ -985,15 +1010,35 @@ er_{ic} &amp; er_{oc}  \\
 <section id="individual-heterogenous-utility-4" class="slide level2">
 <h2>Individual Heterogenous Utility</h2>
 <h3 id="individual-preference">Individual Preference</h3>
-
-<img data-src="images/heterogenous_preference.webp" class="r-stretch"></section>
-<section id="conclusion" class="slide level2">
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/heterogenous_preference.webp"></p>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>Individual preferences can be derived from the model in this manner.</li>
+<li>The relationship between preferences over the product offering can be seen too</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="conclusion" class="slide level2 smaller">
 <h2>Conclusion</h2>
+<h3 id="the-world-in-the-model">The World in the Model</h3>
+<p>We’ve seen a series of models, each one expanding on the last.</p>
+<ul>
+<li>Models articulate the relevant structure of the world.</li>
+<li>They serve as microscopes. Simulations are tools to interrogate reality.</li>
+<li>Bayesian Discrete choice models help us interrogate actors and their motivations under uncertainty.</li>
+<li>PyMC enables us to easily build and experiment with those models.</li>
+</ul>
+<blockquote>
+<p>“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in <em>The World in the Model</em></p>
+</blockquote>
 
 <div class="footer footer-default">
 
 </div>
-</section>
+</section></section>
     </div>
   </div>
 
