@@ -37,7 +37,9 @@ date: last-modified
 # History and Background
  
 ## McFadden and BART
-
+:::: {.columns}
+::: {.column width="50%"}
+::: {.fragment .fade-in}
 > "Transport projects involve sinking money
 in expensive capital investments, which
 have a long life and wide repercussions.
@@ -48,7 +50,19 @@ their repercussions on the economy as a
 whole." 
 - Denys Munby, Transport, 1968 "
 
+
+:::
+:::
+
+::: {.column width="50%"}
+::: {.fragment .fade-in}
 ![Bay Area Rapid Transit](images/bart.jpg)
+
+![Dublin Metrolink](images/metrolink.png)
+:::
+:::
+:::
+
 
 ## Revealed Preference and Predicting Demand
 ### Self Centred Utility Maximisers 
@@ -572,8 +586,9 @@ with pm.Model(coords=coords) as model_4:
 We've seen a series of models, each one expanding on the last. 
 
 - Models articulate the relevant structure of the world. 
-- They serve as microscopes. Simulations are tools to interrogate reality.
-- Bayesian Discrete choice models help us interrogate actors and their motivations under uncertainty.
+- They serve as microscopes. Simulation systems are tools to interrogate reality.
+- Bayesian Conditionalisation calibrates the system against the observed facts.
+- Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.
 - PyMC enables us to easily build and experiment with those models. 
 
 > "Models... [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression" - Mary Morgan in _The World in the Model_

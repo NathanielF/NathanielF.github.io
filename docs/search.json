@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 16, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 17, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -795,7 +795,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#mcfadden-and-bart",
     "title": "Choice Models and Subjective Utility",
     "section": "McFadden and BART",
-    "text": "McFadden and BART\n\n“Transport projects involve sinking money in expensive capital investments, which have a long life and wide repercussions. There is no escape from the attempt both to estimate the demand for their services over twenty or thirty years and to assess their repercussions on the economy as a whole.” - Denys Munby, Transport, 1968 ”\n\n\nBay Area Rapid Transit"
+    "text": "McFadden and BART\n\n\n\n\n“Transport projects involve sinking money in expensive capital investments, which have a long life and wide repercussions. There is no escape from the attempt both to estimate the demand for their services over twenty or thirty years and to assess their repercussions on the economy as a whole.” - Denys Munby, Transport, 1968 ”\n\n\n\n\n\n\n\nBay Area Rapid Transit\n\n\n\n\n\nDublin Metrolink"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#reveal-preference-and-predicting-demand",
@@ -900,7 +900,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#conclusion",
     "title": "Choice Models and Subjective Utility",
     "section": "Conclusion",
-    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels articulate the relevant structure of the world.\nThey serve as microscopes. Simulations are tools to interrogate reality.\nBayesian Discrete choice models help us interrogate actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model"
+    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels articulate the relevant structure of the world.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models",
