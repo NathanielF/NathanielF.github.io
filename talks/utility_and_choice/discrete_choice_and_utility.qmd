@@ -62,7 +62,7 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 
 # History and Background
  
-## McFadden and BART
+## McFadden and BART {.smaller}
 :::: {.columns}
 ::: {.column width="50%"}
 ::: {.fragment .fade-in}
@@ -90,7 +90,7 @@ whole."
 :::
 
 
-## Revealed Preference and Predicting Demand
+## Revealed Preference and Predicting Demand {.smaller}
 ### Self Centred Utility Maximisers?
 
 :::: {.columns}
