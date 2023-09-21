@@ -3,7 +3,9 @@ title: "Choice Models and Subjective Utility"
 subtitle: "Dublin Data Science"
 author: 
     - name: Nathaniel Forde
-      affiliations: Data Science @ Personio
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
 format: 
     revealjs:
          theme: [default, clean.scss]
@@ -12,6 +14,30 @@ image: "images/individual_heterogeniety.png"
 date: last-modified
 ---
 
+## Preliminaries
+
+:::{.callout-warning}
+## I am not an Economist
+- I'm a __data scientist__ at __[Personio]{.blue}__ - where we work on cool problems ranging across themes of:
+    - revenue optimisation
+    - customer churn
+    - experimentation 
+    - survey design
+    -  people analytics at scale.
+- For my sins - a Bayesian statistician and a reformed philosopher. 
+- Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
+:::
+ 
+::: {.callout-note}
+## Disclaimer
+None of Personio's data was used in this presentation
+:::
+
+ 
+::: {.callout-tip}
+## Code or it didn't Happen
+The worked examples used here can be found [here](https://www.pymc.io/projects/examples/en/latest/generalized_linear_models/GLM-discrete-choice_models.html)
+:::
 
 
 ## Agenda
@@ -65,7 +91,7 @@ whole."
 
 
 ## Revealed Preference and Predicting Demand
-### Self Centred Utility Maximisers 
+### Self Centred Utility Maximisers?
 
 :::: {.columns}
 ::: {.column width="50%"}
@@ -342,6 +368,16 @@ with pm.Model(coords=coords) as model_2:
 ### Posterior Predictions
 
 ![Model Fit](images/augmented_fit.png)
+
+
+## Independence of Irrelevant Alternatives
+### New Products Cannibalise Equally from all Alternatives
+
+- Suppose a market choice between transport modes is determined by the above model. 
+- Red Bus or Car are you initial Options. Assume $s_{\color{red}{bus}}(\beta) = s_{car}(\beta)$. 
+- Market Share is 50% to each option. Now introduce the Blue Bus Option
+- The independent characteristics of the utility specification implies that $s_{\color{red}{bus}}(\beta) = s_{car}(\beta) = s_{\color{blue}{bus}}(\beta)$
+- This implies an implausible substitution pattern for real markets. 
 
 ## Adding Correlation Structure
 ### Dependence in Market Share

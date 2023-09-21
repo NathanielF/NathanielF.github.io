@@ -1,0 +1,17 @@
+---
+title: "Multilevel Regression and Post-Stratification"
+author: "Nathaniel Forde"
+date: "2023-09-21"
+categories: ["regression", "post-stratification", "survey data" ]
+image: "mr_p.png"
+---
+
+# Regression as Stratification
+
+In this project I sought to understand the procedure of post-stratification adjustment used in election forecasting and regression modelling of the same. I published the documentation for the technique of using Multilevel Regression and post-stratification (MrP) with the bambi package [here](https://bambinos.github.io/bambi/notebooks/mister_p.html). In this work i tried to elaborate precisely how and why the careful modeller would want to make stratum specific adjustments to the predictions of regression models.
+
+
+I adapted the work of  Martin, Philips and Gelmen’s “Multilevel Regression and Poststratification Case Studies” that can be found [here](https://bookdown.org/jl5522/MRP-case-studies/introduction-to-mister-p.html#estimational-subgroup-level). You can download the worked example [here](mister_p.html)
+
+
+![Comparison with OLS](mr_p.png)

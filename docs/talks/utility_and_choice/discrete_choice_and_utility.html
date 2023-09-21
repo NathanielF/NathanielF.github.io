@@ -399,10 +399,66 @@ Nathaniel Forde
         <p class="quarto-title-affiliation">
             Data Science @ Personio
           </p>
+        <p class="quarto-title-affiliation">
+            and Open Source Contributor @ PyMC
+          </p>
     </div>
 </div>
 
-  <p class="date">9/17/23</p>
+  <p class="date">9/21/23</p>
+</section>
+<section id="preliminaries" class="slide level2">
+<h2>Preliminaries</h2>
+<div class="callout callout-warning callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>I am not an Economist</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>I’m a <strong>data scientist</strong> at <strong><span class="blue">Personio</span></strong> - where we work on cool problems ranging across themes of:
+<ul>
+<li>revenue optimisation</li>
+<li>customer churn</li>
+<li>experimentation</li>
+<li>survey design</li>
+<li>people analytics at scale.</li>
+</ul></li>
+<li>For my sins - a Bayesian statistician and a reformed philosopher.</li>
+<li>Website: <a href="https://nathanielf.github.io/">https://nathanielf.github.io/</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-note callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Disclaimer</strong></p>
+</div>
+<div class="callout-content">
+<p>None of Personio’s data was used in this presentation</p>
+</div>
+</div>
+</div>
+<div class="callout callout-tip callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Code or it didn’t Happen</strong></p>
+</div>
+<div class="callout-content">
+<p>The worked examples used here can be found <a href="https://www.pymc.io/projects/examples/en/latest/generalized_linear_models/GLM-discrete-choice_models.html">here</a></p>
+</div>
+</div>
+</div>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
@@ -471,7 +527,7 @@ Nathaniel Forde
 </section>
 <section id="revealed-preference-and-predicting-demand" class="slide level2">
 <h2>Revealed Preference and Predicting Demand</h2>
-<h3 id="self-centred-utility-maximisers">Self Centred Utility Maximisers</h3>
+<h3 id="self-centred-utility-maximisers">Self Centred Utility Maximisers?</h3>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="fragment fade-in">
@@ -772,6 +828,17 @@ er_{ic} &amp; er_{oc}  \\
 <h3 id="posterior-predictions">Posterior Predictions</h3>
 
 <img data-src="images/augmented_fit.png" class="r-stretch quarto-figure-center"><p class="caption">Model Fit</p></section>
+<section id="independence-of-irrelevant-alternatives" class="slide level2">
+<h2>Independence of Irrelevant Alternatives</h2>
+<h3 id="new-products-cannibalise-equally-from-all-alternatives">New Products Cannibalise Equally from all Alternatives</h3>
+<ul>
+<li>Suppose a market choice between transport modes is determined by the above model.</li>
+<li>Red Bus or Car are you initial Options. Assume <span class="math inline">\(s_{\color{red}{bus}}(\beta) = s_{car}(\beta)\)</span>.</li>
+<li>Market Share is 50% to each option. Now introduce the Blue Bus Option</li>
+<li>The independent characteristics of the utility specification implies that <span class="math inline">\(s_{\color{red}{bus}}(\beta) = s_{car}(\beta) = s_{\color{blue}{bus}}(\beta)\)</span></li>
+<li>This implies an implausible substitution pattern for real markets.</li>
+</ul>
+</section>
 <section id="adding-correlation-structure" class="slide level2">
 <h2>Adding Correlation Structure</h2>
 <h3 id="dependence-in-market-share">Dependence in Market Share</h3>
