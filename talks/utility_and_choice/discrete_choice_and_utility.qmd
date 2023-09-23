@@ -9,6 +9,8 @@ author:
 format: 
     revealjs:
          theme: [default, clean.scss]
+         logo: images/pymc_logo.png
+         footer: "Discrete Choice with PyMC"
 categories: [bayesian, discrete choice]
 image: "images/individual_heterogeniety.png"
 date: last-modified
@@ -24,7 +26,7 @@ date: last-modified
     - experimentation 
     - survey design
     - product analytics
-- For my sins - a Bayesian statistician and a reformed philosopher and logician. 
+- Also a Bayesian statistician, reformed philosopher and logician. 
 - Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
 :::
  
@@ -42,7 +44,7 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 
 ## Agenda
 ::: {.fragment .fade-in}
-- A Little History
+- History and Background
 ::: 
 ::: {.fragment .fade-in}
 - A Naive Utilty Model
@@ -54,13 +56,19 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 - Adding Correlation Structure
 :::
 ::: {.fragment .fade-in}
-- Counterfactual Reasoning
+- Counterfactual Questions
 :::
 ::: {.fragment .fade-in}
 - Individual Heterogenous Utility
 :::
+::: {.fragment .fade-in}
+- Conclusion
+    - The World in the Model
+:::
+
 
 # History and Background
+A brief survey of historical use-cases and the kinds of problems Bayesian discrete choice models can solve.
  
 ## McFadden and BART {.smaller}
 :::: {.columns}
@@ -111,7 +119,7 @@ whole."
 ![](images/copernicus-drawing.png){width="300" height="300"} 
 
 ::: {.fragment .fade-in}
-- __Copernican Shift__: He estimated utility to predict choice, rather than infer utility from choice. 
+- __Copernican Shift__: He estimated utility to predict choice, rather than infer utility from stated choice. 
 :::  
 :::
 
@@ -169,7 +177,8 @@ whole."
 :::
 :::
 
-# Applied Example: Naive Model
+# A Naive Model
+A baseline model for incorporating item specific utilities to predict market share.
 
 ## Choice: The Data
 
@@ -253,7 +262,6 @@ $$  l(\color{blue}{\beta}) = \sum log(s_{j}(\mathbf{\color{blue}{\beta}})) $$
 $$ \text{ We find: } \underset{\color{blue}{\beta}}{\mathrm{argmax}} \text{ } l(\color{blue}{\beta}) $$
 
 
-
 ## Choice: Bayesian Estimation
 
 To evaluate the integrals in the Bayesian model we use MCMC
@@ -310,6 +318,7 @@ The model fit fails to recapture the observed data points
 ![Model Fit](images/naive_model_fit.png)
 
 # Augmenting the Model
+Model now incorporates specification of the mean utilities per item.
 
 ## Augmenting the Model: 
 ### Product Specific Intercepts
@@ -378,6 +387,9 @@ with pm.Model(coords=coords) as model_2:
 - Market Share is 50% to each option. Now introduce the Blue Bus Option
 - The independent characteristics of the utility specification implies that $s_{\color{red}{bus}}(\beta) = s_{car}(\beta) = s_{\color{blue}{bus}}(\beta)$
 - This implies an implausible substitution pattern for real markets. 
+
+# Adding Correlation Structure
+Model tries to account for pathological patterns of sustitution between goods by incorporating covariance structures. 
 
 ## Adding Correlation Structure
 ### Dependence in Market Share
@@ -454,7 +466,8 @@ with pm.Model(coords=coords) as model_3:
 
 ![Correlation Structure](images/correlation_structure.svg)
 
-# Counterfactual Questions and Graph Manipulations
+# Counterfactual Questions
+Models as laboratories for experimentation
 
 ## Counterfactual Reasoning  {.smaller}
 ### From Probability to Causation
@@ -512,7 +525,8 @@ idata_new_policy
 
 :::
 
-# Hierarchical Variations on the Theme
+# Hierarchical Variations 
+Inducing covariance structures by allowing individual deviations from mean utilities.
 
 ## Individual Heterogenous Utility
 ### Repeated Choice and Hierarchical Structure 
@@ -625,7 +639,8 @@ We've seen a series of models, each one expanding on the last.
 - They serve as microscopes. Simulation systems are tools to interrogate reality.
 - Bayesian Conditionalisation calibrates the system against the observed facts.
 - Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.
-- PyMC enables us to easily build and experiment with those models. 
+- PyMC enables us to easily build and experiment with those models.
+- __Future Work__: Aggregate Models of Discrete Choice. Bayesian Alternatives to BLP. 
 
 > "Models... [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression" - Mary Morgan in _The World in the Model_
 

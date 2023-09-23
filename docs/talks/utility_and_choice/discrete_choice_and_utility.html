@@ -405,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">9/21/23</p>
+  <p class="date">9/23/23</p>
 </section>
 <section id="preliminaries" class="slide level2 smaller">
 <h2>Preliminaries</h2>
@@ -427,7 +427,7 @@ Nathaniel Forde
 <li>survey design</li>
 <li>product analytics</li>
 </ul></li>
-<li>For my sins - a Bayesian statistician and a reformed philosopher and logician.</li>
+<li>Also a Bayesian statistician, reformed philosopher and logician.</li>
 <li>Website: <a href="https://nathanielf.github.io/">https://nathanielf.github.io/</a></li>
 </ul>
 </div>
@@ -464,7 +464,7 @@ Nathaniel Forde
 <h2>Agenda</h2>
 <div class="fragment fade-in">
 <ul>
-<li>A Little History</li>
+<li>History and Background</li>
 </ul>
 </div>
 <div class="fragment fade-in">
@@ -484,7 +484,7 @@ Nathaniel Forde
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>Counterfactual Reasoning</li>
+<li>Counterfactual Questions</li>
 </ul>
 </div>
 <div class="fragment fade-in">
@@ -492,11 +492,19 @@ Nathaniel Forde
 <li>Individual Heterogenous Utility</li>
 </ul>
 </div>
+<div class="fragment fade-in">
+<ul>
+<li>Conclusion
+<ul>
+<li>The World in the Model</li>
+</ul></li>
+</ul>
+</div>
 </section>
 <section>
 <section id="history-and-background" class="title-slide slide level1 center">
 <h1>History and Background</h1>
-
+<p>A brief survey of historical use-cases and the kinds of problems Bayesian discrete choice models can solve.</p>
 </section>
 <section id="mcfadden-and-bart" class="slide level2 smaller">
 <h2>McFadden and BART</h2>
@@ -549,7 +557,7 @@ Nathaniel Forde
 <p><img data-src="images/copernicus-drawing.png" width="300" height="300"></p>
 <div class="fragment fade-in">
 <ul>
-<li><strong>Copernican Shift</strong>: He estimated utility to predict choice, rather than infer utility from choice.</li>
+<li><strong>Copernican Shift</strong>: He estimated utility to predict choice, rather than infer utility from stated choice.</li>
 </ul>
 </div>
 </div>
@@ -609,9 +617,9 @@ Nathaniel Forde
 </div>
 </section></section>
 <section>
-<section id="applied-example-naive-model" class="title-slide slide level1 center">
-<h1>Applied Example: Naive Model</h1>
-
+<section id="a-naive-model" class="title-slide slide level1 center">
+<h1>A Naive Model</h1>
+<p>A baseline model for incorporating item specific utilities to predict market share.</p>
 </section>
 <section id="choice-the-data" class="slide level2">
 <h2>Choice: The Data</h2>
@@ -772,7 +780,7 @@ er_{ic} &amp; er_{oc}  \\
 <section>
 <section id="augmenting-the-model" class="title-slide slide level1 center">
 <h1>Augmenting the Model</h1>
-
+<p>Model now incorporates specification of the mean utilities per item.</p>
 </section>
 <section id="augmenting-the-model-1" class="slide level2">
 <h2>Augmenting the Model:</h2>
@@ -838,8 +846,13 @@ er_{ic} &amp; er_{oc}  \\
 <li>The independent characteristics of the utility specification implies that <span class="math inline">\(s_{\color{red}{bus}}(\beta) = s_{car}(\beta) = s_{\color{blue}{bus}}(\beta)\)</span></li>
 <li>This implies an implausible substitution pattern for real markets.</li>
 </ul>
+</section></section>
+<section>
+<section id="adding-correlation-structure" class="title-slide slide level1 center">
+<h1>Adding Correlation Structure</h1>
+<p>Model tries to account for pathological patterns of sustitution between goods by incorporating covariance structures.</p>
 </section>
-<section id="adding-correlation-structure" class="slide level2">
+<section id="adding-correlation-structure-1" class="slide level2">
 <h2>Adding Correlation Structure</h2>
 <h3 id="dependence-in-market-share">Dependence in Market Share</h3>
 <p><span class="math display">\[ \alpha_{i} \sim Normal(\mathbf{0}, \Sigma) \]</span></p>
@@ -863,7 +876,7 @@ er_{ic} &amp; er_{oc}  \\
 \end{split}
 \]</span></p>
 </section>
-<section id="adding-correlation-structure-1" class="slide level2">
+<section id="adding-correlation-structure-2" class="slide level2">
 <h2>Adding Correlation Structure</h2>
 <div class="sourceCode" id="cb3" data-code-line-numbers="|6-12|13-18|"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_3:</span>
 <span id="cb3-2"><a href="#cb3-2"></a>    beta_ic <span class="op">=</span> pm.Normal(<span class="st">"beta_ic"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
@@ -907,14 +920,14 @@ er_{ic} &amp; er_{oc}  \\
 <span id="cb3-40"><a href="#cb3-40"></a>    p_ <span class="op">=</span> pm.Deterministic(<span class="st">"p"</span>, pm.math.softmax(s, axis<span class="op">=</span><span class="dv">1</span>), dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"alts_probs"</span>))</span>
 <span id="cb3-41"><a href="#cb3-41"></a>    choice_obs <span class="op">=</span> pm.Categorical(<span class="st">"y_cat"</span>, p<span class="op">=</span>p_, observed<span class="op">=</span>observed, dims<span class="op">=</span><span class="st">"obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="adding-correlation-structure-2" class="slide level2">
+<section id="adding-correlation-structure-3" class="slide level2">
 <h2>Adding Correlation Structure</h2>
 
 <img data-src="images/correlation_structure.svg" class="r-stretch quarto-figure-center"><p class="caption">Correlation Structure</p></section></section>
 <section>
-<section id="counterfactual-questions-and-graph-manipulations" class="title-slide slide level1 center">
-<h1>Counterfactual Questions and Graph Manipulations</h1>
-
+<section id="counterfactual-questions" class="title-slide slide level1 center">
+<h1>Counterfactual Questions</h1>
+<p>Models as laboratories for experimentation</p>
 </section>
 <section id="counterfactual-reasoning" class="slide level2 smaller">
 <h2>Counterfactual Reasoning</h2>
@@ -969,9 +982,9 @@ er_{ic} &amp; er_{oc}  \\
 </div>
 </section></section>
 <section>
-<section id="hierarchical-variations-on-the-theme" class="title-slide slide level1 center">
-<h1>Hierarchical Variations on the Theme</h1>
-
+<section id="hierarchical-variations" class="title-slide slide level1 center">
+<h1>Hierarchical Variations</h1>
+<p>Inducing covariance structures by allowing individual deviations from mean utilities.</p>
 </section>
 <section id="individual-heterogenous-utility" class="slide level2">
 <h2>Individual Heterogenous Utility</h2>
@@ -1118,13 +1131,15 @@ er_{ic} &amp; er_{oc}  \\
 <li>Bayesian Conditionalisation calibrates the system against the observed facts.</li>
 <li>Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.</li>
 <li>PyMC enables us to easily build and experiment with those models.</li>
+<li><strong>Future Work</strong>: Aggregate Models of Discrete Choice. Bayesian Alternatives to BLP.</li>
 </ul>
 <blockquote>
 <p>“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in <em>The World in the Model</em></p>
 </blockquote>
 
-<div class="footer footer-default">
 
+<img src="images/pymc_logo.png" class="slide-logo r-stretch"><div class="footer footer-default">
+<p>Discrete Choice with PyMC</p>
 </div>
 </section></section>
     </div>
