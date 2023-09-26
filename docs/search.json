@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 23, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 26, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -641,7 +641,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-estimation",
     "title": "Choice Models and Subjective Utility",
     "section": "Choice: Estimation",
-    "text": "Choice: Estimation\nThe model is traditionally estimated with maximum likelihood caclulations\n\\[  L(\\color{blue}{\\beta}) = \\prod s_{j}(\\mathbf{\\color{blue}{\\beta}}) \\]\nor taking the log:\n\\[  l(\\color{blue}{\\beta}) = \\sum log(s_{j}(\\mathbf{\\color{blue}{\\beta}})) \\] \\[ \\text{ We find: } \\underset{\\color{blue}{\\beta}}{\\mathrm{argmax}} \\text{ } l(\\color{blue}{\\beta}) \\]"
+    "text": "Choice: Estimation\nThe model is traditionally estimated with maximum likelihood caclulations.\n\\[  L(\\color{blue}{\\beta}) = \\prod s_{j}(\\mathbf{\\color{blue}{\\beta}}) \\]\nor taking the log:\n\\[  l(\\color{blue}{\\beta}) = \\sum log(s_{j}(\\mathbf{\\color{blue}{\\beta}})) \\] \\[ \\text{ We find: } \\underset{\\color{blue}{\\beta}}{\\mathrm{argmax}} \\text{ } l(\\color{blue}{\\beta}) \\]\nResults are often brittle!"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model",
@@ -683,7 +683,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-bayesian-estimation",
     "title": "Choice Models and Subjective Utility",
     "section": "Choice: Bayesian Estimation",
-    "text": "Choice: Bayesian Estimation\nTo evaluate the integrals in the Bayesian model we use MCMC\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]"
+    "text": "Choice: Bayesian Estimation\nTo evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]\nPriors can be used flexibly regularise and improve reliability of estimation across structural causal models."
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#does-the-model-fit",
@@ -760,14 +760,14 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-1",
     "title": "Choice Models and Subjective Utility",
     "section": "Adding Correlation Structure",
-    "text": "Adding Correlation Structure\nDependence in Market Share\n\\[ \\alpha_{i} \\sim Normal(\\mathbf{0}, \\Sigma) \\]\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+    "text": "Adding Correlation Structure\nDependence in Market Share\n\\[ \\alpha_{i} \\sim Normal(\\mathbf{0}, \\color{brown}{\\Gamma}) \\]\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-2",
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-2",
     "title": "Choice Models and Subjective Utility",
     "section": "Adding Correlation Structure",
-    "text": "Adding Correlation Structure\nwith pm.Model(coords=coords) as model_3:\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    beta_income = pm.Normal(\"beta_income\", 0, 1 dims=\"alts_intercepts\")\n\n    chol, corr, stds = pm.LKJCholeskyCov(\n        \"chol\", n=4, eta=2.0, \n        sd_dist=pm.Exponential.dist(1.0, shape=4)\n    )\n    alphas = pm.MvNormal(\"alpha\", mu=0, chol=chol, dims=\"alts_intercepts\")\n\n    u0 = (\n        alphas[0]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[0] * wide_heating_df[\"income\"]\n    )\n    u1 = (\n        alphas[1]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[1] * wide_heating_df[\"income\"]\n    )\n    u2 = (\n        alphas[2]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[2] * wide_heating_df[\"income\"]\n    )\n    u3 = (\n        alphas[3]\n        + beta_ic * wide_heating_df[\"ic.gr\"]\n        + beta_oc * wide_heating_df[\"oc.gr\"]\n        + beta_income[3] * wide_heating_df[\"income\"]\n    )\n    u4 = np.zeros(N)  # pivot\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+    "text": "Adding Correlation Structure\nPriors on Parameters determine Market Structure\n\\[ \\begin{split} \\color{brown}{\\Gamma} =\n\\begin{pmatrix}\n  \\color{red}{1} + \\gamma + \\gamma + \\gamma \\\\\n  \\gamma + \\color{blue}{1} + \\gamma + \\gamma  \\\\\n   \\gamma + \\gamma  + \\color{orange}{1} + \\gamma \\\\\n  \\gamma + \\gamma + \\gamma + \\color{teal}{1}  \n\\end{pmatrix}\n\\end{split} \\]"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning",
@@ -816,7 +816,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#revealed-preference-and-predicting-demand",
     "title": "Choice Models and Subjective Utility",
     "section": "Revealed Preference and Predicting Demand",
-    "text": "Revealed Preference and Predicting Demand\nSelf Centred Utility Maximisers?\n\n\n\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their subjective utility for A is greater than for B.\n\n\n\n\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\n\n\n\n\nHe was right.\n\n\n\n\n\n\nCopernican Shift: He estimated utility to predict choice, rather than infer utility from stated choice."
+    "text": "Revealed Preference and Predicting Demand\nSelf Centred Utility Maximisers?\n\n\n\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their latent subjective utility for A is greater than for B.\n\n\n\n\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\n\n\n\n\nHe was right.\n\n\n\n\n\n\nCopernican Shift: He estimated utility to predict choice, rather than infer utility from stated choice."
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility",
@@ -900,7 +900,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#conclusion",
     "title": "Choice Models and Subjective Utility",
     "section": "Conclusion",
-    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels articulate the relevant structure of the world.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nFuture Work: Aggregate Models of Discrete Choice. Bayesian Alternatives to BLP.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
+    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels articulate the relevant structure of the world.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can stand behind the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models",
@@ -942,7 +942,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#independence-of-irrelevant-alternatives",
     "title": "Choice Models and Subjective Utility",
     "section": "Independence of Irrelevant Alternatives",
-    "text": "Independence of Irrelevant Alternatives\nNew Products Cannibalise Equally from all Alternatives\n\nSuppose a market choice between transport modes is determined by the above model.\nRed Bus or Car are you initial Options. Assume \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta)\\).\nMarket Share is 50% to each option. Now introduce the Blue Bus Option\nThe independent characteristics of the utility specification implies that \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta) = s_{\\color{blue}{bus}}(\\beta)\\)\nThis implies an implausible substitution pattern for real markets."
+    "text": "Independence of Irrelevant Alternatives\nNew Products Cannibalise Equally from all Alternatives\n\nSuppose a market choice between transport modes is determined by the above model.\nRed Bus or Car are you initial Options. Assume \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta)\\). Market Share is 50% to each option.\nIntroduce the Blue Bus Option, then the Independent characteristics of the utility specification implies that \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta) = s_{\\color{blue}{bus}}(\\beta)\\)\nThis implies an implausible substitution pattern for real markets.1\n\nWhat kind of Monster have we Created!?"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#products-cannibalise-equally-from-all-alternatives",
@@ -975,6 +975,13 @@
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-3",
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-3",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\nwith pm.Model(coords=coords) as model_3:\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    beta_income = pm.Normal(\"beta_income\", 0, 1 dims=\"alts_intercepts\")\n\n    chol, corr, stds = pm.LKJCholeskyCov(\n        \"chol\", n=4, eta=2.0, \n        sd_dist=pm.Exponential.dist(1.0, shape=4)\n    )\n    alphas = pm.MvNormal(\"alpha\", mu=0, chol=chol, dims=\"alts_intercepts\")\n\n    u0 = (\n        alphas[0]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[0] * wide_heating_df[\"income\"]\n    )\n    u1 = (\n        alphas[1]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[1] * wide_heating_df[\"income\"]\n    )\n    u2 = (\n        alphas[2]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[2] * wide_heating_df[\"income\"]\n    )\n    u3 = (\n        alphas[3]\n        + beta_ic * wide_heating_df[\"ic.gr\"]\n        + beta_oc * wide_heating_df[\"oc.gr\"]\n        + beta_income[3] * wide_heating_df[\"income\"]\n    )\n    u4 = np.zeros(N)  # pivot\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-4",
+    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-4",
     "title": "Choice Models and Subjective Utility",
     "section": "Adding Correlation Structure",
     "text": "Adding Correlation Structure\n\nCorrelation Structure"

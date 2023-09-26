@@ -104,7 +104,7 @@ whole."
 :::: {.columns}
 ::: {.column width="50%"}
 ::: {.fragment .fade-in}
-- The assumption of *revealed preference* theory is that if a person chooses A over B then their subjective utility for A is greater than for B. 
+- The assumption of *revealed preference* theory is that if a person chooses A over B then their __latent__ subjective utility for A is greater than for B. 
 :::
 
 ::: {.fragment .fade-in}
@@ -252,7 +252,7 @@ $$ s_{j}(\mathbf{\color{blue}{\beta}}) = P(\color{green}{u_{j}} > \color{green}{
 
 ## Choice: Estimation
 
-The model is traditionally estimated with maximum likelihood caclulations
+The model is traditionally estimated with maximum likelihood caclulations. 
 
 $$  L(\color{blue}{\beta}) = \prod s_{j}(\mathbf{\color{blue}{\beta}}) $$
 
@@ -261,14 +261,19 @@ or taking the log:
 $$  l(\color{blue}{\beta}) = \sum log(s_{j}(\mathbf{\color{blue}{\beta}})) $$
 $$ \text{ We find: } \underset{\color{blue}{\beta}}{\mathrm{argmax}} \text{ } l(\color{blue}{\beta}) $$
 
+Results are often brittle!
+
 
 ## Choice: Bayesian Estimation
 
-To evaluate the integrals in the Bayesian model we use MCMC
+To evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.
 
 $$\underbrace{\color{blue}{\beta}}_{\text{prior draws}} \sim Normal(0, 1) $$
 
 $$ \underbrace{p(\color{blue}{\beta} | D)}_{\text{posterior draws}} = \frac{p(\mathbb{\color{blue}{\beta}})p(D | \color{blue}{\beta} )}{\int_{i}^{n} p(D | \mathbf{\color{blue}{\beta_{i}}})p(\mathbf{\color{blue}{\beta_{i}}}) } $$
+
+Priors can be used flexibly regularise and improve reliability of estimation across structural causal models.
+
 
 
 ## The Naive Model in Code
@@ -383,10 +388,10 @@ with pm.Model(coords=coords) as model_2:
 ### New Products Cannibalise Equally from all Alternatives
 
 - Suppose a market choice between transport modes is determined by the above model. 
-- Red Bus or Car are you initial Options. Assume $s_{\color{red}{bus}}(\beta) = s_{car}(\beta)$. 
-- Market Share is 50% to each option. Now introduce the Blue Bus Option
-- The independent characteristics of the utility specification implies that $s_{\color{red}{bus}}(\beta) = s_{car}(\beta) = s_{\color{blue}{bus}}(\beta)$
-- This implies an implausible substitution pattern for real markets. 
+- Red Bus or Car are you initial Options. Assume $s_{\color{red}{bus}}(\beta) = s_{car}(\beta)$. Market Share is 50% to each option. 
+- Introduce the Blue Bus Option, then the Independent characteristics of the utility specification implies that $s_{\color{red}{bus}}(\beta) = s_{car}(\beta) = s_{\color{blue}{bus}}(\beta)$
+- This implies an implausible substitution pattern for real markets.^[What kind of Monster have we Created!?]
+
 
 # Adding Correlation Structure
 Model tries to account for pathological patterns of sustitution between goods by incorporating covariance structures. 
@@ -394,7 +399,7 @@ Model tries to account for pathological patterns of sustitution between goods by
 ## Adding Correlation Structure
 ### Dependence in Market Share
 
-$$ \alpha_{i} \sim Normal(\mathbf{0}, \Sigma) $$
+$$ \alpha_{i} \sim Normal(\mathbf{0}, \color{brown}{\Gamma}) $$
 
 $$
 \begin{split}
@@ -415,6 +420,22 @@ $$
 \end{pmatrix}
 \end{split}
 $$
+
+## Adding Correlation Structure
+### Priors on Parameters determine Market Structure
+
+$$ \begin{split} \color{brown}{\Gamma} = 
+\begin{pmatrix}
+  \color{red}{1} + \gamma + \gamma + \gamma \\
+  \gamma + \color{blue}{1} + \gamma + \gamma  \\
+   \gamma + \gamma  + \color{orange}{1} + \gamma \\
+  \gamma + \gamma + \gamma + \color{teal}{1}  
+\end{pmatrix}
+\end{split} $$
+
+
+
+
 
 ## Adding Correlation Structure
 
@@ -640,7 +661,7 @@ We've seen a series of models, each one expanding on the last.
 - Bayesian Conditionalisation calibrates the system against the observed facts.
 - Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.
 - PyMC enables us to easily build and experiment with those models.
-- __Future Work__: Aggregate Models of Discrete Choice. Bayesian Alternatives to BLP. 
+- Causal inference is plausible to degree that we can stand behind the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments. 
 
 > "Models... [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression" - Mary Morgan in _The World in the Model_
 

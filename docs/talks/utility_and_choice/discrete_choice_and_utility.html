@@ -405,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">9/23/23</p>
+  <p class="date">9/26/23</p>
 </section>
 <section id="preliminaries" class="slide level2 smaller">
 <h2>Preliminaries</h2>
@@ -540,7 +540,7 @@ Nathaniel Forde
 <div class="column" style="width:50%;">
 <div class="fragment fade-in">
 <ul>
-<li>The assumption of <em>revealed preference</em> theory is that if a person chooses A over B then their subjective utility for A is greater than for B.</li>
+<li>The assumption of <em>revealed preference</em> theory is that if a person chooses A over B then their <strong>latent</strong> subjective utility for A is greater than for B.</li>
 </ul>
 </div>
 <div class="fragment fade-in">
@@ -723,16 +723,18 @@ er_{ic} &amp; er_{oc}  \\
 </section>
 <section id="choice-estimation" class="slide level2">
 <h2>Choice: Estimation</h2>
-<p>The model is traditionally estimated with maximum likelihood caclulations</p>
+<p>The model is traditionally estimated with maximum likelihood caclulations.</p>
 <p><span class="math display">\[  L(\color{blue}{\beta}) = \prod s_{j}(\mathbf{\color{blue}{\beta}}) \]</span></p>
 <p>or taking the log:</p>
 <p><span class="math display">\[  l(\color{blue}{\beta}) = \sum log(s_{j}(\mathbf{\color{blue}{\beta}})) \]</span> <span class="math display">\[ \text{ We find: } \underset{\color{blue}{\beta}}{\mathrm{argmax}} \text{ } l(\color{blue}{\beta}) \]</span></p>
+<p>Results are often brittle!</p>
 </section>
 <section id="choice-bayesian-estimation" class="slide level2">
 <h2>Choice: Bayesian Estimation</h2>
-<p>To evaluate the integrals in the Bayesian model we use MCMC</p>
+<p>To evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.</p>
 <p><span class="math display">\[\underbrace{\color{blue}{\beta}}_{\text{prior draws}} \sim Normal(0, 1) \]</span></p>
 <p><span class="math display">\[ \underbrace{p(\color{blue}{\beta} | D)}_{\text{posterior draws}} = \frac{p(\mathbb{\color{blue}{\beta}})p(D | \color{blue}{\beta} )}{\int_{i}^{n} p(D | \mathbf{\color{blue}{\beta_{i}}})p(\mathbf{\color{blue}{\beta_{i}}}) } \]</span></p>
+<p>Priors can be used flexibly regularise and improve reliability of estimation across structural causal models.</p>
 </section>
 <section id="the-naive-model-in-code" class="slide level2">
 <h2>The Naive Model in Code</h2>
@@ -841,12 +843,11 @@ er_{ic} &amp; er_{oc}  \\
 <h3 id="new-products-cannibalise-equally-from-all-alternatives">New Products Cannibalise Equally from all Alternatives</h3>
 <ul>
 <li>Suppose a market choice between transport modes is determined by the above model.</li>
-<li>Red Bus or Car are you initial Options. Assume <span class="math inline">\(s_{\color{red}{bus}}(\beta) = s_{car}(\beta)\)</span>.</li>
-<li>Market Share is 50% to each option. Now introduce the Blue Bus Option</li>
-<li>The independent characteristics of the utility specification implies that <span class="math inline">\(s_{\color{red}{bus}}(\beta) = s_{car}(\beta) = s_{\color{blue}{bus}}(\beta)\)</span></li>
-<li>This implies an implausible substitution pattern for real markets.</li>
+<li>Red Bus or Car are you initial Options. Assume <span class="math inline">\(s_{\color{red}{bus}}(\beta) = s_{car}(\beta)\)</span>. Market Share is 50% to each option.</li>
+<li>Introduce the Blue Bus Option, then the Independent characteristics of the utility specification implies that <span class="math inline">\(s_{\color{red}{bus}}(\beta) = s_{car}(\beta) = s_{\color{blue}{bus}}(\beta)\)</span></li>
+<li>This implies an implausible substitution pattern for real markets.<sup>1</sup></li>
 </ul>
-</section></section>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>What kind of Monster have we Created!?</p></li></ol></aside></section></section>
 <section>
 <section id="adding-correlation-structure" class="title-slide slide level1 center">
 <h1>Adding Correlation Structure</h1>
@@ -855,7 +856,7 @@ er_{ic} &amp; er_{oc}  \\
 <section id="adding-correlation-structure-1" class="slide level2">
 <h2>Adding Correlation Structure</h2>
 <h3 id="dependence-in-market-share">Dependence in Market Share</h3>
-<p><span class="math display">\[ \alpha_{i} \sim Normal(\mathbf{0}, \Sigma) \]</span></p>
+<p><span class="math display">\[ \alpha_{i} \sim Normal(\mathbf{0}, \color{brown}{\Gamma}) \]</span></p>
 <p><span class="math display">\[
 \begin{split}
 \begin{pmatrix}
@@ -877,6 +878,18 @@ er_{ic} &amp; er_{oc}  \\
 \]</span></p>
 </section>
 <section id="adding-correlation-structure-2" class="slide level2">
+<h2>Adding Correlation Structure</h2>
+<h3 id="priors-on-parameters-determine-market-structure">Priors on Parameters determine Market Structure</h3>
+<p><span class="math display">\[ \begin{split} \color{brown}{\Gamma} =
+\begin{pmatrix}
+  \color{red}{1} + \gamma + \gamma + \gamma \\
+  \gamma + \color{blue}{1} + \gamma + \gamma  \\
+   \gamma + \gamma  + \color{orange}{1} + \gamma \\
+  \gamma + \gamma + \gamma + \color{teal}{1}  
+\end{pmatrix}
+\end{split} \]</span></p>
+</section>
+<section id="adding-correlation-structure-3" class="slide level2">
 <h2>Adding Correlation Structure</h2>
 <div class="sourceCode" id="cb3" data-code-line-numbers="|6-12|13-18|"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model_3:</span>
 <span id="cb3-2"><a href="#cb3-2"></a>    beta_ic <span class="op">=</span> pm.Normal(<span class="st">"beta_ic"</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
@@ -920,7 +933,7 @@ er_{ic} &amp; er_{oc}  \\
 <span id="cb3-40"><a href="#cb3-40"></a>    p_ <span class="op">=</span> pm.Deterministic(<span class="st">"p"</span>, pm.math.softmax(s, axis<span class="op">=</span><span class="dv">1</span>), dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"alts_probs"</span>))</span>
 <span id="cb3-41"><a href="#cb3-41"></a>    choice_obs <span class="op">=</span> pm.Categorical(<span class="st">"y_cat"</span>, p<span class="op">=</span>p_, observed<span class="op">=</span>observed, dims<span class="op">=</span><span class="st">"obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="adding-correlation-structure-3" class="slide level2">
+<section id="adding-correlation-structure-4" class="slide level2">
 <h2>Adding Correlation Structure</h2>
 
 <img data-src="images/correlation_structure.svg" class="r-stretch quarto-figure-center"><p class="caption">Correlation Structure</p></section></section>
@@ -1131,7 +1144,7 @@ er_{ic} &amp; er_{oc}  \\
 <li>Bayesian Conditionalisation calibrates the system against the observed facts.</li>
 <li>Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.</li>
 <li>PyMC enables us to easily build and experiment with those models.</li>
-<li><strong>Future Work</strong>: Aggregate Models of Discrete Choice. Bayesian Alternatives to BLP.</li>
+<li>Causal inference is plausible to degree that we can stand behind the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.</li>
 </ul>
 <blockquote>
 <p>“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in <em>The World in the Model</em></p>
@@ -1142,6 +1155,7 @@ er_{ic} &amp; er_{oc}  \\
 <p>Discrete Choice with PyMC</p>
 </div>
 </section></section>
+
     </div>
   </div>
 
