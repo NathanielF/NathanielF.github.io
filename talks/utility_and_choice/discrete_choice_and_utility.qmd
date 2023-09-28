@@ -304,7 +304,7 @@ with pm.Model(coords=coords) as model_1:
 ### Rate of Substitution
 :::: {.columns}
 ::: {.column width="40%"}
-The beta coefficients in the mode are interpreted as drivers of utility. However, the precision in these latent terms is relative to the variance of **unobserved** factors.
+The beta coefficients in the model are interpreted as weights of utility. However, the precision in these latent terms is relative to the variance of **unobserved** factors.
 
 The utility scale is not fixed, but the ratio $\frac{\beta_{ic}}{\beta_{oc}}$ is invariant.
 
@@ -426,10 +426,10 @@ $$
 
 $$ \begin{split} \color{brown}{\Gamma} = 
 \begin{pmatrix}
-  \color{red}{1} + \gamma + \gamma + \gamma \\
-  \gamma + \color{blue}{1} + \gamma + \gamma  \\
-   \gamma + \gamma  + \color{orange}{1} + \gamma \\
-  \gamma + \gamma + \gamma + \color{teal}{1}  
+  \color{red}{1} , \gamma , \gamma , \gamma \\
+  \gamma , \color{blue}{1} , \gamma , \gamma  \\
+   \gamma , \gamma  , \color{orange}{1} , \gamma \\
+  \gamma , \gamma , \gamma , \color{teal}{1}  
 \end{pmatrix}
 \end{split} $$
 
@@ -661,7 +661,7 @@ We've seen a series of models, each one expanding on the last.
 - Bayesian Conditionalisation calibrates the system against the observed facts.
 - Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.
 - PyMC enables us to easily build and experiment with those models.
-- Causal inference is plausible to degree that we can stand behind the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments. 
+- Causal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments. 
 
 > "Models... [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression" - Mary Morgan in _The World in the Model_
 

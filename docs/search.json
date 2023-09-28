@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 26, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 28, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -697,7 +697,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#interpreting-the-model-coefficients",
     "title": "Choice Models and Subjective Utility",
     "section": "Interpreting the Model Coefficients",
-    "text": "Interpreting the Model Coefficients\nRate of Substitution\n\n\nThe beta coefficients in the mode are interpreted as drivers of utility. However, the precision in these latent terms is relative to the variance of unobserved factors.\nThe utility scale is not fixed, but the ratio \\(\\frac{\\beta_{ic}}{\\beta_{oc}}\\) is invariant.\n\n\n\n\nRate of Substitution"
+    "text": "Interpreting the Model Coefficients\nRate of Substitution\n\n\nThe beta coefficients in the model are interpreted as weights of utility. However, the precision in these latent terms is relative to the variance of unobserved factors.\nThe utility scale is not fixed, but the ratio \\(\\frac{\\beta_{ic}}{\\beta_{oc}}\\) is invariant.\n\n\n\n\nRate of Substitution"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#model-posterior-predictive-fits",
@@ -767,7 +767,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-2",
     "title": "Choice Models and Subjective Utility",
     "section": "Adding Correlation Structure",
-    "text": "Adding Correlation Structure\nPriors on Parameters determine Market Structure\n\\[ \\begin{split} \\color{brown}{\\Gamma} =\n\\begin{pmatrix}\n  \\color{red}{1} + \\gamma + \\gamma + \\gamma \\\\\n  \\gamma + \\color{blue}{1} + \\gamma + \\gamma  \\\\\n   \\gamma + \\gamma  + \\color{orange}{1} + \\gamma \\\\\n  \\gamma + \\gamma + \\gamma + \\color{teal}{1}  \n\\end{pmatrix}\n\\end{split} \\]"
+    "text": "Adding Correlation Structure\nPriors on Parameters determine Market Structure\n\\[ \\begin{split} \\color{brown}{\\Gamma} =\n\\begin{pmatrix}\n  \\color{red}{1} , \\gamma , \\gamma , \\gamma \\\\\n  \\gamma , \\color{blue}{1} , \\gamma , \\gamma  \\\\\n   \\gamma , \\gamma  , \\color{orange}{1} , \\gamma \\\\\n  \\gamma , \\gamma , \\gamma , \\color{teal}{1}  \n\\end{pmatrix}\n\\end{split} \\]"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning",
@@ -900,7 +900,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#conclusion",
     "title": "Choice Models and Subjective Utility",
     "section": "Conclusion",
-    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels articulate the relevant structure of the world.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can stand behind the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
+    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels articulate the relevant structure of the world.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models",

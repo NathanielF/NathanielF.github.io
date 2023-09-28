@@ -405,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">9/26/23</p>
+  <p class="date">9/28/23</p>
 </section>
 <section id="preliminaries" class="slide level2 smaller">
 <h2>Preliminaries</h2>
@@ -762,7 +762,7 @@ er_{ic} &amp; er_{oc}  \\
 <h3 id="rate-of-substitution">Rate of Substitution</h3>
 <div class="columns">
 <div class="column" style="width:40%;">
-<p>The beta coefficients in the mode are interpreted as drivers of utility. However, the precision in these latent terms is relative to the variance of <strong>unobserved</strong> factors.</p>
+<p>The beta coefficients in the model are interpreted as weights of utility. However, the precision in these latent terms is relative to the variance of <strong>unobserved</strong> factors.</p>
 <p>The utility scale is not fixed, but the ratio <span class="math inline">\(\frac{\beta_{ic}}{\beta_{oc}}\)</span> is invariant.</p>
 </div><div class="column" style="width:60%;">
 <div class="quarto-figure quarto-figure-center">
@@ -882,10 +882,10 @@ er_{ic} &amp; er_{oc}  \\
 <h3 id="priors-on-parameters-determine-market-structure">Priors on Parameters determine Market Structure</h3>
 <p><span class="math display">\[ \begin{split} \color{brown}{\Gamma} =
 \begin{pmatrix}
-  \color{red}{1} + \gamma + \gamma + \gamma \\
-  \gamma + \color{blue}{1} + \gamma + \gamma  \\
-   \gamma + \gamma  + \color{orange}{1} + \gamma \\
-  \gamma + \gamma + \gamma + \color{teal}{1}  
+  \color{red}{1} , \gamma , \gamma , \gamma \\
+  \gamma , \color{blue}{1} , \gamma , \gamma  \\
+   \gamma , \gamma  , \color{orange}{1} , \gamma \\
+  \gamma , \gamma , \gamma , \color{teal}{1}  
 \end{pmatrix}
 \end{split} \]</span></p>
 </section>
@@ -1144,7 +1144,7 @@ er_{ic} &amp; er_{oc}  \\
 <li>Bayesian Conditionalisation calibrates the system against the observed facts.</li>
 <li>Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.</li>
 <li>PyMC enables us to easily build and experiment with those models.</li>
-<li>Causal inference is plausible to degree that we can stand behind the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.</li>
+<li>Causal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.</li>
 </ul>
 <blockquote>
 <p>“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in <em>The World in the Model</em></p>
