@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 28, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -858,7 +858,7 @@
     "href": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-1",
     "title": "Choice Models and Subjective Utility",
     "section": "Individual Heterogenous Utility",
-    "text": "Individual Heterogenous Utility\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{i, nb}} \\\\\n\\color{purple}{u_{i, kb}} \\\\\n\\color{orange}{u_{i, sun}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  (\\color{red}{\\alpha_{nb}} + \\sum_{i}^{K}\\beta_{i}) + \\color{blue}{\\beta_{p}}p_{nb} + \\color{green}{\\beta_{disp}}d_{nb} \\\\\n  (\\color{purple}{\\alpha_{kb}} + \\sum_{i}^{K}\\beta_{i}) +  \\color{blue}{\\beta_{p}}p_{kb} + \\color{green}{\\beta_{disp}}d_{kb}  \\\\\n  (\\color{orange}{\\alpha_{sun}}  + \\sum_{i}^{K}\\beta_{i})  + \\color{blue}{\\beta_{p}}p_{sun} + \\color{green}{\\beta_{disp}}d_{sun}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+    "text": "Individual Heterogenous Utility\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{i, nb}} \\\\\n\\color{purple}{u_{i, kb}} \\\\\n\\color{orange}{u_{i, sun}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  (\\color{red}{\\alpha_{nb}} + \\beta_{i}) + \\color{blue}{\\beta_{p}}p_{nb} + \\color{green}{\\beta_{disp}}d_{nb} \\\\\n  (\\color{purple}{\\alpha_{kb}} + \\beta_{i}) +  \\color{blue}{\\beta_{p}}p_{kb} + \\color{green}{\\beta_{disp}}d_{kb}  \\\\\n  (\\color{orange}{\\alpha_{sun}}  + \\beta_{i})  + \\color{blue}{\\beta_{p}}p_{sun} + \\color{green}{\\beta_{disp}}d_{sun}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
   },
   {
     "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-2",

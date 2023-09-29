@@ -573,9 +573,9 @@ $$
 \end{pmatrix}
 = 
 \begin{pmatrix}
-  (\color{red}{\alpha_{nb}} + \sum_{i}^{K}\beta_{i}) + \color{blue}{\beta_{p}}p_{nb} + \color{green}{\beta_{disp}}d_{nb} \\
-  (\color{purple}{\alpha_{kb}} + \sum_{i}^{K}\beta_{i}) +  \color{blue}{\beta_{p}}p_{kb} + \color{green}{\beta_{disp}}d_{kb}  \\
-  (\color{orange}{\alpha_{sun}}  + \sum_{i}^{K}\beta_{i})  + \color{blue}{\beta_{p}}p_{sun} + \color{green}{\beta_{disp}}d_{sun}  \\
+  (\color{red}{\alpha_{nb}} + \beta_{i}) + \color{blue}{\beta_{p}}p_{nb} + \color{green}{\beta_{disp}}d_{nb} \\
+  (\color{purple}{\alpha_{kb}} + \beta_{i}) +  \color{blue}{\beta_{p}}p_{kb} + \color{green}{\beta_{disp}}d_{kb}  \\
+  (\color{orange}{\alpha_{sun}}  + \beta_{i})  + \color{blue}{\beta_{p}}p_{sun} + \color{green}{\beta_{disp}}d_{sun}  \\
    0 + 0 + 0
 \end{pmatrix}
 \end{split}
