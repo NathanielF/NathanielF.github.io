@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nOct 19, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -985,5 +985,355 @@
     "title": "Choice Models and Subjective Utility",
     "section": "Adding Correlation Structure",
     "text": "Adding Correlation Structure\n\nCorrelation Structure"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#preliminaries",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#preliminaries",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Preliminaries",
+    "text": "Preliminaries\n\n\n\n\n\n\nI am not an Economist\n\n\n\nI’m a data scientist at Personio\n\nBayesian statistician,\nReformed philosopher and logician.\n\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#agenda",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#agenda",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Agenda",
+    "text": "Agenda\n\n\nHistory and Background\n\n\n\n\nModelling Choice\n\n\n\n\nCorrelation and Substitution Patterns\n\n\n\n\nCounterfactual Questions\n\n\n\n\nIndividual Heterogenous Utility\n\n\n\n\nConclusion\n\nThe World in the Model"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#mcfadden-and-bart",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#mcfadden-and-bart",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "McFadden and BART",
+    "text": "McFadden and BART\n\n\n\n\n“Transport projects involve sinking money in expensive capital investments, which have a long life and wide repercussions. There is no escape from the attempt both to estimate the demand for their services over twenty or thirty years and to assess their repercussions on the economy as a whole.” - Denys Munby, Transport, 1968 ”\n\n\n\n\n\n\n\nBay Area Rapid Transit\n\n\n\n\n\nDublin Metrolink"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#revealed-preference-and-predicting-demand",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#revealed-preference-and-predicting-demand",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Revealed Preference and Predicting Demand",
+    "text": "Revealed Preference and Predicting Demand\nSelf Centred Utility Maximisers?\n\n\n\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their latent subjective utility for A is greater than for B.\n\n\n\n\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\n\n\n\n\nHe was right.\n\n\n\n\n\n\nCopernican Shift: He estimated utility to predict choice, rather than infer utility from stated choice."
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#general-applicability-of-choice-problems",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#general-applicability-of-choice-problems",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "General Applicability of Choice Problems",
+    "text": "General Applicability of Choice Problems\n\n\nThese models offer the possibility of predicting choice in diverse domains: policy, brand, school, car and partners.\n\n\n\n\nQuestion: What are the attributes that drive these choices? How well are they measurable?\n\n\n\n\nQuestion: How do changes in these attributes influence the predicted market demand for these choices?"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#note-on-model-evaluation",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#note-on-model-evaluation",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Note on Model Evaluation",
+    "text": "Note on Model Evaluation\nReplicating the Super Soldier Program"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#note-on-model-evaluation-1",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#note-on-model-evaluation-1",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Note on Model Evaluation",
+    "text": "Note on Model Evaluation\nReplicating the Super Soldier Program\n\n\n\n\n\n\n\n\n\n\nBayesian Models aim to replicate the DGP holistically"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-the-data",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-the-data",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Choice: The Data",
+    "text": "Choice: The Data\nGas Central Heating and Electrical Central Heating described by their cost of installation and operation.\n\n\n\nchoice_id\nchosen\nic_gc\noc_gc\n…\noc_ec\n\n\n\n\n1\ngc\n866\n200\n…\n542\n\n\n2\nec\n802\n195\n…\n510\n\n\n3\ner\n759\n203\n…\n495\n\n\n4\ngr\n789\n220\n…\n502"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-a-naive-model",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-a-naive-model",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Choice: A Naive Model",
+    "text": "Choice: A Naive Model\nUnderspecified Utilities\nLet there be five goods described by their cost of installation and operation.\n\\[ \\begin{split} \\overbrace{\\begin{pmatrix}\n\\color{green}{u_{gc}}   \\\\\n\\color{green}{u_{gr}}   \\\\\n\\color{green}{u_{ec}}   \\\\\n\\color{green}{u_{er}}   \\\\\n\\color{green}{u_{hp}}   \\\\\n\\end{pmatrix}}^{utility} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\nhp_{ic} & hp_{oc}  \\\\\n\\end{pmatrix} \\overbrace{\\begin{pmatrix}\n\\color{blue}{\\beta_{ic}}   \\\\\n\\color{blue}{\\beta_{oc}}   \\\\\n\\end{pmatrix}}^{parameters}  \\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-a-naive-model-1",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-a-naive-model-1",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Choice: A Naive Model",
+    "text": "Choice: A Naive Model\nThe utility calculation is fundamentally comparative. \\[ \\begin{split} \\begin{pmatrix}\n\\color{green}{u_{gc}}   \\\\\n\\color{green}{u_{gr}}   \\\\\n\\color{green}{u_{ec}}   \\\\\n\\color{green}{u_{er}}   \\\\\n\\color{red}{\\overbrace{0}^{\\text{outside good}}}   \\\\\n\\end{pmatrix} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\n\\color{red}{0} & \\color{red}{0} \\\\\n\\end{pmatrix} \\begin{pmatrix}\n\\color{blue}{\\beta_{ic}}   \\\\\n\\color{blue}{\\beta_{oc}}   \\\\\n\\end{pmatrix}  \\end{split}\n\\]\nWe zero out one category in the data set to represent the “outside good” for comparison. Similar to dummy variables in Regression, this is required for the model to be identified."
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-a-naive-model-2",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-a-naive-model-2",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Choice: A Naive Model",
+    "text": "Choice: A Naive Model\nUtility determines choice probability of choice:\n\\[\\text{softmax}(\\color{green}{u})_{j} = \\frac{\\exp(\\color{green}{u_{j}})}{\\sum_{q=1}^{J}\\exp(\\color{green}{u_{q}})}\\]\nchoices determine market share where:\n\\[ s_{j}(\\mathbf{\\color{blue}{\\beta}}) = P(\\color{green}{u_{j}} > \\color{green}{u_{k}}; ∀k ̸= j) \\]"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-estimation",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-estimation",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Choice: Estimation",
+    "text": "Choice: Estimation\nThe model is traditionally estimated with maximum likelihood caclulations.\n\\[  L(\\color{blue}{\\beta}) = \\prod s_{j}(\\mathbf{\\color{blue}{\\beta}}) \\]\nor taking the log:\n\\[  l(\\color{blue}{\\beta}) = \\sum log(s_{j}(\\mathbf{\\color{blue}{\\beta}})) \\] \\[ \\text{ We find: } \\underset{\\color{blue}{\\beta}}{\\mathrm{argmax}} \\text{ } l(\\color{blue}{\\beta}) \\]\nResults are often brittle!"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-bayesian-estimation",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#choice-bayesian-estimation",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Choice: Bayesian Estimation",
+    "text": "Choice: Bayesian Estimation\nTo evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]\nPriors can be used flexibly regularise and improve reliability of estimation across structural causal models."
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-naive-model-in-code",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-naive-model-in-code",
+    "title": "Choice Models and Subjective Utility",
+    "section": "The Naive Model in Code",
+    "text": "The Naive Model in Code\nwith pm.Model(coords=coords) as model_1:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    ## Construct Utility matrix and Pivot\n    u0 = beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#interpreting-the-model-coefficients",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#interpreting-the-model-coefficients",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Interpreting the Model Coefficients",
+    "text": "Interpreting the Model Coefficients\nRate of Substitution\n\n\nThe beta coefficients in the model are interpreted as weights of utility. However, the precision in these latent terms is relative to the variance of unobserved factors.\nThe utility scale is not fixed, but the ratio \\(\\frac{\\beta_{ic}}{\\beta_{oc}}\\) is invariant.\n\n\n\n\nRate of Substitution"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#model-posterior-predictive-fits",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#model-posterior-predictive-fits",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Model Posterior Predictive Fits",
+    "text": "Model Posterior Predictive Fits\nThe model fit fails to recapture the observed data points\n\nModel Fit"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model-1",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model-1",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Augmenting the Model",
+    "text": "Augmenting the Model\nPosterior Predictions\n\nModel Fit"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model-2",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model-2",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Augmenting the Model:",
+    "text": "Augmenting the Model:\nwith pm.Model(coords=coords) as model_2:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n\n    ## Construct Utility matrix and Pivot using an intercept per alternative\n    u0 = alphas[0] + beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = alphas[1] + beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = alphas[2] + beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = alphas[3] + beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model-3",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model-3",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Augmenting the Model:",
+    "text": "Augmenting the Model:\n\nModel Structure"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model-4",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model-4",
+    "title": "Choice Models and Subjective Utility",
+    "section": "Augmenting the Model",
+    "text": "Augmenting the Model\nPosterior Predictions\n\nModel Fit"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#independence-of-irrelevant-alternatives",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#independence-of-irrelevant-alternatives",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Independence of Irrelevant Alternatives",
+    "text": "Independence of Irrelevant Alternatives\nNew Products Cannibalise Equally from all Alternatives\n\nSuppose a market choice between transport modes is determined by the above model.\nRed Bus or Car are you initial Options. Assume \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta)\\). Market Share is 50% to each option.\nIntroduce the Blue Bus Option, then the Independent characteristics of the utility specification implies that \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta) = s_{\\color{blue}{bus}}(\\beta)\\)\nThis implies an implausible substitution pattern for real markets.1\n\nWhat kind of Monster have we Created!?"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-1",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-1",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\nPriors on Parameters determine Market Structure\n\\[ \\begin{split} \\color{brown}{\\Gamma} =\n\\begin{pmatrix}\n  \\color{red}{1} , \\gamma , \\gamma , \\gamma \\\\\n  \\gamma , \\color{blue}{1} , \\gamma , \\gamma  \\\\\n   \\gamma , \\gamma  , \\color{orange}{1} , \\gamma \\\\\n  \\gamma , \\gamma , \\gamma , \\color{teal}{1}  \n\\end{pmatrix}\n\\end{split} \\]"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-2",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-2",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\nCovariance in Code\nwith pm.Model(coords=coords) as model_3:\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    beta_income = pm.Normal(\"beta_income\", 0, 1 dims=\"alts_intercepts\")\n\n    chol, corr, stds = pm.LKJCholeskyCov(\n        \"chol\", n=4, eta=2.0, \n        sd_dist=pm.Exponential.dist(1.0, shape=4)\n    )\n    alphas = pm.MvNormal(\"alpha\", mu=0, chol=chol, dims=\"alts_intercepts\")\n\n    u0 = (\n        alphas[0]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[0] * wide_heating_df[\"income\"]\n    )\n    u1 = (\n        alphas[1]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[1] * wide_heating_df[\"income\"]\n    )\n    u2 = (\n        alphas[2]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[2] * wide_heating_df[\"income\"]\n    )\n    u3 = (\n        alphas[3]\n        + beta_ic * wide_heating_df[\"ic.gr\"]\n        + beta_oc * wide_heating_df[\"oc.gr\"]\n        + beta_income[3] * wide_heating_df[\"income\"]\n    )\n    u4 = np.zeros(N)  # pivot\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-3",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-3",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\nStructural Dependence\n\nCorrelation Structure"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-4",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-4",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\n\nCorrelation Structure"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#counterfactual-reasoning",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#counterfactual-reasoning",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\nCeteris Paribus Laws\nWith a fitted PyMC model we can counterfactually reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.\n\nWhat would the market share be like if prices for electrical systems increased 20%?\n\n # update values of predictors with new 20% \n # price increase in operating costs for electrical options\nwith model_3:\n    pm.set_data({\"oc_ec\": wide_heating_df[\"oc.ec\"] * 1.2, \n                 \"oc_er\": wide_heating_df[\"oc.er\"] * 1.2})\n    # use the updated values and predict outcomes and probabilities:\n    idata_new_policy = pm.sample_posterior_predictive(\n        idata_m3,\n        var_names=[\"p\", \"y_cat\"],\n        return_inferencedata=True,\n        predictions=True,\n        extend_inferencedata=False,\n        random_seed=100,\n    )\n\nidata_new_policy"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#counterfactual-reasoning-1",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#counterfactual-reasoning-1",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\nPricing Experiments\n\nCounterfactual Shares"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#counterfactual-reasoning-2",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#counterfactual-reasoning-2",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\nInterventions and Conditionalisation\n\n\n\nThere is a sharp distinction between conditional probability distributions and probability under intervention\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process."
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#counterfactual-reasoning-3",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#counterfactual-reasoning-3",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\nInterventions and Conditionalisation\n\n\n\nThere is a sharp distinction between conditional probability distributions and probability under intervention\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process."
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\nRepeated Choice and Hierarchical Structure\n\n\n\nperson_id\nchoice_id\nchosen\nnabisco_price\nkeebler_price\n\n\n\n\n1\n1\nnabisco\n3.40\n2.00\n\n\n1\n2\nnabisco\n3.45\n2.50\n\n\n1\n3\nkeebler\n3.60\n2.70\n\n\n2\n1\nkeebler\n3.48\n2.20\n\n\n2\n2\nkeebler\n3.30\n2.25"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility-1",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility-1",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{i, nb}} \\\\\n\\color{purple}{u_{i, kb}} \\\\\n\\color{orange}{u_{i, sun}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  (\\color{red}{\\alpha_{nb}} + \\beta_{i}) + \\color{blue}{\\beta_{p}}p_{nb} + \\color{green}{\\beta_{disp}}d_{nb} \\\\\n  (\\color{purple}{\\alpha_{kb}} + \\beta_{i}) +  \\color{blue}{\\beta_{p}}p_{kb} + \\color{green}{\\beta_{disp}}d_{kb}  \\\\\n  (\\color{orange}{\\alpha_{sun}}  + \\beta_{i})  + \\color{blue}{\\beta_{p}}p_{sun} + \\color{green}{\\beta_{disp}}d_{sun}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility-2",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility-2",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\nIn Code\n\nwith pm.Model(coords=coords) as model_4:\n    beta_feat = pm.TruncatedNormal(\"beta_feat\", 0, 1, upper=10, lower=0)\n    beta_disp = pm.TruncatedNormal(\"beta_disp\", 0, 1, upper=10, lower=0)\n    ## Stronger Prior on Price to ensure \n    ## an increase in price negatively impacts utility\n    beta_price = pm.TruncatedNormal(\"beta_price\", 0, 1, upper=0, lower=-10)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n    beta_individual = pm.Normal(\"beta_individual\", 0, 0.05,\n     dims=(\"individuals\", \"alts_intercepts\"))\n\n    u0 = (\n        (alphas[0] + beta_individual[person_indx, 0])\n        + beta_disp * c_df[\"disp.sunshine\"]\n        + beta_feat * c_df[\"feat.sunshine\"]\n        + beta_price * c_df[\"price.sunshine\"]\n    )\n    u1 = (\n        (alphas[1] + beta_individual[person_indx, 1])\n        + beta_disp * c_df[\"disp.keebler\"]\n        + beta_feat * c_df[\"feat.keebler\"]\n        + beta_price * c_df[\"price.keebler\"]\n    )\n    u2 = (\n        (alphas[2] + beta_individual[person_indx, 2])\n        + beta_disp * c_df[\"disp.nabisco\"]\n        + beta_feat * c_df[\"feat.nabisco\"]\n        + beta_price * c_df[\"price.nabisco\"]\n    )\n    u3 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3]).T\n    # Reconstruct the total data\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility-3",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility-3",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\nRecovered Posterior Predictive Distribution"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility-4",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility-4",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\nIndividual Preference\n\n\n\n\n\nIndividual preferences can be derived from the model in this manner.\nThe relationship between preferences over the product offering can be seen too"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#conclusion",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#conclusion",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Conclusion",
+    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels articulate the relevant structure of the world.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-multnomial-model",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-multnomial-model",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Multnomial Model:",
+    "text": "The Multnomial Model:\nProduct Specific Intercepts\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-choice-model",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-choice-model",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Choice Model",
+    "text": "The Choice Model\nUtility determines choice probability of choice:\n\\[\\text{softmax}(\\color{green}{u})_{j} = \\frac{\\exp(\\color{green}{u_{j}})}{\\sum_{q=1}^{J}\\exp(\\color{green}{u_{q}})}\\]\nchoices determine market share where:\n\\[ s_{j}(\\mathbf{\\color{blue}{\\beta}}) = P(\\color{green}{u_{j}} > \\color{green}{u_{k}}; ∀k ̸= j) \\]"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-estimation-strategy",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-estimation-strategy",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Estimation Strategy",
+    "text": "The Estimation Strategy\nThe model is traditionally estimated with maximum likelihood caclulations.\n\\[  L(\\color{blue}{\\beta}) = \\prod s_{j}(\\mathbf{\\color{blue}{\\beta}}) \\]\nor taking the log:\n\\[  l(\\color{blue}{\\beta}) = \\sum log(s_{j}(\\mathbf{\\color{blue}{\\beta}})) \\] \\[ \\text{ We find: } \\underset{\\color{blue}{\\beta}}{\\mathrm{argmax}} \\text{ } l(\\color{blue}{\\beta}) \\]\nResults are often brittle!"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#bayesian-estimation",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#bayesian-estimation",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Bayesian Estimation",
+    "text": "Bayesian Estimation\nTo evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]\nPriors can be used flexibly to regularise and improve reliability of estimation across structural causal models."
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-model-in-code",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-model-in-code",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Model in Code:",
+    "text": "The Model in Code:\nwith pm.Model(coords=coords) as model_2:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n\n    ## Construct Utility matrix and Pivot using an intercept per alternative\n    u0 = alphas[0] + beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = alphas[1] + beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = alphas[2] + beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = alphas[3] + beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#augmenting-the-model",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Augmenting the Model:",
+    "text": "Augmenting the Model:\n\nModel Structure"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-multnomial-model-1",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-multnomial-model-1",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Multnomial Model:",
+    "text": "The Multnomial Model:\nUtility determines choice probability of choice:\n\\[\\text{softmax}(\\color{green}{u})_{j} = \\frac{\\exp(\\color{green}{u_{j}})}{\\sum_{q=1}^{J}\\exp(\\color{green}{u_{q}})}\\]\nchoices determine market share where:\n\\[ s_{j}(\\mathbf{\\color{blue}{\\beta}}) = P(\\color{green}{u_{j}} > \\color{green}{u_{k}}; ∀k ̸= j) \\]"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-maximum-likelihood-estimation-strategy",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-maximum-likelihood-estimation-strategy",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Maximum Likelihood Estimation Strategy",
+    "text": "The Maximum Likelihood Estimation Strategy\nThe model is traditionally estimated with maximum likelihood caclulations.\n\\[  L(\\color{blue}{\\beta}) = \\prod s_{j}(\\mathbf{\\color{blue}{\\beta}}) \\]\nor taking the log:\n\\[  l(\\color{blue}{\\beta}) = \\sum log(s_{j}(\\mathbf{\\color{blue}{\\beta}})) \\] \\[ \\text{ We find: } \\underset{\\color{blue}{\\beta}}{\\mathrm{argmax}} \\text{ } l(\\color{blue}{\\beta}) \\]\nResults are often brittle!"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#model-structure",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#model-structure",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Model Structure:",
+    "text": "Model Structure:\n\nModel Structure"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#model-fit",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#model-fit",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Model Fit",
+    "text": "Model Fit\nPosterior Predictive Distribution\n\nModel Fit"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Problem:",
+    "text": "The Problem:\nNew Products Cannibalise Equally from all Alternatives\n\nSuppose a market choice between transport modes is determined by the above model.\nRed Bus or Car are you initial Options. Assume \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta)\\). Market Share is 50% to each option.\nIntroduce the Blue Bus Option, then the Independent characteristics of the utility specification implies that \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta) = s_{\\color{blue}{bus}}(\\beta)\\)\nThis implies an implausible substitution pattern for real markets.1\n\nWhat kind of Monster have we Created!?"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem-iia",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem-iia",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Problem: IIA",
+    "text": "The Problem: IIA\nNew Products Cannibalise Equally from all Alternatives\n\nSuppose a market choice between transport modes is determined by the above model.\nRed Bus or Car are you initial Options. Assume \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta)\\). Market Share is 50% to each option.\nIntroduce the Blue Bus Option, then the Independent characteristics of the utility specification implies that \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta) = s_{\\color{blue}{bus}}(\\beta)\\)\nThis implies an implausible substitution pattern for real markets.1\n\nWhat kind of Monster have we Created!?"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\nDependence in Market Share\n\\[ \\alpha_{i} \\sim Normal(\\mathbf{0}, \\color{brown}{\\Gamma}) \\]\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-in-code",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#adding-correlation-structure-in-code",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Adding Correlation Structure in Code",
+    "text": "Adding Correlation Structure in Code\nwith pm.Model(coords=coords) as model_3:\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    beta_income = pm.Normal(\"beta_income\", 0, 1 dims=\"alts_intercepts\")\n\n    chol, corr, stds = pm.LKJCholeskyCov(\n        \"chol\", n=4, eta=2.0, \n        sd_dist=pm.Exponential.dist(1.0, shape=4)\n    )\n    alphas = pm.MvNormal(\"alpha\", mu=0, chol=chol, dims=\"alts_intercepts\")\n\n    u0 = (\n        alphas[0]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[0] * wide_heating_df[\"income\"]\n    )\n    u1 = (\n        alphas[1]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[1] * wide_heating_df[\"income\"]\n    )\n    u2 = (\n        alphas[2]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[2] * wide_heating_df[\"income\"]\n    )\n    u3 = (\n        alphas[3]\n        + beta_ic * wide_heating_df[\"ic.gr\"]\n        + beta_oc * wide_heating_df[\"oc.gr\"]\n        + beta_income[3] * wide_heating_df[\"income\"]\n    )\n    u4 = np.zeros(N)  # pivot\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-model",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-model",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Model:",
+    "text": "The Model:\nUtilities in Code\nwith pm.Model(coords=coords) as model_2:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n\n    ## Construct Utility matrix and Pivot using an intercept per alternative\n    u0 = alphas[0] + beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = alphas[1] + beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = alphas[2] + beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = alphas[3] + beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
   }
 ]

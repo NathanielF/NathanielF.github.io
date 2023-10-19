@@ -1,0 +1,585 @@
+---
+title: "Discrete Choice and Random Utility Models"
+subtitle: "PyCon Ireland"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+format: 
+    revealjs:
+         theme: [default, clean.scss]
+         logo: images/pycon_ireland.jpeg
+         footer: "Discrete Choice with PyMC"
+categories: [bayesian, discrete choice]
+image: "images/pycon_ireland.jpeg"
+date: last-modified
+---
+
+## Preliminaries {.smaller}
+
+:::{.callout-warning}
+## I am not an Economist
+- I'm a __data scientist__ at __[Personio]{.blue}__ 
+    - Bayesian statistician, 
+    - Reformed philosopher and logician. 
+- Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
+:::
+ 
+::: {.callout-note}
+## Disclaimer
+None of Personio's data was used in this presentation
+:::
+
+ 
+::: {.callout-tip}
+## Code or it didn't Happen
+The worked examples used here can be found [here](https://www.pymc.io/projects/examples/en/latest/generalized_linear_models/GLM-discrete-choice_models.html)
+:::
+
+
+## Agenda
+::: {.fragment .fade-in}
+- History and Background
+::: 
+::: {.fragment .fade-in}
+- Modelling Choice
+:::
+::: {.fragment .fade-in}
+- Correlation and Substitution Patterns
+:::
+::: {.fragment .fade-in}
+- Counterfactual Questions
+:::
+::: {.fragment .fade-in}
+- Individual Heterogenous Utility
+:::
+::: {.fragment .fade-in}
+- Conclusion
+    - The World in the Model
+:::
+
+
+# History and Background
+A brief survey of historical use-cases and the kinds of problems Bayesian discrete choice models can solve.
+ 
+## McFadden and BART {.smaller}
+:::: {.columns}
+::: {.column width="50%"}
+::: {.fragment .fade-in}
+> "Transport projects involve sinking money
+in expensive capital investments, which
+have a long life and wide repercussions.
+There is no escape from the attempt both
+to estimate the demand for their services
+over twenty or thirty years and to assess
+their repercussions on the economy as a
+whole." 
+- Denys Munby, Transport, 1968 "
+
+
+:::
+:::
+
+::: {.column width="50%"}
+::: {.fragment .fade-in}
+![Bay Area Rapid Transit](images/bart.jpg)
+
+![Dublin Metrolink](images/metrolink.png)
+:::
+:::
+:::
+
+
+## Revealed Preference and Predicting Demand {.smaller}
+### Self Centred Utility Maximisers?
+
+:::: {.columns}
+::: {.column width="50%"}
+::: {.fragment .fade-in}
+- The assumption of *revealed preference* theory is that if a person chooses A over B then their __latent__ subjective utility for A is greater than for B. 
+:::
+
+::: {.fragment .fade-in}
+- Survey data estimated about 15% of users would adopt the newly introduced BART system. McFadden's random utility model estimated 6%. 
+:::
+::: {.fragment .fade-in}
+- He was right. 
+:::
+:::
+
+::: {.column width="50%"}
+![](images/copernicus-drawing.png){width="300" height="300"} 
+
+::: {.fragment .fade-in}
+- __Copernican Shift__: He estimated utility to predict choice, rather than infer utility from stated choice. 
+:::  
+:::
+
+:::
+
+## General Applicability of Choice Problems
+::: {.fragment .fade-in}
+ - These models offer the possibility of predicting choice in diverse domains: [policy]{.alert}, [brand]{.blueviolet}, [school]{.green}, [car]{.blue} and [partners]{.magenta}. 
+:::
+::: {.fragment .fade-in}
+ - __Question__: What are the attributes that drive these choices? How well are they measurable?
+:::
+
+::: {.fragment .fade-in}
+ - __Question__: How do changes in these attributes influence the predicted market demand for these choices?
+:::
+
+## Note on Model Evaluation
+### Replicating the Super Soldier Program
+
+:::: {.columns}
+::: {.column width="40%"}
+::: {.fragment .fade-in}
+![](images/dgp.png)
+:::
+
+:::
+
+::: {.column width="60%"}
+
+::: {.fragment .fade-in}
+![](images//ml_models.png)
+:::
+
+:::
+:::
+
+## Note on Model Evaluation
+### Replicating the Super Soldier Program
+
+:::: {.columns}
+::: {.column width="60%"}
+::: {.fragment .fade-in}
+![](images/one_dim.png)
+:::
+
+:::
+
+::: {.column width="40%"}
+
+::: {.fragment .fade-in}
+![Bayesian Models aim to replicate the DGP holistically](images/vitruvian.png)
+:::
+
+:::
+:::
+
+
+# Modelling Choice
+We elaborate the basic multinomial model for choice and a problem with it. 
+
+## Choice: The Data
+
+Gas Central Heating and Electrical Central Heating
+described by their cost of installation and operation. 
+
+
+
+| choice_id | chosen | ic_gc | oc_gc | ...   | oc_ec |
+|-----------|--------|-------|-------|-------|-------|
+| 1         | gc     | 866   | 200   | ...   | 542   |
+| 2         | ec     | 802   | 195   | ...   | 510   |
+| 3         | er     | 759   | 203   | ...   | 495   |
+| 4         | gr     | 789   | 220   | ...   | 502   |
+
+
+
+
+## The Multnomial Model: 
+### Product Specific Intercepts
+
+$$
+\begin{split}
+\begin{pmatrix}
+\color{red}{u_{gc}} \\ 
+\color{purple}{u_{gr}} \\
+\color{orange}{u_{ec}} \\
+\color{teal}{u_{er}} \\
+0
+\end{pmatrix}
+= 
+\begin{pmatrix}
+  \color{red}{\alpha_{gc}} + \color{blue}{\beta_{ic}}gc_{ic} + \color{blue}{\beta_{oc}}gc_{oc} \\
+  \color{purple}{\alpha_{gr}} + \color{blue}{\beta_{ic}}gr_{ic} + \color{blue}{\beta_{oc}}gr_{oc}  \\
+  \color{orange}{\alpha_{ec}} + \color{blue}{\beta_{ic}}ec_{ic} + \color{blue}{\beta_{oc}}ec_{oc}  \\
+  \color{teal}{\alpha_{er}} + \color{blue}{\beta_{ic}}er_{ic} + \color{blue}{\beta_{oc}}er_{oc}  \\
+   0 + 0 + 0
+\end{pmatrix}
+\end{split}
+$$
+
+
+## The Multnomial Model: 
+Utility determines choice probability of choice:
+
+$$\text{softmax}(\color{green}{u})_{j} = \frac{\exp(\color{green}{u_{j}})}{\sum_{q=1}^{J}\exp(\color{green}{u_{q}})}$$
+
+choices determine market share where:
+
+$$ s_{j}(\mathbf{\color{blue}{\beta}}) = P(\color{green}{u_{j}} > \color{green}{u_{k}}; ∀k ̸= j) $$
+
+## The Maximum Likelihood Estimation Strategy
+
+The model is traditionally estimated with maximum likelihood caclulations. 
+
+$$  L(\color{blue}{\beta}) = \prod s_{j}(\mathbf{\color{blue}{\beta}}) $$
+
+or taking the log:
+
+$$  l(\color{blue}{\beta}) = \sum log(s_{j}(\mathbf{\color{blue}{\beta}})) $$
+$$ \text{ We find: } \underset{\color{blue}{\beta}}{\mathrm{argmax}} \text{ } l(\color{blue}{\beta}) $$
+
+Results are often brittle!
+
+
+## Bayesian Estimation
+
+To evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.
+
+$$\underbrace{\color{blue}{\beta}}_{\text{prior draws}} \sim Normal(0, 1) $$
+
+$$ \underbrace{p(\color{blue}{\beta} | D)}_{\text{posterior draws}} = \frac{p(\mathbb{\color{blue}{\beta}})p(D | \color{blue}{\beta} )}{\int_{i}^{n} p(D | \mathbf{\color{blue}{\beta_{i}}})p(\mathbf{\color{blue}{\beta_{i}}}) } $$
+
+Priors can be used flexibly to regularise and improve reliability of estimation across structural causal models.
+
+
+## The Model:
+### Utilities in Code
+
+```{.python code-line-numbers="|5-5|6-13"}
+with pm.Model(coords=coords) as model_2:
+    ## Priors for the Beta Coefficients
+    beta_ic = pm.Normal("beta_ic", 0, 1)
+    beta_oc = pm.Normal("beta_oc", 0, 1)
+    alphas = pm.Normal("alpha", 0, 1, dims="alts_intercepts")
+
+    ## Construct Utility matrix and Pivot using an intercept per alternative
+    u0 = alphas[0] + beta_ic * wide_heating_df["ic.ec"] + beta_oc * wide_heating_df["oc.ec"]
+    u1 = alphas[1] + beta_ic * wide_heating_df["ic.er"] + beta_oc * wide_heating_df["oc.er"]
+    u2 = alphas[2] + beta_ic * wide_heating_df["ic.gc"] + beta_oc * wide_heating_df["oc.gc"]
+    u3 = alphas[3] + beta_ic * wide_heating_df["ic.gr"] + beta_oc * wide_heating_df["oc.gr"]
+    u4 = np.zeros(N)  # Outside Good
+    s = pm.math.stack([u0, u1, u2, u3, u4]).T
+
+    ## Apply Softmax Transform
+    p_ = pm.Deterministic("p", pm.math.softmax(s, axis=1), dims=("obs", "alts_probs"))
+
+    ## Likelihood
+    choice_obs = pm.Categorical("y_cat", p=p_, observed=observed, dims="obs")
+
+```
+
+
+## Interpreting the Model Coefficients
+### Rate of Substitution
+:::: {.columns}
+::: {.column width="40%"}
+The beta coefficients in the model are interpreted as weights of utility. However, the precision in these latent terms is relative to the variance of **unobserved** factors.
+
+The utility scale is not fixed, but the ratio $\frac{\beta_{ic}}{\beta_{oc}}$ is invariant.
+
+:::
+
+::: {.column width="60%"}
+
+![Rate of Substitution](images/rate_of_substitution.png)
+:::
+
+:::
+
+
+## Model Structure:
+
+![Model Structure](images/augmented_model_graph.svg)
+
+## Model Fit 
+### Posterior Predictive Distribution
+
+![Model Fit](images/augmented_fit.png)
+
+
+## The Problem: IIA
+### New Products Cannibalise Equally from all Alternatives
+
+- Suppose a market choice between transport modes is determined by the above model. 
+- Red Bus or Car are you initial Options. Assume $s_{\color{red}{bus}}(\beta) = s_{car}(\beta)$. Market Share is 50% to each option. 
+- Introduce the Blue Bus Option, then the Independent characteristics of the utility specification implies that $s_{\color{red}{bus}}(\beta) = s_{car}(\beta) = s_{\color{blue}{bus}}(\beta)$
+- This implies an implausible substitution pattern for real markets.^[What kind of Monster have we Created!?]
+
+
+# Substitution Patterns and Correlation Structure
+Model tries to account for pathological patterns of sustitution between goods by incorporating covariance structures. 
+
+## Adding Correlation Structure
+### Dependence in Market Share
+
+$$ \alpha_{i} \sim Normal(\mathbf{0}, \color{brown}{\Gamma}) $$
+
+$$
+\begin{split}
+\begin{pmatrix}
+\color{red}{u_{gc}} \\ 
+\color{purple}{u_{gr}} \\
+\color{orange}{u_{ec}} \\
+\color{teal}{u_{er}} \\
+0
+\end{pmatrix}
+= 
+\begin{pmatrix}
+  \color{red}{\alpha_{gc}} + \color{blue}{\beta_{ic}}gc_{ic} + \color{blue}{\beta_{oc}}gc_{oc} \\
+  \color{purple}{\alpha_{gr}} + \color{blue}{\beta_{ic}}gr_{ic} + \color{blue}{\beta_{oc}}gr_{oc}  \\
+  \color{orange}{\alpha_{ec}} + \color{blue}{\beta_{ic}}ec_{ic} + \color{blue}{\beta_{oc}}ec_{oc}  \\
+  \color{teal}{\alpha_{er}} + \color{blue}{\beta_{ic}}er_{ic} + \color{blue}{\beta_{oc}}er_{oc}  \\
+   0 + 0 + 0
+\end{pmatrix}
+\end{split}
+$$
+
+## Adding Correlation Structure
+### Priors on Parameters determine Market Structure
+
+$$ \begin{split} \color{brown}{\Gamma} = 
+\begin{pmatrix}
+  \color{red}{1} , \gamma , \gamma , \gamma \\
+  \gamma , \color{blue}{1} , \gamma , \gamma  \\
+   \gamma , \gamma  , \color{orange}{1} , \gamma \\
+  \gamma , \gamma , \gamma , \color{teal}{1}  
+\end{pmatrix}
+\end{split} $$
+
+
+
+
+
+## Adding Correlation Structure 
+### Covariance in Code
+
+```{.python code-line-numbers="|6-12|13-18|"}
+with pm.Model(coords=coords) as model_3:
+    beta_ic = pm.Normal("beta_ic", 0, 1)
+    beta_oc = pm.Normal("beta_oc", 0, 1)
+
+    beta_income = pm.Normal("beta_income", 0, 1 dims="alts_intercepts")
+
+    chol, corr, stds = pm.LKJCholeskyCov(
+        "chol", n=4, eta=2.0, 
+        sd_dist=pm.Exponential.dist(1.0, shape=4)
+    )
+    alphas = pm.MvNormal("alpha", mu=0, chol=chol, dims="alts_intercepts")
+
+    u0 = (
+        alphas[0]
+        + beta_ic * wide_heating_df["ic.gc"]
+        + beta_oc * wide_heating_df["oc.gc"]
+        + beta_income[0] * wide_heating_df["income"]
+    )
+    u1 = (
+        alphas[1]
+        + beta_ic * wide_heating_df["ic.gc"]
+        + beta_oc * wide_heating_df["oc.gc"]
+        + beta_income[1] * wide_heating_df["income"]
+    )
+    u2 = (
+        alphas[2]
+        + beta_ic * wide_heating_df["ic.gc"]
+        + beta_oc * wide_heating_df["oc.gc"]
+        + beta_income[2] * wide_heating_df["income"]
+    )
+    u3 = (
+        alphas[3]
+        + beta_ic * wide_heating_df["ic.gr"]
+        + beta_oc * wide_heating_df["oc.gr"]
+        + beta_income[3] * wide_heating_df["income"]
+    )
+    u4 = np.zeros(N)  # pivot
+    s = pm.math.stack([u0, u1, u2, u3, u4]).T
+
+    p_ = pm.Deterministic("p", pm.math.softmax(s, axis=1), dims=("obs", "alts_probs"))
+    choice_obs = pm.Categorical("y_cat", p=p_, observed=observed, dims="obs")
+
+```
+## Adding Correlation Structure
+### Structural Dependence
+
+![Correlation Structure](images/correlation_structure.svg)
+
+# Counterfactual Questions
+Models as laboratories for experimentation
+
+
+
+## Counterfactual Reasoning  {.smaller}
+### Ceteris Paribus Laws
+
+With a fitted PyMC model we can __counterfactually__ reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.
+
+- What would the market share be like if prices for electrical systems increased 20%?
+
+```{.python code-line-numbers="|3-5|"}
+ # update values of predictors with new 20% 
+ # price increase in operating costs for electrical options
+with model_3:
+    pm.set_data({"oc_ec": wide_heating_df["oc.ec"] * 1.2, 
+                 "oc_er": wide_heating_df["oc.er"] * 1.2})
+    # use the updated values and predict outcomes and probabilities:
+    idata_new_policy = pm.sample_posterior_predictive(
+        idata_m3,
+        var_names=["p", "y_cat"],
+        return_inferencedata=True,
+        predictions=True,
+        extend_inferencedata=False,
+        random_seed=100,
+    )
+
+idata_new_policy
+```
+
+
+## Counterfactual Reasoning
+### Pricing Experiments
+
+![Counterfactual Shares](images/counterfactual_shares.png)
+
+## Counterfactual Reasoning
+### Interventions and Conditionalisation
+
+:::: {.columns}
+::: {.column width="40%"}
+- There is a sharp distinction between conditional probability distributions and probability under intervention
+- In [PyMC](https://www.pymc.io/projects/examples/en/latest/causal_inference/interventional_distribution.html#interventions-and-the-operatorname-do-operator) you can implement the __do-operator__ to intervene on the graph that represents your data generating process.
+:::
+
+::: {.column width="60%"}
+![](images/sprinkler.png)
+
+:::
+
+
+:::
+
+# Hierarchical Variations 
+Inducing covariance structures by allowing individual deviations from mean utilities.
+
+## Individual Heterogenous Utility
+### Repeated Choice and Hierarchical Structure 
+
+| person_id | choice_id | chosen  | nabisco_price | keebler_price |
+|-----------|-----------|---------|---------------|---------------|
+| 1         | 1         | nabisco | 3.40          | 2.00          |
+| 1         | 2         | nabisco | 3.45          | 2.50          |
+| 1         | 3         | keebler | 3.60          | 2.70          |
+| 2         | 1         | keebler | 3.48          | 2.20          |
+| 2         | 2         | keebler | 3.30          | 2.25          |
+
+
+## Individual Heterogenous Utility
+
+$$
+\begin{split}
+\begin{pmatrix}
+\color{red}{u_{i, nb}} \\ 
+\color{purple}{u_{i, kb}} \\
+\color{orange}{u_{i, sun}} \\
+0
+\end{pmatrix}
+= 
+\begin{pmatrix}
+  (\color{red}{\alpha_{nb}} + \beta_{i}) + \color{blue}{\beta_{p}}p_{nb} + \color{green}{\beta_{disp}}d_{nb} \\
+  (\color{purple}{\alpha_{kb}} + \beta_{i}) +  \color{blue}{\beta_{p}}p_{kb} + \color{green}{\beta_{disp}}d_{kb}  \\
+  (\color{orange}{\alpha_{sun}}  + \beta_{i})  + \color{blue}{\beta_{p}}p_{sun} + \color{green}{\beta_{disp}}d_{sun}  \\
+   0 + 0 + 0
+\end{pmatrix}
+\end{split}
+$$
+
+
+## Individual Heterogenous Utility
+### In Code 
+```{.python code-line-numbers="|9-11|13-17|"}
+
+with pm.Model(coords=coords) as model_4:
+    beta_feat = pm.TruncatedNormal("beta_feat", 0, 1, upper=10, lower=0)
+    beta_disp = pm.TruncatedNormal("beta_disp", 0, 1, upper=10, lower=0)
+    ## Stronger Prior on Price to ensure 
+    ## an increase in price negatively impacts utility
+    beta_price = pm.TruncatedNormal("beta_price", 0, 1, upper=0, lower=-10)
+    alphas = pm.Normal("alpha", 0, 1, dims="alts_intercepts")
+    beta_individual = pm.Normal("beta_individual", 0, 0.05,
+     dims=("individuals", "alts_intercepts"))
+
+    u0 = (
+        (alphas[0] + beta_individual[person_indx, 0])
+        + beta_disp * c_df["disp.sunshine"]
+        + beta_feat * c_df["feat.sunshine"]
+        + beta_price * c_df["price.sunshine"]
+    )
+    u1 = (
+        (alphas[1] + beta_individual[person_indx, 1])
+        + beta_disp * c_df["disp.keebler"]
+        + beta_feat * c_df["feat.keebler"]
+        + beta_price * c_df["price.keebler"]
+    )
+    u2 = (
+        (alphas[2] + beta_individual[person_indx, 2])
+        + beta_disp * c_df["disp.nabisco"]
+        + beta_feat * c_df["feat.nabisco"]
+        + beta_price * c_df["price.nabisco"]
+    )
+    u3 = np.zeros(N)  # Outside Good
+    s = pm.math.stack([u0, u1, u2, u3]).T
+    # Reconstruct the total data
+
+    ## Apply Softmax Transform
+    p_ = pm.Deterministic("p", pm.math.softmax(s, axis=1), dims=("obs", "alts_probs"))
+
+    ## Likelihood
+    choice_obs = pm.Categorical("y_cat", p=p_, observed=observed, dims="obs")
+
+
+
+```
+
+
+## Individual Heterogenous Utility
+### Recovered Posterior Predictive Distribution
+
+![](images/nabisco_fit.png)
+
+
+## Individual Heterogenous Utility
+### Individual Preference
+
+::: {.columns}
+::: {.column width="60%"}
+![](images/heterogenous_preference.webp)
+:::
+
+
+::: {.column width="40%"}
+- Individual preferences can be derived from the model in this manner. 
+- The relationship between preferences over the product offering can be seen too
+:::
+:::
+
+
+## Conclusion  {.smaller}
+### The World in the Model
+
+We've seen a series of models, each one expanding on the last. 
+
+- Models articulate the relevant structure of the world. 
+- They serve as microscopes. Simulation systems are tools to interrogate reality.
+- Bayesian Conditionalisation calibrates the system against the observed facts.
+- Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.
+- PyMC enables us to easily build and experiment with those models.
+- Causal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments. 
+
+> "Models... [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression" - Mary Morgan in _The World in the Model_
+
+
