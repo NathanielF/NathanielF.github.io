@@ -276,7 +276,7 @@ with pm.Model(coords=coords) as model_2:
 ```
 
 
-## The Problem: Interpreting the Model Coefficients
+## The Problem: Interpreting the Model
 ### Rate of Substitution
 :::: {.columns}
 ::: {.column width="40%"}
@@ -296,12 +296,12 @@ The utility scale is not fixed, but the ratio $\frac{\beta_{ic}}{\beta_{oc}}$ is
 
 ## The Problem: Model Structure:
 
-![Model Structure](images/augmented_model_graph.svg)
+![The Process of Bayesian Updating calibrates the parameter estimates against the data](images/augmented_model_graph.svg)
 
 ## The Problem: Model Fit 
 ### Posterior Predictive Distribution
 
-![Model Fit](images/augmented_fit.png)
+![The model successfully predicts observed market share](images/augmented_fit.png)
 
 
 ## The Problem: IIA
@@ -564,6 +564,7 @@ with pm.Model(coords=coords) as model_4:
 ::: {.column width="40%"}
 - Individual preferences can be derived from the model in this manner. 
 - The relationship between preferences over the product offering can be seen too
+- Market stable under stable preferences?
 :::
 :::
 
@@ -573,7 +574,7 @@ with pm.Model(coords=coords) as model_4:
 
 We've seen a series of models, each one expanding on the last. 
 
-- Models __should__ articulate the relevant structure of the world. 
+- Models __should__ articulate the relevant structure of this world and other possible ones. 
 - They serve as microscopes. Simulation systems are tools to interrogate reality.
 - Bayesian Conditionalisation calibrates the system against the observed facts.
 - Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.

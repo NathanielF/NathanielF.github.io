@@ -1222,14 +1222,14 @@
     "href": "talks/pycon_ireland/pycon_ireland_discrete.html#individual-heterogenous-utility-4",
     "title": "Discrete Choice and Random Utility Models",
     "section": "Individual Heterogenous Utility",
-    "text": "Individual Heterogenous Utility\nIndividual Preference\n\n\n\n\n\nIndividual preferences can be derived from the model in this manner.\nThe relationship between preferences over the product offering can be seen too"
+    "text": "Individual Heterogenous Utility\nIndividual Preference\n\n\n\n\n\nIndividual preferences can be derived from the model in this manner.\nThe relationship between preferences over the product offering can be seen too\nMarket stable under stable preferences?"
   },
   {
     "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#conclusion",
     "href": "talks/pycon_ireland/pycon_ireland_discrete.html#conclusion",
     "title": "Discrete Choice and Random Utility Models",
     "section": "Conclusion",
-    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels should articulate the relevant structure of the world.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
+    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels should articulate the relevant structure of this world and other possible ones.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
   },
   {
     "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-multnomial-model",
@@ -1369,13 +1369,20 @@
     "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem-model-structure",
     "title": "Discrete Choice and Random Utility Models",
     "section": "The Problem: Model Structure:",
-    "text": "The Problem: Model Structure:\n\nModel Structure"
+    "text": "The Problem: Model Structure:\n\nThe Process of Bayesian Updating calibrates the parameter estimates against the data"
   },
   {
     "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem-model-fit",
     "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem-model-fit",
     "title": "Discrete Choice and Random Utility Models",
     "section": "The Problem: Model Fit",
-    "text": "The Problem: Model Fit\nPosterior Predictive Distribution\n\nModel Fit"
+    "text": "The Problem: Model Fit\nPosterior Predictive Distribution\n\nThe model successfully predicts observed market share"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem-interpreting-the-model",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem-interpreting-the-model",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "The Problem: Interpreting the Model",
+    "text": "The Problem: Interpreting the Model\nRate of Substitution\n\n\nThe beta coefficients in the model are interpreted as weights of utility. However, the precision in these latent terms is relative to the variance of unobserved factors.\nThe utility scale is not fixed, but the ratio \\(\\frac{\\beta_{ic}}{\\beta_{oc}}\\) is invariant.\n\n\n\n\nRate of Substitution"
   }
 ]

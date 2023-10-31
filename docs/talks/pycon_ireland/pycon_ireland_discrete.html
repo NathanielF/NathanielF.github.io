@@ -731,8 +731,8 @@ Nathaniel Forde
 <span id="cb1-18"><a href="#cb1-18"></a>    <span class="co">## Likelihood</span></span>
 <span id="cb1-19"><a href="#cb1-19"></a>    choice_obs <span class="op">=</span> pm.Categorical(<span class="st">"y_cat"</span>, p<span class="op">=</span>p_, observed<span class="op">=</span>observed, dims<span class="op">=</span><span class="st">"obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="the-problem-interpreting-the-model-coefficients" class="slide level2">
-<h2>The Problem: Interpreting the Model Coefficients</h2>
+<section id="the-problem-interpreting-the-model" class="slide level2">
+<h2>The Problem: Interpreting the Model</h2>
 <h3 id="rate-of-substitution">Rate of Substitution</h3>
 <div class="columns">
 <div class="column" style="width:40%;">
@@ -751,12 +751,12 @@ Nathaniel Forde
 <section id="the-problem-model-structure" class="slide level2">
 <h2>The Problem: Model Structure:</h2>
 
-<img data-src="images/augmented_model_graph.svg" class="r-stretch quarto-figure-center"><p class="caption">Model Structure</p></section>
+<img data-src="images/augmented_model_graph.svg" class="r-stretch quarto-figure-center"><p class="caption">The Process of Bayesian Updating calibrates the parameter estimates against the data</p></section>
 <section id="the-problem-model-fit" class="slide level2">
 <h2>The Problem: Model Fit</h2>
 <h3 id="posterior-predictive-distribution">Posterior Predictive Distribution</h3>
 
-<img data-src="images/augmented_fit.png" class="r-stretch quarto-figure-center"><p class="caption">Model Fit</p></section>
+<img data-src="images/augmented_fit.png" class="r-stretch quarto-figure-center"><p class="caption">The model successfully predicts observed market share</p></section>
 <section id="the-problem-iia" class="slide level2">
 <h2>The Problem: IIA</h2>
 <h3 id="new-products-cannibalise-equally-from-all-alternatives">New Products Cannibalise Equally from all Alternatives</h3>
@@ -1042,6 +1042,7 @@ Nathaniel Forde
 <ul>
 <li>Individual preferences can be derived from the model in this manner.</li>
 <li>The relationship between preferences over the product offering can be seen too</li>
+<li>Market stable under stable preferences?</li>
 </ul>
 </div>
 </div>
@@ -1051,7 +1052,7 @@ Nathaniel Forde
 <h3 id="the-world-in-the-model">The World in the Model</h3>
 <p>We’ve seen a series of models, each one expanding on the last.</p>
 <ul>
-<li>Models <strong>should</strong> articulate the relevant structure of the world.</li>
+<li>Models <strong>should</strong> articulate the relevant structure of this world and other possible ones.</li>
 <li>They serve as microscopes. Simulation systems are tools to interrogate reality.</li>
 <li>Bayesian Conditionalisation calibrates the system against the observed facts.</li>
 <li>Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.</li>
