@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.2.335">
 
   <meta name="author" content="Nathaniel Forde">
-  <meta name="dcterms.date" content="2023-10-19">
+  <meta name="dcterms.date" content="2023-10-31">
   <title>Examined Algorithms - Discrete Choice and Random Utility Models</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -406,7 +406,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">10/19/23</p>
+  <p class="date">10/31/23</p>
 </section>
 <section id="preliminaries" class="slide level2 smaller">
 <h2>Preliminaries</h2>
@@ -731,8 +731,8 @@ Nathaniel Forde
 <span id="cb1-18"><a href="#cb1-18"></a>    <span class="co">## Likelihood</span></span>
 <span id="cb1-19"><a href="#cb1-19"></a>    choice_obs <span class="op">=</span> pm.Categorical(<span class="st">"y_cat"</span>, p<span class="op">=</span>p_, observed<span class="op">=</span>observed, dims<span class="op">=</span><span class="st">"obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="interpreting-the-model-coefficients" class="slide level2">
-<h2>Interpreting the Model Coefficients</h2>
+<section id="the-problem-interpreting-the-model-coefficients" class="slide level2">
+<h2>The Problem: Interpreting the Model Coefficients</h2>
 <h3 id="rate-of-substitution">Rate of Substitution</h3>
 <div class="columns">
 <div class="column" style="width:40%;">
@@ -748,12 +748,12 @@ Nathaniel Forde
 </div>
 </div>
 </section>
-<section id="model-structure" class="slide level2">
-<h2>Model Structure:</h2>
+<section id="the-problem-model-structure" class="slide level2">
+<h2>The Problem: Model Structure:</h2>
 
 <img data-src="images/augmented_model_graph.svg" class="r-stretch quarto-figure-center"><p class="caption">Model Structure</p></section>
-<section id="model-fit" class="slide level2">
-<h2>Model Fit</h2>
+<section id="the-problem-model-fit" class="slide level2">
+<h2>The Problem: Model Fit</h2>
 <h3 id="posterior-predictive-distribution">Posterior Predictive Distribution</h3>
 
 <img data-src="images/augmented_fit.png" class="r-stretch quarto-figure-center"><p class="caption">Model Fit</p></section>
@@ -863,8 +863,8 @@ Nathaniel Forde
 <h1>Counterfactual Questions</h1>
 <p>Models as laboratories for experimentation</p>
 </section>
-<section id="counterfactual-reasoning" class="slide level2 smaller">
-<h2>Counterfactual Reasoning</h2>
+<section id="model-adequacy-and-counterfactuals" class="slide level2 smaller">
+<h2>Model Adequacy and Counterfactuals</h2>
 <h3 id="ceteris-paribus-laws">Ceteris Paribus Laws</h3>
 <p>With a fitted PyMC model we can <strong>counterfactually</strong> reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.</p>
 <ul>
@@ -887,13 +887,13 @@ Nathaniel Forde
 <span id="cb3-15"><a href="#cb3-15"></a></span>
 <span id="cb3-16"><a href="#cb3-16"></a>idata_new_policy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="counterfactual-reasoning-1" class="slide level2">
-<h2>Counterfactual Reasoning</h2>
+<section id="model-adequacy-and-counterfactuals-1" class="slide level2">
+<h2>Model Adequacy and Counterfactuals</h2>
 <h3 id="pricing-experiments">Pricing Experiments</h3>
 
 <img data-src="images/counterfactual_shares.png" class="r-stretch quarto-figure-center"><p class="caption">Counterfactual Shares</p></section>
-<section id="counterfactual-reasoning-2" class="slide level2">
-<h2>Counterfactual Reasoning</h2>
+<section id="model-adequacy-and-counterfactuals-2" class="slide level2">
+<h2>Model Adequacy and Counterfactuals</h2>
 <h3 id="interventions-and-conditionalisation">Interventions and Conditionalisation</h3>
 <div class="columns">
 <div class="column" style="width:40%;">
@@ -1051,7 +1051,7 @@ Nathaniel Forde
 <h3 id="the-world-in-the-model">The World in the Model</h3>
 <p>We’ve seen a series of models, each one expanding on the last.</p>
 <ul>
-<li>Models articulate the relevant structure of the world.</li>
+<li>Models <strong>should</strong> articulate the relevant structure of the world.</li>
 <li>They serve as microscopes. Simulation systems are tools to interrogate reality.</li>
 <li>Bayesian Conditionalisation calibrates the system against the observed facts.</li>
 <li>Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.</li>

@@ -276,7 +276,7 @@ with pm.Model(coords=coords) as model_2:
 ```
 
 
-## Interpreting the Model Coefficients
+## The Problem: Interpreting the Model Coefficients
 ### Rate of Substitution
 :::: {.columns}
 ::: {.column width="40%"}
@@ -294,11 +294,11 @@ The utility scale is not fixed, but the ratio $\frac{\beta_{ic}}{\beta_{oc}}$ is
 :::
 
 
-## Model Structure:
+## The Problem: Model Structure:
 
 ![Model Structure](images/augmented_model_graph.svg)
 
-## Model Fit 
+## The Problem: Model Fit 
 ### Posterior Predictive Distribution
 
 ![Model Fit](images/augmented_fit.png)
@@ -414,7 +414,7 @@ Models as laboratories for experimentation
 
 
 
-## Counterfactual Reasoning  {.smaller}
+## Model Adequacy and Counterfactuals  {.smaller}
 ### Ceteris Paribus Laws
 
 With a fitted PyMC model we can __counterfactually__ reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.
@@ -441,12 +441,12 @@ idata_new_policy
 ```
 
 
-## Counterfactual Reasoning
+## Model Adequacy and Counterfactuals  
 ### Pricing Experiments
 
 ![Counterfactual Shares](images/counterfactual_shares.png)
 
-## Counterfactual Reasoning
+## Model Adequacy and Counterfactuals  
 ### Interventions and Conditionalisation
 
 :::: {.columns}
@@ -573,7 +573,7 @@ with pm.Model(coords=coords) as model_4:
 
 We've seen a series of models, each one expanding on the last. 
 
-- Models articulate the relevant structure of the world. 
+- Models __should__ articulate the relevant structure of the world. 
 - They serve as microscopes. Simulation systems are tools to interrogate reality.
 - Bayesian Conditionalisation calibrates the system against the observed facts.
 - Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.
