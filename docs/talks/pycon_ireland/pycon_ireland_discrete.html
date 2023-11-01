@@ -10,7 +10,6 @@
   <meta name="generator" content="quarto-1.2.335">
 
   <meta name="author" content="Nathaniel Forde">
-  <meta name="dcterms.date" content="2023-10-31">
   <title>Examined Algorithms - Discrete Choice and Random Utility Models</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -406,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">10/31/23</p>
+  <p class="date">11/1/23</p>
 </section>
 <section id="preliminaries" class="slide level2 smaller">
 <h2>Preliminaries</h2>
@@ -466,17 +465,17 @@ Nathaniel Forde
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>Modelling Choice</li>
+<li>Modelling Choice Scenarios</li>
 </ul>
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>Correlation and Substitution Patterns</li>
+<li>Market Structure and Substitution Patterns</li>
 </ul>
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>Counterfactual Questions</li>
+<li>Model Adequacy and Counterfactuals</li>
 </ul>
 </div>
 <div class="fragment fade-in">
@@ -564,12 +563,12 @@ Nathaniel Forde
 </div>
 <div class="fragment fade-in">
 <ul>
-<li><strong>Question</strong>: What are the attributes that drive these choices? How well are they measurable?</li>
+<li><strong>Hard Question</strong>: What are the attributes that drive these choices? How well are they measurable?</li>
 </ul>
 </div>
 <div class="fragment fade-in">
 <ul>
-<li><strong>Question</strong>: How do changes in these attributes influence the predicted market demand for these choices?</li>
+<li><strong>Harder Question</strong>: How do changes in these attributes influence the predicted market demand for these choices?</li>
 </ul>
 </div>
 </section>
@@ -609,8 +608,8 @@ Nathaniel Forde
 </div>
 </section></section>
 <section>
-<section id="modelling-choice" class="title-slide slide level1 center">
-<h1>Modelling Choice</h1>
+<section id="modelling-choice-scenarios" class="title-slide slide level1 center">
+<h1>Modelling Choice Scenarios</h1>
 <p>We elaborate the basic multinomial model for choice and a problem with it.</p>
 </section>
 <section id="choice-the-data" class="slide level2">
@@ -768,8 +767,8 @@ Nathaniel Forde
 </ul>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>What kind of Monster have we Created!?</p></li></ol></aside></section></section>
 <section>
-<section id="substitution-patterns-and-correlation-structure" class="title-slide slide level1 center">
-<h1>Substitution Patterns and Correlation Structure</h1>
+<section id="market-structure-and-substitution-patterns" class="title-slide slide level1 center">
+<h1>Market Structure and Substitution Patterns</h1>
 <p>Model tries to account for pathological patterns of sustitution between goods by incorporating covariance structures.</p>
 </section>
 <section id="adding-correlation-structure" class="slide level2">
@@ -859,11 +858,11 @@ Nathaniel Forde
 
 <img data-src="images/correlation_structure.svg" class="r-stretch quarto-figure-center"><p class="caption">Correlation Structure</p></section></section>
 <section>
-<section id="counterfactual-questions" class="title-slide slide level1 center">
-<h1>Counterfactual Questions</h1>
+<section id="model-adequacy-and-counterfactuals" class="title-slide slide level1 center">
+<h1>Model Adequacy and Counterfactuals</h1>
 <p>Models as laboratories for experimentation</p>
 </section>
-<section id="model-adequacy-and-counterfactuals" class="slide level2 smaller">
+<section id="model-adequacy-and-counterfactuals-1" class="slide level2 smaller">
 <h2>Model Adequacy and Counterfactuals</h2>
 <h3 id="ceteris-paribus-laws">Ceteris Paribus Laws</h3>
 <p>With a fitted PyMC model we can <strong>counterfactually</strong> reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.</p>
@@ -887,12 +886,12 @@ Nathaniel Forde
 <span id="cb3-15"><a href="#cb3-15"></a></span>
 <span id="cb3-16"><a href="#cb3-16"></a>idata_new_policy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="model-adequacy-and-counterfactuals-1" class="slide level2">
+<section id="model-adequacy-and-counterfactuals-2" class="slide level2">
 <h2>Model Adequacy and Counterfactuals</h2>
 <h3 id="pricing-experiments">Pricing Experiments</h3>
 
 <img data-src="images/counterfactual_shares.png" class="r-stretch quarto-figure-center"><p class="caption">Counterfactual Shares</p></section>
-<section id="model-adequacy-and-counterfactuals-2" class="slide level2">
+<section id="model-adequacy-and-counterfactuals-3" class="slide level2">
 <h2>Model Adequacy and Counterfactuals</h2>
 <h3 id="interventions-and-conditionalisation">Interventions and Conditionalisation</h3>
 <div class="columns">

@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nOct 31, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 1, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -998,7 +998,7 @@
     "href": "talks/pycon_ireland/pycon_ireland_discrete.html#agenda",
     "title": "Discrete Choice and Random Utility Models",
     "section": "Agenda",
-    "text": "Agenda\n\n\nHistory and Background\n\n\n\n\nModelling Choice\n\n\n\n\nCorrelation and Substitution Patterns\n\n\n\n\nCounterfactual Questions\n\n\n\n\nIndividual Heterogenous Utility\n\n\n\n\nConclusion\n\nThe World in the Model"
+    "text": "Agenda\n\n\nHistory and Background\n\n\n\n\nModelling Choice Scenarios\n\n\n\n\nMarket Structure and Substitution Patterns\n\n\n\n\nModel Adequacy and Counterfactuals\n\n\n\n\nIndividual Heterogenous Utility\n\n\n\n\nConclusion\n\nThe World in the Model"
   },
   {
     "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#mcfadden-and-bart",
@@ -1019,7 +1019,7 @@
     "href": "talks/pycon_ireland/pycon_ireland_discrete.html#general-applicability-of-choice-problems",
     "title": "Discrete Choice and Random Utility Models",
     "section": "General Applicability of Choice Problems",
-    "text": "General Applicability of Choice Problems\n\n\nThese models offer the possibility of predicting choice in diverse domains: policy, brand, school, car and partners.\n\n\n\n\nQuestion: What are the attributes that drive these choices? How well are they measurable?\n\n\n\n\nQuestion: How do changes in these attributes influence the predicted market demand for these choices?"
+    "text": "General Applicability of Choice Problems\n\n\nThese models offer the possibility of predicting choice in diverse domains: policy, brand, school, car and partners.\n\n\n\n\nHard Question: What are the attributes that drive these choices? How well are they measurable?\n\n\n\n\nHarder Question: How do changes in these attributes influence the predicted market demand for these choices?"
   },
   {
     "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#note-on-model-evaluation",
@@ -1348,14 +1348,14 @@
     "href": "talks/pycon_ireland/pycon_ireland_discrete.html#model-adequacy-and-counterfactuals-1",
     "title": "Discrete Choice and Random Utility Models",
     "section": "Model Adequacy and Counterfactuals",
-    "text": "Model Adequacy and Counterfactuals\nPricing Experiments\n\nCounterfactual Shares"
+    "text": "Model Adequacy and Counterfactuals\nCeteris Paribus Laws\nWith a fitted PyMC model we can counterfactually reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.\n\nWhat would the market share be like if prices for electrical systems increased 20%?\n\n # update values of predictors with new 20% \n # price increase in operating costs for electrical options\nwith model_3:\n    pm.set_data({\"oc_ec\": wide_heating_df[\"oc.ec\"] * 1.2, \n                 \"oc_er\": wide_heating_df[\"oc.er\"] * 1.2})\n    # use the updated values and predict outcomes and probabilities:\n    idata_new_policy = pm.sample_posterior_predictive(\n        idata_m3,\n        var_names=[\"p\", \"y_cat\"],\n        return_inferencedata=True,\n        predictions=True,\n        extend_inferencedata=False,\n        random_seed=100,\n    )\n\nidata_new_policy"
   },
   {
     "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#model-adequacy-and-counterfactuals-2",
     "href": "talks/pycon_ireland/pycon_ireland_discrete.html#model-adequacy-and-counterfactuals-2",
     "title": "Discrete Choice and Random Utility Models",
     "section": "Model Adequacy and Counterfactuals",
-    "text": "Model Adequacy and Counterfactuals\nInterventions and Conditionalisation\n\n\n\nThere is a sharp distinction between conditional probability distributions and probability under intervention\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process."
+    "text": "Model Adequacy and Counterfactuals\nPricing Experiments\n\nCounterfactual Shares"
   },
   {
     "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-problem-interpreting-the-model-coefficients",
@@ -1384,5 +1384,12 @@
     "title": "Discrete Choice and Random Utility Models",
     "section": "The Problem: Interpreting the Model",
     "text": "The Problem: Interpreting the Model\nRate of Substitution\n\n\nThe beta coefficients in the model are interpreted as weights of utility. However, the precision in these latent terms is relative to the variance of unobserved factors.\nThe utility scale is not fixed, but the ratio \\(\\frac{\\beta_{ic}}{\\beta_{oc}}\\) is invariant.\n\n\n\n\nRate of Substitution"
+  },
+  {
+    "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#model-adequacy-and-counterfactuals-3",
+    "href": "talks/pycon_ireland/pycon_ireland_discrete.html#model-adequacy-and-counterfactuals-3",
+    "title": "Discrete Choice and Random Utility Models",
+    "section": "Model Adequacy and Counterfactuals",
+    "text": "Model Adequacy and Counterfactuals\nInterventions and Conditionalisation\n\n\n\nThere is a sharp distinction between conditional probability distributions and probability under intervention\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process."
   }
 ]

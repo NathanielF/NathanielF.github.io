@@ -43,13 +43,13 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 - History and Background
 ::: 
 ::: {.fragment .fade-in}
-- Modelling Choice
+- Modelling Choice Scenarios
 :::
 ::: {.fragment .fade-in}
-- Correlation and Substitution Patterns
+- Market Structure and Substitution Patterns
 :::
 ::: {.fragment .fade-in}
-- Counterfactual Questions
+- Model Adequacy and Counterfactuals 
 :::
 ::: {.fragment .fade-in}
 - Individual Heterogenous Utility
@@ -123,11 +123,11 @@ whole."
  - These models offer the possibility of predicting choice in diverse domains: [policy]{.alert}, [brand]{.blueviolet}, [school]{.green}, [car]{.blue} and [partners]{.magenta}. 
 :::
 ::: {.fragment .fade-in}
- - __Question__: What are the attributes that drive these choices? How well are they measurable?
+ - __Hard Question__: What are the attributes that drive these choices? How well are they measurable?
 :::
 
 ::: {.fragment .fade-in}
- - __Question__: How do changes in these attributes influence the predicted market demand for these choices?
+ - __Harder Question__: How do changes in these attributes influence the predicted market demand for these choices?
 :::
 
 ## Note on Model Evaluation
@@ -171,7 +171,7 @@ whole."
 :::
 
 
-# Modelling Choice
+# Modelling Choice Scenarios
 We elaborate the basic multinomial model for choice and a problem with it. 
 
 ## Choice: The Data
@@ -313,7 +313,7 @@ The utility scale is not fixed, but the ratio $\frac{\beta_{ic}}{\beta_{oc}}$ is
 - This implies an implausible substitution pattern for real markets.^[What kind of Monster have we Created!?]
 
 
-# Substitution Patterns and Correlation Structure
+# Market Structure and Substitution Patterns
 Model tries to account for pathological patterns of sustitution between goods by incorporating covariance structures. 
 
 ## Adding Correlation Structure
@@ -409,7 +409,7 @@ with pm.Model(coords=coords) as model_3:
 
 ![Correlation Structure](images/correlation_structure.svg)
 
-# Counterfactual Questions
+# Model Adequacy and Counterfactuals 
 Models as laboratories for experimentation
 
 
