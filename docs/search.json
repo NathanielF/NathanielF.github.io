@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 1, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inferenxe\n\n\n\n\n\n\n\n\n\n\n\nNov 6, 2023\n\n\n11 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 6, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -1229,7 +1229,7 @@
     "href": "talks/pycon_ireland/pycon_ireland_discrete.html#conclusion",
     "title": "Discrete Choice and Random Utility Models",
     "section": "Conclusion",
-    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels should articulate the relevant structure of this world and other possible ones.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
+    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels should articulate the relevant structure of this world and other possible ones.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of market demand under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
   },
   {
     "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#the-multnomial-model",
@@ -1391,5 +1391,152 @@
     "title": "Discrete Choice and Random Utility Models",
     "section": "Model Adequacy and Counterfactuals",
     "text": "Model Adequacy and Counterfactuals\nInterventions and Conditionalisation\n\n\n\nThere is a sharp distinction between conditional probability distributions and probability under intervention\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process."
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#preliminaries",
+    "href": "talks/missing_data/missing_data_causal.html#preliminaries",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Preliminaries",
+    "text": "Preliminaries\n\n\n\n\n\n\nI am not an Economist\n\n\n\nI’m a data scientist at Personio\n\nBayesian statistician,\nReformed philosopher and logician.\n\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#agenda",
+    "href": "talks/missing_data/missing_data_causal.html#agenda",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Agenda",
+    "text": "Agenda"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#agenda-1",
+    "href": "talks/missing_data/missing_data_causal.html#agenda-1",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Agenda",
+    "text": "Agenda\n\n\nTypology of Missing-ness\n\n\n\n\nMultivariate imputation using FIML\n\n\n\n\nBayesian Imputation by Chained Equations\n\n\n\n\nHierarchical Structures impacting Missing-ness\n\n\n\n\nImputation and Causal Narratives\n\n\n\n\nConclusion\n\nMissing Data: a Gateway to Causal Inference"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#typology-of-missing-ness",
+    "href": "talks/missing_data/missing_data_causal.html#typology-of-missing-ness",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Typology of Missing-ness",
+    "text": "Typology of Missing-ness\n\n\nMissing Completely at Random (MCAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | \\phi)\\)\nwhere \\(\\phi\\) is the haphazard circumstance of the world\nmissing-ness cannot be predicted from the \\(Y\\) variable\n\n\n\n\n\nMissing at Random (MAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | Y_{obs}, \\phi)\\)\nmissing-ness can be predicted from \\(Y\\) variable\n\n\n\n\n\nMissing Not at Random (MNAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi)\\)\nnon-ignorable missing-ness"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#identifiability-under-missing-ness",
+    "href": "talks/missing_data/missing_data_causal.html#identifiability-under-missing-ness",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Identifiability under Missing-ness",
+    "text": "Identifiability under Missing-ness\n\n\nUnder MCAR AND MAR there exist consistent identifiable estimators for functions of \\(Y\\)\n\n\n\n\nUnder MNAR there does not exist in general consistent estimators of \\(Y.\\)\n\n\n\n\nWe cannot using data distinguish cases which are MNAR V (MCAR or MAR).\nWe are required to make assumptions about the nature of the missing-ness"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#the-data",
+    "href": "talks/missing_data/missing_data_causal.html#the-data",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "The Data",
+    "text": "The Data\n\nEmployee Empowerment Survey"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#the-metrics",
+    "href": "talks/missing_data/missing_data_causal.html#the-metrics",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "The Metrics",
+    "text": "The Metrics\n\nMetrics with Gaps"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#modelling-the-multivariate-structure",
+    "href": "talks/missing_data/missing_data_causal.html#modelling-the-multivariate-structure",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Modelling the Multivariate Structure",
+    "text": "Modelling the Multivariate Structure\nWe can use a MLE variant called Full information maximum likelihood to estimate the multivariate distribution.\n\\[ \\mathbf{Y} = MvNormal(\\mu, \\Sigma) \\]\nFIML controls for the missing observations in the data by maximising the likelihood based across the different patterns of missing-ness in the data."
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#modelling-the-multivariate-structure-1",
+    "href": "talks/missing_data/missing_data_causal.html#modelling-the-multivariate-structure-1",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Modelling the Multivariate Structure",
+    "text": "Modelling the Multivariate Structure\nFIML in code\n\ndata = df_employee[[\"worksat\", \"empower\", \"lmx\"]]\n\n\ndef split_data_by_missing_pattern(data):\n    # We want to extract our the pattern of missing-ness in our dataset\n    # and save each sub-set of our data in a structure that can be used to feed into a log-likelihood function\n    grouped_patterns = []\n    patterns = data.notnull().drop_duplicates().values\n    # A pattern is whether the values in each column e.g. [True, True, True] or [True, True, False]\n    observed = data.notnull()\n    for p in range(len(patterns)):\n        temp = observed[\n            (observed[\"worksat\"] == patterns[p][0])\n            & (observed[\"empower\"] == patterns[p][1])\n            & (observed[\"lmx\"] == patterns[p][2])\n        ]\n        grouped_patterns.append([patterns[p], temp.index, data.iloc[temp.index].dropna(axis=1)])\n\n    return grouped_patterns\n\n\ndef reconstitute_params(params_vector, n_vars):\n    # Convenience numpy function to construct mirrored COV matrix\n    # From flattened params_vector\n    mus = params_vector[0:n_vars]\n    cov_flat = params_vector[n_vars:]\n    indices = np.tril_indices(n_vars)\n    cov = np.empty((n_vars, n_vars))\n    for i, j, c in zip(indices[0], indices[1], cov_flat):\n        cov[i, j] = c\n        cov[j, i] = c\n    cov = cov + 1e-25\n    return mus, cov\n\n\ndef optimise_ll(flat_params, n_vars, grouped_patterns):\n    mus, cov = reconstitute_params(flat_params, n_vars)\n    # Check if COV is positive definite\n    if (np.linalg.eigvalsh(cov) < 0).any():\n        return 1e100\n    objval = 0.0\n    for obs_pattern, _, obs_data in grouped_patterns:\n        # This is the key (tricky) step because we're selecting the variables which pattern\n        # the full information set within each pattern of \"missing-ness\"\n        # e.g. when the observed pattern is [True, True, False] we want the first two variables\n        # of the mus vector and we want only the covariance relations between the relevant variables from the cov\n        # in the iteration.\n        obs_mus = mus[obs_pattern]\n        obs_cov = cov[obs_pattern][:, obs_pattern]\n        ll = np.sum(multivariate_normal(obs_mus, obs_cov).logpdf(obs_data))\n        objval = ll + objval\n    return -objval\n\n\ndef estimate(data):\n    n_vars = data.shape[1]\n    # Initialise\n    mus0 = np.zeros(n_vars)\n    cov0 = np.eye(n_vars)\n    # Flatten params for optimiser\n    params0 = np.append(mus0, cov0[np.tril_indices(n_vars)])\n    # Process Data\n    grouped_patterns = split_data_by_missing_pattern(data)\n    # Run the Optimiser.\n    try:\n        result = scipy.optimize.minimize(\n            optimise_ll, params0, args=(n_vars, grouped_patterns), method=\"Powell\"\n        )\n    except Exception as e:\n        raise e\n    mean, cov = reconstitute_params(result.x, n_vars)\n    return mean, cov\n\n\nfiml_mus, fiml_cov = estimate(data)"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#estimate-model-and-samples",
+    "href": "talks/missing_data/missing_data_causal.html#estimate-model-and-samples",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Estimate Model and Samples",
+    "text": "Estimate Model and Samples\n\n\n\n\n\n\n\n\n\n\nDiscrete Choice with PyMC"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#estimated-model-and-samples",
+    "href": "talks/missing_data/missing_data_causal.html#estimated-model-and-samples",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Estimated Model and Samples",
+    "text": "Estimated Model and Samples\n\n\n\n\n\n\n\n\nThe Estimated model Parameters are used to sample from the implied distribution.\nBut the approach lacks control and insight into why the data was missing in the first place."
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#the-joint-distribution-decomposed",
+    "href": "talks/missing_data/missing_data_causal.html#the-joint-distribution-decomposed",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "The Joint Distribution Decomposed",
+    "text": "The Joint Distribution Decomposed\nModelling the Outcome piece-wise\nStart with the observation that: \\[f(emp, lmx, climate, male) \\\\ = f(emp | lmx, climate, male) \\cdot  \\\\f(lmx | climate, male) \\cdot f(climate | male) \\cdot f(male)^{*}\\]\nwhich can be phrased as a set of linear models\n\\[ empower = \\alpha_{2} + \\beta_{3}male + \\beta_{4}climate + \\beta_{5}lmx \\\\\nlmx = \\alpha_{1} + \\beta_{1}climate + \\beta_{2}male \\\\\nclimate = \\alpha_{0} + \\beta_{0}male \\]"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#the-model",
+    "href": "talks/missing_data/missing_data_causal.html#the-model",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "The Model",
+    "text": "The Model\nSensitivity Analysis with Priors in PyMC\ndata = df_employee[[\"lmx\", \"empower\", \"climate\", \"male\"]]\nlmx_mean = data[\"lmx\"].mean()\nlmx_min = data[\"lmx\"].min()\nlmx_max = data[\"lmx\"].max()\nlmx_sd = data[\"lmx\"].std()\n\ncli_mean = data[\"climate\"].mean()\ncli_min = data[\"climate\"].min()\ncli_max = data[\"climate\"].max()\ncli_sd = data[\"climate\"].std()\n\n\npriors = {\n    \"climate\": {\"normal\": [lmx_mean, lmx_sd, lmx_sd], \"uniform\": [lmx_min, lmx_max]},\n    \"lmx\": {\"normal\": [cli_mean, cli_sd, cli_sd], \"uniform\": [cli_min, cli_max]},\n}\n\n\ndef make_model(priors, normal_pred_assumption=True):\n    coords = {\n        \"alpha_dim\": [\"lmx_imputed\", \"climate_imputed\", \"empower_imputed\"],\n        \"beta_dim\": [\n            \"lmxB_male\",\n            \"lmxB_climate\",\n            \"climateB_male\",\n            \"empB_male\",\n            \"empB_climate\",\n            \"empB_lmx\",\n        ],\n    }\n    with pm.Model(coords=coords) as model:\n        # Priors\n        beta = pm.Normal(\"beta\", 0, 1, size=6, dims=\"beta_dim\")\n        alpha = pm.Normal(\"alphas\", 10, 5, size=3, dims=\"alpha_dim\")\n        sigma = pm.HalfNormal(\"sigmas\", 5, size=3, dims=\"alpha_dim\")\n\n        if normal_pred_assumption:\n            mu_climate = pm.Normal(\n                \"mu_climate\", priors[\"climate\"][\"normal\"][0], priors[\"climate\"][\"normal\"][1]\n            )\n            sigma_climate = pm.HalfNormal(\"sigma_climate\", priors[\"climate\"][\"normal\"][2])\n            climate_pred = pm.Normal(\n                \"climate_pred\", mu_climate, sigma_climate, observed=data[\"climate\"].values\n            )\n        else:\n            climate_pred = pm.Uniform(\"climate_pred\", 0, 40, observed=data[\"climate\"].values)\n\n        if normal_pred_assumption:\n            mu_lmx = pm.Normal(\"mu_lmx\", priors[\"lmx\"][\"normal\"][0], priors[\"lmx\"][\"normal\"][1])\n            sigma_lmx = pm.HalfNormal(\"sigma_lmx\", priors[\"lmx\"][\"normal\"][2])\n            lmx_pred = pm.Normal(\"lmx_pred\", mu_lmx, sigma_lmx, observed=data[\"lmx\"].values)\n        else:\n            lmx_pred = pm.Uniform(\"lmx_pred\", 0, 40, observed=data[\"lmx\"].values)\n\n        # Likelihood(s)\n        lmx_imputed = pm.Normal(\n            \"lmx_imputed\",\n            alpha[0] + beta[0] * data[\"male\"] + beta[1] * climate_pred,\n            sigma[0],\n            observed=data[\"lmx\"].values,\n        )\n        climate_imputed = pm.Normal(\n            \"climate_imputed\",\n            alpha[1] + beta[2] * data[\"male\"],\n            sigma[1],\n            observed=data[\"climate\"].values,\n        )\n        empower_imputed = pm.Normal(\n            \"emp_imputed\",\n            alpha[2] + beta[3] * data[\"male\"] + beta[4] * climate_pred + beta[5] * lmx_pred,\n            sigma[2],\n            observed=data[\"empower\"].values,\n        )\n\n        idata = pm.sample_prior_predictive()\n        idata.extend(pm.sample(random_seed=120))\n        pm.sample_posterior_predictive(idata, extend_inferencedata=True)\n        return idata, model\n\n\nidata_uniform, model_uniform = make_model(priors, normal_pred_assumption=False)\nidata_normal, model_normal = make_model(priors, normal_pred_assumption=True)"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#bayesian-updating-and-calibration",
+    "href": "talks/missing_data/missing_data_causal.html#bayesian-updating-and-calibration",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Bayesian Updating and Calibration",
+    "text": "Bayesian Updating and Calibration\nEstimating the Model\nTo evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]\nPriors can be used flexibly to regularise and improve reliability of estimation across structural causal models."
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#the-model-structure",
+    "href": "talks/missing_data/missing_data_causal.html#the-model-structure",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "The Model Structure",
+    "text": "The Model Structure\nThe PyMC model Graph\n\nChained Equation ModelImputing the values and feeding them forward into the ultimate likelihood terms to estimate the profile of the joint distribution."
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#sensitivty-to-prior-specification",
+    "href": "talks/missing_data/missing_data_causal.html#sensitivty-to-prior-specification",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Sensitivty to Prior Specification",
+    "text": "Sensitivty to Prior Specification\n\nThe Effect of choosing the right Priors"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#hierarchical-structures-of-non-response",
+    "href": "talks/missing_data/missing_data_causal.html#hierarchical-structures-of-non-response",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Hierarchical Structures of Non-response",
+    "text": "Hierarchical Structures of Non-response\nTeam dynamics determine probability of response\n\nTeam Empowerment Scores"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#hierarchies-in-code",
+    "href": "talks/missing_data/missing_data_causal.html#hierarchies-in-code",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Hierarchies in Code",
+    "text": "Hierarchies in Code\nSpecifying the hierarchical model in PyMC\nteam_idx, teams = pd.factorize(df_employee[\"team\"], sort=True)\nemployee_idx, _ = pd.factorize(df_employee[\"employee\"], sort=True)\ncoords = {\"team\": teams, \"employee\": np.arange(len(df_employee))}\n\n\nwith pm.Model(coords=coords) as hierarchical_model:\n    # Priors\n    company_beta_lmx = pm.Normal(\"company_beta_lmx\", 0, 1)\n    company_beta_male = pm.Normal(\"company_beta_male\", 0, 1)\n    company_alpha = pm.Normal(\"company_alpha\", 20, 2)\n    team_alpha = pm.Normal(\"team_alpha\", 0, 1, dims=\"team\")\n    team_beta_lmx = pm.Normal(\"team_beta_lmx\", 0, 1, dims=\"team\")\n    sigma = pm.HalfNormal(\"sigma\", 4, dims=\"employee\")\n\n    # Imputed Predictors\n    mu_lmx = pm.Normal(\"mu_lmx\", 10, 5)\n    sigma_lmx = pm.HalfNormal(\"sigma_lmx\", 5)\n    lmx_pred = pm.Normal(\"lmx_pred\", mu_lmx, sigma_lmx, observed=df_employee[\"lmx\"].values)\n\n    # Combining Levels\n    alpha_global = pm.Deterministic(\"alpha_global\", company_alpha + team_alpha[team_idx])\n    beta_global_lmx = pm.Deterministic(\n        \"beta_global_lmx\", company_beta_lmx + team_beta_lmx[team_idx]\n    )\n    beta_global_male = pm.Deterministic(\"beta_global_male\", company_beta_male)\n\n    # Likelihood\n    mu = pm.Deterministic(\n        \"mu\",\n        alpha_global + beta_global_lmx * lmx_pred + beta_global_male * df_employee[\"male\"].values,\n    )\n\n    empower_imputed = pm.Normal(\n        \"emp_imputed\",\n        mu,\n        sigma,\n        observed=df_employee[\"empower\"].values,\n    )\n\n    idata_hierarchical = pm.sample_prior_predictive()\n    idata_hierarchical.extend(\n        sample_blackjax_nuts(draws=20_000, random_seed=500, target_accept=0.99)\n    )\n    pm.sample_posterior_predictive(idata_hierarchical, extend_inferencedata=True)"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#model-structure",
+    "href": "talks/missing_data/missing_data_causal.html#model-structure",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Model Structure",
+    "text": "Model Structure\n\nHierarchical Team based Model"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#influence-of-team-membership",
+    "href": "talks/missing_data/missing_data_causal.html#influence-of-team-membership",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Influence of Team Membership",
+    "text": "Influence of Team Membership\n\nModification of Leader Impact based on Team"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#imputation-with-team-effects",
+    "href": "talks/missing_data/missing_data_causal.html#imputation-with-team-effects",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Imputation with Team Effects",
+    "text": "Imputation with Team Effects\n\nImputation patterns under team influence"
   }
 ]

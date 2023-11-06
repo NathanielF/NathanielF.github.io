@@ -37,6 +37,11 @@ None of Personio's data was used in this presentation
 The worked examples used here can be found [here](https://www.pymc.io/projects/examples/en/latest/generalized_linear_models/GLM-discrete-choice_models.html)
 :::
 
+# The Pitch
+Predictive Models are inadequate decision making tools in product analysis. 
+
+Accept __no substitutes__ for bayesian structural and causal analysis. 
+
 
 ## Agenda
 ::: {.fragment .fade-in}
@@ -577,7 +582,7 @@ We've seen a series of models, each one expanding on the last.
 - Models __should__ articulate the relevant structure of this world and other possible ones. 
 - They serve as microscopes. Simulation systems are tools to interrogate reality.
 - Bayesian Conditionalisation calibrates the system against the observed facts.
-- Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.
+- Bayesian Discrete choice models help us interrogate aspects of market demand under uncertainty.
 - PyMC enables us to easily build and experiment with those models.
 - Causal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments. 
 
