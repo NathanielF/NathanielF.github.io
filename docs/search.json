@@ -1558,7 +1558,7 @@
     "href": "talks/missing_data/missing_data_causal.html#conclusion",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Conclusion",
-    "text": "Conclusion\nWe’ve seen the application of missing data analysis to survey data in the context of People Analytics.\n\nMultivariate approaches are effective but cannot help address confounding bias\nThe flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.\n\n\n\n\nMissing Data with PyMC"
+    "text": "Conclusion\nWe’ve seen the application of missing data analysis to survey data in the context of People Analytics.\n\nMultivariate approaches are effective but cannot help address confounding bias\nThe flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.\nHierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates.\n\n\n\n\nMissing Data with PyMC"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#bayesian-imputation.",
@@ -1579,6 +1579,6 @@
     "href": "talks/missing_data/missing_data_causal.html#sota-bayesian-probabilistic-imputation.",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "SOTA: Bayesian Probabilistic Imputation.",
-    "text": "SOTA: Bayesian Probabilistic Imputation.\n\nBayesian Imputation can be highly customisable method of imputation in almost any domain.\nImputed treatment effect distributions need not be specified simply as a linear combination of observables.\n\nNon-parametric methods such as BART and Dirichlet Process Mixtures can be used.\n\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process.\nHow do patterns of Employee empowerment change if we can intervene on their relationship with their manager?"
+    "text": "SOTA: Bayesian Probabilistic Imputation.\n\nBayesian Imputation can be highly customisable method of imputation in almost any domain.\nImputed treatment effect distributions need not be specified simply as a linear combination of observables.\n\nNon-parametric methods such as BART and Dirichlet Process Mixtures can also be used.\n\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process.\nUsed to answer Counterfactuals\n\nHow do patterns of Employee empowerment change if we can intervene on their relationship with their manager?"
   }
 ]

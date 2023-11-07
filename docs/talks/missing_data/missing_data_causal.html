@@ -459,8 +459,8 @@ Nathaniel Forde
 <section>
 <section id="the-pitch" class="title-slide slide level1 center">
 <h1>The Pitch</h1>
-<p>Non-response in People Analytics survey data is an invitation to causal analysis of working conditions.</p>
-<p>Bayesian imputation of missing data is state of the art for imputation of missing data.</p>
+<p>Causal inference techniques are <strong>required</strong> for Non-response in People Analytics survey data</p>
+<p>Bayesian imputation methods are state of the art for theory-informed imputation of missing data</p>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
@@ -932,10 +932,13 @@ climate = \alpha_{0} + \beta_{0}male \]</span></p>
 <li><p>Bayesian Imputation can be highly customisable method of imputation in almost any domain.</p></li>
 <li><p>Imputed treatment effect distributions need not be specified simply as a linear combination of observables.</p>
 <ul>
-<li><strong><span class="blue">Non-parametric methods</span></strong> such as BART and Dirichlet Process Mixtures can be used.</li>
+<li><strong><span class="blue">Non-parametric methods</span></strong> such as BART and Dirichlet Process Mixtures can also be used.</li>
 </ul></li>
 <li><p>In <a href="https://www.pymc.io/projects/examples/en/latest/causal_inference/interventional_distribution.html#interventions-and-the-operatorname-do-operator">PyMC</a> you can implement the <strong>do-operator</strong> to intervene on the graph that represents your data generating process.</p></li>
-<li><p>How do patterns of Employee empowerment change if we can intervene on their relationship with their manager?</p></li>
+<li><p>Used to answer Counterfactuals</p>
+<ul>
+<li>How do patterns of Employee empowerment change if we can intervene on their relationship with their manager?</li>
+</ul></li>
 </ul>
 </section>
 <section id="conclusion" class="slide level2">
@@ -944,6 +947,7 @@ climate = \alpha_{0} + \beta_{0}male \]</span></p>
 <ul>
 <li><p>Multivariate approaches are effective but cannot help address confounding bias</p></li>
 <li><p>The flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.</p></li>
+<li><p>Hierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates.</p></li>
 </ul>
 
 

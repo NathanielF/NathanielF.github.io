@@ -37,9 +37,9 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 :::
 
 # The Pitch
-Non-response in People Analytics survey data is an invitation to causal analysis of working conditions. 
+Causal inference techniques are __required__ for Non-response in People Analytics survey data 
 
-Bayesian imputation of missing data is state of the art for imputation of missing data.
+Bayesian imputation methods are state of the art for theory-informed imputation of missing data 
 
 ## Agenda
 
@@ -476,11 +476,12 @@ The Fundamental problem of Causal Inference as Missing Data
 - Bayesian Imputation can be highly customisable method of imputation in almost any domain.
 
 - Imputed treatment effect distributions need not be specified simply as a linear combination of observables. 
-    - __[Non-parametric methods]{.blue}__ such as BART and Dirichlet Process Mixtures can be used. 
+    - __[Non-parametric methods]{.blue}__ such as BART and Dirichlet Process Mixtures can also be used. 
 
 - In [PyMC](https://www.pymc.io/projects/examples/en/latest/causal_inference/interventional_distribution.html#interventions-and-the-operatorname-do-operator) you can implement the __do-operator__ to intervene on the graph that represents your data generating process. 
 
-- How do patterns of Employee empowerment change if we can intervene on their relationship with their manager?
+- Used to answer Counterfactuals
+    - How do patterns of Employee empowerment change if we can intervene on their relationship with their manager?
 
 
 ## Conclusion
@@ -490,3 +491,5 @@ We've seen the application of missing data analysis to survey data in the contex
 - Multivariate approaches are effective but cannot help address confounding bias
 
 - The flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.
+
+- Hierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates. 
