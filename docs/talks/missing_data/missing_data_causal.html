@@ -459,7 +459,7 @@ Nathaniel Forde
 <section>
 <section id="the-pitch" class="title-slide slide level1 center">
 <h1>The Pitch</h1>
-<p>Non-response in HR survey data is an invitation to causal analysis of working conditions.</p>
+<p>Non-response in People Analytics survey data is an invitation to causal analysis of working conditions.</p>
 <p>Bayesian imputation of missing data is state of the art for imputation of missing data.</p>
 </section>
 <section id="agenda" class="slide level2">
@@ -536,7 +536,7 @@ Nathaniel Forde
 <h2>Identifiability under Missing-ness</h2>
 <div class="fragment fade-in">
 <ul>
-<li>Under MCAR AND MAR there exist consistent identifiable estimators for functions of <span class="math inline">\(Y\)</span></li>
+<li>Under MCAR and MAR there exist consistent identifiable estimators for functions of <span class="math inline">\(Y\)</span></li>
 </ul>
 </div>
 <div class="fragment fade-in">
@@ -546,8 +546,8 @@ Nathaniel Forde
 </div>
 <div class="fragment fade-in">
 <ul>
-<li><p>We cannot using data distinguish cases which are MNAR V (MCAR or MAR).</p></li>
-<li><p>We are <strong><span class="blue">required</span></strong> to make assumptions about the nature of the missing-ness</p></li>
+<li><p>We cannot use data to distinguish cases which are MNAR V (MCAR or MAR).</p></li>
+<li><p>We are <strong><span class="blue">required</span></strong> to make assumptions about the nature of the missing-ness to try and account for it.</p></li>
 </ul>
 </div>
 </section></section>
@@ -662,6 +662,7 @@ Nathaniel Forde
 <ul>
 <li><p>The Estimated model Parameters are used to sample from the implied distribution.</p></li>
 <li><p>But the approach lacks control and insight into why the data was missing in the first place.</p></li>
+<li><p>Cannot directly account for MNAR cases.</p></li>
 </ul>
 </section></section>
 <section>
@@ -792,7 +793,8 @@ climate = \alpha_{0} + \beta_{0}male \]</span></p>
 <h2>Hierarchical Structures of Non-response</h2>
 <h3 id="team-dynamics-determine-probability-of-response">Team dynamics determine probability of response</h3>
 
-<img data-src="images/team_empowerment.png" class="r-stretch quarto-figure-center"><p class="caption">Team Empowerment Scores</p></section>
+<img data-src="images/team_empowerment.png" class="r-stretch quarto-figure-center"><p class="caption">Team Empowerment Scores</p><p>We can try to recover <strong><span class="blue">ignorable missing-ness</span></strong> i.e moving to MAR from MNAR conditional on group specific fixed effects.</p>
+</section>
 <section id="hierarchies-in-code" class="slide level2">
 <h2>Hierarchies in Code</h2>
 <h3 id="specifying-the-hierarchical-model-in-pymc">Specifying the hierarchical model in PyMC</h3>
@@ -858,9 +860,49 @@ climate = \alpha_{0} + \beta_{0}male \]</span></p>
 <h1>Imputation and Causal Narratives</h1>
 <p>In which we digress on the importance for imputation in causal inference more generally.</p>
 </section>
-<section id="feature-selection-is-not-causal-modelling" class="slide level2">
+<section id="feature-selection-is-not-causal-modelling" class="slide level2 smaller">
 <h2>Feature Selection is not Causal Modelling</h2>
 <h3 id="on-the-importance-of-theory-construction">On the Importance of Theory Construction</h3>
+<div class="columns">
+<div class="column" style="width:20%;">
+<table>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th><span class="math inline">\(Y_{i}(0)\)</span></th>
+<th><span class="math inline">\(Y_{i}(1)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><strong><span class="blue">?</span></strong></td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1</td>
+<td><strong><span class="blue">?</span></strong></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><strong><span class="blue">?</span></strong></td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><strong><span class="blue">?</span></strong></td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>0</td>
+<td><strong><span class="blue">?</span></strong></td>
+</tr>
+</tbody>
+</table>
+<p>The Fundamental problem of Causal Inference as Missing Data</p>
+</div><div class="column" style="width:80%;">
 <div class="fragment fade-in">
 <ul>
 <li>The heart of causal inference is understanding the risk of confounding influence.</li>
@@ -868,7 +910,7 @@ climate = \alpha_{0} + \beta_{0}male \]</span></p>
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>Naively optimising for some in-sample predictive benchmark does not protect your model from out-of-sample distribution shift.</li>
+<li>Naively optimising for some in-sample predictive benchmark does not protect your model from confounding bias.</li>
 </ul>
 </div>
 <div class="fragment fade-in">
@@ -881,16 +923,27 @@ climate = \alpha_{0} + \beta_{0}male \]</span></p>
 <li>This is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable.</li>
 </ul>
 </div>
+</div>
+</div>
 </section>
-<section id="counterfactuals-as-imputation." class="slide level2">
-<h2>Counterfactuals as Imputation.</h2>
+<section id="sota-bayesian-probabilistic-imputation." class="slide level2">
+<h2>SOTA: Bayesian Probabilistic Imputation.</h2>
 <ul>
-<li><p>The Fundamental Problem of Causal Inference is a Missing data problem.</p></li>
 <li><p>Bayesian Imputation can be highly customisable method of imputation in almost any domain.</p></li>
 <li><p>Imputed treatment effect distributions need not be specified simply as a linear combination of observables.</p>
 <ul>
 <li><strong><span class="blue">Non-parametric methods</span></strong> such as BART and Dirichlet Process Mixtures can be used.</li>
 </ul></li>
+<li><p>In <a href="https://www.pymc.io/projects/examples/en/latest/causal_inference/interventional_distribution.html#interventions-and-the-operatorname-do-operator">PyMC</a> you can implement the <strong>do-operator</strong> to intervene on the graph that represents your data generating process.</p></li>
+<li><p>How do patterns of Employee empowerment change if we can intervene on their relationship with their manager?</p></li>
+</ul>
+</section>
+<section id="conclusion" class="slide level2">
+<h2>Conclusion</h2>
+<p>We’ve seen the application of missing data analysis to survey data in the context of People Analytics.</p>
+<ul>
+<li><p>Multivariate approaches are effective but cannot help address confounding bias</p></li>
+<li><p>The flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.</p></li>
 </ul>
 
 

@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inferenxe\n\n\n\n\n\n\n\n\n\n\n\nNov 7, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 6, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inferenxe\n\n\n\n\n\n\n\n\n\n\n\nNov 7, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 6, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -1425,7 +1425,7 @@
     "href": "talks/missing_data/missing_data_causal.html#identifiability-under-missing-ness",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Identifiability under Missing-ness",
-    "text": "Identifiability under Missing-ness\n\n\nUnder MCAR AND MAR there exist consistent identifiable estimators for functions of \\(Y\\)\n\n\n\n\nUnder MNAR there does not exist in general consistent estimators of \\(Y.\\)\n\n\n\n\nWe cannot using data distinguish cases which are MNAR V (MCAR or MAR).\nWe are required to make assumptions about the nature of the missing-ness"
+    "text": "Identifiability under Missing-ness\n\n\nUnder MCAR and MAR there exist consistent identifiable estimators for functions of \\(Y\\)\n\n\n\n\nUnder MNAR there does not exist in general consistent estimators of \\(Y.\\)\n\n\n\n\nWe cannot use data to distinguish cases which are MNAR V (MCAR or MAR).\nWe are required to make assumptions about the nature of the missing-ness to try and account for it."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#the-data",
@@ -1467,7 +1467,7 @@
     "href": "talks/missing_data/missing_data_causal.html#estimated-model-and-samples",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Estimated Model and Samples",
-    "text": "Estimated Model and Samples\n\n\n\n\n\n\n\n\nThe Estimated model Parameters are used to sample from the implied distribution.\nBut the approach lacks control and insight into why the data was missing in the first place."
+    "text": "Estimated Model and Samples\n\n\n\n\n\n\n\n\nThe Estimated model Parameters are used to sample from the implied distribution.\nBut the approach lacks control and insight into why the data was missing in the first place.\nCannot directly account for MNAR cases."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#the-joint-distribution-decomposed",
@@ -1509,7 +1509,7 @@
     "href": "talks/missing_data/missing_data_causal.html#hierarchical-structures-of-non-response",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Hierarchical Structures of Non-response",
-    "text": "Hierarchical Structures of Non-response\nTeam dynamics determine probability of response\n\nTeam Empowerment Scores"
+    "text": "Hierarchical Structures of Non-response\nTeam dynamics determine probability of response\n\nTeam Empowerment ScoresWe can try to recover ignorable missing-ness i.e moving to MAR from MNAR conditional on group specific fixed effects."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#hierarchies-in-code",
@@ -1544,13 +1544,41 @@
     "href": "talks/missing_data/missing_data_causal.html#feature-selection-is-not-causal-modelling",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Feature Selection is not Causal Modelling",
-    "text": "Feature Selection is not Causal Modelling\nOn the Importance of Theory Construction\n\n\nThe heart of causal inference is understanding the risk of confounding influence.\n\n\n\n\nNaively optimising for some in-sample predictive benchmark does not protect your model from out-of-sample distribution shift.\n\n\n\n\nCausal models with deliberate and careful construction of the dependence mechanism are your best hope for genuine insight and robust predictive performance\n\n\n\n\nThis is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable."
+    "text": "Feature Selection is not Causal Modelling\nOn the Importance of Theory Construction\n\n\n\n\n\nID\n\\(Y_{i}(0)\\)\n\\(Y_{i}(1)\\)\n\n\n\n\n1\n?\n1\n\n\n2\n1\n?\n\n\n3\n?\n0\n\n\n4\n?\n1\n\n\n5\n0\n?\n\n\n\nThe Fundamental problem of Causal Inference as Missing Data\n\n\n\nThe heart of causal inference is understanding the risk of confounding influence.\n\n\n\n\nNaively optimising for some in-sample predictive benchmark does not protect your model from confounding bias.\n\n\n\n\nCausal models with deliberate and careful construction of the dependence mechanism are your best hope for genuine insight and robust predictive performance\n\n\n\n\nThis is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#counterfactuals-as-imputation.",
     "href": "talks/missing_data/missing_data_causal.html#counterfactuals-as-imputation.",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Counterfactuals as Imputation.",
-    "text": "Counterfactuals as Imputation.\n\nThe Fundamental Problem of Causal Inference is a Missing data problem.\nBayesian Imputation can be highly customisable method of imputation in almost any domain.\nImputed treatment effect distributions need not be specified simply as a linear combination of observables.\n\nNon-parametric methods such as BART and Dirichlet Process Mixtures can be used.\n\n\n\n\n\nMissing Data with PyMC"
+    "text": "Counterfactuals as Imputation.\n\nBayesian Imputation can be highly customisable method of imputation in almost any domain.\nImputed treatment effect distributions need not be specified simply as a linear combination of observables.\n\nNon-parametric methods such as BART and Dirichlet Process Mixtures can be used.\n\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process."
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#conclusion",
+    "href": "talks/missing_data/missing_data_causal.html#conclusion",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Conclusion",
+    "text": "Conclusion\nWe’ve seen the application of missing data analysis to survey data in the context of People Analytics.\n\nMultivariate approaches are effective but cannot help address confounding bias\nThe flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.\n\n\n\n\nMissing Data with PyMC"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#bayesian-imputation.",
+    "href": "talks/missing_data/missing_data_causal.html#bayesian-imputation.",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Bayesian Imputation.",
+    "text": "Bayesian Imputation.\n\nBayesian Imputation can be highly customisable method of imputation in almost any domain.\nImputed treatment effect distributions need not be specified simply as a linear combination of observables.\n\nNon-parametric methods such as BART and Dirichlet Process Mixtures can be used.\n\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process."
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#bayesian-probabilistic-imputation.",
+    "href": "talks/missing_data/missing_data_causal.html#bayesian-probabilistic-imputation.",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Bayesian Probabilistic Imputation.",
+    "text": "Bayesian Probabilistic Imputation.\n\nBayesian Imputation can be highly customisable method of imputation in almost any domain.\nImputed treatment effect distributions need not be specified simply as a linear combination of observables.\n\nNon-parametric methods such as BART and Dirichlet Process Mixtures can be used.\n\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process.\nHow do patterns of Employee empowerment change if we can intervene on their relationship with their manager?"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#sota-bayesian-probabilistic-imputation.",
+    "href": "talks/missing_data/missing_data_causal.html#sota-bayesian-probabilistic-imputation.",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "SOTA: Bayesian Probabilistic Imputation.",
+    "text": "SOTA: Bayesian Probabilistic Imputation.\n\nBayesian Imputation can be highly customisable method of imputation in almost any domain.\nImputed treatment effect distributions need not be specified simply as a linear combination of observables.\n\nNon-parametric methods such as BART and Dirichlet Process Mixtures can be used.\n\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process.\nHow do patterns of Employee empowerment change if we can intervene on their relationship with their manager?"
   }
 ]

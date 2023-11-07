@@ -37,7 +37,7 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 :::
 
 # The Pitch
-Non-response in HR survey data is an invitation to causal analysis of working conditions. 
+Non-response in People Analytics survey data is an invitation to causal analysis of working conditions. 
 
 Bayesian imputation of missing data is state of the art for imputation of missing data.
 
@@ -89,7 +89,7 @@ Bayesian imputation of missing data is state of the art for imputation of missin
 ## Identifiability under Missing-ness
 
 ::: {.fragment .fade-in}
-- Under MCAR AND MAR there exist consistent identifiable estimators for functions of $Y$
+- Under MCAR and MAR there exist consistent identifiable estimators for functions of $Y$
 :::
 
 ::: {.fragment .fade-in}
@@ -97,9 +97,9 @@ Bayesian imputation of missing data is state of the art for imputation of missin
 :::
 
 ::: {.fragment .fade-in}
-- We cannot using data distinguish cases which are MNAR V (MCAR or MAR). 
+- We cannot use data to distinguish cases which are MNAR V (MCAR or MAR). 
 
-- We are __[required]{.blue}__ to make assumptions about the nature of the missing-ness
+- We are __[required]{.blue}__ to make assumptions about the nature of the missing-ness to try and account for it.
 
 :::
 
@@ -225,6 +225,8 @@ fiml_mus, fiml_cov = estimate(data)
 from the implied distribution.
 
 - But the approach lacks control and insight into why the data was missing in the first place.
+
+- Cannot directly account for MNAR cases. 
 
 # Bayesian Imputation by Chained Equation
 In which we directly sample probable values for each missing observation conditional on flexibly specifiable models.
@@ -361,6 +363,8 @@ In which we consider how management structure and team membership can induce dif
 
 ![Team Empowerment Scores](images/team_empowerment.png)
 
+We can try to recover __[ignorable missing-ness]{.blue}__ i.e moving to MAR from MNAR conditional on group specific fixed effects.
+
 ## Hierarchies in Code
 ### Specifying the hierarchical model in PyMC
 
@@ -427,15 +431,31 @@ with pm.Model(coords=coords) as hierarchical_model:
 # Imputation and Causal Narratives
 In which we digress on the importance for imputation in causal inference more generally.
 
-## Feature Selection is not Causal Modelling
+## Feature Selection is not Causal Modelling{.smaller}
 ### On the Importance of Theory Construction
+
+::: {.columns}
+
+::: {.column width="20%"}
+| ID | $Y_{i}(0)$ | $Y_{i}(1)$ |
+|----|------------|------------|
+| 1  | __[?]{.blue}__  | 1          |
+| 2  | 1          | __[?]{.blue}__ |
+| 3  | __[?]{.blue}__  | 0          |
+| 4  | __[?]{.blue}__  | 1          |
+| 5  | 0          | __[?]{.blue}__  |
+
+The Fundamental problem of Causal Inference as Missing Data
+:::
+
+::: {.column width="80%"}
 
 ::: {.fragment .fade-in}
 - The heart of causal inference is understanding the risk of confounding influence.
 :::
 
 ::: {.fragment .fade-in}
-- Naively optimising for some in-sample predictive benchmark does not protect your model from out-of-sample distribution shift.
+- Naively optimising for some in-sample predictive benchmark does not protect your model from confounding bias.
 :::
 
 ::: {.fragment .fade-in}
@@ -445,13 +465,28 @@ In which we digress on the importance for imputation in causal inference more ge
 ::: {.fragment .fade-in}
 - This is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable.
 :::
+:::
 
 
-## Counterfactuals as Imputation.
+:::
 
-- The Fundamental Problem of Causal Inference is a Missing data problem. 
+
+## SOTA: Bayesian Probabilistic Imputation.
 
 - Bayesian Imputation can be highly customisable method of imputation in almost any domain.
 
 - Imputed treatment effect distributions need not be specified simply as a linear combination of observables. 
     - __[Non-parametric methods]{.blue}__ such as BART and Dirichlet Process Mixtures can be used. 
+
+- In [PyMC](https://www.pymc.io/projects/examples/en/latest/causal_inference/interventional_distribution.html#interventions-and-the-operatorname-do-operator) you can implement the __do-operator__ to intervene on the graph that represents your data generating process. 
+
+- How do patterns of Employee empowerment change if we can intervene on their relationship with their manager?
+
+
+## Conclusion
+
+We've seen the application of missing data analysis to survey data in the context of People Analytics.
+
+- Multivariate approaches are effective but cannot help address confounding bias
+
+- The flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.
