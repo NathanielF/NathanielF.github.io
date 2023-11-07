@@ -405,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">11/6/23</p>
+  <p class="date">11/7/23</p>
 </section>
 <section id="preliminaries" class="slide level2 smaller">
 <h2>Preliminaries</h2>
@@ -527,7 +527,7 @@ Nathaniel Forde
 <li>Missing Not at Random (MNAR)
 <ul>
 <li><span class="math inline">\(P(M = 1 | Y_{obs}, Y_{miss}, \phi)\)</span></li>
-<li>non-ignorable missing-ness</li>
+<li>non-ignorable missing-ness. Need to account for why!</li>
 </ul></li>
 </ul>
 </div>
@@ -848,20 +848,56 @@ climate = \alpha_{0} + \beta_{0}male \]</span></p>
 <section id="influence-of-team-membership" class="slide level2">
 <h2>Influence of Team Membership</h2>
 
-<img data-src="images/lmx_influence.png" class="r-stretch quarto-figure-center"><p class="caption">Modification of Leader Impact based on Team</p></section>
+<img data-src="images/lmx_influence.png" class="r-stretch quarto-figure-center"><p class="caption">Modification of Leader Impact based on Team <strong><span class="blue">imputed with Uncertainty</span></strong></p></section>
 <section id="imputation-with-team-effects" class="slide level2">
 <h2>Imputation with Team Effects</h2>
 
 <img data-src="images/final_empowerment_imputed.png" class="r-stretch quarto-figure-center"><p class="caption">Imputation patterns under team influence</p></section></section>
+<section>
 <section id="imputation-and-causal-narratives" class="title-slide slide level1 center">
 <h1>Imputation and Causal Narratives</h1>
 <p>In which we digress on the importance for imputation in causal inference more generally.</p>
+</section>
+<section id="feature-selection-is-not-causal-modelling" class="slide level2">
+<h2>Feature Selection is not Causal Modelling</h2>
+<h3 id="on-the-importance-of-theory-construction">On the Importance of Theory Construction</h3>
+<div class="fragment fade-in">
+<ul>
+<li>The heart of causal inference is understanding the risk of confounding influence.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Naively optimising for some in-sample predictive benchmark does not protect your model from out-of-sample distribution shift.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Causal models with deliberate and careful construction of the dependence mechanism are your best hope for genuine insight and robust predictive performance</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>This is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable.</li>
+</ul>
+</div>
+</section>
+<section id="counterfactuals-as-imputation." class="slide level2">
+<h2>Counterfactuals as Imputation.</h2>
+<ul>
+<li><p>The Fundamental Problem of Causal Inference is a Missing data problem.</p></li>
+<li><p>Bayesian Imputation can be highly customisable method of imputation in almost any domain.</p></li>
+<li><p>Imputed treatment effect distributions need not be specified simply as a linear combination of observables.</p>
+<ul>
+<li><strong><span class="blue">Non-parametric methods</span></strong> such as BART and Dirichlet Process Mixtures can be used.</li>
+</ul></li>
+</ul>
 
 
 <img src="images/pycon_ireland.jpeg" class="slide-logo r-stretch"><div class="footer footer-default">
-<p>Discrete Choice with PyMC</p>
+<p>Missing Data with PyMC</p>
 </div>
-</section>
+</section></section>
     </div>
   </div>
 

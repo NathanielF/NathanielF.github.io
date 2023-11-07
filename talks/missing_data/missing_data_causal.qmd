@@ -10,9 +10,9 @@ format:
     revealjs:
          theme: [default, clean.scss]
          logo: images/pycon_ireland.jpeg
-         footer: "Discrete Choice with PyMC"
+         footer: "Missing Data with PyMC"
 categories: [bayesian, missing data, causal inferenxe]
-image: "images/different_priors_imputation.png"
+image: "images/final_empowerment_imputed.png"
 date: last-modified
 ---
 
@@ -83,7 +83,7 @@ Bayesian imputation of missing data is state of the art for imputation of missin
 ::: {.fragment .fade-in}
 - Missing Not at Random (MNAR)
     - $P(M = 1 | Y_{obs}, Y_{miss}, \phi)$
-    - non-ignorable missing-ness
+    - non-ignorable missing-ness. Need to account for why!
 :::
 
 ## Identifiability under Missing-ness
@@ -418,7 +418,7 @@ with pm.Model(coords=coords) as hierarchical_model:
 
 ## Influence of Team Membership
 
-![Modification of Leader Impact based on Team](images/lmx_influence.png)
+![Modification of Leader Impact based on Team __[imputed with Uncertainty]{.blue}__](images/lmx_influence.png)
 
 ## Imputation with Team Effects
 
@@ -426,3 +426,32 @@ with pm.Model(coords=coords) as hierarchical_model:
 
 # Imputation and Causal Narratives
 In which we digress on the importance for imputation in causal inference more generally.
+
+## Feature Selection is not Causal Modelling
+### On the Importance of Theory Construction
+
+::: {.fragment .fade-in}
+- The heart of causal inference is understanding the risk of confounding influence.
+:::
+
+::: {.fragment .fade-in}
+- Naively optimising for some in-sample predictive benchmark does not protect your model from out-of-sample distribution shift.
+:::
+
+::: {.fragment .fade-in}
+- Causal models with deliberate and careful construction of the dependence mechanism are your best hope for genuine insight and robust predictive performance
+:::
+
+::: {.fragment .fade-in}
+- This is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable.
+:::
+
+
+## Counterfactuals as Imputation.
+
+- The Fundamental Problem of Causal Inference is a Missing data problem. 
+
+- Bayesian Imputation can be highly customisable method of imputation in almost any domain.
+
+- Imputed treatment effect distributions need not be specified simply as a linear combination of observables. 
+    - __[Non-parametric methods]{.blue}__ such as BART and Dirichlet Process Mixtures can be used. 

@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inferenxe\n\n\n\n\n\n\n\n\n\n\n\nNov 6, 2023\n\n\n11 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 6, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inferenxe\n\n\n\n\n\n\n\n\n\n\n\nNov 7, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 6, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -1418,7 +1418,7 @@
     "href": "talks/missing_data/missing_data_causal.html#typology-of-missing-ness",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Typology of Missing-ness",
-    "text": "Typology of Missing-ness\n\n\nMissing Completely at Random (MCAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | \\phi)\\)\nwhere \\(\\phi\\) is the haphazard circumstance of the world\nmissing-ness cannot be predicted from the \\(Y\\) variable\n\n\n\n\n\nMissing at Random (MAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | Y_{obs}, \\phi)\\)\nmissing-ness can be predicted from \\(Y\\) variable\n\n\n\n\n\nMissing Not at Random (MNAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi)\\)\nnon-ignorable missing-ness"
+    "text": "Typology of Missing-ness\n\n\nMissing Completely at Random (MCAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | \\phi)\\)\nwhere \\(\\phi\\) is the haphazard circumstance of the world\nmissing-ness cannot be predicted from the \\(Y\\) variable\n\n\n\n\n\nMissing at Random (MAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | Y_{obs}, \\phi)\\)\nmissing-ness can be predicted from \\(Y\\) variable\n\n\n\n\n\nMissing Not at Random (MNAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi)\\)\nnon-ignorable missing-ness. Need to account for why!"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#identifiability-under-missing-ness",
@@ -1530,7 +1530,7 @@
     "href": "talks/missing_data/missing_data_causal.html#influence-of-team-membership",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Influence of Team Membership",
-    "text": "Influence of Team Membership\n\nModification of Leader Impact based on Team"
+    "text": "Influence of Team Membership\n\nModification of Leader Impact based on Team imputed with Uncertainty"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#imputation-with-team-effects",
@@ -1538,5 +1538,19 @@
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Imputation with Team Effects",
     "text": "Imputation with Team Effects\n\nImputation patterns under team influence"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#feature-selection-is-not-causal-modelling",
+    "href": "talks/missing_data/missing_data_causal.html#feature-selection-is-not-causal-modelling",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Feature Selection is not Causal Modelling",
+    "text": "Feature Selection is not Causal Modelling\nOn the Importance of Theory Construction\n\n\nThe heart of causal inference is understanding the risk of confounding influence.\n\n\n\n\nNaively optimising for some in-sample predictive benchmark does not protect your model from out-of-sample distribution shift.\n\n\n\n\nCausal models with deliberate and careful construction of the dependence mechanism are your best hope for genuine insight and robust predictive performance\n\n\n\n\nThis is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable."
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#counterfactuals-as-imputation.",
+    "href": "talks/missing_data/missing_data_causal.html#counterfactuals-as-imputation.",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Counterfactuals as Imputation.",
+    "text": "Counterfactuals as Imputation.\n\nThe Fundamental Problem of Causal Inference is a Missing data problem.\nBayesian Imputation can be highly customisable method of imputation in almost any domain.\nImputed treatment effect distributions need not be specified simply as a linear combination of observables.\n\nNon-parametric methods such as BART and Dirichlet Process Mixtures can be used.\n\n\n\n\n\nMissing Data with PyMC"
   }
 ]
