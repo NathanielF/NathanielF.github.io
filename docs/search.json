@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inferenxe\n\n\n\n\n\n\n\n\n\n\n\nNov 7, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 6, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inferenxe\n\n\n\n\n\n\n\n\n\n\n\nNov 8, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 6, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -1580,5 +1580,12 @@
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "SOTA: Bayesian Probabilistic Imputation.",
     "text": "SOTA: Bayesian Probabilistic Imputation.\n\nBayesian Imputation can be highly customisable method of imputation in almost any domain.\nImputed treatment effect distributions need not be specified simply as a linear combination of observables.\n\nNon-parametric methods such as BART and Dirichlet Process Mixtures can also be used.\n\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process.\nUsed to answer Counterfactuals\n\nHow do patterns of Employee empowerment change if we can intervene on their relationship with their manager?"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#probabilistic-maps",
+    "href": "talks/missing_data/missing_data_causal.html#probabilistic-maps",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Probabilistic Maps",
+    "text": "Probabilistic Maps\nSampling the possible spaces over missing data\n\n\n\n\n\nBayes at work busily imputing undiscovered continents\n\n\n\nThe idea\n\nWhen gaps in survey data are not random\nWe need to understand the drivers of missing-ness\nThe “topology” around the gaps gives us a clue\nBayesian inference helps to imputes the probable gradients, inclines and curves of the space in the gaps conditional on the observed data.\nIn our employee engagement data the question becomes - What are the enviromental influences on the probable responses?"
   }
 ]

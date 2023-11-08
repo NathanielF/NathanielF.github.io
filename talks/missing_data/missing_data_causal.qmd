@@ -231,6 +231,28 @@ from the implied distribution.
 # Bayesian Imputation by Chained Equation
 In which we directly sample probable values for each missing observation conditional on flexibly specifiable models.
 
+## Probabilistic Maps{.smaller}
+### Sampling the possible spaces over missing data
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+![Bayes at work busily imputing undiscovered continents](images/probabilistic_maps.png)
+:::
+
+::: {.column width="50%"}
+The idea
+
+- When gaps in survey data are not random
+- We need to understand the drivers of missing-ness
+- The "topology" around the gaps gives us a clue
+- Bayesian inference helps to imputes the probable gradients, inclines and curves of the space in the gaps conditional on the observed data.
+- In our employee engagement data the question becomes - What are the __[enviromental influences on the probable]{.blue}__ responses?
+:::
+
+:::
+
 ## The Joint Distribution Decomposed
 ### Modelling the Outcome piece-wise
 

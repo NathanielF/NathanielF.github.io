@@ -405,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">11/7/23</p>
+  <p class="date">11/8/23</p>
 </section>
 <section id="preliminaries" class="slide level2 smaller">
 <h2>Preliminaries</h2>
@@ -669,6 +669,29 @@ Nathaniel Forde
 <section id="bayesian-imputation-by-chained-equation" class="title-slide slide level1 center">
 <h1>Bayesian Imputation by Chained Equation</h1>
 <p>In which we directly sample probable values for each missing observation conditional on flexibly specifiable models.</p>
+</section>
+<section id="probabilistic-maps" class="slide level2 smaller">
+<h2>Probabilistic Maps</h2>
+<h3 id="sampling-the-possible-spaces-over-missing-data">Sampling the possible spaces over missing data</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/probabilistic_maps.png"></p>
+<p></p><figcaption>Bayes at work busily imputing undiscovered continents</figcaption><p></p>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<p>The idea</p>
+<ul>
+<li>When gaps in survey data are not random</li>
+<li>We need to understand the drivers of missing-ness</li>
+<li>The “topology” around the gaps gives us a clue</li>
+<li>Bayesian inference helps to imputes the probable gradients, inclines and curves of the space in the gaps conditional on the observed data.</li>
+<li>In our employee engagement data the question becomes - What are the <strong><span class="blue">enviromental influences on the probable</span></strong> responses?</li>
+</ul>
+</div>
+</div>
 </section>
 <section id="the-joint-distribution-decomposed" class="slide level2">
 <h2>The Joint Distribution Decomposed</h2>
