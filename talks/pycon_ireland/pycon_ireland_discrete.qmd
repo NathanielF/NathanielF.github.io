@@ -38,9 +38,9 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 :::
 
 # The Pitch
-Predictive Models are inadequate decision making tools in product analysis. 
+Predictive Models are inadequate decision making tools in product demand analysis. 
 
-Accept __no substitutes__ for bayesian structural and causal analysis. 
+Accept __no substitutes__ for bayesian discrete choice models and causal inference. 
 
 
 ## Agenda
@@ -169,7 +169,7 @@ whole."
 ::: {.column width="40%"}
 
 ::: {.fragment .fade-in}
-![Bayesian Models aim to replicate the DGP holistically](images/vitruvian.png)
+![Bayesian Models aim to replicate the DGP holistically and __[answer the harder question]{.blue}__](images/vitruvian.png)
 :::
 
 :::
@@ -577,15 +577,25 @@ with pm.Model(coords=coords) as model_4:
 ## Conclusion  {.smaller}
 ### The World in the Model
 
-We've seen a series of models, each one expanding on the last. 
+"Models... [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression" - Mary Morgan in _The World in the Model_
 
+::: {.columns}
+::: {.column width="80%"}
 - Models __should__ articulate the relevant structure of this world and other possible ones. 
 - They serve as microscopes. Simulation systems are tools to interrogate reality.
 - Bayesian Conditionalisation calibrates the system against the observed facts.
 - Bayesian Discrete choice models help us interrogate aspects of market demand under uncertainty.
 - PyMC enables us to easily build and experiment with those models.
-- Causal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments. 
+- Causal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments and necessary complexity. 
+:::
 
-> "Models... [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression" - Mary Morgan in _The World in the Model_
+::: {.column width="20%"}
+![CausalPy](images/causalpy.png)
+![PyMC](images/PyMC_banner.svg)
+:::
+:::
+
+
+
 
 
