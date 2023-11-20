@@ -1,0 +1,303 @@
+---
+title: "Survival Regression Models in PyMC"
+subtitle: "Time to Attrition in People Analytics"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+format: 
+    revealjs:
+         theme: [default, clean.scss]
+         logo: images/pymc_logo.png
+         footer: "Survival Regression in PyMC"
+categories: [bayesian, survival analysis, people analytics]
+image: "images/frailty_terms.png"
+date: last-modified
+---
+
+## Agenda
+
+::: {.fragment .fade-in}
+- Time to Event Distributions
+  - HyperObjects and Perspectives on Probability
+::: 
+::: {.fragment .fade-in}
+- People Analytics and Survival Regression
+  - Cox Proportional Hazard
+  - Accelerated Failure Time 
+:::
+::: {.fragment .fade-in}
+- Comparing Model Implications
+  - Marginal Predictions
+  - Acceleration Factors
+:::
+::: {.fragment .fade-in}
+- Frailty Models and Stratified Risk
+:::
+::: {.fragment .fade-in}
+- Conclusion
+:::
+
+
+# Time to Event Distributions 
+
+## Layered Abstractions and Hyperobjects
+
+![](images/hyperobject_2.png)
+
+Concepts that defy easy panoptic survey prohibit easy action e.g. climate change.
+
+## Perspectives on Probability
+### Top-Down and Abstract
+::: {.columns}
+
+::: {.column width="50%"}
+![Parametric CDF and Survival functions obscure views of instantaneous hazard](images/survival_relationship.png)
+
+$$ h(t) = \frac{f(t)}{S(t)} \\ 
+H(t) = -ln(S(t))$$
+:::
+
+::: {.column width="50%"}
+![](images/relationship_2.png){fig-align="center"}
+![Baseline Instantenous Hazard](images/baseline_haz.png)
+:::
+
+:::
+
+## Actuarial Tables and Survival Curves
+### Bottom-Up and Concrete
+![Actuarial Tables try to estimate CDF and Survival functions](images/actuarial_table.png)
+
+```{.python code-line-numbers="|7-8|10-11"}
+def make_actuarial_table(actuarial_table):
+    ### Actuarial lifetables are used to describe the nature 
+    ### of the risk over time derived from instantaneous hazard
+    actuarial_table["p_hat"] = (actuarial_table["failed"] / 
+                                actuarial_table["risk_set"])
+    actuarial_table["1-p_hat"] = 1 - actuarial_table["p_hat"]
+    ### Estimate of Survival function
+    actuarial_table["S_hat"] = actuarial_table["1-p_hat"].cumprod()
+    actuarial_table["CH_hat"] = -np.log(actuarial_table["S_hat"])
+    ### The Estimate of the CDF function
+    actuarial_table["F_hat"] = 1 - actuarial_table["S_hat"]
+    actuarial_table["V_hat"] = greenwood_variance(actuarial_table)
+    return actuarial_table
+
+```
+
+# People Analytics and Survival Regression
+
+## Time to Attrition Data
+
+::: {.columns}
+
+::: {.column width="50%"}
+![](images/intention_df.png)
+__Question__: What is the relationship between individual characteristics and their expected survival times?
+:::
+
+::: {.column width="50%"}
+![](images/km_stats.png)
+
+__Question__: How do individual survival times vary as a function of the levels in their covariates.
+:::
+:::
+
+
+
+
+## Regression and Censored Data
+### Censored Data Biases simple summaries
+
+
+$$\mathbf{y_{i}} = \beta \mathbf{X_{i}} $$
+
+::: {.fragment .fade-in}
+$$\begin{split}
+\begin{pmatrix}
+\color{red}{y_{i, c}}  \\
+\color{blue}{y_{i, \neg c}}  \\
+\end{pmatrix} = \begin{pmatrix}
+\beta_{1} \\
+\beta_{2} \\
+\beta_{3}
+\end{pmatrix} \begin{pmatrix}
+\color{red}{x_{1,c}^{i}} & \color{red}{x_{2, c}^{i}} & \color{red}{x_{3, c}^{i}}  \\
+\color{blue}{x_{1,\neg c}^{i}} & \color{blue}{x_{2, \neg c}^{i}} & \color{blue}{x_{3, \neg c}^{i}}  \\
+\end{pmatrix}
+\end{split}
+$$
+:::
+
+::: {.fragment .fade-in}
+
+$$ \Rightarrow L(\mathbf{\beta}, S(\color{red}{y_{c}}), f(\color{blue}{y_{\neg c}}) ) $$
+:::
+
+::: {.fragment .fade-in}
+
+$$ \underbrace{p( \beta | y)}_{\text{posterior draws}} = \frac{p(\mathbb{\beta})p(y | \beta)}{\int_{i}^{n} p(y | \mathbf{\beta_{i}})p(\mathbf{\beta_{i}}) } $$
+:::
+
+## Regression for Survival Times
+### Distributions for Modelling Attrition
+
+![](images/dists.png)
+
+Monotonoc or non-monotonic hazards determined by distribution choice. Risk spikes important in early periods of employment. 
+
+## Accelerated Failure Time Models {.smaller}
+### Parametric Models of Survival Distributions
+
+$$S_{i}(t) = S_{0}\Bigg(\frac{t}{exp(\mu + \alpha_{1}x_{1} + \alpha_{2}x_{2} ... \alpha_{p}x_{p})} \Bigg) $$
+
+```{.python code-line-numbers="|7-8|9-10"}
+with pm.Model(coords=coords, check_bounds=False) as aft_model:
+  X_data = pm.MutableData("X_data_obs", X)
+  beta = pm.Normal("beta", 0.0, 1, dims="preds")
+  mu = pm.Normal("mu", 0, 1)
+
+  s = pm.HalfNormal("s", 5.0)
+  eta = pm.Deterministic("eta", pm.math.dot(beta, X_data.T))
+  reg = pm.Deterministic("reg", pt.exp(-(mu + eta) / s))
+  y_obs = pm.Weibull("y_obs", beta=reg[~cens], alpha=s, observed=y[~cens])
+  y_cens = pm.Potential("y_cens", weibull_lccdf(y[cens], alpha=s, beta=reg[cens]))
+  
+  idata = pm.sample_prior_predictive()
+  idata.extend(
+      pm.sample(target_accept=0.95, random_seed=100, idata_kwargs={"log_likelihood": True})
+  )
+  idata.extend(pm.sample_posterior_predictive(idata))
+```
+
+## Parametric Model Structure
+
+::: {.columns}
+
+::: {.column width="60%"}
+![](images/weibull_reg_struct.png)
+:::
+
+::: {.column width="40%"}
+Accelerated Failure time models incorporate the regression component
+as a weighted sum that enters the parametric probability model
+
+For instance:
+$$ Weibull(\alpha, \beta)
+\\ = Weibull(\alpha, reg)$$
+:::
+
+:::
+
+
+## Proportional Hazards Cox Regression {.smaller}
+### Flexible Discrete Intervals Hazards 
+
+$$ \lambda_{0}(t) $$
+$$ \lambda_{0}(t) \cdot exp(\beta_{1}X_{1} + \beta_{2}X_{2}... \beta_{k}X_{k}) $$
+
+```{.python code-line-numbers="|7-11"}
+
+with pm.Model(coords=coords) as base_model:
+  X_data = pm.MutableData("X_data_obs", retention_df[preds], dims=("individuals", "preds"))
+  lambda0 = pm.Gamma("lambda0", 0.01, 0.01, dims="intervals")
+
+  beta = pm.Normal("beta", 0, sigma=1, dims="preds")
+  lambda_ = pm.Deterministic(
+      "lambda_",
+      pt.outer(pt.exp(pm.math.dot(beta, X_data.T)), lambda0),
+      dims=("individuals", "intervals"),
+  )
+  mu = pm.Deterministic("mu", exposure * lambda_, 
+                        dims=("individuals", "intervals"))
+
+  obs = pm.Poisson("obs", mu, observed=quit, 
+                    dims=("individuals", "intervals"))
+  idata = pm.sample(
+      target_accept=0.95, random_seed=100, idata_kwargs={"log_likelihood": True}
+  )
+
+
+```
+
+## Proportional Hazards Cox Regression
+
+![Baseline Instantenous Hazard](images/baseline_haz.png)
+
+## Proportional Hazards Cox Regression
+
+![Cumulative Hazard across Individuals](images/cumulative_hazard.png)
+
+## Proportional Hazards Cox Regression {.smaller}
+### Using the Poisson Trick
+
+::: {.columns}
+
+::: {.column width="60%"}
+![](images/coxph_poisson.png){height=500}
+:::
+
+::: {.column width="40%"}
+$$ CoxPH(left, month) \sim gender + level $$
+
+is akin to 
+
+$$ left \sim glm(gender + level + (1 | month)) \\ \text{ where link is } Poisson  $$
+
+applying an offset to the event rate for each time interval.
+:::
+
+:::
+
+# Comparing Model Implications
+
+## Comparing Models {.smaller}
+### Stated Intention and Sentiment
+
+$$ CoxPH(left, month) \sim gender + field + level + sentiment $$
+
+$$ CoxPH(left, month) \sim gender + field + level + sentiment + intention $$
+
+![](images/parameters_coxph.png)
+
+## Comparing Models
+### Interpreting Model Coefficients
+
+- If $exp(\beta)$ > 1: An increase in X is associated with an increased hazard (risk) of the event occurring.
+- If $exp(\beta)$ < 1: An increase in X is associated with a decreased hazard (lower risk) of the event occurring.
+- If $exp(\beta)$ = 1: X has no effect on the hazard rate.
+
+_[Predicting Marginal Effects]{.blue}_
+![](images/marginal_table.png)
+
+## Comparing Models {.smaller}
+### Predicting Marginal Effects
+::: {.rows}
+
+::: {.row height="50%"}
+
+![The Intention Model absorbs some of the variance in the baseline hazard not accounted for in the sentiment model](images/intention_model.png){height=250}
+
+:::
+
+
+::: {.row height="50%"}
+
+![The Sentiment Model](images/sentiment_model.png){height=250}
+:::
+
+:::
+
+
+## Comparing Models
+
+![AFT models allow us to quantify the acceleration factor due to an individual or group's risk profile.](images/afts_compare.png)
+
+## Comparing Models {.smaller}
+### Marginal Survival Functions and WAIC
+
+![Comparing Marginal Survival Functions](images/marginal_model_compare.png){height=300}
+
+![](images/loglogistic_compare.png){fig-align="center" height=200}

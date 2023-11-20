@@ -11,7 +11,7 @@ format:
          theme: [default, clean.scss]
          logo: images/pycon_ireland.jpeg
          footer: "Missing Data with PyMC"
-categories: [bayesian, missing data, causal inferenxe]
+categories: [bayesian, missing data, causal inference]
 image: "images/final_empowerment_imputed.png"
 date: last-modified
 ---
