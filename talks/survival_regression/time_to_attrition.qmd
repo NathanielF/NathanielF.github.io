@@ -16,7 +16,7 @@ image: "images/frailty_terms.png"
 date: last-modified
 ---
 
-## Agenda
+## Agenda {.smaller}
 
 ::: {.fragment .fade-in}
 - Time to Event Distributions
@@ -138,7 +138,7 @@ $$ \Rightarrow L(\mathbf{\beta}, S(\color{red}{y_{c}}), f(\color{blue}{y_{\neg c
 
 ::: {.fragment .fade-in}
 
-$$ \underbrace{p( \beta | y)}_{\text{posterior draws}} = \frac{p(\mathbb{\beta})p(y | \beta)}{\int_{i}^{n} p(y | \mathbf{\beta_{i}})p(\mathbf{\beta_{i}}) } $$
+$$ \underbrace{p( \beta | y)}_{\text{posterior draws}} = \frac{p(\mathbb{\beta})L(\mathbf{\beta}, S(\color{red}{y_{c}}), f(\color{blue}{y_{\neg c}}) )}{\int_{i}^{n} L(\mathbf{\beta}_{i}, S(\color{red}{y_{c}}), f(\color{blue}{y_{\neg c}}) )p(\mathbf{\beta_{i}}) } $$
 :::
 
 ## Regression for Survival Times
@@ -251,6 +251,14 @@ applying an offset to the event rate for each time interval.
 
 :::
 
+## Proportional Hazards Cox Regression
+### The Proportional Hazards Assumption
+ 
+- The covariates enter __once__ into the weighted sum that modifies the baseline hazard. 
+- While the baseline hazard can change over time the difference in hazard induced by different levels in the covariates remains __constant__ over time.
+
+$$ \forall t \in T:  \frac{h(t | X_{gender} = 1)}{h(t | X_{gender} = 0)} = constant $$
+
 # Comparing Model Implications
 
 ## Comparing Models {.smaller}
@@ -301,3 +309,85 @@ _[Predicting Marginal Effects]{.blue}_
 ![Comparing Marginal Survival Functions](images/marginal_model_compare.png){height=300}
 
 ![](images/loglogistic_compare.png){fig-align="center" height=200}
+
+# Frailty Models and Stratified Risks
+
+## Frailty Models and Individual Heterogeneity {.smaller}
+
+We want to relax the assumptions of Cox Proportional Hazards model. We introduce (i) frailty terms and (ii) stratified risks
+
+$$ \lambda_{i}(t) = \color{green}{z_{i}}exp(\beta X)\color{red}{\lambda_{0}^{g}(t)} $$
+
+The __[multiplicative frailty]{.green}__ terms [$z_{i}$]{.green} can be specified as a gamma distribution centred on unity with __[stratified risks]{.red}__
+
+![](images/gamma_frailties.png)
+
+
+## Frailty Model in Codes
+
+```{.python code-line-numbers="|1-4|8|13-16|18-22"}
+
+with pm.Model(coords=coords) as frailty_model:
+        X_data_m = pm.MutableData("X_data_m", df_m[preds], dims=("men", "preds"))
+        X_data_f = pm.MutableData("X_data_f", df_f[preds], dims=("women", "preds"))
+        lambda0 = pm.Gamma("lambda0", 0.01, 0.01, dims=("intervals", "gender"))
+        sigma_frailty = pm.Normal("sigma_frailty", opt_params["alpha"], 1)
+        mu_frailty = pm.Normal("mu_frailty", opt_params["beta"], 1)
+        frailty = pm.Gamma("frailty", mu_frailty, sigma_frailty, dims="frailty_id")
+
+        beta = pm.Normal("beta", 0, sigma=1, dims="preds")
+
+        ## Stratified baseline hazards
+        lambda_m = pm.Deterministic(
+            "lambda_m",
+            pt.outer(pt.exp(pm.math.dot(beta, X_data_m.T)), lambda0[:, 0]),
+            dims=("men", "intervals"),
+        )
+        lambda_f = pm.Deterministic(
+            "lambda_f",
+            pt.outer(pt.exp(pm.math.dot(beta, X_data_f.T)), lambda0[:, 1]),
+            dims=("women", "intervals"),
+        )
+        lambda_ = pm.Deterministic(
+            "lambda_",
+            frailty[frailty_idx, None] * pt.concatenate([lambda_f, lambda_m], axis=0),
+            dims=("obs", "intervals"),
+        )
+
+        mu = pm.Deterministic("mu", exposure * lambda_, dims=("obs", "intervals"))
+
+        obs = pm.Poisson("outcome", mu, observed=quit, dims=("obs", "intervals"))
+        frailty_idata = pm.sample_prior_predictive()
+        frailty_idata.extend(pm.sample(random_seed=101))
+```
+
+## Frailty Model Structure
+### Individual Frailties
+
+![](images/frailty_model_structure.svg)
+
+
+## Frailty Model Structure
+### Shared Frailties
+
+::: {.columns}
+
+::: {.column width="60%"}
+
+![](images/shared_frailty_structure.svg)
+
+:::
+
+::: {.column width="40%"}
+
+![](images/posterior_shared_frailties.png)
+:::
+
+:::
+
+
+## Frailty Models and Stratified Baseline Risks
+
+![](images/stratified_baseline.png)
+
+We see differences in the risks stratified by gender and additionally how the magnitude of the baseline hazard shrinks with more or less well-specified covariate in the model.

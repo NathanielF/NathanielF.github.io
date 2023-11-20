@@ -119,6 +119,12 @@ $selection-bg: #26351c !default;
   color: magenta
 }
 
+
+.red {
+  color: red
+}
+
+
 .fg {
   color: var(--col, $jet);
 }

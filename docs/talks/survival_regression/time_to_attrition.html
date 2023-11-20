@@ -408,7 +408,7 @@ Nathaniel Forde
 
   <p class="date">11/20/23</p>
 </section>
-<section id="agenda" class="slide level2">
+<section id="agenda" class="slide level2 smaller">
 <h2>Agenda</h2>
 <div class="fragment fade-in">
 <ul>
@@ -533,7 +533,7 @@ H(t) = -ln(S(t))\]</span></p>
 <p><span class="math display">\[ \Rightarrow L(\mathbf{\beta}, S(\color{red}{y_{c}}), f(\color{blue}{y_{\neg c}}) ) \]</span></p>
 </div>
 <div class="fragment fade-in">
-<p><span class="math display">\[ \underbrace{p( \beta | y)}_{\text{posterior draws}} = \frac{p(\mathbb{\beta})p(y | \beta)}{\int_{i}^{n} p(y | \mathbf{\beta_{i}})p(\mathbf{\beta_{i}}) } \]</span></p>
+<p><span class="math display">\[ \underbrace{p( \beta | y)}_{\text{posterior draws}} = \frac{p(\mathbb{\beta})L(\mathbf{\beta}, S(\color{red}{y_{c}}), f(\color{blue}{y_{\neg c}}) )}{\int_{i}^{n} L(\mathbf{\beta}_{i}, S(\color{red}{y_{c}}), f(\color{blue}{y_{\neg c}}) )p(\mathbf{\beta_{i}}) } \]</span></p>
 </div>
 </section>
 <section id="regression-for-survival-times" class="slide level2">
@@ -621,6 +621,15 @@ H(t) = -ln(S(t))\]</span></p>
 <p>applying an offset to the event rate for each time interval.</p>
 </div>
 </div>
+</section>
+<section id="proportional-hazards-cox-regression-4" class="slide level2">
+<h2>Proportional Hazards Cox Regression</h2>
+<h3 id="the-proportional-hazards-assumption">The Proportional Hazards Assumption</h3>
+<ul>
+<li>The covariates enter <strong>once</strong> into the weighted sum that modifies the baseline hazard.</li>
+<li>While the baseline hazard can change over time the difference in hazard induced by different levels in the covariates remains <strong>constant</strong> over time.</li>
+</ul>
+<p><span class="math display">\[ \forall t \in T:  \frac{h(t | X_{gender} = 1)}{h(t | X_{gender} = 0)} = constant \]</span></p>
 </section></section>
 <section>
 <section id="comparing-model-implications" class="title-slide slide level1 center">
@@ -684,6 +693,75 @@ H(t) = -ln(S(t))\]</span></p>
 <p><img data-src="images/loglogistic_compare.png" height="200"></p>
 </figure>
 </div>
+</section></section>
+<section>
+<section id="frailty-models-and-stratified-risks" class="title-slide slide level1 center">
+<h1>Frailty Models and Stratified Risks</h1>
+
+</section>
+<section id="frailty-models-and-individual-heterogeneity" class="slide level2 smaller">
+<h2>Frailty Models and Individual Heterogeneity</h2>
+<p>We want to relax the assumptions of Cox Proportional Hazards model. We introduce (i) frailty terms and (ii) stratified risks</p>
+<p><span class="math display">\[ \lambda_{i}(t) = \color{green}{z_{i}}exp(\beta X)\color{red}{\lambda_{0}^{g}(t)} \]</span></p>
+<p>The <strong><span class="green">multiplicative frailty</span></strong> terms <span class="green"><span class="math inline">\(z_{i}\)</span></span> can be specified as a gamma distribution centred on unity with <strong><span class="red">stratified risks</span></strong></p>
+
+<img data-src="images/gamma_frailties.png" class="r-stretch"></section>
+<section id="frailty-model-in-codes" class="slide level2">
+<h2>Frailty Model in Codes</h2>
+<div class="sourceCode" id="cb4" data-code-line-numbers="|1-4|8|13-16|18-22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> frailty_model:</span>
+<span id="cb4-3"><a href="#cb4-3"></a>        X_data_m <span class="op">=</span> pm.MutableData(<span class="st">"X_data_m"</span>, df_m[preds], dims<span class="op">=</span>(<span class="st">"men"</span>, <span class="st">"preds"</span>))</span>
+<span id="cb4-4"><a href="#cb4-4"></a>        X_data_f <span class="op">=</span> pm.MutableData(<span class="st">"X_data_f"</span>, df_f[preds], dims<span class="op">=</span>(<span class="st">"women"</span>, <span class="st">"preds"</span>))</span>
+<span id="cb4-5"><a href="#cb4-5"></a>        lambda0 <span class="op">=</span> pm.Gamma(<span class="st">"lambda0"</span>, <span class="fl">0.01</span>, <span class="fl">0.01</span>, dims<span class="op">=</span>(<span class="st">"intervals"</span>, <span class="st">"gender"</span>))</span>
+<span id="cb4-6"><a href="#cb4-6"></a>        sigma_frailty <span class="op">=</span> pm.Normal(<span class="st">"sigma_frailty"</span>, opt_params[<span class="st">"alpha"</span>], <span class="dv">1</span>)</span>
+<span id="cb4-7"><a href="#cb4-7"></a>        mu_frailty <span class="op">=</span> pm.Normal(<span class="st">"mu_frailty"</span>, opt_params[<span class="st">"beta"</span>], <span class="dv">1</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a>        frailty <span class="op">=</span> pm.Gamma(<span class="st">"frailty"</span>, mu_frailty, sigma_frailty, dims<span class="op">=</span><span class="st">"frailty_id"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9"></a></span>
+<span id="cb4-10"><a href="#cb4-10"></a>        beta <span class="op">=</span> pm.Normal(<span class="st">"beta"</span>, <span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">1</span>, dims<span class="op">=</span><span class="st">"preds"</span>)</span>
+<span id="cb4-11"><a href="#cb4-11"></a></span>
+<span id="cb4-12"><a href="#cb4-12"></a>        <span class="co">## Stratified baseline hazards</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>        lambda_m <span class="op">=</span> pm.Deterministic(</span>
+<span id="cb4-14"><a href="#cb4-14"></a>            <span class="st">"lambda_m"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15"></a>            pt.outer(pt.exp(pm.math.dot(beta, X_data_m.T)), lambda0[:, <span class="dv">0</span>]),</span>
+<span id="cb4-16"><a href="#cb4-16"></a>            dims<span class="op">=</span>(<span class="st">"men"</span>, <span class="st">"intervals"</span>),</span>
+<span id="cb4-17"><a href="#cb4-17"></a>        )</span>
+<span id="cb4-18"><a href="#cb4-18"></a>        lambda_f <span class="op">=</span> pm.Deterministic(</span>
+<span id="cb4-19"><a href="#cb4-19"></a>            <span class="st">"lambda_f"</span>,</span>
+<span id="cb4-20"><a href="#cb4-20"></a>            pt.outer(pt.exp(pm.math.dot(beta, X_data_f.T)), lambda0[:, <span class="dv">1</span>]),</span>
+<span id="cb4-21"><a href="#cb4-21"></a>            dims<span class="op">=</span>(<span class="st">"women"</span>, <span class="st">"intervals"</span>),</span>
+<span id="cb4-22"><a href="#cb4-22"></a>        )</span>
+<span id="cb4-23"><a href="#cb4-23"></a>        lambda_ <span class="op">=</span> pm.Deterministic(</span>
+<span id="cb4-24"><a href="#cb4-24"></a>            <span class="st">"lambda_"</span>,</span>
+<span id="cb4-25"><a href="#cb4-25"></a>            frailty[frailty_idx, <span class="va">None</span>] <span class="op">*</span> pt.concatenate([lambda_f, lambda_m], axis<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb4-26"><a href="#cb4-26"></a>            dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"intervals"</span>),</span>
+<span id="cb4-27"><a href="#cb4-27"></a>        )</span>
+<span id="cb4-28"><a href="#cb4-28"></a></span>
+<span id="cb4-29"><a href="#cb4-29"></a>        mu <span class="op">=</span> pm.Deterministic(<span class="st">"mu"</span>, exposure <span class="op">*</span> lambda_, dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"intervals"</span>))</span>
+<span id="cb4-30"><a href="#cb4-30"></a></span>
+<span id="cb4-31"><a href="#cb4-31"></a>        obs <span class="op">=</span> pm.Poisson(<span class="st">"outcome"</span>, mu, observed<span class="op">=</span>quit, dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"intervals"</span>))</span>
+<span id="cb4-32"><a href="#cb4-32"></a>        frailty_idata <span class="op">=</span> pm.sample_prior_predictive()</span>
+<span id="cb4-33"><a href="#cb4-33"></a>        frailty_idata.extend(pm.sample(random_seed<span class="op">=</span><span class="dv">101</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="frailty-model-structure" class="slide level2">
+<h2>Frailty Model Structure</h2>
+<h3 id="individual-frailties">Individual Frailties</h3>
+
+<img data-src="images/frailty_model_structure.svg" class="r-stretch"></section>
+<section id="frailty-model-structure-1" class="slide level2">
+<h2>Frailty Model Structure</h2>
+<h3 id="shared-frailties">Shared Frailties</h3>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/shared_frailty_structure.svg"></p>
+</div><div class="column" style="width:40%;">
+<p><img data-src="images/posterior_shared_frailties.png"></p>
+</div>
+</div>
+</section>
+<section id="frailty-models-and-stratified-baseline-risks" class="slide level2">
+<h2>Frailty Models and Stratified Baseline Risks</h2>
+<p><img data-src="images/stratified_baseline.png"></p>
+<p>We see differences in the risks stratified by gender and additionally how the magnitude of the baseline hazard shrinks with more or less well-specified covariate in the model.</p>
 
 <p><img src="images/pymc_logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
