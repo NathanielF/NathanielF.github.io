@@ -391,3 +391,8 @@ with pm.Model(coords=coords) as frailty_model:
 ![](images/stratified_baseline.png)
 
 We see differences in the risks stratified by gender and additionally how the magnitude of the baseline hazard shrinks with more or less well-specified covariate in the model.
+
+
+## Individual Frailties and Marginal Statistics
+
+![](images/stratified_by_gender.png)

@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.2.335">
 
   <meta name="author" content="Nathaniel Forde">
-  <meta name="dcterms.date" content="2023-11-20">
+  <meta name="dcterms.date" content="2023-11-21">
   <title>Examined Algorithms - Survival Regression Models in PyMC</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -406,7 +406,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">11/20/23</p>
+  <p class="date">11/21/23</p>
 </section>
 <section id="agenda" class="slide level2 smaller">
 <h2>Agenda</h2>
@@ -760,8 +760,12 @@ H(t) = -ln(S(t))\]</span></p>
 </section>
 <section id="frailty-models-and-stratified-baseline-risks" class="slide level2">
 <h2>Frailty Models and Stratified Baseline Risks</h2>
-<p><img data-src="images/stratified_baseline.png"></p>
-<p>We see differences in the risks stratified by gender and additionally how the magnitude of the baseline hazard shrinks with more or less well-specified covariate in the model.</p>
+
+<img data-src="images/stratified_baseline.png" class="r-stretch"><p>We see differences in the risks stratified by gender and additionally how the magnitude of the baseline hazard shrinks with more or less well-specified covariate in the model.</p>
+</section>
+<section id="individual-frailties-and-marginal-statistics" class="slide level2">
+<h2>Individual Frailties and Marginal Statistics</h2>
+<p><img data-src="images/stratified_by_gender.png"></p>
 
 <p><img src="images/pymc_logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
