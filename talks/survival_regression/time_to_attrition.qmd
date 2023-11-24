@@ -70,6 +70,11 @@ H(t) = -ln(S(t))$$
 ### Bottom-Up and Concrete
 ![Actuarial Tables try to estimate CDF and Survival functions](images/actuarial_table.png)
 
+Calculation of these abstract quantities proceeds from a clear and concrete notion of the risk-set in time.
+
+## Actuarial Tables and Survival Curves
+### Bottom-Up and Concrete
+
 ```{.python code-line-numbers="|7-8|10-11"}
 def make_actuarial_table(actuarial_table):
     ### Actuarial lifetables are used to describe the nature 
@@ -391,7 +396,7 @@ with pm.Model(coords=coords) as frailty_model:
 
 ::: {.column width="40%"}
 
-![](images/posterior_shared_frailties.png)
+![Shared Frailties by Field of Occupation](images/posterior_shared_frailties.png)
 :::
 
 :::

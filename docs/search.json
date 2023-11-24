@@ -1614,7 +1614,7 @@
     "href": "talks/survival_regression/time_to_attrition.html#actuarial-tables-and-survival-curves",
     "title": "Survival Regression Models in PyMC",
     "section": "Actuarial Tables and Survival Curves",
-    "text": "Actuarial Tables and Survival Curves\nBottom-Up and Concrete\n\nActuarial Tables try to estimate CDF and Survival functionsdef make_actuarial_table(actuarial_table):\n    ### Actuarial lifetables are used to describe the nature \n    ### of the risk over time derived from instantaneous hazard\n    actuarial_table[\"p_hat\"] = (actuarial_table[\"failed\"] / \n                                actuarial_table[\"risk_set\"])\n    actuarial_table[\"1-p_hat\"] = 1 - actuarial_table[\"p_hat\"]\n    ### Estimate of Survival function\n    actuarial_table[\"S_hat\"] = actuarial_table[\"1-p_hat\"].cumprod()\n    actuarial_table[\"CH_hat\"] = -np.log(actuarial_table[\"S_hat\"])\n    ### The Estimate of the CDF function\n    actuarial_table[\"F_hat\"] = 1 - actuarial_table[\"S_hat\"]\n    actuarial_table[\"V_hat\"] = greenwood_variance(actuarial_table)\n    return actuarial_table"
+    "text": "Actuarial Tables and Survival Curves\nBottom-Up and Concrete\n\nActuarial Tables try to estimate CDF and Survival functionsCalculation of these abstract quantities proceeds from a clear and concrete notion of the risk-set in time."
   },
   {
     "objectID": "talks/survival_regression/time_to_attrition.html#time-to-attrition-data",
@@ -1754,7 +1754,7 @@
     "href": "talks/survival_regression/time_to_attrition.html#frailty-model-structure-1",
     "title": "Survival Regression Models in PyMC",
     "section": "Frailty Model Structure",
-    "text": "Frailty Model Structure\nShared Frailties"
+    "text": "Frailty Model Structure\nShared Frailties\n\n\n\n\n\n\n\nShared Frailties by Field of Occupation"
   },
   {
     "objectID": "talks/survival_regression/time_to_attrition.html#frailty-models-and-stratified-baseline-risks",
@@ -1776,5 +1776,12 @@
     "title": "Survival Regression Models in PyMC",
     "section": "Conclusion",
     "text": "Conclusion\n\n\n\n\nSurvival Analysis is a tool for the expression of probabilities governing state-transitions\n\n\n\n\nImportant everywhere process efficiency and transformative outcomes matter. Corrects for censorship bias of naive summaries.\n\n\n\n\nAllows for sophisticated expression of risk over time and along many dimensions. Variety of hierarchical modelling options\n\n\n\n\nBayesian estimation of these complex model structures is natural and informative. Meaningful across a range of disciplines and domains.\n\n\n\n\nProvides an actionable lens on “actuarial” risk and “diagnostic” causal analysis in time.\n\n\n\n\n\n\nDicing with Death\n\n\n\n\n\nWhen sand becomes a heap? When a heap returns to sand?\n\n\n\n\n\n\n\nSurvival Regression in PyMC"
+  },
+  {
+    "objectID": "talks/survival_regression/time_to_attrition.html#actuarial-tables-and-survival-curves-1",
+    "href": "talks/survival_regression/time_to_attrition.html#actuarial-tables-and-survival-curves-1",
+    "title": "Survival Regression Models in PyMC",
+    "section": "Actuarial Tables and Survival Curves",
+    "text": "Actuarial Tables and Survival Curves\nBottom-Up and Concrete\ndef make_actuarial_table(actuarial_table):\n    ### Actuarial lifetables are used to describe the nature \n    ### of the risk over time derived from instantaneous hazard\n    actuarial_table[\"p_hat\"] = (actuarial_table[\"failed\"] / \n                                actuarial_table[\"risk_set\"])\n    actuarial_table[\"1-p_hat\"] = 1 - actuarial_table[\"p_hat\"]\n    ### Estimate of Survival function\n    actuarial_table[\"S_hat\"] = actuarial_table[\"1-p_hat\"].cumprod()\n    actuarial_table[\"CH_hat\"] = -np.log(actuarial_table[\"S_hat\"])\n    ### The Estimate of the CDF function\n    actuarial_table[\"F_hat\"] = 1 - actuarial_table[\"S_hat\"]\n    actuarial_table[\"V_hat\"] = greenwood_variance(actuarial_table)\n    return actuarial_table"
   }
 ]

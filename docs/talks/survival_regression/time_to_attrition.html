@@ -479,7 +479,12 @@ H(t) = -ln(S(t))\]</span></p>
 <h2>Actuarial Tables and Survival Curves</h2>
 <h3 id="bottom-up-and-concrete">Bottom-Up and Concrete</h3>
 
-<img data-src="images/actuarial_table.png" class="r-stretch quarto-figure-center"><p class="caption">Actuarial Tables try to estimate CDF and Survival functions</p><div class="sourceCode" id="cb1" data-code-line-numbers="|7-8|10-11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">def</span> make_actuarial_table(actuarial_table):</span>
+<img data-src="images/actuarial_table.png" class="r-stretch quarto-figure-center"><p class="caption">Actuarial Tables try to estimate CDF and Survival functions</p><p>Calculation of these abstract quantities proceeds from a clear and concrete notion of the risk-set in time.</p>
+</section>
+<section id="actuarial-tables-and-survival-curves-1" class="slide level2">
+<h2>Actuarial Tables and Survival Curves</h2>
+<h3 id="bottom-up-and-concrete-1">Bottom-Up and Concrete</h3>
+<div class="sourceCode" id="cb1" data-code-line-numbers="|7-8|10-11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">def</span> make_actuarial_table(actuarial_table):</span>
 <span id="cb1-2"><a href="#cb1-2"></a>    <span class="co">### Actuarial lifetables are used to describe the nature </span></span>
 <span id="cb1-3"><a href="#cb1-3"></a>    <span class="co">### of the risk over time derived from instantaneous hazard</span></span>
 <span id="cb1-4"><a href="#cb1-4"></a>    actuarial_table[<span class="st">"p_hat"</span>] <span class="op">=</span> (actuarial_table[<span class="st">"failed"</span>] <span class="op">/</span> </span>
@@ -772,7 +777,12 @@ H(t) = -ln(S(t))\]</span></p>
 <div class="column" style="width:60%;">
 <p><img data-src="images/shared_frailty_structure.svg"></p>
 </div><div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/posterior_shared_frailties.png"></p>
+<p></p><figcaption>Shared Frailties by Field of Occupation</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
