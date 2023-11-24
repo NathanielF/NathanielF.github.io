@@ -455,7 +455,7 @@ Nathaniel Forde
 <section id="layered-abstractions-and-hyperobjects" class="slide level2">
 <h2>Layered Abstractions and Hyperobjects</h2>
 
-<img data-src="images/hyperobject_2.png" class="r-stretch"><p>Concepts that defy easy panoptic survey prohibit easy action e.g.&nbsp;climate change, familities of probability distributions under different guises.</p>
+<img data-src="images/hyperobject_2.png" class="r-stretch"><p>Concepts that defy easy panoptic survey prohibit easy action e.g.&nbsp;climate change and mathematical structures such as families of probability distributions</p>
 </section>
 <section id="perspectives-on-probability" class="slide level2">
 <h2>Perspectives on Probability</h2>
@@ -578,7 +578,7 @@ H(t) = -ln(S(t))\]</span></p>
 <section id="proportional-hazards-cox-regression" class="slide level2 smaller">
 <h2>Proportional Hazards Cox Regression</h2>
 <h3 id="flexible-discrete-intervals-hazards">Flexible Discrete Intervals Hazards</h3>
-<p><span class="math display">\[ \lambda_{0}(t) \]</span> <span class="math display">\[ \lambda_{0}(t) \cdot exp(\beta_{1}X_{1} + \beta_{2}X_{2}... \beta_{k}X_{k}) \]</span></p>
+<p><span class="math display">\[ \text{Baseline Hazard: } \lambda_{0}(t) \]</span> <span class="math display">\[ \lambda_{0}(t) \cdot exp(\beta_{1}X_{1} + \beta_{2}X_{2}... \beta_{k}X_{k}) \]</span></p>
 <div class="sourceCode" id="cb3" data-code-line-numbers="|7-11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a></span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> base_model:</span>
 <span id="cb3-3"><a href="#cb3-3"></a>  X_data <span class="op">=</span> pm.MutableData(<span class="st">"X_data_obs"</span>, retention_df[preds], dims<span class="op">=</span>(<span class="st">"individuals"</span>, <span class="st">"preds"</span>))</span>

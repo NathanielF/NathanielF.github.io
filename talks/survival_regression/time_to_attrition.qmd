@@ -46,7 +46,7 @@ date: last-modified
 
 ![](images/hyperobject_2.png)
 
-Concepts that defy easy panoptic survey prohibit easy action e.g. climate change, familities of probability distributions under different guises. 
+Concepts that defy easy panoptic survey prohibit easy action e.g. climate change and mathematical structures such as families of probability distributions 
 
 ## Perspectives on Probability
 ### Top-Down and Abstract
@@ -195,7 +195,7 @@ $$ Weibull(\alpha, \beta)
 ## Proportional Hazards Cox Regression {.smaller}
 ### Flexible Discrete Intervals Hazards 
 
-$$ \lambda_{0}(t) $$
+ $$ \text{Baseline Hazard: } \lambda_{0}(t) $$
 $$ \lambda_{0}(t) \cdot exp(\beta_{1}X_{1} + \beta_{2}X_{2}... \beta_{k}X_{k}) $$
 
 ```{.python code-line-numbers="|7-11"}

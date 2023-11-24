@@ -1600,7 +1600,7 @@
     "href": "talks/survival_regression/time_to_attrition.html#layered-abstractions-and-hyperobjects",
     "title": "Survival Regression Models in PyMC",
     "section": "Layered Abstractions and Hyperobjects",
-    "text": "Layered Abstractions and Hyperobjects\n\nConcepts that defy easy panoptic survey prohibit easy action e.g. climate change, familities of probability distributions under different guises."
+    "text": "Layered Abstractions and Hyperobjects\n\nConcepts that defy easy panoptic survey prohibit easy action e.g. climate change and mathematical structures such as families of probability distributions"
   },
   {
     "objectID": "talks/survival_regression/time_to_attrition.html#perspectives-on-probability",
@@ -1656,7 +1656,7 @@
     "href": "talks/survival_regression/time_to_attrition.html#proportional-hazards-cox-regression",
     "title": "Survival Regression Models in PyMC",
     "section": "Proportional Hazards Cox Regression",
-    "text": "Proportional Hazards Cox Regression\nFlexible Discrete Intervals Hazards\n\\[ \\lambda_{0}(t) \\] \\[ \\lambda_{0}(t) \\cdot exp(\\beta_{1}X_{1} + \\beta_{2}X_{2}... \\beta_{k}X_{k}) \\]\n\nwith pm.Model(coords=coords) as base_model:\n  X_data = pm.MutableData(\"X_data_obs\", retention_df[preds], dims=(\"individuals\", \"preds\"))\n  lambda0 = pm.Gamma(\"lambda0\", 0.01, 0.01, dims=\"intervals\")\n\n  beta = pm.Normal(\"beta\", 0, sigma=1, dims=\"preds\")\n  lambda_ = pm.Deterministic(\n      \"lambda_\",\n      pt.outer(pt.exp(pm.math.dot(beta, X_data.T)), lambda0),\n      dims=(\"individuals\", \"intervals\"),\n  )\n  mu = pm.Deterministic(\"mu\", exposure * lambda_, \n                        dims=(\"individuals\", \"intervals\"))\n\n  obs = pm.Poisson(\"obs\", mu, observed=quit, \n                    dims=(\"individuals\", \"intervals\"))\n  idata = pm.sample(\n      target_accept=0.95, random_seed=100, idata_kwargs={\"log_likelihood\": True}\n  )"
+    "text": "Proportional Hazards Cox Regression\nFlexible Discrete Intervals Hazards\n\\[ \\text{Baseline Hazard: } \\lambda_{0}(t) \\] \\[ \\lambda_{0}(t) \\cdot exp(\\beta_{1}X_{1} + \\beta_{2}X_{2}... \\beta_{k}X_{k}) \\]\n\nwith pm.Model(coords=coords) as base_model:\n  X_data = pm.MutableData(\"X_data_obs\", retention_df[preds], dims=(\"individuals\", \"preds\"))\n  lambda0 = pm.Gamma(\"lambda0\", 0.01, 0.01, dims=\"intervals\")\n\n  beta = pm.Normal(\"beta\", 0, sigma=1, dims=\"preds\")\n  lambda_ = pm.Deterministic(\n      \"lambda_\",\n      pt.outer(pt.exp(pm.math.dot(beta, X_data.T)), lambda0),\n      dims=(\"individuals\", \"intervals\"),\n  )\n  mu = pm.Deterministic(\"mu\", exposure * lambda_, \n                        dims=(\"individuals\", \"intervals\"))\n\n  obs = pm.Poisson(\"obs\", mu, observed=quit, \n                    dims=(\"individuals\", \"intervals\"))\n  idata = pm.sample(\n      target_accept=0.95, random_seed=100, idata_kwargs={\"log_likelihood\": True}\n  )"
   },
   {
     "objectID": "talks/survival_regression/time_to_attrition.html#proportional-hazards-cox-regression-1",
