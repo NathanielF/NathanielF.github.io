@@ -222,9 +222,20 @@ with pm.Model(coords=coords) as base_model:
 
 ```
 
-## Proportional Hazards Cox Regression
+## Proportional Hazards Cox Regression {.smaller}
+
+::: {.columns}
+
+::: {.column}
+![Sorites Paradoxes and accumulation of a triggering resource](images/sorites_heap.jpeg)
+:::
+
+::: {.column}
+> "There’s the ‘mañana paradox’: the unwelcome task which needs to be done, but it’s always a matter of indifference whether it’s done today or tomorrow; the dieter’s paradox: I don’t care at all about the difference to my weight one chocolate will make." - Dorothy Edgington
+:::
 
 ![Baseline Instantenous Hazard](images/baseline_haz.png)
+:::
 
 ## Proportional Hazards Cox Regression
 
@@ -404,22 +415,28 @@ We see differences in the risks stratified by gender and additionally how the ma
 ::: {.column width="60%"}
 
 ::: {.fragment .fade-in}
-- Survival Analysis is a tool for the expression of probabilities governing state-transitions
+- Survival Analysis is a tool for the expression of probabilities governing __[state-transitions]{.blue}__
 ::: 
 ::: {.fragment .fade-in}
-- Important everywhere process efficiency and transformative outcomes matter. 
+- Important everywhere __[process efficiency]{.blue}__ and transformative outcomes matter. Corrects for censorship bias of naive summaries.
 :::
 ::: {.fragment .fade-in}
-- Allows for sophisticated expression of risk over time and along many dimensions. 
+- Allows for __[sophisticated]{.blue}__ expression of risk over time and along many dimensions. Variety of hierarchical modelling options
 :::
 ::: {.fragment .fade-in}
-- Bayesian estimation of these complex model structures is natural and informative. 
+- Bayesian estimation of these complex model structures is natural and informative. __[Meaningful]{.blue}__ across a range of disciplines and domains.
+:::
+
+::: {.fragment .fade-in}
+- Provides an __[actionable]{.blue}__ lens on "actuarial" risk and "diagnostic" causal analysis in time. 
 :::
 
 :::
 
 ::: {.column width="40%"}
-![](images/dicing_death.jpeg)
+![Dicing with Death](images/dicing_death.jpeg)
+
+![When sand becomes a heap? When a heap returns to sand?](images/sorites.png)
 
 
 :::

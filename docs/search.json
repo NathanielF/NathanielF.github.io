@@ -1663,7 +1663,7 @@
     "href": "talks/survival_regression/time_to_attrition.html#proportional-hazards-cox-regression-1",
     "title": "Survival Regression Models in PyMC",
     "section": "Proportional Hazards Cox Regression",
-    "text": "Proportional Hazards Cox Regression\n\nBaseline Instantenous Hazard"
+    "text": "Proportional Hazards Cox Regression\n\n\n\n\n\nSorites Paradoxes and accumulation of a triggering resource\n\n\n\n\n“There’s the ‘mañana paradox’: the unwelcome task which needs to be done, but it’s always a matter of indifference whether it’s done today or tomorrow; the dieter’s paradox: I don’t care at all about the difference to my weight one chocolate will make.” - Dorothy Edgington\n\n\n\n\nBaseline Instantenous Hazard"
   },
   {
     "objectID": "talks/survival_regression/time_to_attrition.html#proportional-hazards-cox-regression-2",
@@ -1775,6 +1775,6 @@
     "href": "talks/survival_regression/time_to_attrition.html#conclusion",
     "title": "Survival Regression Models in PyMC",
     "section": "Conclusion",
-    "text": "Conclusion\n\n\n\n\nSurvival Analysis is a tool for the expression of probabilities governing state-transitions\n\n\n\n\nImportant everywhere process efficiency and transformative outcomes matter.\n\n\n\n\nAllows for sophisticated expression of risk over time and along many dimensions.\n\n\n\n\nBayesian estimation of these complex model structures is natural and informative.\n\n\n\n\n\n\n\n\n\nSurvival Regression in PyMC"
+    "text": "Conclusion\n\n\n\n\nSurvival Analysis is a tool for the expression of probabilities governing state-transitions\n\n\n\n\nImportant everywhere process efficiency and transformative outcomes matter. Corrects for censorship bias of naive summaries.\n\n\n\n\nAllows for sophisticated expression of risk over time and along many dimensions. Variety of hierarchical modelling options\n\n\n\n\nBayesian estimation of these complex model structures is natural and informative. Meaningful across a range of disciplines and domains.\n\n\n\n\nProvides an actionable lens on “actuarial” risk and “diagnostic” causal analysis in time.\n\n\n\n\n\n\nDicing with Death\n\n\n\n\n\nWhen sand becomes a heap? When a heap returns to sand?\n\n\n\n\n\n\n\nSurvival Regression in PyMC"
   }
 ]
