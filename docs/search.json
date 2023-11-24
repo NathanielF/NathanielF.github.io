@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nNov 21, 2023\n\n\n6 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nNov 17, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nNov 24, 2023\n\n\n7 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nNov 17, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -1600,7 +1600,7 @@
     "href": "talks/survival_regression/time_to_attrition.html#layered-abstractions-and-hyperobjects",
     "title": "Survival Regression Models in PyMC",
     "section": "Layered Abstractions and Hyperobjects",
-    "text": "Layered Abstractions and Hyperobjects\n\nConcepts that defy easy panoptic survey prohibit easy action e.g. climate change."
+    "text": "Layered Abstractions and Hyperobjects\n\nConcepts that defy easy panoptic survey prohibit easy action e.g. climate change, familities of probability distributions under different guises."
   },
   {
     "objectID": "talks/survival_regression/time_to_attrition.html#perspectives-on-probability",
@@ -1768,6 +1768,13 @@
     "href": "talks/survival_regression/time_to_attrition.html#individual-frailties-and-marginal-statistics",
     "title": "Survival Regression Models in PyMC",
     "section": "Individual Frailties and Marginal Statistics",
-    "text": "Individual Frailties and Marginal Statistics\n\n\n\n\nSurvival Regression in PyMC"
+    "text": "Individual Frailties and Marginal Statistics"
+  },
+  {
+    "objectID": "talks/survival_regression/time_to_attrition.html#conclusion",
+    "href": "talks/survival_regression/time_to_attrition.html#conclusion",
+    "title": "Survival Regression Models in PyMC",
+    "section": "Conclusion",
+    "text": "Conclusion\n\n\n\n\nSurvival Analysis is a tool for the expression of probabilities governing state-transitions\n\n\n\n\nImportant everywhere process efficiency and transformative outcomes matter.\n\n\n\n\nAllows for sophisticated expression of risk over time and along many dimensions.\n\n\n\n\nBayesian estimation of these complex model structures is natural and informative.\n\n\n\n\n\n\n\n\n\nSurvival Regression in PyMC"
   }
 ]

@@ -46,7 +46,7 @@ date: last-modified
 
 ![](images/hyperobject_2.png)
 
-Concepts that defy easy panoptic survey prohibit easy action e.g. climate change.
+Concepts that defy easy panoptic survey prohibit easy action e.g. climate change, familities of probability distributions under different guises. 
 
 ## Perspectives on Probability
 ### Top-Down and Abstract
@@ -396,3 +396,31 @@ We see differences in the risks stratified by gender and additionally how the ma
 ## Individual Frailties and Marginal Statistics
 
 ![](images/stratified_by_gender.png)
+
+## Conclusion
+
+::: {.columns}
+
+::: {.column width="60%"}
+
+::: {.fragment .fade-in}
+- Survival Analysis is a tool for the expression of probabilities governing state-transitions
+::: 
+::: {.fragment .fade-in}
+- Important everywhere process efficiency and transformative outcomes matter. 
+:::
+::: {.fragment .fade-in}
+- Allows for sophisticated expression of risk over time and along many dimensions. 
+:::
+::: {.fragment .fade-in}
+- Bayesian estimation of these complex model structures is natural and informative. 
+:::
+
+:::
+
+::: {.column width="40%"}
+![](images/dicing_death.jpeg)
+
+
+:::
+:::
