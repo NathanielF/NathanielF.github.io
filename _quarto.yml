@@ -17,22 +17,25 @@ website:
         href: opensource.qmd
       - text: Talks
         href: talks.qmd
+      - text: CV
+        href: /resume/Nathaniel_Forde_CV.pdf
       - icon: github
         href: https://github.com/
       - icon: twitter
         href: https://twitter.com
 
+
   
   sidebar:
     title: Notes
-    pinned: true
+    pinned: false
     collapse-level: 1
     style: docked
     contents: notes/**
 
 format:
   html:
-    theme: [litera]
+    theme: [flatly]
     css:
       - styles.css
     toc: true

@@ -445,7 +445,7 @@
     "href": "index.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Welcome to my site!\nYou’ll find a range of writings on data science, philosophy, statistics and inference more generally. I’ll update this site with semi-regular blog entries, and any talks or presentations on these topics.\n\n\nI’m a data scientist specialising in probabilistic modelling for the study of risk and causal inference. I have experience in model development, deployment, multivariate testing and monitoring.\nI’m interested in questions of inference and measurement in the face of natural variation and confounding.\nMy academic background is in mathematical logic and philosophy where I mostly imagined possible worlds and modal logics.\n\nRecent ExperiencePast Experience\n\n\n\nPersonio | Senior Data Scientist | December 2021 - Present\n\nWorking with Product and Engineering to measure risk and quantify impact.\n\nPyMC | Open Source Contributor | November 2021 - Present\n\nHelping to document some of the more esoteric applications of Bayesian modelling in PyMC."
+    "text": "Welcome to my site!\nYou’ll find a range of writings on data science, philosophy, statistics and inference more generally. I’ll update this site with semi-regular blog entries, and any talks or presentations on these topics.\n\n\nI’m a data scientist specialising in probabilistic modelling for the study of risk and causal inference. I have experience in model development, deployment, multivariate testing and monitoring.\nI’m interested in questions of inference and measurement in the face of natural variation and confounding.\nMy academic background is in mathematical logic and philosophy where I mostly imagined possible worlds and modal logics.\n\n\n\n\nPersonio | Senior Data Scientist | December 2021 - Present\n\nWorking with Product and Engineering to measure risk and quantify impact.\n\nPyMC | Open Source Contributor | November 2021 - Present\n\nHelping to document some of the more esoteric applications of Bayesian modelling in PyMC."
   },
   {
     "objectID": "notes/Statistics/Introduction - Statistics Topics.html",
@@ -1432,14 +1432,14 @@
     "href": "talks/missing_data/missing_data_causal.html#the-data",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "The Data",
-    "text": "The Data\n\nEmployee Empowerment Survey"
+    "text": "The Data\n\n\n\nEmployee Empowerment Survey"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#the-metrics",
     "href": "talks/missing_data/missing_data_causal.html#the-metrics",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "The Metrics",
-    "text": "The Metrics\n\nMetrics with Gaps"
+    "text": "The Metrics\n\n\n\nMetrics with Gaps"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#modelling-the-multivariate-structure",
@@ -1474,77 +1474,77 @@
     "href": "talks/missing_data/missing_data_causal.html#the-joint-distribution-decomposed",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "The Joint Distribution Decomposed",
-    "text": "The Joint Distribution Decomposed\nModelling the Outcome piece-wise\nStart with the observation that: \\[f(emp, lmx, climate, male) \\\\ = f(emp | lmx, climate, male) \\cdot  \\\\f(lmx | climate, male) \\cdot f(climate | male) \\cdot f(male)^{*}\\]\nwhich can be phrased as a set of linear models\n\\[ empower = \\alpha_{2} + \\beta_{3}male + \\beta_{4}climate + \\beta_{5}lmx \\\\\nlmx = \\alpha_{1} + \\beta_{1}climate + \\beta_{2}male \\\\\nclimate = \\alpha_{0} + \\beta_{0}male \\]"
+    "text": "The Joint Distribution Decomposed\n\nModelling the Outcome piece-wise\nStart with the observation that: \\[f(emp, lmx, climate, male) \\\\ = f(emp | lmx, climate, male) \\cdot  \\\\f(lmx | climate, male) \\cdot f(climate | male) \\cdot f(male)^{*}\\]\nwhich can be phrased as a set of linear models\n\\[ empower = \\alpha_{2} + \\beta_{3}male + \\beta_{4}climate + \\beta_{5}lmx \\\\\nlmx = \\alpha_{1} + \\beta_{1}climate + \\beta_{2}male \\\\\nclimate = \\alpha_{0} + \\beta_{0}male \\]"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#the-model",
     "href": "talks/missing_data/missing_data_causal.html#the-model",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "The Model",
-    "text": "The Model\nSensitivity Analysis with Priors in PyMC\ndata = df_employee[[\"lmx\", \"empower\", \"climate\", \"male\"]]\nlmx_mean = data[\"lmx\"].mean()\nlmx_min = data[\"lmx\"].min()\nlmx_max = data[\"lmx\"].max()\nlmx_sd = data[\"lmx\"].std()\n\ncli_mean = data[\"climate\"].mean()\ncli_min = data[\"climate\"].min()\ncli_max = data[\"climate\"].max()\ncli_sd = data[\"climate\"].std()\n\n\npriors = {\n    \"climate\": {\"normal\": [lmx_mean, lmx_sd, lmx_sd], \"uniform\": [lmx_min, lmx_max]},\n    \"lmx\": {\"normal\": [cli_mean, cli_sd, cli_sd], \"uniform\": [cli_min, cli_max]},\n}\n\n\ndef make_model(priors, normal_pred_assumption=True):\n    coords = {\n        \"alpha_dim\": [\"lmx_imputed\", \"climate_imputed\", \"empower_imputed\"],\n        \"beta_dim\": [\n            \"lmxB_male\",\n            \"lmxB_climate\",\n            \"climateB_male\",\n            \"empB_male\",\n            \"empB_climate\",\n            \"empB_lmx\",\n        ],\n    }\n    with pm.Model(coords=coords) as model:\n        # Priors\n        beta = pm.Normal(\"beta\", 0, 1, size=6, dims=\"beta_dim\")\n        alpha = pm.Normal(\"alphas\", 10, 5, size=3, dims=\"alpha_dim\")\n        sigma = pm.HalfNormal(\"sigmas\", 5, size=3, dims=\"alpha_dim\")\n\n        if normal_pred_assumption:\n            mu_climate = pm.Normal(\n                \"mu_climate\", priors[\"climate\"][\"normal\"][0], priors[\"climate\"][\"normal\"][1]\n            )\n            sigma_climate = pm.HalfNormal(\"sigma_climate\", priors[\"climate\"][\"normal\"][2])\n            climate_pred = pm.Normal(\n                \"climate_pred\", mu_climate, sigma_climate, observed=data[\"climate\"].values\n            )\n        else:\n            climate_pred = pm.Uniform(\"climate_pred\", 0, 40, observed=data[\"climate\"].values)\n\n        if normal_pred_assumption:\n            mu_lmx = pm.Normal(\"mu_lmx\", priors[\"lmx\"][\"normal\"][0], priors[\"lmx\"][\"normal\"][1])\n            sigma_lmx = pm.HalfNormal(\"sigma_lmx\", priors[\"lmx\"][\"normal\"][2])\n            lmx_pred = pm.Normal(\"lmx_pred\", mu_lmx, sigma_lmx, observed=data[\"lmx\"].values)\n        else:\n            lmx_pred = pm.Uniform(\"lmx_pred\", 0, 40, observed=data[\"lmx\"].values)\n\n        # Likelihood(s)\n        lmx_imputed = pm.Normal(\n            \"lmx_imputed\",\n            alpha[0] + beta[0] * data[\"male\"] + beta[1] * climate_pred,\n            sigma[0],\n            observed=data[\"lmx\"].values,\n        )\n        climate_imputed = pm.Normal(\n            \"climate_imputed\",\n            alpha[1] + beta[2] * data[\"male\"],\n            sigma[1],\n            observed=data[\"climate\"].values,\n        )\n        empower_imputed = pm.Normal(\n            \"emp_imputed\",\n            alpha[2] + beta[3] * data[\"male\"] + beta[4] * climate_pred + beta[5] * lmx_pred,\n            sigma[2],\n            observed=data[\"empower\"].values,\n        )\n\n        idata = pm.sample_prior_predictive()\n        idata.extend(pm.sample(random_seed=120))\n        pm.sample_posterior_predictive(idata, extend_inferencedata=True)\n        return idata, model\n\n\nidata_uniform, model_uniform = make_model(priors, normal_pred_assumption=False)\nidata_normal, model_normal = make_model(priors, normal_pred_assumption=True)"
+    "text": "The Model\n\nSensitivity Analysis with Priors in PyMC\ndata = df_employee[[\"lmx\", \"empower\", \"climate\", \"male\"]]\nlmx_mean = data[\"lmx\"].mean()\nlmx_min = data[\"lmx\"].min()\nlmx_max = data[\"lmx\"].max()\nlmx_sd = data[\"lmx\"].std()\n\ncli_mean = data[\"climate\"].mean()\ncli_min = data[\"climate\"].min()\ncli_max = data[\"climate\"].max()\ncli_sd = data[\"climate\"].std()\n\n\npriors = {\n    \"climate\": {\"normal\": [lmx_mean, lmx_sd, lmx_sd], \"uniform\": [lmx_min, lmx_max]},\n    \"lmx\": {\"normal\": [cli_mean, cli_sd, cli_sd], \"uniform\": [cli_min, cli_max]},\n}\n\n\ndef make_model(priors, normal_pred_assumption=True):\n    coords = {\n        \"alpha_dim\": [\"lmx_imputed\", \"climate_imputed\", \"empower_imputed\"],\n        \"beta_dim\": [\n            \"lmxB_male\",\n            \"lmxB_climate\",\n            \"climateB_male\",\n            \"empB_male\",\n            \"empB_climate\",\n            \"empB_lmx\",\n        ],\n    }\n    with pm.Model(coords=coords) as model:\n        # Priors\n        beta = pm.Normal(\"beta\", 0, 1, size=6, dims=\"beta_dim\")\n        alpha = pm.Normal(\"alphas\", 10, 5, size=3, dims=\"alpha_dim\")\n        sigma = pm.HalfNormal(\"sigmas\", 5, size=3, dims=\"alpha_dim\")\n\n        if normal_pred_assumption:\n            mu_climate = pm.Normal(\n                \"mu_climate\", priors[\"climate\"][\"normal\"][0], priors[\"climate\"][\"normal\"][1]\n            )\n            sigma_climate = pm.HalfNormal(\"sigma_climate\", priors[\"climate\"][\"normal\"][2])\n            climate_pred = pm.Normal(\n                \"climate_pred\", mu_climate, sigma_climate, observed=data[\"climate\"].values\n            )\n        else:\n            climate_pred = pm.Uniform(\"climate_pred\", 0, 40, observed=data[\"climate\"].values)\n\n        if normal_pred_assumption:\n            mu_lmx = pm.Normal(\"mu_lmx\", priors[\"lmx\"][\"normal\"][0], priors[\"lmx\"][\"normal\"][1])\n            sigma_lmx = pm.HalfNormal(\"sigma_lmx\", priors[\"lmx\"][\"normal\"][2])\n            lmx_pred = pm.Normal(\"lmx_pred\", mu_lmx, sigma_lmx, observed=data[\"lmx\"].values)\n        else:\n            lmx_pred = pm.Uniform(\"lmx_pred\", 0, 40, observed=data[\"lmx\"].values)\n\n        # Likelihood(s)\n        lmx_imputed = pm.Normal(\n            \"lmx_imputed\",\n            alpha[0] + beta[0] * data[\"male\"] + beta[1] * climate_pred,\n            sigma[0],\n            observed=data[\"lmx\"].values,\n        )\n        climate_imputed = pm.Normal(\n            \"climate_imputed\",\n            alpha[1] + beta[2] * data[\"male\"],\n            sigma[1],\n            observed=data[\"climate\"].values,\n        )\n        empower_imputed = pm.Normal(\n            \"emp_imputed\",\n            alpha[2] + beta[3] * data[\"male\"] + beta[4] * climate_pred + beta[5] * lmx_pred,\n            sigma[2],\n            observed=data[\"empower\"].values,\n        )\n\n        idata = pm.sample_prior_predictive()\n        idata.extend(pm.sample(random_seed=120))\n        pm.sample_posterior_predictive(idata, extend_inferencedata=True)\n        return idata, model\n\n\nidata_uniform, model_uniform = make_model(priors, normal_pred_assumption=False)\nidata_normal, model_normal = make_model(priors, normal_pred_assumption=True)"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#bayesian-updating-and-calibration",
     "href": "talks/missing_data/missing_data_causal.html#bayesian-updating-and-calibration",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Bayesian Updating and Calibration",
-    "text": "Bayesian Updating and Calibration\nEstimating the Model\nTo evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]\nPriors can be used flexibly to regularise and improve reliability of estimation across structural causal models."
+    "text": "Bayesian Updating and Calibration\n\nEstimating the Model\nTo evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]\nPriors can be used flexibly to regularise and improve reliability of estimation across structural causal models."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#the-model-structure",
     "href": "talks/missing_data/missing_data_causal.html#the-model-structure",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "The Model Structure",
-    "text": "The Model Structure\nThe PyMC model Graph\n\nChained Equation ModelImputing the values and feeding them forward into the ultimate likelihood terms to estimate the profile of the joint distribution."
+    "text": "The Model Structure\n\nThe PyMC model Graph\n\n\n\nChained Equation Model\n\n\nImputing the values and feeding them forward into the ultimate likelihood terms to estimate the profile of the joint distribution."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#sensitivty-to-prior-specification",
     "href": "talks/missing_data/missing_data_causal.html#sensitivty-to-prior-specification",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Sensitivty to Prior Specification",
-    "text": "Sensitivty to Prior Specification\n\nThe Effect of choosing the right Priors"
+    "text": "Sensitivty to Prior Specification\n\n\n\nThe Effect of choosing the right Priors"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#hierarchical-structures-of-non-response",
     "href": "talks/missing_data/missing_data_causal.html#hierarchical-structures-of-non-response",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Hierarchical Structures of Non-response",
-    "text": "Hierarchical Structures of Non-response\nTeam dynamics determine probability of response\n\nTeam Empowerment ScoresWe can try to recover ignorable missing-ness i.e moving to MAR from MNAR conditional on group specific fixed effects."
+    "text": "Hierarchical Structures of Non-response\n\nTeam dynamics determine probability of response\n\n\n\nTeam Empowerment Scores\n\n\nWe can try to recover ignorable missing-ness i.e moving to MAR from MNAR conditional on group specific fixed effects."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#hierarchies-in-code",
     "href": "talks/missing_data/missing_data_causal.html#hierarchies-in-code",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Hierarchies in Code",
-    "text": "Hierarchies in Code\nSpecifying the hierarchical model in PyMC\nteam_idx, teams = pd.factorize(df_employee[\"team\"], sort=True)\nemployee_idx, _ = pd.factorize(df_employee[\"employee\"], sort=True)\ncoords = {\"team\": teams, \"employee\": np.arange(len(df_employee))}\n\n\nwith pm.Model(coords=coords) as hierarchical_model:\n    # Priors\n    company_beta_lmx = pm.Normal(\"company_beta_lmx\", 0, 1)\n    company_beta_male = pm.Normal(\"company_beta_male\", 0, 1)\n    company_alpha = pm.Normal(\"company_alpha\", 20, 2)\n    team_alpha = pm.Normal(\"team_alpha\", 0, 1, dims=\"team\")\n    team_beta_lmx = pm.Normal(\"team_beta_lmx\", 0, 1, dims=\"team\")\n    sigma = pm.HalfNormal(\"sigma\", 4, dims=\"employee\")\n\n    # Imputed Predictors\n    mu_lmx = pm.Normal(\"mu_lmx\", 10, 5)\n    sigma_lmx = pm.HalfNormal(\"sigma_lmx\", 5)\n    lmx_pred = pm.Normal(\"lmx_pred\", mu_lmx, sigma_lmx, observed=df_employee[\"lmx\"].values)\n\n    # Combining Levels\n    alpha_global = pm.Deterministic(\"alpha_global\", company_alpha + team_alpha[team_idx])\n    beta_global_lmx = pm.Deterministic(\n        \"beta_global_lmx\", company_beta_lmx + team_beta_lmx[team_idx]\n    )\n    beta_global_male = pm.Deterministic(\"beta_global_male\", company_beta_male)\n\n    # Likelihood\n    mu = pm.Deterministic(\n        \"mu\",\n        alpha_global + beta_global_lmx * lmx_pred + beta_global_male * df_employee[\"male\"].values,\n    )\n\n    empower_imputed = pm.Normal(\n        \"emp_imputed\",\n        mu,\n        sigma,\n        observed=df_employee[\"empower\"].values,\n    )\n\n    idata_hierarchical = pm.sample_prior_predictive()\n    idata_hierarchical.extend(\n        sample_blackjax_nuts(draws=20_000, random_seed=500, target_accept=0.99)\n    )\n    pm.sample_posterior_predictive(idata_hierarchical, extend_inferencedata=True)"
+    "text": "Hierarchies in Code\n\nSpecifying the hierarchical model in PyMC\nteam_idx, teams = pd.factorize(df_employee[\"team\"], sort=True)\nemployee_idx, _ = pd.factorize(df_employee[\"employee\"], sort=True)\ncoords = {\"team\": teams, \"employee\": np.arange(len(df_employee))}\n\n\nwith pm.Model(coords=coords) as hierarchical_model:\n    # Priors\n    company_beta_lmx = pm.Normal(\"company_beta_lmx\", 0, 1)\n    company_beta_male = pm.Normal(\"company_beta_male\", 0, 1)\n    company_alpha = pm.Normal(\"company_alpha\", 20, 2)\n    team_alpha = pm.Normal(\"team_alpha\", 0, 1, dims=\"team\")\n    team_beta_lmx = pm.Normal(\"team_beta_lmx\", 0, 1, dims=\"team\")\n    sigma = pm.HalfNormal(\"sigma\", 4, dims=\"employee\")\n\n    # Imputed Predictors\n    mu_lmx = pm.Normal(\"mu_lmx\", 10, 5)\n    sigma_lmx = pm.HalfNormal(\"sigma_lmx\", 5)\n    lmx_pred = pm.Normal(\"lmx_pred\", mu_lmx, sigma_lmx, observed=df_employee[\"lmx\"].values)\n\n    # Combining Levels\n    alpha_global = pm.Deterministic(\"alpha_global\", company_alpha + team_alpha[team_idx])\n    beta_global_lmx = pm.Deterministic(\n        \"beta_global_lmx\", company_beta_lmx + team_beta_lmx[team_idx]\n    )\n    beta_global_male = pm.Deterministic(\"beta_global_male\", company_beta_male)\n\n    # Likelihood\n    mu = pm.Deterministic(\n        \"mu\",\n        alpha_global + beta_global_lmx * lmx_pred + beta_global_male * df_employee[\"male\"].values,\n    )\n\n    empower_imputed = pm.Normal(\n        \"emp_imputed\",\n        mu,\n        sigma,\n        observed=df_employee[\"empower\"].values,\n    )\n\n    idata_hierarchical = pm.sample_prior_predictive()\n    idata_hierarchical.extend(\n        sample_blackjax_nuts(draws=20_000, random_seed=500, target_accept=0.99)\n    )\n    pm.sample_posterior_predictive(idata_hierarchical, extend_inferencedata=True)"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#model-structure",
     "href": "talks/missing_data/missing_data_causal.html#model-structure",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Model Structure",
-    "text": "Model Structure\n\nHierarchical Team based Model"
+    "text": "Model Structure\n\n\n\nHierarchical Team based Model"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#influence-of-team-membership",
     "href": "talks/missing_data/missing_data_causal.html#influence-of-team-membership",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Influence of Team Membership",
-    "text": "Influence of Team Membership\n\nModification of Leader Impact based on Team imputed with Uncertainty"
+    "text": "Influence of Team Membership\n\n\n\nModification of Leader Impact based on Team imputed with Uncertainty"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#imputation-with-team-effects",
     "href": "talks/missing_data/missing_data_causal.html#imputation-with-team-effects",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Imputation with Team Effects",
-    "text": "Imputation with Team Effects\n\nImputation patterns under team influence"
+    "text": "Imputation with Team Effects\n\n\n\nImputation patterns under team influence"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#feature-selection-is-not-causal-modelling",
     "href": "talks/missing_data/missing_data_causal.html#feature-selection-is-not-causal-modelling",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Feature Selection is not Causal Modelling",
-    "text": "Feature Selection is not Causal Modelling\nOn the Importance of Theory Construction\n\n\n\n\n\nID\n\\(Y_{i}(0)\\)\n\\(Y_{i}(1)\\)\n\n\n\n\n1\n?\n1\n\n\n2\n1\n?\n\n\n3\n?\n0\n\n\n4\n?\n1\n\n\n5\n0\n?\n\n\n\nThe Fundamental problem of Causal Inference as Missing Data\n\n\n\nThe heart of causal inference is understanding the risk of confounding influence.\n\n\n\n\nNaively optimising for some in-sample predictive benchmark does not protect your model from confounding bias.\n\n\n\n\nCausal models with deliberate and careful construction of the dependence mechanism are your best hope for genuine insight and robust predictive performance\n\n\n\n\nThis is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable."
+    "text": "Feature Selection is not Causal Modelling\n\nOn the Importance of Theory Construction\n\n\n\n\n\nID\n\\(Y_{i}(0)\\)\n\\(Y_{i}(1)\\)\n\n\n\n\n1\n?\n1\n\n\n2\n1\n?\n\n\n3\n?\n0\n\n\n4\n?\n1\n\n\n5\n0\n?\n\n\n\nThe Fundamental problem of Causal Inference as Missing Data\n\n\n\nThe heart of causal inference is understanding the risk of confounding influence.\n\n\n\n\nNaively optimising for some in-sample predictive benchmark does not protect your model from confounding bias.\n\n\n\n\nCausal models with deliberate and careful construction of the dependence mechanism are your best hope for genuine insight and robust predictive performance\n\n\n\n\nThis is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#counterfactuals-as-imputation.",
@@ -1558,7 +1558,7 @@
     "href": "talks/missing_data/missing_data_causal.html#conclusion",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Conclusion",
-    "text": "Conclusion\nWe’ve seen the application of missing data analysis to survey data in the context of People Analytics.\n\nMultivariate approaches are effective but cannot help address confounding bias\nThe flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.\nHierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates.\n\n\n\n\nMissing Data with PyMC"
+    "text": "Conclusion\nWe’ve seen the application of missing data analysis to survey data in the context of People Analytics.\n\nMultivariate approaches are effective but cannot help address confounding bias\nThe flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.\nHierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#bayesian-imputation.",
@@ -1586,7 +1586,7 @@
     "href": "talks/missing_data/missing_data_causal.html#probabilistic-maps",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Probabilistic Maps",
-    "text": "Probabilistic Maps\nSampling the possible spaces over missing data\n\n\n\n\n\nBayes at work busily imputing undiscovered continents\n\n\n\nThe idea\n\nWhen gaps in survey data are not random\nWe need to understand the drivers of missing-ness\nThe “topology” around the gaps gives us a clue\nBayesian inference helps to imputes the probable gradients, inclines and curves of the space in the gaps conditional on the observed data.\nIn our employee engagement data the question becomes - What are the enviromental influences on the probable responses?"
+    "text": "Probabilistic Maps\n\nSampling the possible spaces over missing data\n\n\n\n\n\nBayes at work busily imputing undiscovered continents\n\n\n\nThe idea\n\nWhen gaps in survey data are not random\nWe need to understand the drivers of missing-ness\nThe “topology” around the gaps gives us a clue\nBayesian inference helps to imputes the probable gradients, inclines and curves of the space in the gaps conditional on the observed data.\nIn our employee engagement data the question becomes - What are the enviromental influences on the probable responses?"
   },
   {
     "objectID": "talks/survival_regression/time_to_attrition.html#agenda",
@@ -1783,5 +1783,12 @@
     "title": "Survival Regression Models in PyMC",
     "section": "Actuarial Tables and Survival Curves",
     "text": "Actuarial Tables and Survival Curves\nBottom-Up and Concrete\ndef make_actuarial_table(actuarial_table):\n    ### Actuarial lifetables are used to describe the nature \n    ### of the risk over time derived from instantaneous hazard\n    actuarial_table[\"p_hat\"] = (actuarial_table[\"failed\"] / \n                                actuarial_table[\"risk_set\"])\n    actuarial_table[\"1-p_hat\"] = 1 - actuarial_table[\"p_hat\"]\n    ### Estimate of Survival function\n    actuarial_table[\"S_hat\"] = actuarial_table[\"1-p_hat\"].cumprod()\n    actuarial_table[\"CH_hat\"] = -np.log(actuarial_table[\"S_hat\"])\n    ### The Estimate of the CDF function\n    actuarial_table[\"F_hat\"] = 1 - actuarial_table[\"S_hat\"]\n    actuarial_table[\"V_hat\"] = greenwood_variance(actuarial_table)\n    return actuarial_table"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html",
+    "href": "talks/missing_data/missing_data_causal.html",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "",
+    "text": "I am not an Economist\n\n\n\n\nI’m a data scientist at Personio\n\nBayesian statistician,\nReformed philosopher and logician.\n\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\n\nThe worked examples used here can be found here"
   }
 ]
