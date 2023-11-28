@@ -1,0 +1,11 @@
+name: examined_algorithms_website
+channels:
+- conda-forge
+- defaults
+dependencies:
+- pymc
+- statsmodels
+- pandas
+- numpy
+- numpyro
+- jax

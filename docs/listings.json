@@ -25,6 +25,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/pymc/frailty_survival.html",
       "/oss/bambi/mr_p.html",
       "/oss/causalpy/instrumental_variables.html",
       "/oss/pymc/discrete_choice.html",

@@ -5,7 +5,7 @@ categories: ["weak instruemnts", "iv regression"]
 self-contained: true
 execute: 
   enabled: true
-jupyter: python3
+jupyter: examined_algorithms_website
 draft: true
 ---
 
@@ -44,6 +44,7 @@ Stargazer([mod_1, mod_2, mod_3])
 ## 2SLS
 
 ```{python}
+df_sample = iv_df.sample(1000, random_state=100).copy()
 
 def make_2sls(formula, instrument_formula, iv_df):
     first_stage = smf.ols(instrument_formula, iv_df).fit()
@@ -51,12 +52,12 @@ def make_2sls(formula, instrument_formula, iv_df):
     second_stage = smf.ols(formula, iv_df).fit()
     return second_stage, first_stage
 
-mod_4, mod_4_1 = make_2sls('logwage ~ 1 + edu_predicted', 'edu ~ C(qob)', iv_df)
-mod_5, mod_5_1 = make_2sls('logwage ~ 1 + edu_predicted + black', 'edu ~ C(qob)', iv_df)
-mod_6, mod_6_1 = make_2sls('logwage ~ 1 + edu_predicted + black + C(state)', 'edu ~ C(qob)', iv_df)
-mod_7, mod_7_1 = make_2sls('logwage ~ 1 + edu_predicted + black + C(state) + C(yob)', 'edu ~ C(qob)', iv_df)
+mod_4, mod_4_1 = make_2sls('logwage ~ 1 + edu_predicted', 'edu ~ C(qob)', df_sample)
+mod_5, mod_5_1 = make_2sls('logwage ~ 1 + edu_predicted + black', 'edu ~ C(qob)', df_sample)
+mod_6, mod_6_1 = make_2sls('logwage ~ 1 + edu_predicted + black + C(state)', 'edu ~ C(qob)', df_sample)
+mod_7, mod_7_1 = make_2sls('logwage ~ 1 + edu_predicted + black + C(state) + C(yob)', 'edu ~ C(qob)', df_sample)
 
-Stargazer([mod_4, mod_5, mod_6, mod_7])    
+Stargazer([mod_4, mod_5])    
 
 
 
@@ -67,10 +68,9 @@ Stargazer([mod_4, mod_5, mod_6, mod_7])
 
 ```{python}
 
-df_sample = iv_df.sample(1000, random_state=200)
-
 instrument_model = smf.ols('edu ~ 0 + C(qob)', df_sample)
 instrument_preds = instrument_model.data.exog
+instrument_preds = instrument_preds - instrument_preds.mean()
 instrument_y = instrument_model.data.endog
 
 
@@ -78,8 +78,9 @@ outcome_model = smf.ols('logwage ~ 0 + edu + black', df_sample)
 outcome_preds = outcome_model.data.exog
 outcome_y = outcome_model.data.endog 
 
-coords = {'instruments': range(instrument_preds.shape[1]), 
-         'covariates': range(outcome_preds.shape[1])}
+
+coords = {'instruments': ['qob_1', 'qob_2', 'qob_3', 'qob_4'], 
+         'covariates': ['edu', 'black']}
 
 with pm.Model(coords=coords) as model:
     sigma_y = pm.HalfNormal("sigma_y", 1)
@@ -114,7 +115,9 @@ with pm.Model(coords=coords) as model:
     # --- Parameterization ---
     mu_y = pm.Deterministic(name="mu_y", var=pm.math.dot(outcome_preds, beta_x) + intercept_y)
     # focal regression
+    sigma_ = pm.HalfNormal("sigma", 1)
     mu_t = pm.Deterministic(name="mu_t", var=pm.math.dot(instrument_preds, beta_t) + intercept_t)
+
     # instrumental regression
     mu = pm.Deterministic(name="mu", var=pt.stack(tensors=(mu_y, mu_t), axis=1))
 
@@ -139,6 +142,8 @@ pm.model_to_graphviz(model)
 with model:
     idata = pm.sample_prior_predictive()
     idata.extend(pm.sample(draws=500, chains=2, target_accept=0.95, nuts_sampler='numpyro'))
+    #approx = pm.fit()
+    #idata = approx.sample(1000)
 
 
 ```
@@ -146,7 +151,7 @@ with model:
 
 ```{python}
 import arviz as az
-az.summary(idata, var_names=['intercept_y', 'intercept_t', 'beta_t', 'beta_x',])
+az.summary(idata, var_names=['intercept_y', 'intercept_t', 'beta_t', 'beta_x','beta_t_shifted'])
 
 ```
 
@@ -161,7 +166,7 @@ idata.posterior["chol_cov_corr"].mean(dim=("chain", "draw"))
 
 ```{python}
 
-az.plot_pair(idata, var_names=['intercept_y', 'intercept_t', 'beta_t', 'beta_x'], divergences=True)
+az.plot_pair(idata, var_names=['intercept_y', 'intercept_t', 'beta_x', 'beta_t_shifted'], divergences=True)
 
 
 ```

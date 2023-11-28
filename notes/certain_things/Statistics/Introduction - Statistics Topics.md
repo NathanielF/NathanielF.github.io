@@ -1,0 +1,1 @@
+The idea is that this section of my notes will serve to capture my Zettelkasten style notes on topics in Statistics. 

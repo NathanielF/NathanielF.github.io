@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "A blog site for Nathaniel Forde"
 authors = ["Nathaniel <NathanielF@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{include = "examined_algorithms"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -15,7 +14,6 @@ ipykernel = "6.0.0"
 statsmodels = "^0.13.5"
 bambi = "^0.10.0"
 linearmodels = "^4.27"
-dynamax = "^0.1.0"
 stargazer = "^0.0.5"
 numpyro = "^0.13.0"
 jax = "^0.4.14"

@@ -1,0 +1,16 @@
+---
+title: "Frailty Survival Models in PyMC"
+author: "Nathaniel Forde"
+date: "2023-11-28"
+categories: ["probability", "pymc", "survival models", "frailty models"]
+image: "frailty_terms.png"
+---
+
+## Survial Modelling and Individual Frailties
+
+In this project I demonstrated how to fit a variety of hierarchical survival models in PyMC. We applied these techniques to a human resources data set attempting to measure time-to-attrition across individuals surveyed. The project is interesting within my work in Personio as example of modelling for process improvements and the measurement of drivers for efficiencies. Additionally, I think there is an interesting connection with the philosophical puzzle of the Sorites Paradox. 
+
+The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/survival_analysis/frailty_models.html) or downloaded as notebook [here](frailty_models.html)
+
+
+
