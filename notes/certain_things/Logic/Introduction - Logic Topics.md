@@ -1,1 +1,1 @@
-The idea is that this section will serve to capture any and all Zettelkasten notes on topics in logic -mathematical, philosophical or any style in between. 
+This section will serve to capture any and all Zettelkasten notes on topics in logic -mathematical, philosophical or any style in between. 

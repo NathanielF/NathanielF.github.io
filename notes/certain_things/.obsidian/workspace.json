@@ -13,13 +13,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Philosophy/Sorites Paradox and Survival Analysis.md",
+                "file": "Logic/Introduction - Logic Topics.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "0e6464293638b65e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Intro - Zettelkasten.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -85,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Philosophy/Sorites Paradox and Survival Analysis.md",
+                "file": "Intro - Zettelkasten.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Philosophy/Sorites Paradox and Survival Analysis.md",
+                "file": "Intro - Zettelkasten.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Philosophy/Sorites Paradox and Survival Analysis.md"
+                "file": "Intro - Zettelkasten.md"
               }
             }
           }
@@ -146,23 +159,28 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "77eb316555bb9c87",
+  "active": "0e6464293638b65e",
   "lastOpenFiles": [
-    "Philosophy/Sorites Paradox and Survival Analysis.html",
-    "Philosophy/Sorites Paradox and Survival Analysis_files/mediabag",
-    "Philosophy/Sorites Paradox and Survival Analysis_files",
     "Philosophy/Introduction - Philosophy Topics.html",
     "Philosophy/Introduction - Philosophy Topics_files/mediabag",
     "Philosophy/Introduction - Philosophy Topics_files",
-    "Statistics/Introduction - Statistics Topics.html",
-    "Statistics/Introduction - Statistics Topics_files/mediabag",
-    "Statistics/Introduction - Statistics Topics_files",
-    "Philosophy/Introduction - Philosophy Topics.md",
-    "Philosophy/Sorites Paradox and Survival Analysis.md",
-    "Philosophy/Untitled.md",
     "Logic/Introduction - Logic Topics.html",
     "Logic/Introduction - Logic Topics_files/mediabag",
-    "zettelkasten.md",
-    "Untitled.md"
+    "Logic/Introduction - Logic Topics_files",
+    "Intro - Zettelkasten.html",
+    "Intro - Zettelkasten_files/mediabag",
+    "Intro - Zettelkasten_files",
+    "Logic/Introduction - Logic Topics.md",
+    "Intro - Zettelkasten.md",
+    "Philosophy/Introduction - Philosophy Topics.md",
+    "Statistics/Introduction - Statistics Topics.md",
+    "Statistics/Analogies between Missing Data and Causal Inference.md",
+    "Statistics/Introduction - Statistics Topics.html",
+    "Statistics/Introduction - Statistics Topics_files/mediabag",
+    "Philosophy/Sorites Paradox and Survival Analysis.md",
+    "Statistics/Images/Expectations_MAR.jpg",
+    "Non-Parametric Bayesian Causal Inference.md",
+    "Philosophy/Untitled.md",
+    "zettelkasten.md"
   ]
 }

@@ -1,1 +1,1 @@
-The idea is that this section will serve to capture the philosophical topics in my Zettelkasten notes.
+This section will serve to capture the philosophical topics in my Zettelkasten notes.

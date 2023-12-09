@@ -1,0 +1,3 @@
+Zettelkasten is a note-taking method that originated from the work of sociologist Niklas Luhmann. The term "Zettelkasten" translates to "slip box" in English. The key idea behind the Zettelkasten method is to create and organise a collection of interconnected notes or "slips" that capture individual ideas, concepts, or pieces of information. Each note is meant to be concise and focused on a single idea. The notes are then linked together through a system of numbered or categorised references, allowing for easy navigation and discovery of connections between different concepts.
+
+In this section i will capture my notes using Obsidian and publish them to my website where relevant. 
