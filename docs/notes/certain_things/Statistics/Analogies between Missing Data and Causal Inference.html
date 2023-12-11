@@ -141,6 +141,11 @@ ul.task-list li input[type="checkbox"] {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/certain_things/Intro - Zettelkasten.html" class="sidebar-item-text sidebar-link">Intro - Zettelkasten</a>
+  </div>
+</li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Logic</a>
@@ -217,6 +222,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#potential-outcomes-and-sutva" id="toc-potential-outcomes-and-sutva" class="nav-link" data-scroll-target="#potential-outcomes-and-sutva">Potential Outcomes and SUTVA</a></li>
   <li><a href="#average-treatment-effects" id="toc-average-treatment-effects" class="nav-link" data-scroll-target="#average-treatment-effects">Average Treatment Effects</a></li>
+  <li><a href="#propensity-functions-and-reweighting-estimators." id="toc-propensity-functions-and-reweighting-estimators." class="nav-link" data-scroll-target="#propensity-functions-and-reweighting-estimators.">Propensity Functions and Reweighting Estimators.</a></li>
   <li><a href="#instrumental-variables-with-bayes" id="toc-instrumental-variables-with-bayes" class="nav-link" data-scroll-target="#instrumental-variables-with-bayes">Instrumental variables with Bayes</a></li>
   </ul></li>
   </ul>
@@ -227,7 +233,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>The clearest framework for causal inference has a tight relationship with missing data imputation. However, the range of problems addressed seem to require a slew of distinct estimators. It is not always clear in which circumstances we should apply each estimation procedure.</p>
+<p>The clearest framework for causal inference has a tight relationship with #missing-data imputation. However, the range of problems addressed seem to require a slew of distinct estimators. It is not always clear in which circumstances we should apply each estimation procedure.</p>
 <p>Like most statistical work the practical details should be worked out in code for the clearest demonstration. However, here we’ll describe (as best we can) the conceptual underpinning of important estimators. Their usage and motivation.</p>
 <section id="taxonomies-of-missing-ness" class="level2">
 <h2 class="anchored" data-anchor-id="taxonomies-of-missing-ness">Taxonomies of Missing-ness</h2>
@@ -328,7 +334,14 @@ ul.task-list li input[type="checkbox"] {
 </table>
 <p>The missing values in this table depict the <em>fundamental problem of causal inference</em> as a missing data issue. So #causal-inference as a strategy is broadly related to finding ways to solve this missing data problem under different regimes of missing-ness. For instance, the reason A/B testing works to isolate the treatment effects is that under randomisation of treatment regime we are implicitly assuming that the reason missing-data is effectively a case of MCAR missing-ness. As such the expectations of the individual columns in the above table are valid estimates which can then be combined using the above decomposition to derived the treatment effect <span class="math inline">\(\tau\)</span>.</p>
 <p>In this case the pattern of reasoning is akin to performing mean-imputation and then taking the difference of the averages. The imputation step is redundant in A/B testing, but it is highlighted by Aronow and Miller as a useful lens on more complex causal inference tasks on observed data. We are always (under the hood) trying to impute the missing values to gain a better view of the treatment effect distribution. ### Regression Estimators</p>
-<p>Again</p>
+<p>Again we rely on the idea of regression as an approximation to the CEF of the data generating process. The flexibility of regression modelling for automating a host of statistical test should be reasonable familiar. The point here is not to rehash the theory but just to note the similarity with the procedures used abovr for regression-based imputation.</p>
+<p>So we can derive estimates for the ATE from the data generating model</p>
+<p><span class="math display">\[ Y \sim \beta_0 + \beta_1 D + ... \beta_{n} \cdot X_{n} \]</span> such that out quantity of interest <span class="math inline">\(\tau\)</span> is cleanly identified in expectation by the quantity: <span class="math display">\[ E[\tau] = \beta_{1}\]</span> But this result can also be derived by predicting the outcomes under the different treatment regimes, using a fitted regression model, and taking the differences of the averaged predictions over the cases. The equivalence between these perspectives is the insight we want to record here. We drew out this connection in the discussion of <a href="https://nathanielf.github.io/oss/bambi/mr_p.html">poststratification estimators</a></p>
+<p><img src="Images/predictions_imputation.jpg" class="img-fluid"></p>
+<p>This is a neat and beautiful connection between causal-inference and missing data analysis. Simultaneously a reminder of the versatility of regression analysis.</p>
+</section>
+<section id="propensity-functions-and-reweighting-estimators." class="level3">
+<h3 class="anchored" data-anchor-id="propensity-functions-and-reweighting-estimators.">Propensity Functions and Reweighting Estimators.</h3>
 </section>
 <section id="instrumental-variables-with-bayes" class="level3">
 <h3 class="anchored" data-anchor-id="instrumental-variables-with-bayes">Instrumental variables with Bayes</h3>

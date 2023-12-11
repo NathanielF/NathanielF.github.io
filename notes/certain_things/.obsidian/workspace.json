@@ -4,35 +4,22 @@
     "type": "split",
     "children": [
       {
-        "id": "0591456f1b394a0a",
+        "id": "685a7700077b2581",
         "type": "tabs",
         "children": [
           {
-            "id": "77eb316555bb9c87",
+            "id": "19fdfad75c2bb461",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Logic/Introduction - Logic Topics.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "0e6464293638b65e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Intro - Zettelkasten.md",
+                "file": "Statistics/Analogies between Missing Data and Causal Inference.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -98,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Intro - Zettelkasten.md",
+                "file": "Statistics/Analogies between Missing Data and Causal Inference.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Intro - Zettelkasten.md",
+                "file": "Statistics/Analogies between Missing Data and Causal Inference.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Intro - Zettelkasten.md"
+                "file": "Statistics/Analogies between Missing Data and Causal Inference.md"
               }
             }
           }
@@ -159,24 +146,27 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "0e6464293638b65e",
+  "active": "19fdfad75c2bb461",
   "lastOpenFiles": [
+    "Statistics/Analogies between Missing Data and Causal Inference.html",
+    "Statistics/Analogies between Missing Data and Causal Inference_files/mediabag",
+    "Statistics/Analogies between Missing Data and Causal Inference_files",
+    "Images/predictions_imputations.jpg.md",
+    "Statistics/Analogies between Missing Data and Causal Inference.md",
+    "Images/predictions.md",
+    "Images",
+    "predictions.md",
+    "Logic/Introduction - Logic Topics.md",
+    "Statistics/Images/predictions_imputation.jpg",
+    "Intro - Zettelkasten.md",
+    "Statistics/Introduction - Statistics Topics.html",
+    "Statistics/Introduction - Statistics Topics_files/mediabag",
+    "Statistics/Introduction - Statistics Topics_files",
     "Philosophy/Introduction - Philosophy Topics.html",
     "Philosophy/Introduction - Philosophy Topics_files/mediabag",
     "Philosophy/Introduction - Philosophy Topics_files",
-    "Logic/Introduction - Logic Topics.html",
-    "Logic/Introduction - Logic Topics_files/mediabag",
-    "Logic/Introduction - Logic Topics_files",
-    "Intro - Zettelkasten.html",
-    "Intro - Zettelkasten_files/mediabag",
-    "Intro - Zettelkasten_files",
-    "Logic/Introduction - Logic Topics.md",
-    "Intro - Zettelkasten.md",
     "Philosophy/Introduction - Philosophy Topics.md",
     "Statistics/Introduction - Statistics Topics.md",
-    "Statistics/Analogies between Missing Data and Causal Inference.md",
-    "Statistics/Introduction - Statistics Topics.html",
-    "Statistics/Introduction - Statistics Topics_files/mediabag",
     "Philosophy/Sorites Paradox and Survival Analysis.md",
     "Statistics/Images/Expectations_MAR.jpg",
     "Non-Parametric Bayesian Causal Inference.md",

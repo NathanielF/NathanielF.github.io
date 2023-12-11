@@ -1,4 +1,4 @@
-The clearest framework for causal inference has a tight relationship with missing data imputation. However, the range of problems addressed seem to require a slew of distinct estimators. It is not always clear in which circumstances we should apply each estimation procedure.
+The clearest framework for causal inference has a tight relationship with #missing-data imputation. However, the range of problems addressed seem to require a slew of distinct estimators. It is not always clear in which circumstances we should apply each estimation procedure.
 
 Like most statistical work the practical details should be worked out in code for the clearest demonstration. However, here we'll describe (as best we can) the conceptual underpinning of important estimators. Their usage and motivation.
 
@@ -79,13 +79,27 @@ The missing values in this table depict the *fundamental problem of causal infer
 In this case the pattern of reasoning is akin to performing mean-imputation and then taking the difference of the averages. The imputation step is redundant in A/B testing, but it is highlighted by Aronow and Miller as a useful lens on more complex causal inference tasks on observed data. We are always (under the hood) trying to impute the missing values to gain a better view of the treatment effect distribution. 
 ### Regression Estimators
 
-Again 
+Again we rely on the idea of regression as an approximation to the CEF of the data generating process. The flexibility of regression modelling for automating a host of statistical test should be reasonable familiar. The point here is not to rehash the theory but just to note the similarity with the procedures used abovr for regression-based imputation. 
+
+So we can derive estimates for the ATE from the data generating model 
+
+$$ Y \sim \beta_0 + \beta_1 D + ... \beta_{n} \cdot X_{n} $$
+such that out quantity of interest $\tau$  is cleanly identified in expectation by the quantity: 
+$$ E[\tau] = \beta_{1}$$
+But this result can also be derived by predicting the outcomes under the different treatment regimes, using a fitted regression model, and taking the differences of the averaged predictions over the cases. The equivalence between these perspectives is the insight we want to record here. We drew out this connection in the discussion of [poststratification estimators](https://nathanielf.github.io/oss/bambi/mr_p.html)
+
+![](Images/predictions_imputation.jpg)
+
+This is a neat and beautiful connection between causal-inference and missing data analysis. Simultaneously a reminder of the versatility of regression analysis. 
+
+### Propensity Functions and Reweighting Estimators.
+
+
 
 
 ### Instrumental variables with Bayes
 
 Consider the stan case study here: https://mc-stan.org/users/documentation/case-studies/model-based_causal_inference_for_RCT.html
-
 
 
 
