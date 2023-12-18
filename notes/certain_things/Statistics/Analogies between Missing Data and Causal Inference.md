@@ -12,7 +12,9 @@ From an estimation perspective there are different species of missing-ness that 
 
 Mechanically we can't work with null values under any of these assumptions. The stable outcomes model is a first step procedure for imputing the missing values. Whether we choose mean imputation or an arbitrary figure - we initially assume missing values at the individual level in a stable fashion by specifying a constant value for the missing cases. 
 
-Very crudely, estimation procedures work reasonably well under (MAR) and (MCAR) but require extra effort when there is assumptions if we hope to account for the (MNAR) cases. This stems largely from successive applications of the law of iterated expectations. In this case the stable outcome assumption encodes the missing data as $-99$ and we then average over the joint distribution of the stable outcomes model and the missingness data.
+Very crudely, estimation procedures work reasonably well under (MCAR) but require extra effort when there is assumptions if we hope to account for the (MAR) and (MNAR) cases. Under MAR we are assuming that the values are missing as a function of the observable covariates and can be imputed under proper conditionalisation. 
+
+Imputation under MAR and MCAR succeeds largely from successive applications of the law of iterated expectations. In this case the stable outcome assumption encodes the missing data as $-99$ and we then average over the joint distribution of the stable outcomes model and the missingness data.
 
 ![](Images/Expectations_MAR.jpg)
 
@@ -55,11 +57,11 @@ $$ Y_{i} =
         Y_{i}(1), & \text{for } D = 1\\
         \end{array}\right\}
 $$
-where the (S)table (U)nit (T)reatment (V)alue (A)ssumption holds i.e. the observed data under treatment or non-treatment regimes is the potential outcome for that individual. 
+where the (S)table (U)nit (T)reatment (V)alue (A)ssumption holds i.e. the observed data under treatment or non-treatment regimes is the potential outcome for that individual. Additionally the counterfactual outcome is assumed to be stable for each individual. It is crucially this assumption that allows for statistical identification of key metrics in causal inference under randomisation. 
 
 ### Average Treatment Effects
 
-Similarly, we rely on the properties of expectation over the observed data to isolate quantities of causal effect. In particular we tend to be interested in the average treatment effects, which we can get by using the following decomposition. 
+Similarly, here we rely on the properties of expectation over the observed data to isolate quantities of causal effect. In particular we tend to be interested in the average treatment effects, which we can get by using the following decomposition under random assignment.
 
 $$ E[\tau] = E[Y_{i}(1) - Y_{i}(0)] = E[Y_{i}(1)] - E[Y_{i}(0)] $$
 This decomposition is crucial since it allows us to move between the expectations derived from the observed data under each regime towards an estimate of the population treatment effects. 
@@ -79,7 +81,8 @@ The missing values in this table depict the *fundamental problem of causal infer
 In this case the pattern of reasoning is akin to performing mean-imputation and then taking the difference of the averages. The imputation step is redundant in A/B testing, but it is highlighted by Aronow and Miller as a useful lens on more complex causal inference tasks on observed data. We are always (under the hood) trying to impute the missing values to gain a better view of the treatment effect distribution. 
 ### Regression Estimators
 
-Again we rely on the idea of regression as an approximation to the CEF of the data generating process. The flexibility of regression modelling for automating a host of statistical test should be reasonable familiar. The point here is not to rehash the theory but just to note the similarity with the procedures used abovr for regression-based imputation. 
+Again we rely on the idea of regression as an approximation to the CEF of the data generating process. The flexibility of regression modelling for automating a host of statistical test should be reasonably familiar. The point here is not to rehash the theory but just to note the similarity with the procedures used above for regression-based imputation. Regression modelling of the treatment effect proceeds on the **strong ignorability** assumption that - conditional on the observed covariates knowing whether or not an individual received the treatment adds no new information i.e. it is the insistence that assignment might as well be *random*
+after accounting for the background characteristics. These assumptions mirror the conditions required for imputation under the MAR regime. 
 
 So we can derive estimates for the ATE from the data generating model 
 
@@ -94,16 +97,28 @@ This is a neat and beautiful connection between causal-inference and missing dat
 
 ### Propensity Functions and Reweighting Estimators.
 
+We will skip the detailed elaboration of propensity score matching, a technique for creating pseudo treatment and control groups, only noting that there is a rich and detailed literature on the topic for causal inference. 
 
+We do want to draw out how propensity-scores can be used in the class of reweighting estimators. Where under the **strong ignorability** assumption we can estimate the treatment effect as a simple expectation: 
 
+$$E[\tau] = E [\dfrac{YD}{p_D(X)} - \dfrac{Y(1-D)}{(1 - p_D (X))}] $$
 
-### Instrumental variables with Bayes
+Using this formula we can scale each observation by the relative probabilities for the individual falling into each treatment regime. Then the expectation of the scaled differences is an estimate of our ATE. The logic of this inverse probability weighting (IPW) estimator stems from the idea that low propensity individuals are likely underrepresented in the treatment group and over represented in the control. So this estimator down weights and unweights each option accordingly to "balance" the groups before comparison. 
 
-Consider the stan case study here: https://mc-stan.org/users/documentation/case-studies/model-based_causal_inference_for_RCT.html
+This balancing operation can work but is dependent on empirical properties of the sample data. Even if the data generating process ensures that *strong ignorability* holds, if our sample under represents the variety of possible individual in each group then reweighting the remaining individuals is no guarantee for sound inference. This is a small sample problem recurring. 
 
+## Conclusion
 
+The sequence of complexity in missing data imputation is as follows: 
 
+$$ MCAR \Rightarrow MAR \Rightarrow MNAR $$
 
+which mirrors the complexity of cases in causal inference. Here we have:
+
+$$ Ignorability \Rightarrow \text{Strong Ignorability} \Rightarrow \text{Non Ignorability} $$
+As we consider circumstances moving up the hierarchy, we require an increase in assumptions or structural commitments to offset the risk of non-identifiability bringing us back down the hierarchy. The emphasis in the book stresses how properties of good experimental design can help recover sound inference by enforcing MAR conditions in MNAR circumstances. But the crucial role of modelling in defending the **strong ignorability** condition is underplayed. 
+
+Yes, we need to justify our estimator but also our model! Are we including the right covariates? Have we an appropriate covariance structure? What is the functional form and why is it reasonable? Are we accounting for heterogeneity of outcome? All such questions centre the importance of domain knowledge for causal inference. This is not a criticism of boon focused on Agnostic statistics. Their focus is appropriately on the design aspects that enable inference. However it should be abundantly clear that you cannot get away with agnostic approaches in the real world. There is no way to justify stepping back down the hierarchy without substantial commitments about the world-model fit. Even if your aesthetic preferences drive you toward design based methods, this only serves to obscure the commitments. Statistics in the real world require real world commitments.
 
 
 

@@ -223,8 +223,8 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#potential-outcomes-and-sutva" id="toc-potential-outcomes-and-sutva" class="nav-link" data-scroll-target="#potential-outcomes-and-sutva">Potential Outcomes and SUTVA</a></li>
   <li><a href="#average-treatment-effects" id="toc-average-treatment-effects" class="nav-link" data-scroll-target="#average-treatment-effects">Average Treatment Effects</a></li>
   <li><a href="#propensity-functions-and-reweighting-estimators." id="toc-propensity-functions-and-reweighting-estimators." class="nav-link" data-scroll-target="#propensity-functions-and-reweighting-estimators.">Propensity Functions and Reweighting Estimators.</a></li>
-  <li><a href="#instrumental-variables-with-bayes" id="toc-instrumental-variables-with-bayes" class="nav-link" data-scroll-target="#instrumental-variables-with-bayes">Instrumental variables with Bayes</a></li>
   </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -242,7 +242,8 @@ ul.task-list li input[type="checkbox"] {
 <section id="the-stable-outcomes-assumption" class="level3">
 <h3 class="anchored" data-anchor-id="the-stable-outcomes-assumption">The Stable Outcomes Assumption</h3>
 <p>Mechanically we can’t work with null values under any of these assumptions. The stable outcomes model is a first step procedure for imputing the missing values. Whether we choose mean imputation or an arbitrary figure - we initially assume missing values at the individual level in a stable fashion by specifying a constant value for the missing cases.</p>
-<p>Very crudely, estimation procedures work reasonably well under (MAR) and (MCAR) but require extra effort when there is assumptions if we hope to account for the (MNAR) cases. This stems largely from successive applications of the law of iterated expectations. In this case the stable outcome assumption encodes the missing data as <span class="math inline">\(-99\)</span> and we then average over the joint distribution of the stable outcomes model and the missingness data.</p>
+<p>Very crudely, estimation procedures work reasonably well under (MCAR) but require extra effort when there is assumptions if we hope to account for the (MAR) and (MNAR) cases. Under MAR we are assuming that the values are missing as a function of the observable covariates and can be imputed under proper conditionalisation.</p>
+<p>Imputation under MAR and MCAR succeeds largely from successive applications of the law of iterated expectations. In this case the stable outcome assumption encodes the missing data as <span class="math inline">\(-99\)</span> and we then average over the joint distribution of the stable outcomes model and the missingness data.</p>
 <p><img src="Images/Expectations_MAR.jpg" class="img-fluid"></p>
 <p>The various estimation procedures for counterfactual results trade on this property of expectation that allow for point identification of the expected value for the outcome variable.</p>
 <p>But we also want to consider individual variation due to the observed covariate profiles. When we consider cases of missing data conditional the observed covariate profile, we can derive a propensity score as a one number summary for the conditional probability of missing-ness. This can be used in imputation techniques where we want to carefully attribute values to the missing data that respect the other observed properties of the individual.</p>
@@ -272,11 +273,11 @@ ul.task-list li input[type="checkbox"] {
         Y_{i}(0), &amp; \text{for } D = 0\\
         Y_{i}(1), &amp; \text{for } D = 1\\
         \end{array}\right\}
-\]</span> where the (S)table (U)nit (T)reatment (V)alue (A)ssumption holds i.e.&nbsp;the observed data under treatment or non-treatment regimes is the potential outcome for that individual.</p>
+\]</span> where the (S)table (U)nit (T)reatment (V)alue (A)ssumption holds i.e.&nbsp;the observed data under treatment or non-treatment regimes is the potential outcome for that individual. Additionally the counterfactual outcome is assumed to be stable for each individual. It is crucially this assumption that allows for statistical identification of key metrics in causal inference under randomisation.</p>
 </section>
 <section id="average-treatment-effects" class="level3">
 <h3 class="anchored" data-anchor-id="average-treatment-effects">Average Treatment Effects</h3>
-<p>Similarly, we rely on the properties of expectation over the observed data to isolate quantities of causal effect. In particular we tend to be interested in the average treatment effects, which we can get by using the following decomposition.</p>
+<p>Similarly, here we rely on the properties of expectation over the observed data to isolate quantities of causal effect. In particular we tend to be interested in the average treatment effects, which we can get by using the following decomposition under random assignment.</p>
 <p><span class="math display">\[ E[\tau] = E[Y_{i}(1) - Y_{i}(0)] = E[Y_{i}(1)] - E[Y_{i}(0)] \]</span> This decomposition is crucial since it allows us to move between the expectations derived from the observed data under each regime towards an estimate of the population treatment effects.</p>
 <table class="table">
 <thead>
@@ -334,7 +335,7 @@ ul.task-list li input[type="checkbox"] {
 </table>
 <p>The missing values in this table depict the <em>fundamental problem of causal inference</em> as a missing data issue. So #causal-inference as a strategy is broadly related to finding ways to solve this missing data problem under different regimes of missing-ness. For instance, the reason A/B testing works to isolate the treatment effects is that under randomisation of treatment regime we are implicitly assuming that the reason missing-data is effectively a case of MCAR missing-ness. As such the expectations of the individual columns in the above table are valid estimates which can then be combined using the above decomposition to derived the treatment effect <span class="math inline">\(\tau\)</span>.</p>
 <p>In this case the pattern of reasoning is akin to performing mean-imputation and then taking the difference of the averages. The imputation step is redundant in A/B testing, but it is highlighted by Aronow and Miller as a useful lens on more complex causal inference tasks on observed data. We are always (under the hood) trying to impute the missing values to gain a better view of the treatment effect distribution. ### Regression Estimators</p>
-<p>Again we rely on the idea of regression as an approximation to the CEF of the data generating process. The flexibility of regression modelling for automating a host of statistical test should be reasonable familiar. The point here is not to rehash the theory but just to note the similarity with the procedures used abovr for regression-based imputation.</p>
+<p>Again we rely on the idea of regression as an approximation to the CEF of the data generating process. The flexibility of regression modelling for automating a host of statistical test should be reasonably familiar. The point here is not to rehash the theory but just to note the similarity with the procedures used above for regression-based imputation. Regression modelling of the treatment effect proceeds on the <strong>strong ignorability</strong> assumption that - conditional on the observed covariates knowing whether or not an individual received the treatment adds no new information i.e.&nbsp;it is the insistence that assignment might as well be <em>random</em> after accounting for the background characteristics. These assumptions mirror the conditions required for imputation under the MAR regime.</p>
 <p>So we can derive estimates for the ATE from the data generating model</p>
 <p><span class="math display">\[ Y \sim \beta_0 + \beta_1 D + ... \beta_{n} \cdot X_{n} \]</span> such that out quantity of interest <span class="math inline">\(\tau\)</span> is cleanly identified in expectation by the quantity: <span class="math display">\[ E[\tau] = \beta_{1}\]</span> But this result can also be derived by predicting the outcomes under the different treatment regimes, using a fitted regression model, and taking the differences of the averaged predictions over the cases. The equivalence between these perspectives is the insight we want to record here. We drew out this connection in the discussion of <a href="https://nathanielf.github.io/oss/bambi/mr_p.html">poststratification estimators</a></p>
 <p><img src="Images/predictions_imputation.jpg" class="img-fluid"></p>
@@ -342,13 +343,22 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="propensity-functions-and-reweighting-estimators." class="level3">
 <h3 class="anchored" data-anchor-id="propensity-functions-and-reweighting-estimators.">Propensity Functions and Reweighting Estimators.</h3>
+<p>We will skip the detailed elaboration of propensity score matching, a technique for creating pseudo treatment and control groups, only noting that there is a rich and detailed literature on the topic for causal inference.</p>
+<p>We do want to draw out how propensity-scores can be used in the class of reweighting estimators. Where under the <strong>strong ignorability</strong> assumption we can estimate the treatment effect as a simple expectation:</p>
+<p><span class="math display">\[E[\tau] = E [\dfrac{YD}{p_D(X)} - \dfrac{Y(1-D)}{(1 - p_D (X))}] \]</span></p>
+<p>Using this formula we can scale each observation by the relative probabilities for the individual falling into each treatment regime. Then the expectation of the scaled differences is an estimate of our ATE. The logic of this inverse probability weighting (IPW) estimator stems from the idea that low propensity individuals are likely underrepresented in the treatment group and over represented in the control. So this estimator down weights and unweights each option accordingly to “balance” the groups before comparison.</p>
+<p>This balancing operation can work but is dependent on empirical properties of the sample data. Even if the data generating process ensures that <em>strong ignorability</em> holds, if our sample under represents the variety of possible individual in each group then reweighting the remaining individuals is no guarantee for sound inference. This is a small sample problem recurring.</p>
 </section>
-<section id="instrumental-variables-with-bayes" class="level3">
-<h3 class="anchored" data-anchor-id="instrumental-variables-with-bayes">Instrumental variables with Bayes</h3>
-<p>Consider the stan case study here: https://mc-stan.org/users/documentation/case-studies/model-based_causal_inference_for_RCT.html</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>The sequence of complexity in missing data imputation is as follows:</p>
+<p><span class="math display">\[ MCAR \Rightarrow MAR \Rightarrow MNAR \]</span></p>
+<p>which mirrors the complexity of cases in causal inference. Here we have:</p>
+<p><span class="math display">\[ Ignorability \Rightarrow \text{Strong Ignorability} \Rightarrow \text{Non Ignorability} \]</span> As we consider circumstances moving up the hierarchy, we require an increase in assumptions or structural commitments to offset the risk of non-identifiability bringing us back down the hierarchy. The emphasis in the book stresses how properties of good experimental design can help recover sound inference by enforcing MAR conditions in MNAR circumstances. But the crucial role of modelling in defending the <strong>strong ignorability</strong> condition is underplayed.</p>
+<p>Yes, we need to justify our estimator but also our model! Are we including the right covariates? Have we an appropriate covariance structure? What is the functional form and why is it reasonable? Are we accounting for heterogeneity of outcome? All such questions centre the importance of domain knowledge for causal inference. This is not a criticism of boon focused on Agnostic statistics. Their focus is appropriately on the design aspects that enable inference. However it should be abundantly clear that you cannot get away with agnostic approaches in the real world. There is no way to justify stepping back down the hierarchy without substantial commitments about the world-model fit. Even if your aesthetic preferences drive you toward design based methods, this only serves to obscure the commitments. Statistics in the real world require real world commitments.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
