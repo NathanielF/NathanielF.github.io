@@ -299,3 +299,124 @@ model_hierarchical = bmb.Model(formula, model_df, family="binomial")
 
 # Stratum Specific Adjustment
 In which we use the fitted model to predict rates of voting over the population and adjust the predicted values by the relative weights each strata occupies in the population. 
+
+
+## Predicting Vote Share{.smaller}
+### Using the Biased Model
+
+```{.python}
+new_data = (new_data.merge(
+    new_data.groupby("state").agg({"n": "sum"})
+    .reset_index()
+    .rename({"n": "state_total"}, axis=1)
+)
+)
+new_data["state_percent"] = new_data["n"] / new_data["state_total"]
+new_data.head()
+```
+
+![](images/state_data.png)
+
+```{.python}
+result_adjust = model_hierarchical.predict(result, 
+data=new_data, inplace=False, kind="pps")
+result_adjust
+```
+
+## Adjusting the State Level Predictions
+### Reweighting Outcomes by Strata specific Share
+
+```{.python code-line-numbers="3-5|6-8|10|11-17"}
+
+estimates = []
+## The base model posterior fitted on biased sample
+abortion_posterior_base = az.extract(result)["p(abortion, n)_mean"]
+
+## The posterior updated with national level figures
+abortion_posterior_mrp = az.extract(result_adjust)["p(abortion, n)_mean"]
+
+## Adjusting the predictions on state level
+for s in new_data["state"].unique():
+    idx = new_data.index[new_data["state"] == s].tolist()
+    predicted_mrp = (
+        ((abortion_posterior_mrp[idx].mean(dim="sample") * 
+        new_data.iloc[idx]["state_percent"]))
+        .sum()
+        .item()
+    )
+    predicted_mrp_lb = (
+        (
+            (
+                abortion_posterior_mrp[idx].quantile(0.025, dim="sample")
+                * new_data.iloc[idx]["state_percent"]
+            )
+        )
+        .sum()
+        .item()
+    )
+    predicted_mrp_ub = (
+        (
+            (
+                abortion_posterior_mrp[idx].quantile(0.975, dim="sample")
+                * new_data.iloc[idx]["state_percent"]
+            )
+        )
+        .sum()
+        .item()
+    )
+    predicted = abortion_posterior_base[idx].mean().item()
+    base_lb = abortion_posterior_base[idx].quantile(0.025).item()
+    base_ub = abortion_posterior_base[idx].quantile(0.975).item()
+
+    estimates.append(
+        [s, predicted, base_lb, base_ub, predicted_mrp, predicted_mrp_ub, predicted_mrp_lb]
+    )
+
+
+state_predicted = pd.DataFrame(
+    estimates,
+    columns=["state", "base_expected", "base_lb", 
+    "base_ub", "mrp_adjusted", "mrp_ub", "mrp_lb"],
+)
+
+state_predicted = (
+    state_predicted.merge(cces_all_df.groupby("state")[["abortion"]].mean().reset_index())
+    .sort_values("mrp_adjusted")
+    .rename({"abortion": "census_share"}, axis=1)
+)
+state_predicted.head()
+```
+
+## Comparing Adjusted and Raw Predictions
+Derived state level predictions using the biased sample and the corrected values. 
+
+![](images/comparison_predictions.png)
+
+## Comparing Adjusted and Raw Predictions
+
+![](images/final_plot.png)
+
+## Conclusion {.smaller}
+### The Need for Reweighting
+
+> "The IID condition is a mathematical specification of what Hume called the uniformity of nature. To say that nature is uniform means that whatever circumstances holds for the observed, the same circumstances will continue to hold for the unobserved. This is what Hume required for the possibility of inductive reasoning"
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+- Survey Bias Breaks the IID condition
+- Inference falls apart with non-representative samples
+- Prediction suffers from wild skew
+:::
+
+::: {.column width="50%"}
+
+- Knowledge about demographic representation informs priors 
+- Historic rates can be used to improve sample representation
+- Model recovers inferential validity. Prediction improves. 
+
+
+:::
+
+:::

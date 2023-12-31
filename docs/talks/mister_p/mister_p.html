@@ -684,14 +684,124 @@ Nathaniel Forde
 </div>
 </div>
 </section></section>
+<section>
 <section id="stratum-specific-adjustment" class="title-slide slide level1 center">
 <h1>Stratum Specific Adjustment</h1>
 <p>In which we use the fitted model to predict rates of voting over the population and adjust the predicted values by the relative weights each strata occupies in the population.</p>
+</section>
+<section id="predicting-vote-share" class="slide level2 smaller">
+<h2>Predicting Vote Share</h2>
+<h3 id="using-the-biased-model">Using the Biased Model</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a>new_data <span class="op">=</span> (new_data.merge(</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    new_data.groupby(<span class="st">"state"</span>).agg({<span class="st">"n"</span>: <span class="st">"sum"</span>})</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    .reset_index()</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    .rename({<span class="st">"n"</span>: <span class="st">"state_total"</span>}, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7"></a>new_data[<span class="st">"state_percent"</span>] <span class="op">=</span> new_data[<span class="st">"n"</span>] <span class="op">/</span> new_data[<span class="st">"state_total"</span>]</span>
+<span id="cb5-8"><a href="#cb5-8"></a>new_data.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+<img data-src="images/state_data.png" class="r-stretch"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>result_adjust <span class="op">=</span> model_hierarchical.predict(result, </span>
+<span id="cb6-2"><a href="#cb6-2"></a>data<span class="op">=</span>new_data, inplace<span class="op">=</span><span class="va">False</span>, kind<span class="op">=</span><span class="st">"pps"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a>result_adjust</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="adjusting-the-state-level-predictions" class="slide level2">
+<h2>Adjusting the State Level Predictions</h2>
+<h3 id="reweighting-outcomes-by-strata-specific-share">Reweighting Outcomes by Strata specific Share</h3>
+<div class="sourceCode" id="cb7" data-code-line-numbers="3-5|6-8|10|11-17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2"></a>estimates <span class="op">=</span> []</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">## The base model posterior fitted on biased sample</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>abortion_posterior_base <span class="op">=</span> az.extract(result)[<span class="st">"p(abortion, n)_mean"</span>]</span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="co">## The posterior updated with national level figures</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>abortion_posterior_mrp <span class="op">=</span> az.extract(result_adjust)[<span class="st">"p(abortion, n)_mean"</span>]</span>
+<span id="cb7-8"><a href="#cb7-8"></a></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="co">## Adjusting the predictions on state level</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="cf">for</span> s <span class="kw">in</span> new_data[<span class="st">"state"</span>].unique():</span>
+<span id="cb7-11"><a href="#cb7-11"></a>    idx <span class="op">=</span> new_data.index[new_data[<span class="st">"state"</span>] <span class="op">==</span> s].tolist()</span>
+<span id="cb7-12"><a href="#cb7-12"></a>    predicted_mrp <span class="op">=</span> (</span>
+<span id="cb7-13"><a href="#cb7-13"></a>        ((abortion_posterior_mrp[idx].mean(dim<span class="op">=</span><span class="st">"sample"</span>) <span class="op">*</span> </span>
+<span id="cb7-14"><a href="#cb7-14"></a>        new_data.iloc[idx][<span class="st">"state_percent"</span>]))</span>
+<span id="cb7-15"><a href="#cb7-15"></a>        .<span class="bu">sum</span>()</span>
+<span id="cb7-16"><a href="#cb7-16"></a>        .item()</span>
+<span id="cb7-17"><a href="#cb7-17"></a>    )</span>
+<span id="cb7-18"><a href="#cb7-18"></a>    predicted_mrp_lb <span class="op">=</span> (</span>
+<span id="cb7-19"><a href="#cb7-19"></a>        (</span>
+<span id="cb7-20"><a href="#cb7-20"></a>            (</span>
+<span id="cb7-21"><a href="#cb7-21"></a>                abortion_posterior_mrp[idx].quantile(<span class="fl">0.025</span>, dim<span class="op">=</span><span class="st">"sample"</span>)</span>
+<span id="cb7-22"><a href="#cb7-22"></a>                <span class="op">*</span> new_data.iloc[idx][<span class="st">"state_percent"</span>]</span>
+<span id="cb7-23"><a href="#cb7-23"></a>            )</span>
+<span id="cb7-24"><a href="#cb7-24"></a>        )</span>
+<span id="cb7-25"><a href="#cb7-25"></a>        .<span class="bu">sum</span>()</span>
+<span id="cb7-26"><a href="#cb7-26"></a>        .item()</span>
+<span id="cb7-27"><a href="#cb7-27"></a>    )</span>
+<span id="cb7-28"><a href="#cb7-28"></a>    predicted_mrp_ub <span class="op">=</span> (</span>
+<span id="cb7-29"><a href="#cb7-29"></a>        (</span>
+<span id="cb7-30"><a href="#cb7-30"></a>            (</span>
+<span id="cb7-31"><a href="#cb7-31"></a>                abortion_posterior_mrp[idx].quantile(<span class="fl">0.975</span>, dim<span class="op">=</span><span class="st">"sample"</span>)</span>
+<span id="cb7-32"><a href="#cb7-32"></a>                <span class="op">*</span> new_data.iloc[idx][<span class="st">"state_percent"</span>]</span>
+<span id="cb7-33"><a href="#cb7-33"></a>            )</span>
+<span id="cb7-34"><a href="#cb7-34"></a>        )</span>
+<span id="cb7-35"><a href="#cb7-35"></a>        .<span class="bu">sum</span>()</span>
+<span id="cb7-36"><a href="#cb7-36"></a>        .item()</span>
+<span id="cb7-37"><a href="#cb7-37"></a>    )</span>
+<span id="cb7-38"><a href="#cb7-38"></a>    predicted <span class="op">=</span> abortion_posterior_base[idx].mean().item()</span>
+<span id="cb7-39"><a href="#cb7-39"></a>    base_lb <span class="op">=</span> abortion_posterior_base[idx].quantile(<span class="fl">0.025</span>).item()</span>
+<span id="cb7-40"><a href="#cb7-40"></a>    base_ub <span class="op">=</span> abortion_posterior_base[idx].quantile(<span class="fl">0.975</span>).item()</span>
+<span id="cb7-41"><a href="#cb7-41"></a></span>
+<span id="cb7-42"><a href="#cb7-42"></a>    estimates.append(</span>
+<span id="cb7-43"><a href="#cb7-43"></a>        [s, predicted, base_lb, base_ub, predicted_mrp, predicted_mrp_ub, predicted_mrp_lb]</span>
+<span id="cb7-44"><a href="#cb7-44"></a>    )</span>
+<span id="cb7-45"><a href="#cb7-45"></a></span>
+<span id="cb7-46"><a href="#cb7-46"></a></span>
+<span id="cb7-47"><a href="#cb7-47"></a>state_predicted <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb7-48"><a href="#cb7-48"></a>    estimates,</span>
+<span id="cb7-49"><a href="#cb7-49"></a>    columns<span class="op">=</span>[<span class="st">"state"</span>, <span class="st">"base_expected"</span>, <span class="st">"base_lb"</span>, </span>
+<span id="cb7-50"><a href="#cb7-50"></a>    <span class="st">"base_ub"</span>, <span class="st">"mrp_adjusted"</span>, <span class="st">"mrp_ub"</span>, <span class="st">"mrp_lb"</span>],</span>
+<span id="cb7-51"><a href="#cb7-51"></a>)</span>
+<span id="cb7-52"><a href="#cb7-52"></a></span>
+<span id="cb7-53"><a href="#cb7-53"></a>state_predicted <span class="op">=</span> (</span>
+<span id="cb7-54"><a href="#cb7-54"></a>    state_predicted.merge(cces_all_df.groupby(<span class="st">"state"</span>)[[<span class="st">"abortion"</span>]].mean().reset_index())</span>
+<span id="cb7-55"><a href="#cb7-55"></a>    .sort_values(<span class="st">"mrp_adjusted"</span>)</span>
+<span id="cb7-56"><a href="#cb7-56"></a>    .rename({<span class="st">"abortion"</span>: <span class="st">"census_share"</span>}, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb7-57"><a href="#cb7-57"></a>)</span>
+<span id="cb7-58"><a href="#cb7-58"></a>state_predicted.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="comparing-adjusted-and-raw-predictions" class="slide level2">
+<h2>Comparing Adjusted and Raw Predictions</h2>
+<p>Derived state level predictions using the biased sample and the corrected values.</p>
+
+<img data-src="images/comparison_predictions.png" class="r-stretch"></section>
+<section id="comparing-adjusted-and-raw-predictions-1" class="slide level2">
+<h2>Comparing Adjusted and Raw Predictions</h2>
+
+<img data-src="images/final_plot.png" class="r-stretch"></section>
+<section id="conclusion" class="slide level2 smaller">
+<h2>Conclusion</h2>
+<h3 id="the-need-for-reweighting">The Need for Reweighting</h3>
+<blockquote>
+<p>“The IID condition is a mathematical specification of what Hume called the uniformity of nature. To say that nature is uniform means that whatever circumstances holds for the observed, the same circumstances will continue to hold for the unobserved. This is what Hume required for the possibility of inductive reasoning”</p>
+</blockquote>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>Survey Bias Breaks the IID condition</li>
+<li>Inference falls apart with non-representative samples</li>
+<li>Prediction suffers from wild skew</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<ul>
+<li>Knowledge about demographic representation informs priors</li>
+<li>Historic rates can be used to improve sample representation</li>
+<li>Model recovers inferential validity. Prediction improves.</li>
+</ul>
+</div>
+</div>
 
 <div class="footer footer-default">
 <p>Post-Stratification Weighting</p>
 </div>
-</section>
+</section></section>
     </div>
   </div>
 

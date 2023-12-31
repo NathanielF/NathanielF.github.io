@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 31, 2023\n\n\n3 min\n\n\n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n8 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 1, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 31, 2023\n\n\n6 min\n\n\n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n8 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 1, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -2077,5 +2077,40 @@
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Preliminaries",
     "text": "Preliminaries\n\n\n\n\n\n\nIntro\n\n\n\nI’m a data scientist at Personio\n\nBayesian statistician,\nReformed philosopher and logician.\n\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here"
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#predicting-vote-share",
+    "href": "talks/mister_p/mister_p.html#predicting-vote-share",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Predicting Vote Share",
+    "text": "Predicting Vote Share\nUsing the Biased Model\nnew_data = (new_data.merge(\n    new_data.groupby(\"state\").agg({\"n\": \"sum\"})\n    .reset_index()\n    .rename({\"n\": \"state_total\"}, axis=1)\n)\n)\nnew_data[\"state_percent\"] = new_data[\"n\"] / new_data[\"state_total\"]\nnew_data.head()\n\nresult_adjust = model_hierarchical.predict(result, \ndata=new_data, inplace=False, kind=\"pps\")\nresult_adjust"
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#adjusting-the-state-level-predictions",
+    "href": "talks/mister_p/mister_p.html#adjusting-the-state-level-predictions",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Adjusting the State Level Predictions",
+    "text": "Adjusting the State Level Predictions\nReweighting Outcomes by Strata specific Share\n\nestimates = []\n## The base model posterior fitted on biased sample\nabortion_posterior_base = az.extract(result)[\"p(abortion, n)_mean\"]\n\n## The posterior updated with national level figures\nabortion_posterior_mrp = az.extract(result_adjust)[\"p(abortion, n)_mean\"]\n\n## Adjusting the predictions on state level\nfor s in new_data[\"state\"].unique():\n    idx = new_data.index[new_data[\"state\"] == s].tolist()\n    predicted_mrp = (\n        ((abortion_posterior_mrp[idx].mean(dim=\"sample\") * \n        new_data.iloc[idx][\"state_percent\"]))\n        .sum()\n        .item()\n    )\n    predicted_mrp_lb = (\n        (\n            (\n                abortion_posterior_mrp[idx].quantile(0.025, dim=\"sample\")\n                * new_data.iloc[idx][\"state_percent\"]\n            )\n        )\n        .sum()\n        .item()\n    )\n    predicted_mrp_ub = (\n        (\n            (\n                abortion_posterior_mrp[idx].quantile(0.975, dim=\"sample\")\n                * new_data.iloc[idx][\"state_percent\"]\n            )\n        )\n        .sum()\n        .item()\n    )\n    predicted = abortion_posterior_base[idx].mean().item()\n    base_lb = abortion_posterior_base[idx].quantile(0.025).item()\n    base_ub = abortion_posterior_base[idx].quantile(0.975).item()\n\n    estimates.append(\n        [s, predicted, base_lb, base_ub, predicted_mrp, predicted_mrp_ub, predicted_mrp_lb]\n    )\n\n\nstate_predicted = pd.DataFrame(\n    estimates,\n    columns=[\"state\", \"base_expected\", \"base_lb\", \n    \"base_ub\", \"mrp_adjusted\", \"mrp_ub\", \"mrp_lb\"],\n)\n\nstate_predicted = (\n    state_predicted.merge(cces_all_df.groupby(\"state\")[[\"abortion\"]].mean().reset_index())\n    .sort_values(\"mrp_adjusted\")\n    .rename({\"abortion\": \"census_share\"}, axis=1)\n)\nstate_predicted.head()"
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#comparing-adjusted-and-raw-predictions",
+    "href": "talks/mister_p/mister_p.html#comparing-adjusted-and-raw-predictions",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Comparing Adjusted and Raw Predictions",
+    "text": "Comparing Adjusted and Raw Predictions\nDerived state level predictions using the biased sample and the corrected values."
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#comparing-adjusted-and-raw-predictions-1",
+    "href": "talks/mister_p/mister_p.html#comparing-adjusted-and-raw-predictions-1",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Comparing Adjusted and Raw Predictions",
+    "text": "Comparing Adjusted and Raw Predictions"
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#conclusion",
+    "href": "talks/mister_p/mister_p.html#conclusion",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Conclusion",
+    "text": "Conclusion\nThe Need for Reweighting\n\n“The IID condition is a mathematical specification of what Hume called the uniformity of nature. To say that nature is uniform means that whatever circumstances holds for the observed, the same circumstances will continue to hold for the unobserved. This is what Hume required for the possibility of inductive reasoning”\n\n\n\n\nSurvey Bias Breaks the IID condition\nInference falls apart with non-representative samples\nPrediction suffers from wild skew\n\n\n\nKnowledge about demographic representation informs priors\nHistoric rates can be used to improve sample representation\nModel recovers inferential validity. Prediction improves.\n\n\n\n\n\nPost-Stratification Weighting"
   }
 ]
