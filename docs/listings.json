@@ -2,8 +2,8 @@
   {
     "listing": "/talks.html",
     "items": [
-      "/talks/missing_data/missing_data_causal.html",
       "/talks/survival_regression/time_to_attrition.html",
+      "/talks/missing_data/missing_data_causal.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
       "/talks/utility_and_choice/discrete_choice_and_utility.html",
       "/talks/tenuous_relations/first_talk.html"

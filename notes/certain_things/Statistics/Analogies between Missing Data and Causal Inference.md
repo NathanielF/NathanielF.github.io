@@ -24,7 +24,7 @@ But we also want to consider individual variation due to the observed covariate 
 
 ### Propensity Scores
 
-The propensity score has a role in a number of re-weighting schemes for the estimation of missing data. These rely on the property of expectation under (MAR). So accuracy of the propensity score is itself an important question. The missing-ness variable $R$ is a binary random variable in $\{ 0, 1 \}$. Maximum likelihood methods for logistic regression are often used to estimate these terms.  
+The propensity score has a role in a number of re-weighting schemes for the estimation of missing data. These rely on the property of expectation under (MAR). So accuracy of the propensity score is itself an important question. Because the missing-ness variable $R$ is a binary random variable in $\{ 0, 1 \}$ maximum likelihood methods for logistic regression are often used to estimate these terms.  
 
 $$p_{R}(\mathbf{x}) \sim logit(X_{i} \beta )$$
 
@@ -32,11 +32,13 @@ This score is a summary in some sense of the factors driving missing-ness. In th
 
 ### Regression Estimators
 
+
 We might want to simply estimate the missing values of our outcome using the conditional expectation function (CEF) property of simple regression. The imputation pattern will work well when the linear properties of the regression model are a good fit for the relationship between the outcome variables and the observed covariates. Hence the estimate for: 
 
 $$E[Y_{i}] = \beta_{0} + \beta_{1}\cdot X_{1i} ... \beta_{n} \cdot X_{ni} $$
 where we replace all values to be prediction of our regression model for each individual and then average the predictions. 
-### Weighting Estimators
+
+### Weighting Estimators 
 
 Another approach to missing data imputation, which relies on the expectation properties of our outcome variable of interest under (MAR) and the stable outcome model,  is the inverse probability weighting approach to imputation.
 

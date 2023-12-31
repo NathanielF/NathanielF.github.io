@@ -1,0 +1,301 @@
+---
+title: "Multilevel Regression and Post-Stratification"
+subtitle: "Stratum Specific effect modification"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+format: 
+    revealjs:
+         theme: [default, clean.scss]
+         footer: "Post-Stratification Weighting"
+categories: [bayesian, missing data, causal inference]
+image: "images/final_plot.png"
+date: last-modified
+draft: True
+---
+
+## Preliminaries {.smaller}
+
+:::{.callout-warning}
+## Intro
+- I'm a __data scientist__ at __[Personio]{.blue}__ 
+    - Bayesian statistician, 
+    - Reformed philosopher and logician. 
+- Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
+:::
+ 
+::: {.callout-note}
+## Disclaimer
+None of Personio's data was used in this presentation
+:::
+
+::: {.callout-tip}
+## Code or it didn't Happen
+The worked examples used here can be found [here](https://bambinos.github.io/bambi/notebooks/mister_p.html)
+:::
+
+
+# The Pitch
+
+Opt-out policies in SAAS customer surveys represent a risk for bias in survey derived summaries of sentiment
+
+Multilevel Regression with Post-stratification is a __corrective__ technique for intellegently re-weighting the summaries to better reflect the true population distribution of sentiment.
+
+## Agenda
+
+## Agenda
+::: {.fragment .fade-in}
+- Regression as Strata specific Summarisation
+::: 
+::: {.fragment .fade-in}
+- Sampling and Probability Sampling 
+:::
+::: {.fragment .fade-in}
+- Stratum Specific Modelling
+:::
+::: {.fragment .fade-in}
+- Stratum Specific Adjustment
+:::
+::: {.fragment .fade-in}
+- Conclusion
+    - When to Adjust and Why?
+:::
+
+# Regression Modelling
+In which we illustrate how regression models automate strata specific effect modification
+
+
+## Regression: What are we even doing?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+$$\hat{y_{i}} = \alpha + \beta_{1}X_{1} ... \beta_{n}X_{n}$$
+
+![](images/regression.png)
+
+Assume $y = \hat{y_{i}} + \epsilon$ where $E(\epsilon) = 0$
+
+:::
+
+::: {.column width="60%"}
+$$ E[y | X = x] = \alpha + \beta_{1}X_{1} ... \beta_{n}X_{n}$$
+
+$$ y  \sim Normal(\hat{y_{i}}, \sigma) $$
+
+
+![](images/3d_regression.png)
+
+:::
+
+:::
+
+
+## Regression: What are we even doing? {.smaller}
+
+```{.python}
+m0 = smf.ols('np.log(hwage) ~ job +  educ', data=df).fit()
+m1 = smf.ols('np.log(hwage) ~ job + educ + male ', data=df).fit()
+pred = m0.predict(['software_engineer', 'college'])
+pred1 = m1.predict(['software_engineer', 'college', 1])
+diff = predc - pred1
+```
+
+:::: {.columns}
+
+::: {.column width="40%"}
+![](images/path.png)
+
+As we add more covariates we add more combinatorial branches which define the available strata across our population of interest. 
+
+A fitted regression model allows us to explore the conditional branching probabilities. 
+
+:::
+
+::: {.column width="60%"}
+![](images/choose.jpeg)
+:::
+
+:::
+
+## Regression as Effect Modification
+
+```{.python}
+reg = bmb.Model("Outcome ~ 1 + Treatment", df)
+results = reg.fit()
+
+reg_strata = bmb.Model("""Outcome ~ 1 + Treatment + Risk_Strata 
++ Treatment_x_Risk_Strata""", df)
+results_strata = reg_strata.fit()
+bmb.interpret.plot_predictions(reg, results, conditional=["Treatment"])
+bmb.interpret.plot_predictions(reg_strata, results_strata, conditional=["Treatment"])
+```
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](images/trt_effect.png){fig-align="center"}
+
+:::
+
+::: {.column width="50%"}
+![Bambi's Marginal Effects Interpretation module automates the implications of each model fit](images/marginal_effects.png)
+:::
+
+:::
+
+## Regression as Weighting Adjustment
+
+Regression __[automates]{.blue}__ the more manual re-weighting that needs to occur
+to account for different varieties of risk across the strata of our population
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+![](images/simple_average.png)
+
+:::
+
+::: {.column width="50%"}
+![](images/weighted_average.png)
+:::
+
+:::
+
+
+## The Need for Re-Weighting
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+- Causal Inference
+    - Inverse Probability Weighting
+    - Pseudo-Population Imputation
+    - Treatment effect estimation
+
+:::
+
+::: {.column width="50%"}
+
+- Survey Sample Bias
+    - Non-response 
+    - Opt-out Sampling contracts
+    - Incomplete coverage
+    - Multilevel Regression 
+    - Post-stratification Adjustment
+
+:::
+
+:::
+
+# Sampling and Probability Sampling 
+In which we discuss the manner in which sample bias can corrupt the inferences drawn in even theoretically sound regression models. 
+
+## The Data 
+
+We examine a comprehensive YouGov poll on whether employers should cover abortion in their coverage plans. 
+
+We select a __biased__ subsample.
+
+![](images/the_data.png)
+
+
+## Deliberate Bias
+
+![Illustrated differences in vote share by demographics](images/bias_illustrated.png)
+
+
+## Prep Data for Modelling
+
+![](images/data_prep.png)
+
+## Exploratory Modelling
+
+We fit a preliminary model to investigate the interactions across demographic splits. We specify a logit model using the binomial link.
+
+```{.python}
+formula = """ p(abortion, n) ~ C(state) + C(eth) + C(edu) + male + repvote"""
+
+base_model = bmb.Model(formula, model_df, family="binomial")
+
+result = base_model.fit(
+    random_seed=100,
+    target_accept=0.95,
+    idata_kwargs={"log_likelihood": True},
+)
+
+fig, ax = bmb.interpret.plot_comparisons(
+    model=base_model,
+    idata=result,
+    contrast={"eth": ["Black", "White"]},
+    conditional=["age", "edu"],
+    comparison_type="diff",
+    subplot_kwargs={"main": "age", "group": "edu"},
+    fig_kwargs={"figsize": (12, 5), "sharey": True},
+    legend=True,
+)
+ax[0].set_title("Comparison of Difference in Ethnicity \n within Age and Educational Strata");
+```
+
+## Plotting Implications
+
+![](images/exploratory_interactions.png)
+
+
+# Stratum Specific Modelling
+In which we fit our full model to the biased data.
+
+## The Full Hierarchical Interaction Model
+
+$$Pr(y_i = 1) = logit^{-1}\Bigg(
+\alpha_{\rm s[i]}^{\rm state}
++ \alpha_{\rm a[i]}^{\rm age}
++ \alpha_{\rm r[i]}^{\rm eth}
++ \alpha_{\rm e[i]}^{\rm edu} \\
++ \beta^{\rm male} \cdot {\rm Male}_{\rm i}
++ \alpha_{\rm g[i], r[i]}^{\rm male.eth}
++ \alpha_{\rm e[i], a[i]}^{\rm edu.age}
++ \alpha_{\rm e[i], r[i]}^{\rm edu.eth}
+\Bigg)$$
+
+Allowing for stratum specific intercept terms for each level of the demographic categories and their interaction effects. 
+
+## The Model in Code
+### Fitting the model to the biased sample: 
+
+```{.python}
+formula = """ p(abortion, n) ~ (1 | state) + (1 | eth) + (1 | edu)
+ + male + repvote  + (1 | male:eth) + (1 | edu:age) + (1 | edu:eth)"""
+
+model_hierarchical = bmb.Model(formula, model_df, family="binomial")
+```
+
+![](images/model_structure.svg)
+
+## Learning the Bias
+### The Model Derived Coefficients
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+![](images/coefficients.png)
+
+:::
+
+::: {.column width="50%"}
+
+![](images/bias_model_fit.png)
+
+:::
+
+:::
+
+
+# Stratum Specific Adjustment
+In which we use the fitted model to predict rates of voting over the population and adjust the predicted values by the relative weights each strata occupies in the population. 

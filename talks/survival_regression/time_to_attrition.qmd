@@ -39,6 +39,12 @@ date: last-modified
 - Conclusion
 :::
 
+# The Pitch
+Time to event data is __everywhere__. Understanding the temporal dynamics of event risk is crucial
+to management of organisational efficiency and costs.  
+
+The different flavours of complex hierarchical survival are all cleanly modelled as probabilities of state-transition within PyMC
+
 
 # Time to Event Distributions 
 

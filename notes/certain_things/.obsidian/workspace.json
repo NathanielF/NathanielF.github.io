@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "685a7700077b2581",
+        "id": "88b454cfe5d1a7e4",
         "type": "tabs",
         "children": [
           {
-            "id": "19fdfad75c2bb461",
+            "id": "79214965101271fb",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Statistics/Analogies between Missing Data and Causal Inference.md",
+                "file": "Philosophy/Thinking about Statistics.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Statistics/Analogies between Missing Data and Causal Inference.md",
+                "file": "Philosophy/Thinking about Statistics.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Statistics/Analogies between Missing Data and Causal Inference.md",
+                "file": "Philosophy/Thinking about Statistics.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Statistics/Analogies between Missing Data and Causal Inference.md"
+                "file": "Philosophy/Thinking about Statistics.md"
               }
             }
           }
@@ -146,14 +146,21 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "19fdfad75c2bb461",
+  "active": "79214965101271fb",
   "lastOpenFiles": [
+    "Philosophy/Thinking about Statistics.html",
+    "Philosophy/Thinking about Statistics_files/mediabag",
+    "Philosophy/Thinking about Statistics_files",
+    "Philosophy/Thinking about Statistics.md",
+    "Philosophy/Book - Thinking about Statistics.md",
+    "Statistics/Analogies between Missing Data and Causal Inference.md",
     "Statistics/Analogies between Missing Data and Causal Inference.html",
     "Statistics/Analogies between Missing Data and Causal Inference_files/mediabag",
     "Statistics/Analogies between Missing Data and Causal Inference_files",
-    "Philosophy/Book - Thinking about Statistics.md",
+    "Philosophy/Book - Thinking about Statistics.html",
+    "Philosophy/Book - Thinking about Statistics_files/mediabag",
+    "Philosophy/Book - Thinking about Statistics_files",
     "Images/predictions_imputations.jpg.md",
-    "Statistics/Analogies between Missing Data and Causal Inference.md",
     "Images/predictions.md",
     "Images",
     "predictions.md",
@@ -161,11 +168,6 @@
     "Statistics/Images/predictions_imputation.jpg",
     "Intro - Zettelkasten.md",
     "Statistics/Introduction - Statistics Topics.html",
-    "Statistics/Introduction - Statistics Topics_files/mediabag",
-    "Statistics/Introduction - Statistics Topics_files",
-    "Philosophy/Introduction - Philosophy Topics.html",
-    "Philosophy/Introduction - Philosophy Topics_files/mediabag",
-    "Philosophy/Introduction - Philosophy Topics_files",
     "Philosophy/Introduction - Philosophy Topics.md",
     "Statistics/Introduction - Statistics Topics.md",
     "Philosophy/Sorites Paradox and Survival Analysis.md",
