@@ -13,7 +13,7 @@ format:
 categories: [bayesian, missing data, causal inference]
 image: "images/final_plot.png"
 date: last-modified
-draft: True
+draft: False
 ---
 
 ## Preliminaries {.smaller}

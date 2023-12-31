@@ -2,6 +2,7 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/mister_p/mister_p.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/missing_data/missing_data_causal.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
