@@ -10,7 +10,6 @@
   <meta name="generator" content="quarto-1.2.335">
 
   <meta name="author" content="Nathaniel Forde">
-  <meta name="dcterms.date" content="2023-12-31">
   <title>Examined Algorithms - Multilevel Regression and Post-Stratification</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -406,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">12/31/23</p>
+  <p class="date">1/1/24</p>
 </section>
 <section id="preliminaries" class="slide level2 smaller">
 <h2>Preliminaries</h2>
@@ -616,6 +615,13 @@ Nathaniel Forde
 <h2>Prep Data for Modelling</h2>
 
 <img data-src="images/data_prep.png" class="r-stretch"></section>
+<section id="modelling-of-survey-outcomes" class="slide level2 smaller">
+<h2>Modelling of Survey Outcomes</h2>
+<h3 id="bayesian-models-incorporate-different-sources-of-knowledge">Bayesian Models incorporate different sources of knowledge</h3>
+<blockquote>
+<p>“In conventional sampling theory, the only scenario considered is essentially that of ‘drawing from an urn’, and the only probabilities that arise are those that presuppose the contents of the ‘urn’ or the ‘population’ already known, and seek to predict what ‘data’ we are likely to get as a result. …It was our use of probability theory as logic that has enabled us to do so easily what was impossible for those who thought of probability as a physical phenomenon associated with ‘randomness’. Quite the opposite; we have thought of probability distributions as <strong>carriers of information.</strong>” - Edwin Jaynes in <em>Probability: The Logic of Science</em> pg88 &amp; p117</p>
+</blockquote>
+</section>
 <section id="exploratory-modelling" class="slide level2">
 <h2>Exploratory Modelling</h2>
 <p>We fit a preliminary model to investigate the interactions across demographic splits. We specify a logit model using the binomial link.</p>
@@ -644,7 +650,15 @@ Nathaniel Forde
 <section id="plotting-implications" class="slide level2">
 <h2>Plotting Implications</h2>
 
-<img data-src="images/exploratory_interactions.png" class="r-stretch"></section></section>
+<img data-src="images/exploratory_interactions.png" class="r-stretch"></section>
+<section id="plotting-implications-1" class="slide level2">
+<h2>Plotting Implications</h2>
+
+<img data-src="images/plot_pred_by_class.png" class="r-stretch"></section>
+<section id="investigating-marginal-contrasts" class="slide level2">
+<h2>Investigating Marginal Contrasts</h2>
+
+<img data-src="images/contrasts.png" class="r-stretch"></section></section>
 <section>
 <section id="stratum-specific-modelling" class="title-slide slide level1 center">
 <h1>Stratum Specific Modelling</h1>

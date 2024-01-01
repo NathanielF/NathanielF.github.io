@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 31, 2023\n\n\n6 min\n\n\n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n8 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 1, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nJan 1, 2024\n\n\n6 min\n\n\n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n8 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 1, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -2112,5 +2112,40 @@
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Conclusion",
     "text": "Conclusion\nThe Need for Reweighting\n\n“The IID condition is a mathematical specification of what Hume called the uniformity of nature. To say that nature is uniform means that whatever circumstances holds for the observed, the same circumstances will continue to hold for the unobserved. This is what Hume required for the possibility of inductive reasoning”\n\n\n\n\nSurvey Bias Breaks the IID condition\nInference falls apart with non-representative samples\nPrediction suffers from wild skew\n\n\n\nKnowledge about demographic representation informs priors\nHistoric rates can be used to improve sample representation\nModel recovers inferential validity. Prediction improves.\n\n\n\n\n\nPost-Stratification Weighting"
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#informed-sampling",
+    "href": "talks/mister_p/mister_p.html#informed-sampling",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Informed Sampling",
+    "text": "Informed Sampling\nModelling of Survey Outcomes with Prior information\n\n“In conventional sampling theory, the only scenario considered is essentially that of ‘drawing from an urn’, and the only probabilities that arise are those that presuppose the contents of the ‘urn’ or the ‘population’ already known, and seek to predict what ‘data’ we are likely to get as a result. Problems of this type can become arbitrarily complicated in the details, and there is a highly developed mathematical literature dealing with them…It was our use of probability theory as logic that has enabled us to do so easily what was impossible for those who thought of probability as a physical phenomenon associated with ‘randomness’. Quite the opposite; we have thought of probability distributions as carriers of information. At the same time, under the protection of Cox’s theorems, we have avoided the inconsistencies and absurdities which are generated inevitably by those who try to deal with the problems of scientific inference by inventing ad hoc devices instead of applying the rules of probability theory” - Edwin Jaynes in Probability: The Logic of Science pg88"
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#modelling-of-survey-outcomes-with-prior-information",
+    "href": "talks/mister_p/mister_p.html#modelling-of-survey-outcomes-with-prior-information",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Modelling of Survey Outcomes with Prior information",
+    "text": "Modelling of Survey Outcomes with Prior information\nBayesian Models incorporate different sources of knowledge\n\n“In conventional sampling theory, the only scenario considered is essentially that of ‘drawing from an urn’, and the only probabilities that arise are those that presuppose the contents of the ‘urn’ or the ‘population’ already known, and seek to predict what ‘data’ we are likely to get as a result. …It was our use of probability theory as logic that has enabled us to do so easily what was impossible for those who thought of probability as a physical phenomenon associated with ‘randomness’. Quite the opposite; we have thought of probability distributions as carriers of information.” - Edwin Jaynes in Probability: The Logic of Science pg88 & p117"
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#modelling-of-survey-outcomes",
+    "href": "talks/mister_p/mister_p.html#modelling-of-survey-outcomes",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Modelling of Survey Outcomes",
+    "text": "Modelling of Survey Outcomes\nBayesian Models incorporate different sources of knowledge\n\n“In conventional sampling theory, the only scenario considered is essentially that of ‘drawing from an urn’, and the only probabilities that arise are those that presuppose the contents of the ‘urn’ or the ‘population’ already known, and seek to predict what ‘data’ we are likely to get as a result. …It was our use of probability theory as logic that has enabled us to do so easily what was impossible for those who thought of probability as a physical phenomenon associated with ‘randomness’. Quite the opposite; we have thought of probability distributions as carriers of information.” - Edwin Jaynes in Probability: The Logic of Science pg88 & p117"
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#plotting-implications-1",
+    "href": "talks/mister_p/mister_p.html#plotting-implications-1",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Plotting Implications",
+    "text": "Plotting Implications"
+  },
+  {
+    "objectID": "talks/mister_p/mister_p.html#investigating-marginal-contrasts",
+    "href": "talks/mister_p/mister_p.html#investigating-marginal-contrasts",
+    "title": "Multilevel Regression and Post-Stratification",
+    "section": "Investigating Marginal Contrasts",
+    "text": "Investigating Marginal Contrasts"
   }
 ]

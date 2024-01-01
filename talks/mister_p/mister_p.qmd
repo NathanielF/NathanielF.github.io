@@ -196,6 +196,7 @@ to account for different varieties of risk across the strata of our population
 # Sampling and Probability Sampling 
 In which we discuss the manner in which sample bias can corrupt the inferences drawn in even theoretically sound regression models. 
 
+
 ## The Data 
 
 We examine a comprehensive YouGov poll on whether employers should cover abortion in their coverage plans. 
@@ -214,9 +215,20 @@ We select a __biased__ subsample.
 
 ![](images/data_prep.png)
 
+## Modelling of Survey Outcomes{.smaller}
+### Bayesian Models incorporate different sources of knowledge
+
+> "In conventional sampling theory, the only scenario considered is essentially that of ‘drawing from an urn’, and the only probabilities that arise are those that presuppose the contents
+of the ‘urn’ or the ‘population’ already known, and seek to predict what ‘data’ we are likely
+to get as a result. ...It was our use of probability theory as logic that has enabled us to do so easily what was
+impossible for those who thought of probability as a physical phenomenon associated with
+‘randomness’. Quite the opposite; we have thought of probability distributions as __carriers
+of information.__" - Edwin Jaynes in _Probability: The Logic of Science_ pg88 & p117 
+
 ## Exploratory Modelling
 
 We fit a preliminary model to investigate the interactions across demographic splits. We specify a logit model using the binomial link.
+
 
 ```{.python}
 formula = """ p(abortion, n) ~ C(state) + C(eth) + C(edu) + male + repvote"""
@@ -245,6 +257,14 @@ ax[0].set_title("Comparison of Difference in Ethnicity \n within Age and Educati
 ## Plotting Implications
 
 ![](images/exploratory_interactions.png)
+
+## Plotting Implications
+
+![](images/plot_pred_by_class.png)
+
+## Investigating Marginal Contrasts
+
+![](images/contrasts.png)
 
 
 # Stratum Specific Modelling
