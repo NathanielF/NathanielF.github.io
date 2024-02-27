@@ -129,6 +129,10 @@ We'll show how Bayesian non-parametrics are natural framwork in with which to co
 
 # Go to Code
 
+```{=html}
+<iframe width="780" height="600" src="https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html#the-structure-of-the-presentation" title="ACT 1"></iframe>
+```
+
 
 ## Act Two
 ### Confounding and Debiasing
@@ -169,6 +173,11 @@ We'll show how Bayesian non-parametrics are natural framwork in with which to co
 
 # Go to Code
 
+```{=html}
+<iframe width="780" height="600" src="https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html#confounded-inference-health-expenditure-data" title="ACT 2"></iframe>
+```
+
+
 ## Act Three
 ### Causal Structure and Mediation
 
@@ -197,6 +206,10 @@ We'll show how Bayesian non-parametrics are natural framwork in with which to co
 
 
 # Go To Code
+
+```{=html}
+<iframe width="780" height="600" src="https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html#mediation-effects-and-causal-structure" title="ACT 3"></iframe>
+```
 
 ## Conclusions
 ### Structural Assumptions and Bayesian Inference
