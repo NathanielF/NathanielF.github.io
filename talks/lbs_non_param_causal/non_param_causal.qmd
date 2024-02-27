@@ -67,6 +67,17 @@ We'll show how Bayesian non-parametrics are natural framwork in with which to co
 
 ![Posterior Predictive Imputation of Treatment Effects](images/thepitch_meme.jpeg)
 
+## Non Parametric Bayes Formula
+### Full Luxury Bayesianism
+
+$$ p(\color{blue}{\theta} |D) \propto p(D | \color{blue}{\theta})p(D) $$
+
+where $\color{blue}{\theta}$ is an explict model parameter becomes
+
+$$ p(\color{blue}{G} |D) \propto p(D | \color{blue}{G})p(D) $$
+
+where $\color{blue}{G}$ is a general stochastic process
+
 ## Three Acts
 ::: {.fragment .fade-in}
 - Propensity Scores and Non-Parametric Causal Inference

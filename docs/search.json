@@ -2357,5 +2357,19 @@
     "title": "Non Parametric Causal Inference with PyMC",
     "section": "Propaganda",
     "text": "Propaganda\nFull Luxury Bayesianism\n\nPosterior Predictive Imputation of Treatment Effects"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#bayes-formula",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#bayes-formula",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Bayes Formula",
+    "text": "Bayes Formula\nFull Luxury Bayesianism\n\\[ p(\\theta |D) \\propto p(D | \\theta)p(D) \\]\nwhere \\(\\theta\\) is parameter becomes\n\\[ p(G |D) \\propto p(D | G)p(D) \\]\nwhere G is a general stochastic process"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#non-parametric-bayes-formula",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#non-parametric-bayes-formula",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Non Parametric Bayes Formula",
+    "text": "Non Parametric Bayes Formula\nFull Luxury Bayesianism\n\\[ p(\\color{blue}{\\theta} |D) \\propto p(D | \\color{blue}{\\theta})p(D) \\]\nwhere \\(\\color{blue}{\\theta}\\) is an explict model parameter becomes\n\\[ p(\\color{blue}{G} |D) \\propto p(D | \\color{blue}{G})p(D) \\]\nwhere \\(\\color{blue}{G}\\) is a general stochastic process"
   }
 ]
