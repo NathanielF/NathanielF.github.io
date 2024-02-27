@@ -1,0 +1,202 @@
+---
+title: "Non Parametric Causal Inference with PyMC"
+subtitle: "Propensity Scores, Debiased ML and Causal Mediation"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+format: 
+    revealjs:
+         theme: [default, clean.scss]
+         footer: "Non Parametric Causal Inference"
+categories: [bayesian, propensity scores, causal inference]
+image: "images/ps_scores.png"
+date: last-modified
+---
+
+## Preliminaries {.smaller}
+
+:::{.callout-warning}
+## Profile
+- I'm a __data scientist__ at __[Personio]{.blue}__ 
+    - Bayesian statistician, 
+    - Reformed philosopher and logician. 
+- Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
+:::
+
+ 
+::: {.callout-note}
+## Disclaimer
+None of Personio's data was used in this presentation
+:::
+
+::: {.callout-tip}
+## Code or it didn't Happen
+The worked examples used here can be found [here](https://www.pymc.io/projects/examples/en/latest/case_studies/Missing_Data_Imputation.html)
+:::
+
+# The Pitch
+Agnostic statistical methods in causal inference are well motivated but limited in scope. 
+
+We'll show how Bayesian non-parametrics are natural framwork in with which to couch and extend these methods
+
+## Primary Debts and Sources 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+![Foundations](images/agnostic_stats.jpeg)
+:::
+
+::: {.column width="33%"}
+![Debiased ML](images/causal_inference.jpeg)
+:::
+
+::: {.column width="33%"}
+![Non-Parametric](images/nonparam_bayes.jpeg)
+:::
+
+::::
+
+## Agenda
+
+![](images/three_acts.png)
+
+## Three Acts
+::: {.fragment .fade-in}
+- Propensity Scores and Non-Parametric Causal Inference
+::: 
+::: {.fragment .fade-in}
+- Confounding and Debiasing
+:::
+::: {.fragment .fade-in}
+- Causal Structure and Mediation
+:::
+
+
+## Act One
+### Propensity Scores and Non-Parametric Causal Inference
+
+::: {.fragment .fade-in}
+ - Strong Ignorability and Propensity Scores
+::: 
+::: {.fragment .fade-in}
+ -   BART models and Non-Parametric Estimation
+:::
+::: {.fragment .fade-in}
+ - Balance and Inverse Propensity Weighting
+:::
+::: {.fragment .fade-in}
+ - Robust and Doubly Robust methods
+:::
+
+
+## Strong Ignorability and Propensity Scores
+### Definitions
+
+- Potential Outcomes
+    - $Y(0)$ and $Y(1)$ under different treatment regimes $T \in \{ 0, 1\}$
+- Strong Ignorability
+    - Outcomes are independent of the treatment assignment given a covariate profile $X$: $Y(0), Y(1)  \perp\!\!\!\perp T | X$ 
+- Propensity Scores
+    - An estimate of the probability for a particular treatment status conditional on the covariate profile $X$: $0 \leq p_{t}(X) \leq 1$
+
+
+## BART Models and Non-Parametric Estimation
+
+- BART
+    - Bayesian Additive Regression Trees
+    - "[B]lack-box method based on the sum of many trees where priors are used to regularize inference"
+
+- Non-Parametric Estimation
+    - Outcomes and Propensity Scores can be estimated using non-parametric methods
+    - Causal estimands can be estimated using posterior predictive imputation under different treatment regimes
+    - Benefit of minimalist structural assumptions.
+
+## Inverse Propensity Score Weighting
+ 
+- Adjustment by representative Weighting
+    - Using the propensity scores as a summary metric for group membership, we down-weight and upweight the prevalence of high and low propensity score in each group to induce __strong ignorability__ like conditions.
+
+## Robust and Doubly Robust Methods
+### Differing Weighting Schemes
+
+- Raw
+    - $\sum\frac{1}{N}\Big[ Y(1) \cdot \frac{1}{p_{T}(X)} - (Y(0)\cdot\frac{1}{1-p_{T}(X)}) \Big]$
+- Doubly Robust
+    - $$ \hat{Y(1)} = \frac{1}{n} \sum_{0}^{N} \Bigg[ \frac{T(Y - m_{1}(X))}{p_{T}(X)} + m_{1}(X) \Bigg] \\ \hat{Y(0)} = \frac{1}{n} \sum_{0}^{N} \Bigg[ \frac{(1-T)(Y - m_{0}(X))}{(1-p_{T}(X))} + m_{0}(X) \Bigg] $$   
+
+# Go to Code
+
+
+## Act Two
+### Confounding and Debiasing
+
+::: {.fragment .fade-in}
+ - Propensity Scores Miscalibrated
+::: 
+::: {.fragment .fade-in}
+ -   BART models and Overfitting
+:::
+::: {.fragment .fade-in}
+ - Debiased Machine Learning 
+:::
+::: {.fragment .fade-in}
+ - CATE estimation
+:::
+
+## Miscalibrated Propensity Scores
+### What is the Estimand?
+
+> "Each theoretical estimand is linked to an empirical  estimand involving only observable quantities (e.g. a difference in means in a population) by assumptions about the relationship between the data we observe and the data we do not." - Lundberg et al in _What is your Estimand_
+
+- Q1. What are we aiming at when we estimate propensity scores for highly granular covariate profiles?
+- Q2. What happens when the sample data has no treatment data cases for a particular covariate profile?
+
+## Overfitting
+### BART models can achieve perfect Allocation
+
+![Overfitting](images/overfit.jpeg)
+
+## Debiasing Machine Learning
+
+![K-fold Propensity Estimation](images/kfold.jpeg)
+
+## CATE Estimation
+
+![Conditional Average Treatment Effect](images/CATE.png)
+
+# Go to Code
+
+## Act Three
+### Causal Structure and Mediation
+
+::: {.fragment .fade-in}
+ - Parametric Mediation
+::: 
+::: {.fragment .fade-in}
+ -   Non-Parametric Mediation
+:::
+::: {.fragment .fade-in}
+ - Escalating Structural Assumptions and Bayesian Inference
+:::
+
+## Parametric Mediation
+
+![Traditional Model Based Mediation](images/Mediation_Model.png)
+
+## Causal Mediation Analysis
+### Non-Parametric Estimation
+
+- __NDE:__ $E[Y(t, M(t^{*})) - Y(t^{*}, M(t^{*}))]$
+    - Which is to say we're interested in the differences in the imputed outcomes under different treatments, mediated by values for M under a specific treatment regime. 
+- __NIE:__ $E[(Y(t, M(t))) - Y(t, M(t^{*}))]$
+    - Which amounts to the imputed differences in the outcome Y due to differences in the treatment regimes which generated the mediation values M. 
+- __TE__: NDE + NIE
+
+
+# Go To Code
+
+## Conclusions
+### Structural Assumptions and Bayesian Inference

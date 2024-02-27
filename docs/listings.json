@@ -2,6 +2,7 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/lbs_non_param_causal/non_param_causal.html",
       "/talks/mister_p/mister_p.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/missing_data/missing_data_causal.html",
@@ -26,6 +27,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/pymc/bnp.html",
       "/oss/pymc/frailty_survival.html",
       "/oss/bambi/mr_p.html",
       "/oss/causalpy/instrumental_variables.html",

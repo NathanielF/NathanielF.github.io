@@ -1,0 +1,16 @@
+---
+title: "Bayesian Non Parametric Causal Inference in PyMC"
+author: "Nathaniel Forde"
+date: "2024-02-27"
+categories: ["probability", "pymc", "non parametric", "causal inference" ]
+image: "bnp_cate.png"
+---
+
+# Bayesian Non Parametric Causal Inference
+
+In this project I demonstrated how to fit and use BART propensity score models in the assessment of causal inference questions. We showed the conditions under which these methods work well and an example of where they break down due to overfit. We showed how they could be fixed using debiasing techniques and how appropriate analysis of this case could be achieved using non-parametric mediation analysis.
+
+The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html) or downloaded as notebook [here](bayesian_nonparametric_causal.html)
+
+
+![Ireland's GDP v Peers](bnp_cate.png)

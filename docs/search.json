@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nJan 1, 2024\n\n\n6 min\n\n\n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n8 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 1, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nNon Parametric Causal Inference with PyMC\n\n\nPropensity Scores, Debiased ML and Causal Mediation\n\n\n\n\nbayesian\n\n\npropensity scores\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nFeb 27, 2024\n\n\n3 min\n\n\n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nJan 1, 2024\n\n\n6 min\n\n\n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n8 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 1, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -578,7 +578,7 @@
     "href": "opensource.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nFrailty Survival Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nsurvival models\n\n\nfrailty models\n\n\n \n\n\n\n\nNov 28, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\n\n\n\n\n\nregression\n\n\npost-stratification\n\n\nsurvey data\n\n\n \n\n\n\n\nSep 21, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian IV Regression in CausalPy\n\n\n\n\n\n\n\nregression\n\n\ninstrumental variables\n\n\ncausal inference\n\n\n \n\n\n\n\nAug 15, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\ndiscrete choice\n\n\nsubjective utility\n\n\n \n\n\n\n\nJul 15, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nOrdinal Regression Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nordinal regression\n\n\nlikert scales\n\n\n \n\n\n\n\nJun 1, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nLongitudinal Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nlongitudinal models\n\n\n \n\n\n\n\nApr 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data Imputation in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nmissing_data\n\n\nimputation\n\n\n \n\n\n\n\nFeb 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nReliability Statistics in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\ntime-to-failure\n\n\ncalibration\n\n\n \n\n\n\n\nJan 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian Vector Autoregressive Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nautoregressive\n\n\nhierarchical_models\n\n\n \n\n\n\n\nDec 15, 2022\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nAutoregressive Forecasting in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nautoregressive\n\n\n \n\n\n\n\nAug 15, 2022\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nBayesian Non Parametric Causal Inference in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nnon parametric\n\n\ncausal inference\n\n\n \n\n\n\n\nFeb 27, 2024\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nFrailty Survival Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nsurvival models\n\n\nfrailty models\n\n\n \n\n\n\n\nNov 28, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\n\n\n\n\n\nregression\n\n\npost-stratification\n\n\nsurvey data\n\n\n \n\n\n\n\nSep 21, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian IV Regression in CausalPy\n\n\n\n\n\n\n\nregression\n\n\ninstrumental variables\n\n\ncausal inference\n\n\n \n\n\n\n\nAug 15, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\ndiscrete choice\n\n\nsubjective utility\n\n\n \n\n\n\n\nJul 15, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nOrdinal Regression Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nordinal regression\n\n\nlikert scales\n\n\n \n\n\n\n\nJun 1, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nLongitudinal Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nlongitudinal models\n\n\n \n\n\n\n\nApr 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data Imputation in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nmissing_data\n\n\nimputation\n\n\n \n\n\n\n\nFeb 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nReliability Statistics in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\ntime-to-failure\n\n\ncalibration\n\n\n \n\n\n\n\nJan 10, 2023\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian Vector Autoregressive Models in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nautoregressive\n\n\nhierarchical_models\n\n\n \n\n\n\n\nDec 15, 2022\n\n\n0 min\n\n\n\n\n\n\n  \n\n\n\n\nAutoregressive Forecasting in PyMC\n\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nautoregressive\n\n\n \n\n\n\n\nAug 15, 2022\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "blog.html",
@@ -2147,5 +2147,187 @@
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Investigating Marginal Contrasts",
     "text": "Investigating Marginal Contrasts"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#preliminaries",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#preliminaries",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Preliminaries",
+    "text": "Preliminaries\n\n\n\n\n\n\nProfile\n\n\n\nI’m a data scientist at Personio\n\nBayesian statistician,\nReformed philosopher and logician.\n\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#agenda",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#agenda",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Agenda",
+    "text": "Agenda"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#agenda-1",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#agenda-1",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Agenda",
+    "text": "Agenda\n\n\nTypology of Missing-ness\n\n\n\n\nMultivariate imputation using FIML\n\n\n\n\nBayesian Imputation by Chained Equations\n\n\n\n\nHierarchical Structures impacting Missing-ness\n\n\n\n\nImputation and Causal Narratives\n\n\n\n\nConclusion\n\nMissing Data: a Gateway to Causal Inference\n\n\n\n\n\nNon Parametric Causal Inference"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#three-acts",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#three-acts",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Three Acts",
+    "text": "Three Acts\n\n\nPropensity Scores and Non-Parametric Causal Inference\n\n\n\n\nConfounding and Debiasing\n\n\n\n\nCausal Structure and Mediation"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#three-acts-1",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#three-acts-1",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Three Acts",
+    "text": "Three Acts\n\n\nPropensity Scores and Non-Parametric Causal Inference\n\n\n\n\nConfounding and Debiasing\n\n\n\n\nCausal Structure and Mediation\n\n\n\n\nNon Parametric Causal Inference"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#act-one",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#act-one",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Act One",
+    "text": "Act One\nPropensity Scores and Non-Parametric Causal Inference\n\n\nStrong Ignorability and Propensity Scores\n\n\n\n\nBART models and Non-Parametric Estimation\n\n\n\n\nBalance and Inverse Propensity Weighting\n\n\n\n\nRobust and Doubly Robust methods"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#act-two",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#act-two",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Act Two",
+    "text": "Act Two\nConfounding and Debiasing\n\n\nPropensity Scores Miscalibrated\n\n\n\n\nBART models and Overfitting\n\n\n\n\nDebiased Machine Learning\n\n\n\n\nCATE estimation"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#act-three",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#act-three",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Act Three",
+    "text": "Act Three\nCausal Structure and Mediation\n\n\nParametric Mediation\n\n\n\n\nNon-Parametric Mediation\n\n\n\n\nEscalating Structural Assumptions and Bayesian Inference"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#sources",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#sources",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Sources",
+    "text": "Sources\n\n\n\n\n\nFoundations\n\n\n\n\n\n\nFoundations\n\n\n\n\n\n\nNon-Parametric"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#debts-and-sources",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#debts-and-sources",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Debts and Sources",
+    "text": "Debts and Sources\n\n\n\n\n\nFoundations\n\n\n\n\n\n\nG-Computation\n\n\n\n\n\n\nNon-Parametric"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#primary-debts-and-sources",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#primary-debts-and-sources",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Primary Debts and Sources",
+    "text": "Primary Debts and Sources\n\n\n\n\n\nFoundations\n\n\n\n\n\n\nDebiased ML\n\n\n\n\n\n\nNon-Parametric"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#strong-ignorability-and-propensity-scores",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#strong-ignorability-and-propensity-scores",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Strong Ignorability and Propensity Scores",
+    "text": "Strong Ignorability and Propensity Scores\nDefinitions\n\nPotential Outcomes\n\n\\(Y(0)\\) and \\(Y(1)\\) under different treatment regimes \\(T \\in \\{ 0, 1\\}\\)\n\nStrong Ignorability\n\nOutcomes are independent of the treatment assignment given a covariate profile \\(X\\): \\(Y(0), Y(1) \\perp\\!\\!\\!\\perp T | X\\)\n\nPropensity Scores\n\nAn estimate of the probability for a particular treatment status conditional on the covariate profile \\(X\\): \\(0 \\leq p_{t}(X) \\leq 1\\)"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#bart-models-and-non-parametric-estimation",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#bart-models-and-non-parametric-estimation",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "BART Models and Non-Parametric Estimation",
+    "text": "BART Models and Non-Parametric Estimation\n\nBART\n\nBayesian Additive Regression Trees\n“[B]lack-box method based on the sum of many trees where priors are used to regularize inference”\n\nNon-Parametric Estimation\n\nOutcomes and Propensity Scores can be estimated using non-parametric methods\nCausal estimands can be estimated using posterior predictive imputation under different treatment regimes\nBenefit of minimalist structural assumptions."
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#inverse-propensity-score-weighting",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#inverse-propensity-score-weighting",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Inverse Propensity Score Weighting",
+    "text": "Inverse Propensity Score Weighting\n\nAdjustment by representative Weighting\n\nUsing the propensity scores as a summary metric for group membership, we down-weight and upweight the prevalence of high and low propensity score in each group to induce strong ignorability like conditions."
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#robust-and-doubly-robust-weighting-schemes",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#robust-and-doubly-robust-weighting-schemes",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Robust and Doubly Robust Weighting Schemes",
+    "text": "Robust and Doubly Robust Weighting Schemes"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#robust-and-doubly-robust",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#robust-and-doubly-robust",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Robust and Doubly Robust",
+    "text": "Robust and Doubly Robust\nWeighting Schemes"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#robust-and-doubly-robust-methods",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#robust-and-doubly-robust-methods",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Robust and Doubly Robust Methods",
+    "text": "Robust and Doubly Robust Methods\nDiffering Weighting Schemes\n\nRaw\n\n\\(\\sum\\frac{1}{N}\\Big[ Y(1) \\cdot \\frac{1}{p_{T}(X)} - (Y(0)\\cdot\\frac{1}{1-p_{T}(X)}) \\Big]\\)\n\nDoubly Robust\n\n\\[ \\hat{Y(1)} = \\frac{1}{n} \\sum_{0}^{N} \\Bigg[ \\frac{T(Y - m_{1}(X))}{p_{T}(X)} + m_{1}(X) \\Bigg] \\\\ \\hat{Y(0)} = \\frac{1}{n} \\sum_{0}^{N} \\Bigg[ \\frac{(1-T)(Y - m_{0}(X))}{(1-p_{T}(X))} + m_{0}(X) \\Bigg] \\]"
+  },
+  {
+    "objectID": "oss/pymc/bnp.html",
+    "href": "oss/pymc/bnp.html",
+    "title": "Bayesian Non Parametric Causal Inference in PyMC",
+    "section": "",
+    "text": "Bayesian Non Parametric Causal Inference\nIn this project I demonstrated how to fit and use BART propensity score models in the assessment of causal inference questions. We showed the conditions under which these methods work well and an example of where they break down due to overfit. We showed how they could be fixed using debiasing techniques and how appropriate analysis of this case could be achieved using non-parametric mediation analysis.\nThe project culminated in a publication to the official PyMC documentation that can be found online here or downloaded as notebook here\n\n\n\nIreland’s GDP v Peers"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#miscalibrated-propensity-scores",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#miscalibrated-propensity-scores",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Miscalibrated Propensity Scores",
+    "text": "Miscalibrated Propensity Scores\nWhat is the Estimand?\n\n“Each theoretical estimand is linked to an empirical estimand involving only observable quantities (e.g. a difference in means in a population) by assumptions about the relationship between the data we observe and the data we do not.” - Lundberg et al in What is your Estimand\n\n\nQ1. What are we aiming at when we estimate propensity scores for highly granular covariate profiles?\nQ2. What happens when the sample data has no treatment data cases for a particular covariate profile?"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#overfitting",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#overfitting",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Overfitting",
+    "text": "Overfitting\nBART models can achieve perfect Allocation\n\nOverfitting"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#debiasing-machine-learning",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#debiasing-machine-learning",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Debiasing Machine Learning",
+    "text": "Debiasing Machine Learning\n\nK-fold Propensity Estimation"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#cate-estimation",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#cate-estimation",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "CATE Estimation",
+    "text": "CATE Estimation\n\nConditional Average Treatment Effect"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#parametric-mediation",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#parametric-mediation",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Parametric Mediation",
+    "text": "Parametric Mediation\n\nTraditional Model Based Mediation"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#causal-mediation-analysis",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#causal-mediation-analysis",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Causal Mediation Analysis",
+    "text": "Causal Mediation Analysis\nNon-Parametric Estimation\n\nNDE: \\(E[Y(t, M(t^{*})) - Y(t^{*}, M(t^{*}))]\\)\n\nWhich is to say we’re interested in the differences in the imputed outcomes under different treatments, mediated by values for M under a specific treatment regime.\n\nNIE: \\(E[(Y(t, M(t))) - Y(t, M(t^{*}))]\\)\n\nWhich amounts to the imputed differences in the outcome Y due to differences in the treatment regimes which generated the mediation values M.\n\nTE: NDE + NIE"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#conclusion",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#conclusion",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Conclusion",
+    "text": "Conclusion\n### Structural Assumption\n\n\nNon Parametric Causal Inference"
+  },
+  {
+    "objectID": "talks/lbs_non_param_causal/non_param_causal.html#conclusions",
+    "href": "talks/lbs_non_param_causal/non_param_causal.html#conclusions",
+    "title": "Non Parametric Causal Inference with PyMC",
+    "section": "Conclusions",
+    "text": "Conclusions\nStructural Assumptions and Bayesian Inference\n\n\nNon Parametric Causal Inference"
   }
 ]
