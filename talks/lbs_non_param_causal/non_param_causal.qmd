@@ -226,5 +226,13 @@ where $\color{blue}{G}$ is a general stochastic process
 <iframe width="780" height="600" src="https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html#mediation-effects-and-causal-structure" title="ACT 3"></iframe>
 ```
 
-## Conclusions
-### Structural Assumptions and Bayesian Inference
+## Conclusions {.smaller}
+### Structural Beliefs and Bayesian Inference
+
+- Propensity score adjustment reflects the belief in the need for adjustment
+    - It reflects a belief in the adequacy of the propensity score model for achieving balance
+- Doubly Robust methods reflect the belief that either the propensity or outcome model is mispecified. 
+    - But that one outght to be adequatly specified.
+- Debiased ML methods reflect the belief that mis-specification can be corrected by cross-validation
+- Mediation Analysis reflects the belief that the causal influence must be interepreted with particular causal structure.
+- In each case sound inference proceeds as we take steps to adjust our model or the conditions of its assessment as informed by our best beliefs regarding the problem to hand.  
