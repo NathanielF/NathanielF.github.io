@@ -234,6 +234,6 @@ where $\color{blue}{G}$ is a general stochastic process
 - Regression based imputation of treatment effects reflects the belief that covariate controls eliminates selection effects
 - Doubly Robust methods reflect the belief that either the propensity or outcome model is mispecified. 
     - But that one ought to be adequately specified.
-- Debiased ML methods reflect the belief that mis-specification can be corrected by cross-validation
-- Mediation Analysis reflects the belief that the causal influence must be interepreted with particular causal structure.
-- In each case sound inference proceeds as we take steps to adjust our model or the conditions of its assessment as informed by our best beliefs regarding the problem to hand.  
+- Debiased ML methods reflect the belief that mis-specification can be corrected by cross-validation and non-parametric estimation of residuals in FWL theorem
+- Mediation Analysis reflects the belief that the causal influence must be interepreted with particular causal structure to avoid confounding. 
+- __There are no truly Agnostic statistics__:In each case sound inference proceeds as we take steps to adjust our model or the conditions of its assessment as informed by our best beliefs regarding the problem to hand.  
