@@ -13,4 +13,8 @@ In this project I demonstrated how to fit and use BART propensity score models i
 The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html) or downloaded as notebook [here](bayesian_nonparametric_causal.html)
 
 
-![Ireland's GDP v Peers](bnp_cate.png)
+![Conditional Average Treatment Effects of Smoking](bnp_cate.png)
+
+I also recorded a youtube modeling webinair on this topic with [Alex Andorra](https://www.youtube.com/@learningbayesianstatistics8147)
+
+[![Youtube Webinair](snapshot.png)](https://www.youtube.com/watch?v=y9BeOr0AETw&list=PL7RjIaSLWh5lDvhGf6qs_im0fRzOeFN5_ "Learning Bayesian Statistics")

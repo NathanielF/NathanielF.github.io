@@ -4,19 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "88b454cfe5d1a7e4",
+        "id": "ac40ed86ec33785f",
         "type": "tabs",
         "children": [
           {
-            "id": "79214965101271fb",
+            "id": "d041b25e5c8ebdcb",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Philosophy/Thinking about Statistics.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -85,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Philosophy/Thinking about Statistics.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Philosophy/Thinking about Statistics.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Philosophy/Thinking about Statistics.md"
-              }
+              "state": {}
             }
           }
         ]
@@ -146,28 +138,29 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "79214965101271fb",
+  "active": "d041b25e5c8ebdcb",
   "lastOpenFiles": [
+    "Wedding/Three things.html",
+    "Wedding/Three things_files/mediabag",
+    "Wedding/Three things_files",
+    "Wedding/Ceremony.html",
+    "Wedding/Ceremony_files/mediabag",
+    "Wedding/Ceremony_files",
+    "Wedding/Three things.md",
+    "Wedding/Ceremony.md",
+    "Wedding",
     "Philosophy/Thinking about Statistics.html",
     "Philosophy/Thinking about Statistics_files/mediabag",
     "Philosophy/Thinking about Statistics_files",
     "Philosophy/Thinking about Statistics.md",
     "Philosophy/Book - Thinking about Statistics.md",
     "Statistics/Analogies between Missing Data and Causal Inference.md",
-    "Statistics/Analogies between Missing Data and Causal Inference.html",
-    "Statistics/Analogies between Missing Data and Causal Inference_files/mediabag",
-    "Statistics/Analogies between Missing Data and Causal Inference_files",
-    "Philosophy/Book - Thinking about Statistics.html",
-    "Philosophy/Book - Thinking about Statistics_files/mediabag",
-    "Philosophy/Book - Thinking about Statistics_files",
     "Images/predictions_imputations.jpg.md",
     "Images/predictions.md",
-    "Images",
     "predictions.md",
     "Logic/Introduction - Logic Topics.md",
     "Statistics/Images/predictions_imputation.jpg",
     "Intro - Zettelkasten.md",
-    "Statistics/Introduction - Statistics Topics.html",
     "Philosophy/Introduction - Philosophy Topics.md",
     "Statistics/Introduction - Statistics Topics.md",
     "Philosophy/Sorites Paradox and Survival Analysis.md",
