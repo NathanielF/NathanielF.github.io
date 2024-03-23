@@ -424,7 +424,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nNon Parametric Causal Inference with PyMC\n\n\nPropensity Scores, Debiased ML and Causal Mediation\n\n\n\n\nbayesian\n\n\npropensity scores\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nMar 1, 2024\n\n\n4 min\n\n\n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nJan 1, 2024\n\n\n6 min\n\n\n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n8 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 1, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nSep 29, 2023\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nModel Evaluation and Discrete Choice Scenarios\n\n\nBayesian Mixer London\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nMar 23, 2024\n\n\n14 min\n\n\n\n\n\n\n  \n\n\n\n\nNon Parametric Causal Inference with PyMC\n\n\nPropensity Scores, Debiased ML and Causal Mediation\n\n\n\n\nbayesian\n\n\npropensity scores\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nMar 1, 2024\n\n\n4 min\n\n\n\n\n\n\n  \n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nJan 1, 2024\n\n\n6 min\n\n\n\n\n\n\n  \n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n8 min\n\n\n\n\n\n\n  \n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\n\n\nDec 1, 2023\n\n\n13 min\n\n\n\n\n\n\n  \n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n12 min\n\n\n\n\n\n\n  \n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n0 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -588,202 +588,6 @@
     "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nDifferences in Differences\n\n\n\n\n\n\n\ncard-kreuger\n\n\ncausal-inference\n\n\ndiff-in-diff\n\n\n\n\n\n\n\n\n\n\n\nFeb 4, 2023\n\n\n17 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian Estimation and the Histogram Approximation\n\n\n\n\n\n\n\nprobability\n\n\nexperiments\n\n\nbayesian-AB-tests\n\n\nhistogram-trick\n\n\n\n\n\n\n\n\n\n\n\nAug 15, 2022\n\n\n9 min\n\n\n\n\n\n\n  \n\n\n\n\nPsi, Replication and Bayesian Evidence\n\n\n\n\n\n\n\nreplication_crisis\n\n\nbayesian\n\n\nhypothesis_tests\n\n\n\n\n\n\n\n\n\n\n\nAug 1, 2021\n\n\n11 min\n\n\n\n\n\n\n  \n\n\n\n\nGaussian Processes and Inferred Networks\n\n\nThis post describes the idea of spatial correlation outlined using a gaussian process model\n\n\n\n\nprobability\n\n\ninformation\n\n\noptimisation\n\n\nspatial correlation\n\n\ngaussian_process\n\n\n\n\n\n\n\n\n\n\n\nJun 22, 2021\n\n\n7 min\n\n\n\n\n\n\n  \n\n\n\n\nWheat from Chaff: Maximum Entropy and Information\n\n\n\n\n\n\n\nentropy\n\n\ninformation\n\n\njaynes\n\n\npriors\n\n\n\n\n\n\n\n\n\n\n\nMar 22, 2021\n\n\n9 min\n\n\n\n\n\n\n  \n\n\n\n\nBayesian Decisions & Model Comparison\n\n\n\n\n\n\n\nmodel_evaluation\n\n\nlikelihood_ratio_tests\n\n\nloss_ratios\n\n\n\n\n\n\n\n\n\n\n\nMar 22, 2021\n\n\n15 min\n\n\n\n\n\n\n  \n\n\n\n\nTrains, Planes …Utility and Maximum Likelihood\n\n\n\n\n\n\n\nmle\n\n\nrevealed preference\n\n\nlog-likelihood\n\n\nutility\n\n\n\n\n\n\n\n\n\n\n\nFeb 21, 2021\n\n\n15 min\n\n\n\n\n\n\n  \n\n\n\n\nFactor Analysis and Construct Validity in Psychology\n\n\n\n\n\n\n\nconstruct_validity\n\n\nsignificance_tests\n\n\nfactor analysis\n\n\nreplicability\n\n\n\n\n\n\n\n\n\n\n\nJan 22, 2021\n\n\n15 min\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#getting-up",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#getting-up",
-    "title": "Discrete Choice Models in PyMC",
-    "section": "Getting up",
-    "text": "Getting up\n\nTurn off alarm\nGet out of bed"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#types-of-problem-to-solve",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#types-of-problem-to-solve",
-    "title": "Product Choice Models and Subjective Utility",
-    "section": "Types of Problem to Solve",
-    "text": "Types of Problem to Solve\n\nChoice of Policy\nChoice of Brand\nChoice of School\nChoice of Car"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-statistical-model",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-statistical-model",
-    "title": "Discrete Choice Models in PyMC",
-    "section": "Choice: A Statistical Model",
-    "text": "Choice: A Statistical Model\nLet there be five goods described by their cost of installation and operation.\n\\[ \\begin{split} \\begin{pmatrix}\nu_{gc}   \\\\\nu_{gr}   \\\\\nu_{ec}   \\\\\nu_{er}   \\\\\nu_{hp}   \\\\\n\\end{pmatrix} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\nhp_{ic} & hp_{oc}  \\\\\n\\end{pmatrix} \\begin{pmatrix}\n\\beta_{ic}   \\\\\n\\beta_{oc}   \\\\\n\\end{pmatrix}  \\end{split}\n\\]\nWe want to estimate how a linear combination of their attributes determines their utility."
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-statistical-model-1",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-statistical-model-1",
-    "title": "Discrete Choice Models in PyMC",
-    "section": "Choice: A Statistical Model",
-    "text": "Choice: A Statistical Model\nUtility determines choice probability:\n\\[\\text{softmax}(u)_{j} = \\frac{\\exp(u_{j})}{\\sum_{q=1}^{J}\\exp(u_{q})}\\]\nchoices determine market share where:\n\\[ s_{j}(\\mathbf{\\beta}) = P(u_{j} > u_{k}; ∀k ̸= j) \\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-the-data",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-the-data",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Choice: The Data",
-    "text": "Choice: The Data\nGas Central Heating and Electrical Central Heating described by their cost of installation and operation.\n\n\n\nchoice_id\nchosen\nic_gc\noc_gc\n…\noc_ec\n\n\n\n\n1\ngc\n866\n200\n…\n542\n\n\n2\nec\n802\n195\n…\n510\n\n\n3\ner\n759\n203\n…\n495\n\n\n4\ngr\n789\n220\n…\n502"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#a-too-simple-model",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#a-too-simple-model",
-    "title": "Discrete Choice Models in PyMC",
-    "section": "A Too Simple Model",
-    "text": "A Too Simple Model\n\nwith pm.Model(coords=coords) as model_1:\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    ## Construct Utility matrix and Pivot\n    u0 = beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-who-is-choosing",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-who-is-choosing",
-    "title": "Discrete Choice Models in PyMC",
-    "section": "Choice: Who is Choosing?",
-    "text": "Choice: Who is Choosing?\n\nMutually exclusive discrete choice\nMultiple Agents in distinct choice scenarios"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-estimation",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-estimation",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Choice: Estimation",
-    "text": "Choice: Estimation\nThe model is traditionally estimated with maximum likelihood caclulations.\n\\[  L(\\color{blue}{\\beta}) = \\prod s_{j}(\\mathbf{\\color{blue}{\\beta}}) \\]\nor taking the log:\n\\[  l(\\color{blue}{\\beta}) = \\sum log(s_{j}(\\mathbf{\\color{blue}{\\beta}})) \\] \\[ \\text{ We find: } \\underset{\\color{blue}{\\beta}}{\\mathrm{argmax}} \\text{ } l(\\color{blue}{\\beta}) \\]\nResults are often brittle!"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Choice: A Naive Model",
-    "text": "Choice: A Naive Model\nUnderspecified Utilities\nLet there be five goods described by their cost of installation and operation.\n\\[ \\begin{split} \\overbrace{\\begin{pmatrix}\n\\color{green}{u_{gc}}   \\\\\n\\color{green}{u_{gr}}   \\\\\n\\color{green}{u_{ec}}   \\\\\n\\color{green}{u_{er}}   \\\\\n\\color{green}{u_{hp}}   \\\\\n\\end{pmatrix}}^{utility} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\nhp_{ic} & hp_{oc}  \\\\\n\\end{pmatrix} \\overbrace{\\begin{pmatrix}\n\\color{blue}{\\beta_{ic}}   \\\\\n\\color{blue}{\\beta_{oc}}   \\\\\n\\end{pmatrix}}^{parameters}  \\end{split}\n\\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model-1",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model-1",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Choice: A Naive Model",
-    "text": "Choice: A Naive Model\nThe utility calculation is fundamentally comparative. \\[ \\begin{split} \\begin{pmatrix}\n\\color{green}{u_{gc}}   \\\\\n\\color{green}{u_{gr}}   \\\\\n\\color{green}{u_{ec}}   \\\\\n\\color{green}{u_{er}}   \\\\\n\\color{red}{\\overbrace{0}^{\\text{outside good}}}   \\\\\n\\end{pmatrix} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\n\\color{red}{0} & \\color{red}{0} \\\\\n\\end{pmatrix} \\begin{pmatrix}\n\\color{blue}{\\beta_{ic}}   \\\\\n\\color{blue}{\\beta_{oc}}   \\\\\n\\end{pmatrix}  \\end{split}\n\\]\nWe zero out one category in the data set to represent the “outside good” for comparison. Similar to dummy variables in Regression, this is required for the model to be identified."
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#the-naive-model-in-code",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#the-naive-model-in-code",
-    "title": "Choice Models and Subjective Utility",
-    "section": "The Naive Model in Code",
-    "text": "The Naive Model in Code\nwith pm.Model(coords=coords) as model_1:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    ## Construct Utility matrix and Pivot\n    u0 = beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model-2",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-a-naive-model-2",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Choice: A Naive Model",
-    "text": "Choice: A Naive Model\nUtility determines choice probability of choice:\n\\[\\text{softmax}(\\color{green}{u})_{j} = \\frac{\\exp(\\color{green}{u_{j}})}{\\sum_{q=1}^{J}\\exp(\\color{green}{u_{q}})}\\]\nchoices determine market share where:\n\\[ s_{j}(\\mathbf{\\color{blue}{\\beta}}) = P(\\color{green}{u_{j}} > \\color{green}{u_{k}}; ∀k ̸= j) \\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#what-are-we-missing",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#what-are-we-missing",
-    "title": "Discrete Choice Models in PyMC",
-    "section": "What are we missing?",
-    "text": "What are we missing?"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-bayesian-estimation",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#choice-bayesian-estimation",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Choice: Bayesian Estimation",
-    "text": "Choice: Bayesian Estimation\nTo evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]\nPriors can be used flexibly regularise and improve reliability of estimation across structural causal models."
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#does-the-model-fit",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#does-the-model-fit",
-    "title": "Discrete Choice Models in PyMC",
-    "section": "Does the Model Fit?",
-    "text": "Does the Model Fit?"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#interpreting-the-model-coefficients",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#interpreting-the-model-coefficients",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Interpreting the Model Coefficients",
-    "text": "Interpreting the Model Coefficients\nRate of Substitution\n\n\nThe beta coefficients in the model are interpreted as weights of utility. However, the precision in these latent terms is relative to the variance of unobserved factors.\nThe utility scale is not fixed, but the ratio \\(\\frac{\\beta_{ic}}{\\beta_{oc}}\\) is invariant.\n\n\n\n\nRate of Substitution"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#model-posterior-predictive-fits",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#model-posterior-predictive-fits",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Model Posterior Predictive Fits",
-    "text": "Model Posterior Predictive Fits\nThe model fit fails to recapture the observed data points\n\nModel Fit"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-product-specific-intercepts",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-product-specific-intercepts",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Augmenting the Model: Product Specific Intercepts",
-    "text": "Augmenting the Model: Product Specific Intercepts\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Augmenting the Model:",
-    "text": "Augmenting the Model:\nProduct Specific Intercepts\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-1",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-1",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Augmenting the Model:",
-    "text": "Augmenting the Model:\nProduct Specific Intercepts\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-posterior-predictions",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-posterior-predictions",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Augmenting the Model: Posterior Predictions",
-    "text": "Augmenting the Model: Posterior Predictions\n\nModel Fit"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#agenda",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#agenda",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Agenda",
-    "text": "Agenda\n\n\nHistory and Background\n\n\n\n\nA Naive Utilty Model\n\n\n\n\nAn Augmented Model\n\n\n\n\nAdding Correlation Structure\n\n\n\n\nCounterfactual Questions\n\n\n\n\nIndividual Heterogenous Utility\n\n\n\n\nConclusion\n\nThe World in the Model"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Adding Correlation Structure",
-    "text": "Adding Correlation Structure\nDependence in Market Share\n\\[ \\alpha_{i} \\sim Normal(\\mathbf{0}, \\Sigma) \\]\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html",
-    "title": "Discrete Choice Models in PyMC",
-    "section": "",
-    "text": "A Naive Utilty Model\nAn Augmented Model\nAdding Correlation Structure\nCounterfactual Reasoning\nIndividual Heterogenous Utility"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-1",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-1",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Adding Correlation Structure",
-    "text": "Adding Correlation Structure\nDependence in Market Share\n\\[ \\alpha_{i} \\sim Normal(\\mathbf{0}, \\color{brown}{\\Gamma}) \\]\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-2",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-2",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Adding Correlation Structure",
-    "text": "Adding Correlation Structure\nPriors on Parameters determine Market Structure\n\\[ \\begin{split} \\color{brown}{\\Gamma} =\n\\begin{pmatrix}\n  \\color{red}{1} , \\gamma , \\gamma , \\gamma \\\\\n  \\gamma , \\color{blue}{1} , \\gamma , \\gamma  \\\\\n   \\gamma , \\gamma  , \\color{orange}{1} , \\gamma \\\\\n  \\gamma , \\gamma , \\gamma , \\color{teal}{1}  \n\\end{pmatrix}\n\\end{split} \\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Counterfactual Reasoning",
-    "text": "Counterfactual Reasoning\nFrom Probability to Causation\n\n“[C]ontrary to the views of a number of pessimistic statisticians and philosophers you can get from probabilities to causes after all. Not always, not even ussually - but in just the right circumstances and with just the right kind of starting information, it is in principle possible.” - Nancy Cartwright in Nature’s Capacities and their Measurement\n\n\n“One of the functions of theoretical economics is to provide fully articulated artificial economic systems that can serve as laboratories in which policies that would be prohibitively expensive to experiment with in actual economies can be tested out at a much lower cost” - Mary Morgan quoted in Hunting Causes and Using Them"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning-1",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning-1",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Counterfactual Reasoning",
-    "text": "Counterfactual Reasoning\nCeteris Paribus Laws\nWith a fitted PyMC model we can counterfactually reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.\n\nWhat would the market share be like if prices for electrical systems increased 20%?\n\n # update values of predictors with new 20% \n # price increase in operating costs for electrical options\nwith model_3:\n    pm.set_data({\"oc_ec\": wide_heating_df[\"oc.ec\"] * 1.2, \n                 \"oc_er\": wide_heating_df[\"oc.er\"] * 1.2})\n    # use the updated values and predict outcomes and probabilities:\n    idata_new_policy = pm.sample_posterior_predictive(\n        idata_m3,\n        var_names=[\"p\", \"y_cat\"],\n        return_inferencedata=True,\n        predictions=True,\n        extend_inferencedata=False,\n        random_seed=100,\n    )\n\nidata_new_policy"
-  },
-  {
     "objectID": "oss/causalpy/instrumental_variables.html",
     "href": "oss/causalpy/instrumental_variables.html",
     "title": "Bayesian IV Regression in CausalPy",
@@ -791,200 +595,11 @@
     "text": "Instrumental Variable Regression\nIn this project I sought to add the functionality for bayesian instrumental variable analysis to the CausalPy package. I adapted the work of Juan Orduz to contribute the base classes to the package and demonstrated how these classes can be used to esitmate instrumental regression by replicating the results of an Acemologu paper on the efficacy of political institutions. The demonstration can be seen here\n\n\n\nComparison with OLS"
   },
   {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#mcfadden-and-bart",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#mcfadden-and-bart",
-    "title": "Choice Models and Subjective Utility",
-    "section": "McFadden and BART",
-    "text": "McFadden and BART\n\n\n\n\n“Transport projects involve sinking money in expensive capital investments, which have a long life and wide repercussions. There is no escape from the attempt both to estimate the demand for their services over twenty or thirty years and to assess their repercussions on the economy as a whole.” - Denys Munby, Transport, 1968 ”\n\n\n\n\n\n\n\nBay Area Rapid Transit\n\n\n\n\n\nDublin Metrolink"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#reveal-preference-and-predicting-demand",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#reveal-preference-and-predicting-demand",
-    "title": "Product Choice Models and Subjective Utility",
-    "section": "Reveal Preference and Predicting Demand",
-    "text": "Reveal Preference and Predicting Demand\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their subjective utility for A is greater than for B.\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\nHe was right.\nCopernican Shift: He estimated utility to predict choice."
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#general-applicability-of-choice-problems",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#general-applicability-of-choice-problems",
-    "title": "Choice Models and Subjective Utility",
-    "section": "General Applicability of Choice Problems",
-    "text": "General Applicability of Choice Problems\n\n\nThese models offer the possibility of predicting choice in diverse domains: policy, brand, school, car and partners.\n\n\n\n\nQuestion: What are the attributes that drive these choices? How well are they measurable?\n\n\n\n\nQuestion: How do changes in these attributes influence the predicted market demand for these choices?"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#revealed-preference-and-predicting-demand",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#revealed-preference-and-predicting-demand",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Revealed Preference and Predicting Demand",
-    "text": "Revealed Preference and Predicting Demand\nSelf Centred Utility Maximisers?\n\n\n\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their latent subjective utility for A is greater than for B.\n\n\n\n\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\n\n\n\n\nHe was right.\n\n\n\n\n\n\nCopernican Shift: He estimated utility to predict choice, rather than infer utility from stated choice."
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Individual Heterogenous Utility",
-    "text": "Individual Heterogenous Utility\nRepeated Choice and Hierarchical Structure\n\n\n\nperson_id\nchoice_id\nchosen\nnabisco_price\nkeebler_price\n\n\n\n\n1\n1\nnabisco\n3.40\n2.00\n\n\n1\n2\nnabisco\n3.45\n2.50\n\n\n1\n3\nkeebler\n3.60\n2.70\n\n\n2\n1\nkeebler\n3.48\n2.20\n\n\n2\n2\nkeebler\n3.30\n2.25"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning-2",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning-2",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Counterfactual Reasoning",
-    "text": "Counterfactual Reasoning\n\nCounterfactual Shares"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-2",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-2",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Augmenting the Model:",
-    "text": "Augmenting the Model:\nwith pm.Model(coords=coords) as model_2:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n\n    ## Construct Utility matrix and Pivot using an intercept per alternative\n    u0 = alphas[0] + beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = alphas[1] + beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = alphas[2] + beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = alphas[3] + beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-3",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-3",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Augmenting the Model:",
-    "text": "Augmenting the Model:\n\nModel Structure"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#self-centred-utility",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#self-centred-utility",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Self-centred Utility",
-    "text": "Self-centred Utility\n\ncoperincon"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-1",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-1",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Individual Heterogenous Utility",
-    "text": "Individual Heterogenous Utility\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{i, nb}} \\\\\n\\color{purple}{u_{i, kb}} \\\\\n\\color{orange}{u_{i, sun}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  (\\color{red}{\\alpha_{nb}} + \\beta_{i}) + \\color{blue}{\\beta_{p}}p_{nb} + \\color{green}{\\beta_{disp}}d_{nb} \\\\\n  (\\color{purple}{\\alpha_{kb}} + \\beta_{i}) +  \\color{blue}{\\beta_{p}}p_{kb} + \\color{green}{\\beta_{disp}}d_{kb}  \\\\\n  (\\color{orange}{\\alpha_{sun}}  + \\beta_{i})  + \\color{blue}{\\beta_{p}}p_{sun} + \\color{green}{\\beta_{disp}}d_{sun}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-2",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-2",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Individual Heterogenous Utility",
-    "text": "Individual Heterogenous Utility\nIn Code\n\nwith pm.Model(coords=coords) as model_4:\n    beta_feat = pm.TruncatedNormal(\"beta_feat\", 0, 1, upper=10, lower=0)\n    beta_disp = pm.TruncatedNormal(\"beta_disp\", 0, 1, upper=10, lower=0)\n    ## Stronger Prior on Price to ensure \n    ## an increase in price negatively impacts utility\n    beta_price = pm.TruncatedNormal(\"beta_price\", 0, 1, upper=0, lower=-10)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n    beta_individual = pm.Normal(\"beta_individual\", 0, 0.05,\n     dims=(\"individuals\", \"alts_intercepts\"))\n\n    u0 = (\n        (alphas[0] + beta_individual[person_indx, 0])\n        + beta_disp * c_df[\"disp.sunshine\"]\n        + beta_feat * c_df[\"feat.sunshine\"]\n        + beta_price * c_df[\"price.sunshine\"]\n    )\n    u1 = (\n        (alphas[1] + beta_individual[person_indx, 1])\n        + beta_disp * c_df[\"disp.keebler\"]\n        + beta_feat * c_df[\"feat.keebler\"]\n        + beta_price * c_df[\"price.keebler\"]\n    )\n    u2 = (\n        (alphas[2] + beta_individual[person_indx, 2])\n        + beta_disp * c_df[\"disp.nabisco\"]\n        + beta_feat * c_df[\"feat.nabisco\"]\n        + beta_price * c_df[\"price.nabisco\"]\n    )\n    u3 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3]).T\n    # Reconstruct the total data\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning-3",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#counterfactual-reasoning-3",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Counterfactual Reasoning",
-    "text": "Counterfactual Reasoning\nInterventions and Conditionalisation\n\n\n\nThere is a sharp distinction between conditional probability distributions and probability under intervention\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process."
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-3",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-3",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Individual Heterogenous Utility",
-    "text": "Individual Heterogenous Utility\nRecovered Posterior Predictive Distribution"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-4",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#individual-heterogenous-utility-4",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Individual Heterogenous Utility",
-    "text": "Individual Heterogenous Utility\nIndividual Preference\n\n\n\n\n\nIndividual preferences can be derived from the model in this manner.\nThe relationship between preferences over the product offering can be seen too"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-bayesian-models",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-bayesian-models",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Note on Evaluating Bayesian Models",
-    "text": "Note on Evaluating Bayesian Models"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#conclusion",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#conclusion",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Conclusion",
-    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels articulate the relevant structure of the world.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Note on Evaluating Models",
-    "text": "Note on Evaluating Models"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models-1",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-evaluating-models-1",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Note on Evaluating Models",
-    "text": "Note on Evaluating Models\n\n\n\n\n\n\n\n\n\n\nBayesian Models aim to replicate the DGP holistically"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-model-evaluation",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-model-evaluation",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Note on Model Evaluation",
-    "text": "Note on Model Evaluation\nReplicating the Super Soldier Program"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-model-evaluation-1",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#note-on-model-evaluation-1",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Note on Model Evaluation",
-    "text": "Note on Model Evaluation\nReplicating the Super Soldier Program\n\n\n\n\n\n\n\n\n\n\nBayesian Models aim to replicate the DGP holistically"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-4",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#augmenting-the-model-4",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Augmenting the Model",
-    "text": "Augmenting the Model\nPosterior Predictions\n\nModel Fit"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#independence-of-irrelevant-alternatives",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#independence-of-irrelevant-alternatives",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Independence of Irrelevant Alternatives",
-    "text": "Independence of Irrelevant Alternatives\nNew Products Cannibalise Equally from all Alternatives\n\nSuppose a market choice between transport modes is determined by the above model.\nRed Bus or Car are you initial Options. Assume \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta)\\). Market Share is 50% to each option.\nIntroduce the Blue Bus Option, then the Independent characteristics of the utility specification implies that \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta) = s_{\\color{blue}{bus}}(\\beta)\\)\nThis implies an implausible substitution pattern for real markets.1\n\nWhat kind of Monster have we Created!?"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#products-cannibalise-equally-from-all-alternatives",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#products-cannibalise-equally-from-all-alternatives",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Products Cannibalise Equally from all Alternatives",
-    "text": "Products Cannibalise Equally from all Alternatives"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#discrete-choice",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#discrete-choice",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Discrete Choice",
-    "text": "Discrete Choice\n\n\n\n\n\n\nI am not an Economist\n\n\n\nI’m a data scientist at Personio, where we work on cool problems ranging across: revenue optimisation, customer churn, experimentation, survey design and people analytics at scale.\nI’m a Bayesian Statistician and a reformed philosopher.\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#preliminaries",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#preliminaries",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Preliminaries",
-    "text": "Preliminaries\n\n\n\n\n\n\nI am not an Economist\n\n\n\nI’m a data scientist at Personio - where we work on cool problems ranging across themes of:\n\nrevenue optimisation\ncustomer churn\nexperimentation\nsurvey design\nproduct analytics\n\nAlso a Bayesian statistician, reformed philosopher and logician.\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here"
-  },
-  {
     "objectID": "oss/bambi/mr_p.html",
     "href": "oss/bambi/mr_p.html",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "",
     "text": "Regression as Stratification\nIn this project I sought to understand the procedure of post-stratification adjustment used in election forecasting and regression modelling of the same. I published the documentation for the technique of using Multilevel Regression and post-stratification (MrP) with the bambi package here. In this work i tried to elaborate precisely how and why the careful modeller would want to make stratum specific adjustments to the predictions of regression models.\nI adapted the work of Martin, Philips and Gelmen’s “Multilevel Regression and Poststratification Case Studies” that can be found here. You can download the worked example here\n\n\n\nComparison with OLS"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-3",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-3",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Adding Correlation Structure",
-    "text": "Adding Correlation Structure\nwith pm.Model(coords=coords) as model_3:\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    beta_income = pm.Normal(\"beta_income\", 0, 1 dims=\"alts_intercepts\")\n\n    chol, corr, stds = pm.LKJCholeskyCov(\n        \"chol\", n=4, eta=2.0, \n        sd_dist=pm.Exponential.dist(1.0, shape=4)\n    )\n    alphas = pm.MvNormal(\"alpha\", mu=0, chol=chol, dims=\"alts_intercepts\")\n\n    u0 = (\n        alphas[0]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[0] * wide_heating_df[\"income\"]\n    )\n    u1 = (\n        alphas[1]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[1] * wide_heating_df[\"income\"]\n    )\n    u2 = (\n        alphas[2]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[2] * wide_heating_df[\"income\"]\n    )\n    u3 = (\n        alphas[3]\n        + beta_ic * wide_heating_df[\"ic.gr\"]\n        + beta_oc * wide_heating_df[\"oc.gr\"]\n        + beta_income[3] * wide_heating_df[\"income\"]\n    )\n    u4 = np.zeros(N)  # pivot\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
-  },
-  {
-    "objectID": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-4",
-    "href": "talks/utility_and_choice/discrete_choice_and_utility.html#adding-correlation-structure-4",
-    "title": "Choice Models and Subjective Utility",
-    "section": "Adding Correlation Structure",
-    "text": "Adding Correlation Structure\n\nCorrelation Structure"
   },
   {
     "objectID": "talks/pycon_ireland/pycon_ireland_discrete.html#preliminaries",
@@ -2412,6 +2027,265 @@
     "href": "notes/certain_things/Wedding/Three things.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Three Things to Discuss\nI think the three things should add detail that evokes concrete imagery and raises an element of depth unexplored - hinting at a tapestry of connections between aspects of her character that only we share….\n\nPassion\nCourage\nJoy\n\n\n\nPassion\nHer fierce anger about poor urban planning and misuse or the urban realm\n\n\nCourage\nHer stubborn no nonsense determination to progress a problem even when overwhelmed at each step forward.\n\n\nJoy\nThe cascade of smiles rising across her cheeks when watching Wyatt discover something new."
+    "text": "I think the three things should add detail that evokes concrete imagery and raises an element of depth unexplored - hinting at a tapestry of connections between aspects of her character that only we share….\n\nPassion\nCourage\nJoy"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#preliminaries",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#preliminaries",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Preliminaries",
+    "text": "Preliminaries\n\n\n\n\n\n\nI am not an Economist\n\n\n\nI’m a data scientist at Personio - where we work on cool problems ranging across themes of:\n\nrevenue optimisation\ncustomer churn\nexperimentation\nsurvey design\nproduct analytics\n\nBayesian statistician, reformed philosopher and logician.\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#agenda",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#agenda",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Agenda",
+    "text": "Agenda\n\n\nHistory and Conceptual Background\n\n\n\n\nA Naive Utilty Model\n\n\n\n\nAn Augmented Model\n\n\n\n\nAdding Correlation Structure\n\n\n\n\nCounterfactual Questions\n\n\n\n\nIndividual Heterogenous Utility\n\n\n\n\nConclusion\n\nThe World in the Model"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#mcfadden-and-bart",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#mcfadden-and-bart",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "McFadden and BART",
+    "text": "McFadden and BART\n\n\n\n\n“Transport projects involve sinking money in expensive capital investments, which have a long life and wide repercussions. There is no escape from the attempt both to estimate the demand for their services over twenty or thirty years and to assess their repercussions on the economy as a whole.” - Denys Munby, Transport, 1968 ”\n\n\n\n\n\n\n\nBay Area Rapid Transit\n\n\n\n\n\nDublin Metrolink"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#revealed-preference-and-predicting-demand",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#revealed-preference-and-predicting-demand",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Revealed Preference and Predicting Demand",
+    "text": "Revealed Preference and Predicting Demand\nSelf Centred Utility Maximisers?\n\n\n\n\nThe assumption of revealed preference theory is that if a person chooses A over B then their latent subjective utility for A is greater than for B.\n\n\n\n\nSurvey data estimated about 15% of users would adopt the newly introduced BART system. McFadden’s random utility model estimated 6%.\n\n\n\n\nHe was right.\n\n\n\n\n\n\nCopernican Shift: He estimated utility to predict choice, rather than infer utility from stated choice."
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#general-applicability-of-choice-problems",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#general-applicability-of-choice-problems",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "General Applicability of Choice Problems",
+    "text": "General Applicability of Choice Problems\n\n\nThese models offer the possibility of predicting choice in diverse domains: policy, brand, school, car and partners.\n\n\n\n\nQuestion: What are the attributes that drive these choices? How well are they measurable?\n\n\n\n\nQuestion: How do changes in these attributes influence the predicted market demand for these choices?"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#note-on-model-evaluation",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#note-on-model-evaluation",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Note on Model Evaluation",
+    "text": "Note on Model Evaluation\nReplicating the Super Soldier Program"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#note-on-model-evaluation-1",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#note-on-model-evaluation-1",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Note on Model Evaluation",
+    "text": "Note on Model Evaluation\nReplicating the Super Soldier Program\n\n\n\n\n\n\n\n\n\n\nBayesian Models aim to replicate the DGP holistically"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-the-data",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-the-data",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Choice: The Data",
+    "text": "Choice: The Data\nGas Central Heating and Electrical Central Heating described by their cost of installation and operation.\n\n\n\nchoice_id\nchosen\nic_gc\noc_gc\n…\noc_ec\n\n\n\n\n1\ngc\n866\n200\n…\n542\n\n\n2\nec\n802\n195\n…\n510\n\n\n3\ner\n759\n203\n…\n495\n\n\n4\ngr\n789\n220\n…\n502"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-a-naive-model",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-a-naive-model",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Choice: A Naive Model",
+    "text": "Choice: A Naive Model\nUnderspecified Utilities\nLet there be five goods described by their cost of installation and operation.\n\\[ \\begin{split} \\overbrace{\\begin{pmatrix}\n\\color{green}{u_{gc}}   \\\\\n\\color{green}{u_{gr}}   \\\\\n\\color{green}{u_{ec}}   \\\\\n\\color{green}{u_{er}}   \\\\\n\\color{green}{u_{hp}}   \\\\\n\\end{pmatrix}}^{utility} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\nhp_{ic} & hp_{oc}  \\\\\n\\end{pmatrix} \\overbrace{\\begin{pmatrix}\n\\color{blue}{\\beta_{ic}}   \\\\\n\\color{blue}{\\beta_{oc}}   \\\\\n\\end{pmatrix}}^{parameters}  \\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-a-naive-model-1",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-a-naive-model-1",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Choice: A Naive Model",
+    "text": "Choice: A Naive Model\nThe utility calculation is fundamentally comparative. \\[ \\begin{split} \\begin{pmatrix}\n\\color{green}{u_{gc}}   \\\\\n\\color{green}{u_{gr}}   \\\\\n\\color{green}{u_{ec}}   \\\\\n\\color{green}{u_{er}}   \\\\\n\\color{red}{\\overbrace{0}^{\\text{outside good}}}   \\\\\n\\end{pmatrix} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\n\\color{red}{0} & \\color{red}{0} \\\\\n\\end{pmatrix} \\begin{pmatrix}\n\\color{blue}{\\beta_{ic}}   \\\\\n\\color{blue}{\\beta_{oc}}   \\\\\n\\end{pmatrix}  \\end{split}\n\\]\nWe zero out one category in the data set to represent the “outside good” for comparison. Similar to dummy variables in Regression, this is required for the model to be identified."
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-a-naive-model-2",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-a-naive-model-2",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Choice: A Naive Model",
+    "text": "Choice: A Naive Model\nUtility determines choice probability of choice:\n\\[\\text{softmax}(\\color{green}{u})_{j} = \\frac{\\exp(\\color{green}{u_{j}})}{\\sum_{q=1}^{J}\\exp(\\color{green}{u_{q}})}\\]\nchoices determine market share where:\n\\[ s_{j}(\\mathbf{\\color{blue}{\\beta}}) = P(\\color{green}{u_{j}} > \\color{green}{u_{k}}; ∀k ̸= j) \\]"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-estimation",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-estimation",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Choice: Estimation",
+    "text": "Choice: Estimation\nThe model is traditionally estimated with maximum likelihood caclulations.\n\\[  L(\\color{blue}{\\beta}) = \\prod s_{j}(\\mathbf{\\color{blue}{\\beta}}) \\]\nor taking the log:\n\\[  l(\\color{blue}{\\beta}) = \\sum log(s_{j}(\\mathbf{\\color{blue}{\\beta}})) \\] \\[ \\text{ We find: } \\underset{\\color{blue}{\\beta}}{\\mathrm{argmax}} \\text{ } l(\\color{blue}{\\beta}) \\]\nResults are often brittle!"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-bayesian-estimation",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#choice-bayesian-estimation",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Choice: Bayesian Estimation",
+    "text": "Choice: Bayesian Estimation\nTo evaluate the integrals in the Bayesian model we use MCMC to estimate conditional probabilities of the joint distribution.\n\\[\\underbrace{\\color{blue}{\\beta}}_{\\text{prior draws}} \\sim Normal(0, 1) \\]\n\\[ \\underbrace{p(\\color{blue}{\\beta} | D)}_{\\text{posterior draws}} = \\frac{p(\\mathbb{\\color{blue}{\\beta}})p(D | \\color{blue}{\\beta} )}{\\int_{i}^{n} p(D | \\mathbf{\\color{blue}{\\beta_{i}}})p(\\mathbf{\\color{blue}{\\beta_{i}}}) } \\]\nPriors can be used flexibly regularise and improve reliability of estimation across structural causal models."
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#the-naive-model-in-code",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#the-naive-model-in-code",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "The Naive Model in Code",
+    "text": "The Naive Model in Code\nwith pm.Model(coords=coords) as model_1:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    ## Construct Utility matrix and Pivot\n    u0 = beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#interpreting-the-model-coefficients",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#interpreting-the-model-coefficients",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Interpreting the Model Coefficients",
+    "text": "Interpreting the Model Coefficients\nRate of Substitution\n\n\nThe beta coefficients in the model are interpreted as weights of utility. However, the precision in these latent terms is relative to the variance of unobserved factors.\nThe utility scale is not fixed, but the ratio \\(\\frac{\\beta_{ic}}{\\beta_{oc}}\\) is invariant.\n\n\n\n\nRate of Substitution"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#model-posterior-predictive-fits",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#model-posterior-predictive-fits",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Model Posterior Predictive Fits",
+    "text": "Model Posterior Predictive Fits\nThe model fit fails to recapture the observed data points\n\nModel Fit"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#augmenting-the-model-1",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#augmenting-the-model-1",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Augmenting the Model:",
+    "text": "Augmenting the Model:\nProduct Specific Intercepts\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#augmenting-the-model-2",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#augmenting-the-model-2",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Augmenting the Model:",
+    "text": "Augmenting the Model:\nwith pm.Model(coords=coords) as model_2:\n    ## Priors for the Beta Coefficients\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n\n    ## Construct Utility matrix and Pivot using an intercept per alternative\n    u0 = alphas[0] + beta_ic * wide_heating_df[\"ic.ec\"] + beta_oc * wide_heating_df[\"oc.ec\"]\n    u1 = alphas[1] + beta_ic * wide_heating_df[\"ic.er\"] + beta_oc * wide_heating_df[\"oc.er\"]\n    u2 = alphas[2] + beta_ic * wide_heating_df[\"ic.gc\"] + beta_oc * wide_heating_df[\"oc.gc\"]\n    u3 = alphas[3] + beta_ic * wide_heating_df[\"ic.gr\"] + beta_oc * wide_heating_df[\"oc.gr\"]\n    u4 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#augmenting-the-model-3",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#augmenting-the-model-3",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Augmenting the Model:",
+    "text": "Augmenting the Model:\n\nModel Structure"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#augmenting-the-model-4",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#augmenting-the-model-4",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Augmenting the Model",
+    "text": "Augmenting the Model\nPosterior Predictions\n\nModel Fit"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#independence-of-irrelevant-alternatives",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#independence-of-irrelevant-alternatives",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Independence of Irrelevant Alternatives",
+    "text": "Independence of Irrelevant Alternatives\nNew Products Cannibalise Equally from all Alternatives\n\nSuppose a market choice between transport modes is determined by the above model.\nRed Bus or Car are you initial Options. Assume \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta)\\). Market Share is 50% to each option.\nIntroduce the Blue Bus Option, then the Independent characteristics of the utility specification implies that \\(s_{\\color{red}{bus}}(\\beta) = s_{car}(\\beta) = s_{\\color{blue}{bus}}(\\beta)\\)\nThis implies an implausible substitution pattern for real markets.1\n\nWhat kind of Monster have we Created!?"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#adding-correlation-structure-1",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#adding-correlation-structure-1",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\nDependence in Market Share\n\\[ \\alpha_{i} \\sim Normal(\\mathbf{0}, \\color{brown}{\\Gamma}) \\]\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{gc}} \\\\\n\\color{purple}{u_{gr}} \\\\\n\\color{orange}{u_{ec}} \\\\\n\\color{teal}{u_{er}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  \\color{red}{\\alpha_{gc}} + \\color{blue}{\\beta_{ic}}gc_{ic} + \\color{blue}{\\beta_{oc}}gc_{oc} \\\\\n  \\color{purple}{\\alpha_{gr}} + \\color{blue}{\\beta_{ic}}gr_{ic} + \\color{blue}{\\beta_{oc}}gr_{oc}  \\\\\n  \\color{orange}{\\alpha_{ec}} + \\color{blue}{\\beta_{ic}}ec_{ic} + \\color{blue}{\\beta_{oc}}ec_{oc}  \\\\\n  \\color{teal}{\\alpha_{er}} + \\color{blue}{\\beta_{ic}}er_{ic} + \\color{blue}{\\beta_{oc}}er_{oc}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#adding-correlation-structure-2",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#adding-correlation-structure-2",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\nPriors on Parameters determine Market Structure\n\\[ \\begin{split} \\color{brown}{\\Gamma} =\n\\begin{pmatrix}\n  \\color{red}{1} , \\gamma , \\gamma , \\gamma \\\\\n  \\gamma , \\color{blue}{1} , \\gamma , \\gamma  \\\\\n   \\gamma , \\gamma  , \\color{orange}{1} , \\gamma \\\\\n  \\gamma , \\gamma , \\gamma , \\color{teal}{1}  \n\\end{pmatrix}\n\\end{split} \\]"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#adding-correlation-structure-3",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#adding-correlation-structure-3",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\nwith pm.Model(coords=coords) as model_3:\n    beta_ic = pm.Normal(\"beta_ic\", 0, 1)\n    beta_oc = pm.Normal(\"beta_oc\", 0, 1)\n\n    beta_income = pm.Normal(\"beta_income\", 0, 1 dims=\"alts_intercepts\")\n\n    chol, corr, stds = pm.LKJCholeskyCov(\n        \"chol\", n=4, eta=2.0, \n        sd_dist=pm.Exponential.dist(1.0, shape=4)\n    )\n    alphas = pm.MvNormal(\"alpha\", mu=0, chol=chol, dims=\"alts_intercepts\")\n\n    u0 = (\n        alphas[0]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[0] * wide_heating_df[\"income\"]\n    )\n    u1 = (\n        alphas[1]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[1] * wide_heating_df[\"income\"]\n    )\n    u2 = (\n        alphas[2]\n        + beta_ic * wide_heating_df[\"ic.gc\"]\n        + beta_oc * wide_heating_df[\"oc.gc\"]\n        + beta_income[2] * wide_heating_df[\"income\"]\n    )\n    u3 = (\n        alphas[3]\n        + beta_ic * wide_heating_df[\"ic.gr\"]\n        + beta_oc * wide_heating_df[\"oc.gr\"]\n        + beta_income[3] * wide_heating_df[\"income\"]\n    )\n    u4 = np.zeros(N)  # pivot\n    s = pm.math.stack([u0, u1, u2, u3, u4]).T\n\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#adding-correlation-structure-4",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#adding-correlation-structure-4",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Adding Correlation Structure",
+    "text": "Adding Correlation Structure\n\nCorrelation Structure"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#counterfactual-reasoning",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#counterfactual-reasoning",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\nFrom Probability to Causation\n\n“[C]ontrary to the views of a number of pessimistic statisticians and philosophers you can get from probabilities to causes after all. Not always, not even ussually - but in just the right circumstances and with just the right kind of starting information, it is in principle possible.” - Nancy Cartwright in Nature’s Capacities and their Measurement\n\n\n“One of the functions of theoretical economics is to provide fully articulated artificial economic systems that can serve as laboratories in which policies that would be prohibitively expensive to experiment with in actual economies can be tested out at a much lower cost” - Mary Morgan quoted in Hunting Causes and Using Them"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#counterfactual-reasoning-1",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#counterfactual-reasoning-1",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\nCeteris Paribus Laws\nWith a fitted PyMC model we can counterfactually reset the values for the input data and regenerate the posterior predictive distribution holding else equal in the data generating process.\n\nWhat would the market share be like if prices for electrical systems increased 20%?\n\n # update values of predictors with new 20% \n # price increase in operating costs for electrical options\nwith model_3:\n    pm.set_data({\"oc_ec\": wide_heating_df[\"oc.ec\"] * 1.2, \n                 \"oc_er\": wide_heating_df[\"oc.er\"] * 1.2})\n    # use the updated values and predict outcomes and probabilities:\n    idata_new_policy = pm.sample_posterior_predictive(\n        idata_m3,\n        var_names=[\"p\", \"y_cat\"],\n        return_inferencedata=True,\n        predictions=True,\n        extend_inferencedata=False,\n        random_seed=100,\n    )\n\nidata_new_policy"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#counterfactual-reasoning-2",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#counterfactual-reasoning-2",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\n\nCounterfactual Shares"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#counterfactual-reasoning-3",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#counterfactual-reasoning-3",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Counterfactual Reasoning",
+    "text": "Counterfactual Reasoning\nInterventions and Conditionalisation\n\n\n\nThere is a sharp distinction between conditional probability distributions and probability under intervention\nIn PyMC you can implement the do-operator to intervene on the graph that represents your data generating process."
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\nRepeated Choice and Hierarchical Structure\n\n\n\nperson_id\nchoice_id\nchosen\nnabisco_price\nkeebler_price\n\n\n\n\n1\n1\nnabisco\n3.40\n2.00\n\n\n1\n2\nnabisco\n3.45\n2.50\n\n\n1\n3\nkeebler\n3.60\n2.70\n\n\n2\n1\nkeebler\n3.48\n2.20\n\n\n2\n2\nkeebler\n3.30\n2.25"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility-1",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility-1",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\n\\[\n\\begin{split}\n\\begin{pmatrix}\n\\color{red}{u_{i, nb}} \\\\\n\\color{purple}{u_{i, kb}} \\\\\n\\color{orange}{u_{i, sun}} \\\\\n0\n\\end{pmatrix}\n=\n\\begin{pmatrix}\n  (\\color{red}{\\alpha_{nb}} + \\beta_{i}) + \\color{blue}{\\beta_{p}}p_{nb} + \\color{green}{\\beta_{disp}}d_{nb} \\\\\n  (\\color{purple}{\\alpha_{kb}} + \\beta_{i}) +  \\color{blue}{\\beta_{p}}p_{kb} + \\color{green}{\\beta_{disp}}d_{kb}  \\\\\n  (\\color{orange}{\\alpha_{sun}}  + \\beta_{i})  + \\color{blue}{\\beta_{p}}p_{sun} + \\color{green}{\\beta_{disp}}d_{sun}  \\\\\n   0 + 0 + 0\n\\end{pmatrix}\n\\end{split}\n\\]"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility-2",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility-2",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\nIn Code\n\nwith pm.Model(coords=coords) as model_4:\n    beta_feat = pm.TruncatedNormal(\"beta_feat\", 0, 1, upper=10, lower=0)\n    beta_disp = pm.TruncatedNormal(\"beta_disp\", 0, 1, upper=10, lower=0)\n    ## Stronger Prior on Price to ensure \n    ## an increase in price negatively impacts utility\n    beta_price = pm.TruncatedNormal(\"beta_price\", 0, 1, upper=0, lower=-10)\n    alphas = pm.Normal(\"alpha\", 0, 1, dims=\"alts_intercepts\")\n    beta_individual = pm.Normal(\"beta_individual\", 0, 0.05,\n     dims=(\"individuals\", \"alts_intercepts\"))\n\n    u0 = (\n        (alphas[0] + beta_individual[person_indx, 0])\n        + beta_disp * c_df[\"disp.sunshine\"]\n        + beta_feat * c_df[\"feat.sunshine\"]\n        + beta_price * c_df[\"price.sunshine\"]\n    )\n    u1 = (\n        (alphas[1] + beta_individual[person_indx, 1])\n        + beta_disp * c_df[\"disp.keebler\"]\n        + beta_feat * c_df[\"feat.keebler\"]\n        + beta_price * c_df[\"price.keebler\"]\n    )\n    u2 = (\n        (alphas[2] + beta_individual[person_indx, 2])\n        + beta_disp * c_df[\"disp.nabisco\"]\n        + beta_feat * c_df[\"feat.nabisco\"]\n        + beta_price * c_df[\"price.nabisco\"]\n    )\n    u3 = np.zeros(N)  # Outside Good\n    s = pm.math.stack([u0, u1, u2, u3]).T\n    # Reconstruct the total data\n\n    ## Apply Softmax Transform\n    p_ = pm.Deterministic(\"p\", pm.math.softmax(s, axis=1), dims=(\"obs\", \"alts_probs\"))\n\n    ## Likelihood\n    choice_obs = pm.Categorical(\"y_cat\", p=p_, observed=observed, dims=\"obs\")"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility-3",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility-3",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\nRecovered Posterior Predictive Distribution"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility-4",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#individual-heterogenous-utility-4",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Individual Heterogenous Utility",
+    "text": "Individual Heterogenous Utility\nIndividual Preference\n\n\n\n\n\nIndividual preferences can be derived from the model in this manner.\nThe relationship between preferences over the product offering can be seen too"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html#conclusion",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html#conclusion",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "Conclusion",
+    "text": "Conclusion\nThe World in the Model\nWe’ve seen a series of models, each one expanding on the last.\n\nModels should articulate the relevant structure of the world.\nThey serve as microscopes. Simulation systems are tools to interrogate reality.\nBayesian Conditionalisation calibrates the system against the observed facts.\nBayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.\nPyMC enables us to easily build and experiment with those models.\nCausal inference is plausible to degree that we can defend the structural assumptions. Bayesian models enforce tranparency and justification of structural commitments.\n\n\n“Models… [are] like sonnets for the poet, [a] means to express accounts of life in exact, short form using languages that may easily abstract or analogise, and involve imaginative choices and even a certain degree of playfulness in expression” - Mary Morgan in The World in the Model\n\n\n\n\nDiscrete Choice with PyMC"
+  },
+  {
+    "objectID": "talks/bayesian_mixer/bayesian_mixer_london.html",
+    "href": "talks/bayesian_mixer/bayesian_mixer_london.html",
+    "title": "Model Evaluation and Discrete Choice Scenarios",
+    "section": "",
+    "text": "I am not an Economist\n\n\n\n\nI’m a data scientist at Personio - where we work on cool problems ranging across themes of:\n\nrevenue optimisation\ncustomer churn\nexperimentation\nsurvey design\nproduct analytics\n\nBayesian statistician, reformed philosopher and logician.\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\n\nThe worked examples used here can be found here"
+  },
+  {
+    "objectID": "notes/certain_things/Wedding/Three things.html#razor-sharp",
+    "href": "notes/certain_things/Wedding/Three things.html#razor-sharp",
+    "title": "Examined Algorithms",
+    "section": "Razor Sharp",
+    "text": "Razor Sharp\nMind like a diamond.\n\nJoy\nThe cascade of smiles rising across her cheeks when watching Wyatt burgeoning pride of discovering the next new thing."
   }
 ]

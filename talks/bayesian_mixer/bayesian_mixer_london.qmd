@@ -1,6 +1,6 @@
 ---
-title: "Choice Models and Subjective Utility"
-subtitle: "Dublin Data Science"
+title: "Model Evaluation and Discrete Choice Scenarios"
+subtitle: "Bayesian Mixer London"
 author: 
     - name: Nathaniel Forde
       affiliations: 
@@ -14,7 +14,6 @@ format:
 categories: [bayesian, discrete choice]
 image: "images/individual_heterogeniety.png"
 date: last-modified
-draft: True
 ---
 
 ## Preliminaries {.smaller}
@@ -27,7 +26,7 @@ draft: True
     - experimentation 
     - survey design
     - product analytics
-- Also a Bayesian statistician, reformed philosopher and logician. 
+- Bayesian statistician, reformed philosopher and logician. 
 - Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
 :::
  
@@ -42,10 +41,15 @@ None of Personio's data was used in this presentation
 The worked examples used here can be found [here](https://www.pymc.io/projects/examples/en/latest/generalized_linear_models/GLM-discrete-choice_models.html)
 :::
 
+# The Pitch
+Predictive Models are inadequate decision making tools in product demand analysis. 
+
+Accept __no substitutes__ for bayesian discrete choice models and causal inference. 
+
 
 ## Agenda
 ::: {.fragment .fade-in}
-- History and Background
+- History and Conceptual Background
 ::: 
 ::: {.fragment .fade-in}
 - A Naive Utilty Model
@@ -657,7 +661,7 @@ with pm.Model(coords=coords) as model_4:
 
 We've seen a series of models, each one expanding on the last. 
 
-- Models articulate the relevant structure of the world. 
+- Models __should__ articulate the relevant structure of the world. 
 - They serve as microscopes. Simulation systems are tools to interrogate reality.
 - Bayesian Conditionalisation calibrates the system against the observed facts.
 - Bayesian Discrete choice models help us interrogate aspects of actors and their motivations under uncertainty.

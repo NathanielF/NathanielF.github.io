@@ -2,12 +2,12 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/bayesian_mixer/bayesian_mixer_london.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
       "/talks/mister_p/mister_p.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/missing_data/missing_data_causal.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
-      "/talks/utility_and_choice/discrete_choice_and_utility.html",
       "/talks/tenuous_relations/first_talk.html"
     ]
   },
