@@ -31,7 +31,7 @@ website:
     pinned: false
     collapse-level: 1
     style: docked
-    contents: notes/**
+    contents: notes/certain_things/Public/**
 
 format:
   html:

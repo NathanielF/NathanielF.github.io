@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Examined Algorithms – thinking-about-statistics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../../">
+<script src="../../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../../index.html">
+    <span class="navbar-title">Examined Algorithms</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../../blog.html">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../../opensource.html">
+ <span class="menu-text">Open Source Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../../talks.html">
+ <span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../../resume/Nathaniel_Forde_CV.pdf">
+ <span class="menu-text">CV</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-reader-toggle nav-link" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Logic</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Logic/Introduction - Logic Topics.html" class="sidebar-item-text sidebar-link">Introduction - Logic Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Philosophy</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Philosophy/Introduction - Philosophy Topics.html" class="sidebar-item-text sidebar-link">Introduction - Philosophy Topics</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Philosophy/Thinking about Statistics.html" class="sidebar-item-text sidebar-link active">Statistical Models and the Problem of Induction</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Philosophy/Sorites Paradox and Survival Analysis.html" class="sidebar-item-text sidebar-link">The Sorites Paradox</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Statistics</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Statistics/Introduction - Statistics Topics.html" class="sidebar-item-text sidebar-link">Introduction - Statistics Topics</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Statistics/Analogies between Missing Data and Causal Inference.html" class="sidebar-item-text sidebar-link">Taxonomies of Missing-ness</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#statistical-models-and-the-problem-of-induction" id="toc-statistical-models-and-the-problem-of-induction" class="nav-link active" data-scroll-target="#statistical-models-and-the-problem-of-induction">Statistical Models and the Problem of Induction</a></li>
+  <li><a href="#the-uniformity-of-nature" id="toc-the-uniformity-of-nature" class="nav-link" data-scroll-target="#the-uniformity-of-nature">The Uniformity of Nature</a></li>
+  <li><a href="#approaches-to-learning" id="toc-approaches-to-learning" class="nav-link" data-scroll-target="#approaches-to-learning">Approaches to Learning</a>
+  <ul class="collapse">
+  <li><a href="#bayesian-machinery" id="toc-bayesian-machinery" class="nav-link" data-scroll-target="#bayesian-machinery">Bayesian Machinery</a></li>
+  <li><a href="#frequentist-consolidation" id="toc-frequentist-consolidation" class="nav-link" data-scroll-target="#frequentist-consolidation">Frequentist Consolidation</a></li>
+  </ul></li>
+  <li><a href="#when-philosophies-conflict" id="toc-when-philosophies-conflict" class="nav-link" data-scroll-target="#when-philosophies-conflict">When Philosophies Conflict</a></li>
+  <li><a href="#bias-and-regularisation" id="toc-bias-and-regularisation" class="nav-link" data-scroll-target="#bias-and-regularisation">Bias and Regularisation</a></li>
+  <li><a href="#causal-inference-and-statistics" id="toc-causal-inference-and-statistics" class="nav-link" data-scroll-target="#causal-inference-and-statistics">Causal Inference and Statistics</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+
+<p>In this note we’ll capture reflections about Jun Otsuka’s <em>Thinking about statistics</em></p>
+<section id="statistical-models-and-the-problem-of-induction" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-models-and-the-problem-of-induction">Statistical Models and the Problem of Induction</h2>
+<p>The book begins by framing the different epistemological projects of both #Bayesian and #Frequentist patterns of inference as approaches to solving the problem of induction expressed by David Hume. #book #philosophy #statistics</p>
+<p>This is a nice lens on the development of statistics and the applied work of statistical modelling. The two probabilistic frameworks are initially contrasted or compared to each other. The distinction is drawn between the epistemological process involved in both approaches. Firstly the notion of Bayesian conditionalisation which incorporates new data to derive new beliefs coherent with the observed facts is spelled out. Then we see how the frequentist approach can be considered as a species of reliablist epistemology, where the focus is on the error control of well defined processes. In both cases the problem of induction is located as one of inference i.e.&nbsp;if we have an appropriate set of i.i.d sample data we can warrant the inference that the future will look like the past</p>
+<p>He draws out the ontological commitments to probabilistic kinds that appear required to underwrite statistical inference in both paradigms. He supplies a justification for these commitments as being instances of <strong>real patterns</strong> in the sense of Daniel Dennett’s phrasing. This is a kind of indispensability argument for the deployment of probabilistic kinds in our best science.</p>
+</section>
+<section id="the-uniformity-of-nature" class="level2">
+<h2 class="anchored" data-anchor-id="the-uniformity-of-nature">The Uniformity of Nature</h2>
+<p>If probabilistic kinds inhabit the world they can exhibit different characteristics - varying fauna and flora of the natural world. One process might be well described by a Gaussian distribution, another by a Laplace distribution… this diversity is all well and good, but to go beyond descriptive statistics we need to posit more. We need the assumption that there is some stability to the processes we seek to characterise. A uniformity of nature that underwrites statistical inference and probabilistic prediction models.</p>
+<p>Otsuka suggests that this commitment is cashed out in contemporary statistics with the famous i.i.d assumption. This posit argues that for sound inference, we must assume that any sample data is drawn from a probability distribution that each draw is <em>independent</em> and identically distributed.</p>
+<blockquote class="blockquote">
+<p>“The IID condition is a mathematical specification of what Hume called the uniformity of nature. To say that nature is uniform means that whatever circumstances holds for the observed, the same circumstances will continue to hold for the unobserved. This is what Hume required for the possibility of inductive reasoning …” pg 25/26</p>
+</blockquote>
+<p>This obviously is constraint on sound inference, but also implicitly an ontological assertion regarding distributional drift. This commitment is deeper than when we argue for a particular distributional characterisation of our process of interest. Our target process could be articulated as a mixture distribution or some more complicated beast, but in each case we require that (a) it is well described by <strong>some</strong> probability model and (b) the world is set up in such a way that more observations enable us to learn which particular statistical model (parametric or non-parametric) fits the data.</p>
+</section>
+<section id="approaches-to-learning" class="level2">
+<h2 class="anchored" data-anchor-id="approaches-to-learning">Approaches to Learning</h2>
+<p>With this background Otsuka goes on to describe the manner in which the Bayesian and frequentist schools approach the task of learning from data.</p>
+<section id="bayesian-machinery" class="level3">
+<h3 class="anchored" data-anchor-id="bayesian-machinery">Bayesian Machinery</h3>
+<p>The focus in the Bayesian setting presents conditionalisation as a logic of inductive reasoning, which expands on logical inference. These are frameworks for organising and interrogating our system of beliefs and their relationship to the achievement of knowledge. Otsuka argues that Bayesian inference plays a crucial role in justification. Moving from prior to posterior distribution is seen as a change in the weighting of our beliefs. An internalist species of the justification-relation between beliefs in light of data.</p>
+<p>But founding a story about epistemological justification on bayesian inference involves a defense of priors and likelihood specifications. Priors are defended using the usual moves: (1) appeal to wash-out theorems of iteratively updating on sufficiently large data. Convergence theorems assuring Bayesian updated belief is truth conducive in the limit regardless of apparently subjective prior specification. (2) Non-informative priors and (3) Objective priors or empirical Bayes.</p>
+<p>We won’t spend much time on (2) because it’s just kind of silly to justify beliefs and their manipulation by constant appeals to ignorance. On (3) there is a more interesting discussion regarding the relationship between degrees of belief and chance. We want our priors to reflect our background knowledge and update our beliefs in a way that it tracks the actual occurence of the events in question. David Lewis enshrined this requirement as the <em>Principal Principle</em>. But while this is an agreeable sounding tenet it cannot serve as a foundational justification for our priors within an <strong>internalist</strong> picture of justification without risk of infinite regress. This is problematic for the philosopher that seeks to establish bayesian inference as the sole source of belief generation, but seems less serious if you can tolerate primitive or foundational epistemological commitments outside those justified with inductive inference in the Bayesian loop. Justification must end somewhere (the spade eventually turns), and in-practice arguments and evidential exchanges rarely get anywhere close to an infinite series.</p>
+<p>Additionally the Bayesian needs to defend the incorporation of different likelihood choices. Their shape and implications. Fortunately this can be more pragmatic in so far likelihood specifications are in effect testable hypotheses about the data generating process. They can be justified by the success of the modelling endeavour and our ability to recover data akin to our observations. The data is a fixed quantity, we use it to update our probabilstic beliefs and commitments. This is to the good because it can be shown (via Dutch book style theorems) that in strategic decision making where your beliefs adhere to the probability calculus they will strictly dominate other strategies.</p>
+<p>The Bayesian machinery is a set of tools for arranging coherence amongst our beliefs, commitments - tracing out the implications. We move dynamically between prior and posterior by means of the likelihood term. This process cannot serve as as an ultimate court of appeal for basic beliefs that kick off the learning process itself. It is an abstract, highly flexible set of tools applicable to a wide range of questions. It provides a very general model of learning where the concern is justification of our beliefs in the context of what we know.</p>
+</section>
+<section id="frequentist-consolidation" class="level3">
+<h3 class="anchored" data-anchor-id="frequentist-consolidation">Frequentist Consolidation</h3>
+<p>So far so uncontroversial. The Bayesian perspective is a natural fit for a species of internalist epistemology. The framework is abstract and characterised concisely, so relatively straightforward to incorporate in a general philosophical picture. Otsuka’s synthesis of the “classical” inferential picture is in this way more impressive.</p>
+<p>The classical frequentist picture has a history of poor pedagogy and can seem disparate and ad-hoc. Jaynes is famously dismissive of the absurdities engendered by the pick-and-mix approach to statistical inference adhered to in the “classical” approach.</p>
+<p>The frequentist view ties statements of probability to measures of relative frequency within a collection of observations. This makes it impossible to articulate probability statements for specific hypotheses. The epistemological perspective is quite distinct from the Bayesian view of updating individual hypotheses. Instead the focus must lie of testing statements about stochastic processes - processes which are inherently repeatable.</p>
+<p>As such these processes can be described by probabilistic kinds. The question then becomes - how can the properties of these observable processes feed into knowledge gathering routines. How can we go from a statement about an observed frequency to claims of knowledge or belief regarding the data generating process?</p>
+<p>The route is to go via the framework of statistical testing which has some relationship to Karl Popper’s <em>falsification</em>. This involves positing a statistical hypothesis with direct implications. These implications can be parsed as an explicit prediction that can be compared to future observations. In this way, the hypothesis is tested against the data. This gives us a means of arguing <em>reductio ad unlikely</em> against the initial hypothesis and turns statistical inference into a “process of systematically plowing out falsehood”. Through iteratively testing and refining more targeted hypotheses. We define and reject the null hypotheses as we go.</p>
+<p>The constraints on the test design are built to ensure reliability over the course of repeated testing under a known null hypothesis. Sample size considerations, alpha-spending and statistical power are properties of the test. These properties need to be chosen in such a way to ensure reliability of a particular test, but there are also constraints for running repeated tests of multiple hypotheses. The entire testing enterprise is set up to minimise and control errors. The epistemological picture is one of reliablism. Whether a belief is justified is determined by the nature and <strong>defensiblity</strong> of the process that generated the claim. This approach allows us to reject the Gettier style counter examples to justified true belief analyses of knowledge. If the procedures of knowledge acquisition are not themselves well founded than the coincidence between claim and fact in the Gettier cases cannot be counted as justified. The procedures of knowledge acquisition are fixed, uncertainty stems from how we learn the shape of the data probabilistically.</p>
+<p>For this method to work the reliabilism the methodology seeks should be clarified. Otsuka suggests that the reliability implicit in statistical testing needs to underwrite truth-tracking counterfactuals. In particular the claims:</p>
+<ul>
+<li>if P were not true, S would not believe P</li>
+<li>If P were true then S would believe P.</li>
+</ul>
+<p>Which is not to say that any particular statistical test will lead to the endorsement/rejection of the hypothesis in question. Statistical tests cannot directly accept the null - just fail to reject. But cumulatively over many tests a reliabilist epistemology should ultimately ascertain the falsity of the null when the null is false. This points to a tension in the focus on individual tests and specific p-values. Statistical testing as an epistemological enterprise is a wholesale endeavour and the overall success or failure of conditions which underwrite the reliability of the process are not easily discerned by mere success in our world. The procedures must be valid and truth tracking in “nearby” counterfactual worlds where the null hypothesis is not how it is in our world. The conditions under which a process is ultimately truth-tracking may depend on contextual factors which cannot be easily turned to an algorithm. This perspective nicely unites all the ad-hoc approaches to defining tests with asymptotic error control properties. The concern is inherently procedural, and procedures can (and perhaps should) vary in the context of the learning. But their adoption is founded on the commitment that they would be reliably truth-tracking in all worlds similar enough to our own.</p>
+</section>
+</section>
+<section id="when-philosophies-conflict" class="level2">
+<h2 class="anchored" data-anchor-id="when-philosophies-conflict">When Philosophies Conflict</h2>
+<p>Otsuka’s survey of the two approaches is detailed and comprehensive. It sketches the motivations of each position well, and you might hope to reconcile the two. Apply each in their own domain where appropriate…, but unfortunately the motivating instincts can clash irreconcilably.</p>
+<p>The Bayesian perspective necessitates the adoption of the <strong>Likelihood Principle</strong> which can be violated by the classical procedure of sequential testing. Recall how for the Bayesian the data is a fixed quantity, fed forward into the likelihood term to update our beliefs. This works the same whether we update our beliefs at time t1, t2 or tN. All the information is in the likelihood irrespective of how much data has accrued over time.</p>
+<p>While under the frequentist model if the data is analysed under different experimental designs (e.g.&nbsp;one with a stopping rule and one without) the results of test for a particular null hypothesis can differ I.e. with the same data and the same null hypothesis, one experiment can reject the null and the other will fail to reject it. This is because the result incorporates information about the design of the experiment that cannot be captured in the simple likelihood. Otsuka makes the point that this is a broad problem for all <strong>reliabilist</strong> philosophies where the fit between process/test and reality is contestable. There is no perfectly general procedure that returns true results in all circumstances. As such the frequentist methodologist must argue anew in each circumstances for the appropriateness of their methods.</p>
+<p>This is a keen source of divisiveness between the two schools. Scientists historically cannot be trusted to review their methods with respect to their goals. Instead frequentist statistical methodology has been abused in practice. Adherents use the routine nature of procedure as a rubber stamp without due consideration for the reliability of the methods in the context of the question at hand. This pattern of abuse is rightly seen as a key contributor to the replication crisis in science. Ironically it is this aspect of frequentist methodology that introduces obscure subjective bias into the experimental exercise. The Bayesian (often accused of criminal subjectivity) wears their priors clearly and defends their appropriateness for each analysis.</p>
+<p>Neither school of thought is a self-contained epistemology. Neither method is self-sustaining. Both priors and procedures must be justified with an appeal to their apt fit for the problem at hand. Statistical methodology slots into a broader epistemological endeavour and there is no substitute for the careful and knowing application of inferential machinery if we hope to justify the achievements of science.</p>
+</section>
+<section id="bias-and-regularisation" class="level2">
+<h2 class="anchored" data-anchor-id="bias-and-regularisation">Bias and Regularisation</h2>
+<p>In later chapters we move towards the more pragmatist position of model selection based on predictive power. This mirrors a move away from understanding of uncertainty due to natural variation towards an model-uncertainty in the analysis.</p>
+<p>We may prefer a model which does not capture the true data generating process just so long as it performs better in prediction tasks. This effectively invokes the more typical approaches to machine learning model evaluation as driving us toward pragmatic biases that work well to optimise for some measure of out-of-sample prediction. Your inferential framework can be independent of your model selection criteria, but model ranking is still conducted under uncertainty. Each measure of performance is still an estimate.</p>
+<p>Otsuka contrasts the ranking of models based on information criteria with the out of sample predictive performance of deep learning systems. The AIC style methodologies penalises models with too many parameters to optimise for predictive performance. Deep learning methods have explicit methods to induce regularisation like effects with: drop-out, modified loss-functions. What is striking is that while both methods are checks against overfitting of models to the data, both are pragmatic compromises that dispense with the idea of epistemological truth-tracking. They concede that the it is often better to overcome the problem of model uncertainty with suitably practical abstraction. Don’t worry about the world-model fit so long as the outcomes of the model are workable.</p>
+<p>But this comes with a burden of explainability often demanded of opaque models. Predictive success in one domain does not always translate to success in another. Regulators and stakeholders need to understand when and why the predictive reliability of deep learning systems can be expected to transfer well across tasks. Appeals to the epistemological surety of beliefs derived from predictions in these black-box systems stem from a loosely held belief in the virtues of the deep learning mechanisms. These virtues are less well established than error-control rates of a statistical test and they are somewhat transient across task.</p>
+</section>
+<section id="causal-inference-and-statistics" class="level2">
+<h2 class="anchored" data-anchor-id="causal-inference-and-statistics">Causal Inference and Statistics</h2>
+<p>Finally Otsuka pauses to consider the role of causal inference in contemporary statistics and how here optimising for predictive power will often fail when the task requires subtlety or insight into the data generating process. The manner in which models and measurements can be confounded by aspects of the data generating process cannot be detected automatically without knowledge of the relationships in the system. The focus here is on how tools for <strong>identification</strong> are required when we want to be sure that the causal quantities of interest are soundly derivable from the data we have to hand. Whether we use the potential outcomes framework, the do-calculus or structural estimation. The work of statistical inference using any and all of the above frameworks can only get off the ground when we have enough of a world-picture - a set of commitments or assumptions that allow our inferences to have warrant. Our priors our informed, our inferential procedures suitably well defined to sustain truth-tracking counterfactuals.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>The broad picture painted in Otsuka’s survey of statistics is the central role of inferential procedures in our broader epistemological landscape. The diversity of roles it can play and different standards of rigour at play in different contexts. The links between the foundational questions and puzzles of epistemology have illuminated the structure of the debates in statistics.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

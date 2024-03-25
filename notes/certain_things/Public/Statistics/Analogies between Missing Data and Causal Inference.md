@@ -16,7 +16,7 @@ Very crudely, estimation procedures work reasonably well under (MCAR) but requir
 
 Imputation under MAR and MCAR succeeds largely from successive applications of the law of iterated expectations. In this case the stable outcome assumption encodes the missing data as $-99$ and we then average over the joint distribution of the stable outcomes model and the missingness data.
 
-![](Images/Expectations_MAR.jpg)
+![](Expectations_MAR.jpg)
 
 The various estimation procedures for counterfactual results trade on this property of expectation that allow for point identification of the expected value for the outcome variable.
 
@@ -93,7 +93,7 @@ such that out quantity of interest $\tau$  is cleanly identified in expectation 
 $$ E[\tau] = \beta_{1}$$
 But this result can also be derived by predicting the outcomes under the different treatment regimes, using a fitted regression model, and taking the differences of the averaged predictions over the cases. The equivalence between these perspectives is the insight we want to record here. We drew out this connection in the discussion of [poststratification estimators](https://nathanielf.github.io/oss/bambi/mr_p.html)
 
-![](Images/predictions_imputation.jpg)
+![](predictions_imputation.jpg)
 
 This is a neat and beautiful connection between causal-inference and missing data analysis. Simultaneously a reminder of the versatility of regression analysis. 
 

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Examined Algorithms – analogies-between-missing-data-and-causal-inference</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../../">
+<script src="../../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../../index.html">
+    <span class="navbar-title">Examined Algorithms</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../../blog.html">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../../opensource.html">
+ <span class="menu-text">Open Source Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../../talks.html">
+ <span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../../resume/Nathaniel_Forde_CV.pdf">
+ <span class="menu-text">CV</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-reader-toggle nav-link" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Logic</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Logic/Introduction - Logic Topics.html" class="sidebar-item-text sidebar-link">Introduction - Logic Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Philosophy</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Philosophy/Introduction - Philosophy Topics.html" class="sidebar-item-text sidebar-link">Introduction - Philosophy Topics</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Philosophy/Thinking about Statistics.html" class="sidebar-item-text sidebar-link">Statistical Models and the Problem of Induction</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Philosophy/Sorites Paradox and Survival Analysis.html" class="sidebar-item-text sidebar-link">The Sorites Paradox</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Statistics</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Statistics/Introduction - Statistics Topics.html" class="sidebar-item-text sidebar-link">Introduction - Statistics Topics</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../notes/certain_things/Public/Statistics/Analogies between Missing Data and Causal Inference.html" class="sidebar-item-text sidebar-link active">Taxonomies of Missing-ness</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#taxonomies-of-missing-ness" id="toc-taxonomies-of-missing-ness" class="nav-link active" data-scroll-target="#taxonomies-of-missing-ness">Taxonomies of Missing-ness</a>
+  <ul class="collapse">
+  <li><a href="#the-stable-outcomes-assumption" id="toc-the-stable-outcomes-assumption" class="nav-link" data-scroll-target="#the-stable-outcomes-assumption">The Stable Outcomes Assumption</a></li>
+  <li><a href="#propensity-scores" id="toc-propensity-scores" class="nav-link" data-scroll-target="#propensity-scores">Propensity Scores</a></li>
+  <li><a href="#regression-estimators" id="toc-regression-estimators" class="nav-link" data-scroll-target="#regression-estimators">Regression Estimators</a></li>
+  <li><a href="#weighting-estimators" id="toc-weighting-estimators" class="nav-link" data-scroll-target="#weighting-estimators">Weighting Estimators</a></li>
+  </ul></li>
+  <li><a href="#causal-inference" id="toc-causal-inference" class="nav-link" data-scroll-target="#causal-inference">Causal Inference</a>
+  <ul class="collapse">
+  <li><a href="#potential-outcomes-and-sutva" id="toc-potential-outcomes-and-sutva" class="nav-link" data-scroll-target="#potential-outcomes-and-sutva">Potential Outcomes and SUTVA</a></li>
+  <li><a href="#average-treatment-effects" id="toc-average-treatment-effects" class="nav-link" data-scroll-target="#average-treatment-effects">Average Treatment Effects</a></li>
+  <li><a href="#propensity-functions-and-reweighting-estimators." id="toc-propensity-functions-and-reweighting-estimators." class="nav-link" data-scroll-target="#propensity-functions-and-reweighting-estimators.">Propensity Functions and Reweighting Estimators.</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+
+<p>The clearest framework for causal inference has a tight relationship with #missing-data imputation. However, the range of problems addressed seem to require a slew of distinct estimators. It is not always clear in which circumstances we should apply each estimation procedure.</p>
+<p>Like most statistical work the practical details should be worked out in code for the clearest demonstration. However, here we’ll describe (as best we can) the conceptual underpinning of important estimators. Their usage and motivation.</p>
+<section id="taxonomies-of-missing-ness" class="level2">
+<h2 class="anchored" data-anchor-id="taxonomies-of-missing-ness">Taxonomies of Missing-ness</h2>
+<p>Causal inference can be seen as a species of missing data problem where the missing data is the counterfactual situation(s) of how the world would have been were the course of the world different from the one we know. What if we used this treatment plan rather than another? What it the actors’ behaviour differed from the actions they in fact pursued?</p>
+<p>From an estimation perspective there are different species of missing-ness that matter. We won’t here go deep into the distinctions. It is enough to note that they vary in the operative source of the missing-ness: Missing-completely-at-random (MCAR), missing-at-random (MAR) and missing-not-at-random (MNAR).</p>
+<section id="the-stable-outcomes-assumption" class="level3">
+<h3 class="anchored" data-anchor-id="the-stable-outcomes-assumption">The Stable Outcomes Assumption</h3>
+<p>Mechanically we can’t work with null values under any of these assumptions. The stable outcomes model is a first step procedure for imputing the missing values. Whether we choose mean imputation or an arbitrary figure - we initially assume missing values at the individual level in a stable fashion by specifying a constant value for the missing cases.</p>
+<p>Very crudely, estimation procedures work reasonably well under (MCAR) but require extra effort when there is assumptions if we hope to account for the (MAR) and (MNAR) cases. Under MAR we are assuming that the values are missing as a function of the observable covariates and can be imputed under proper conditionalisation.</p>
+<p>Imputation under MAR and MCAR succeeds largely from successive applications of the law of iterated expectations. In this case the stable outcome assumption encodes the missing data as <span class="math inline">\(-99\)</span> and we then average over the joint distribution of the stable outcomes model and the missingness data.</p>
+<p><img src="Expectations_MAR.jpg" class="img-fluid"></p>
+<p>The various estimation procedures for counterfactual results trade on this property of expectation that allow for point identification of the expected value for the outcome variable.</p>
+<p>But we also want to consider individual variation due to the observed covariate profiles. When we consider cases of missing data conditional the observed covariate profile, we can derive a propensity score as a one number summary for the conditional probability of missing-ness. This can be used in imputation techniques where we want to carefully attribute values to the missing data that respect the other observed properties of the individual.</p>
+</section>
+<section id="propensity-scores" class="level3">
+<h3 class="anchored" data-anchor-id="propensity-scores">Propensity Scores</h3>
+<p>The propensity score has a role in a number of re-weighting schemes for the estimation of missing data. These rely on the property of expectation under (MAR). So accuracy of the propensity score is itself an important question. Because the missing-ness variable <span class="math inline">\(R\)</span> is a binary random variable in <span class="math inline">\(\{ 0, 1 \}\)</span> maximum likelihood methods for logistic regression are often used to estimate these terms.</p>
+<p><span class="math display">\[p_{R}(\mathbf{x}) \sim logit(X_{i} \beta )\]</span></p>
+<p>This score is a summary in some sense of the factors driving missing-ness. In the context of causal inference it is often stated “in reverse” as a probability of being treated. We will keep focus here on the case of missing data, but the generality of the notion shouldn’t be lost. The propensity score is a one number summary of the covariate profile for each individual in the data. Under the (MAR) assumption it is often sufficient to conditionalise on the propensity score for each individual for imputation of their missing data values.</p>
+</section>
+<section id="regression-estimators" class="level3">
+<h3 class="anchored" data-anchor-id="regression-estimators">Regression Estimators</h3>
+<p>We might want to simply estimate the missing values of our outcome using the conditional expectation function (CEF) property of simple regression. The imputation pattern will work well when the linear properties of the regression model are a good fit for the relationship between the outcome variables and the observed covariates. Hence the estimate for:</p>
+<p><span class="math display">\[E[Y_{i}] = \beta_{0} + \beta_{1}\cdot X_{1i} ... \beta_{n} \cdot X_{ni} \]</span> where we replace all values to be prediction of our regression model for each individual and then average the predictions.</p>
+</section>
+<section id="weighting-estimators" class="level3">
+<h3 class="anchored" data-anchor-id="weighting-estimators">Weighting Estimators</h3>
+<p>Another approach to missing data imputation, which relies on the expectation properties of our outcome variable of interest under (MAR) and the stable outcome model, is the inverse probability weighting approach to imputation.</p>
+<p><span class="math display">\[ E[Y_{i}] = E[\dfrac{(YR + (-99) (1-R ))R }{p_{R}(\mathbf{x})}]\]</span> With this property we can express estimates of missing values as a function of the individuals’ observed data. There are variations on this theme but sophisticated imputation schemes all rely on functions of the individual’s observed covariate profile. This specificity is important too in the context heterogenous treatment effects in causal inference.</p>
+</section>
+</section>
+<section id="causal-inference" class="level2">
+<h2 class="anchored" data-anchor-id="causal-inference">Causal Inference</h2>
+<p>The above perspective on missing data has deep analogies with the potential outcomes framework of causal inference. This is well brought out in the beautiful book <em>Foundations of Agnostic Statistics</em> by Aronow and Miller.</p>
+<section id="potential-outcomes-and-sutva" class="level3">
+<h3 class="anchored" data-anchor-id="potential-outcomes-and-sutva">Potential Outcomes and SUTVA</h3>
+<p>In the causal context we assume the potential outcomes framework and the notation of <span class="math inline">\(Y(1), Y(0)\)</span> to denote the value of the outcome under the treatment regime <span class="math inline">\(D\)</span>.</p>
+<p><span class="math display">\[ Y_{i} =  
+\left\{\begin{array}{lr}
+        Y_{i}(0), &amp; \text{for } D = 0\\
+        Y_{i}(1), &amp; \text{for } D = 1\\
+        \end{array}\right\}
+\]</span> where the (S)table (U)nit (T)reatment (V)alue (A)ssumption holds i.e.&nbsp;the observed data under treatment or non-treatment regimes is the potential outcome for that individual. Additionally the counterfactual outcome is assumed to be stable for each individual. It is crucially this assumption that allows for statistical identification of key metrics in causal inference under randomisation.</p>
+</section>
+<section id="average-treatment-effects" class="level3">
+<h3 class="anchored" data-anchor-id="average-treatment-effects">Average Treatment Effects</h3>
+<p>Similarly, here we rely on the properties of expectation over the observed data to isolate quantities of causal effect. In particular we tend to be interested in the average treatment effects, which we can get by using the following decomposition under random assignment.</p>
+<p><span class="math display">\[ E[\tau] = E[Y_{i}(1) - Y_{i}(0)] = E[Y_{i}(1)] - E[Y_{i}(0)] \]</span> This decomposition is crucial since it allows us to move between the expectations derived from the observed data under each regime towards an estimate of the population treatment effects.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>subject</th>
+<th><span class="math inline">\(Y_{i}(1)\)</span></th>
+<th><span class="math inline">\(Y_{i}(0)\)</span></th>
+<th><span class="math inline">\(\tau\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Joe</td>
+<td>?</td>
+<td>115</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<td>Bob</td>
+<td>120</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<td>James</td>
+<td>100</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<td>Mary</td>
+<td>115</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<td>Sally</td>
+<td>120</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr class="even">
+<td>Laila</td>
+<td>?</td>
+<td>105</td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(E[Y_{i}(D)]\)</span></td>
+<td>113.75</td>
+<td>110</td>
+<td>3.75</td>
+</tr>
+</tbody>
+</table>
+<p>The missing values in this table depict the <em>fundamental problem of causal inference</em> as a missing data issue. So #causal-inference as a strategy is broadly related to finding ways to solve this missing data problem under different regimes of missing-ness. For instance, the reason A/B testing works to isolate the treatment effects is that under randomisation of treatment regime we are implicitly assuming that the reason missing-data is effectively a case of MCAR missing-ness. As such the expectations of the individual columns in the above table are valid estimates which can then be combined using the above decomposition to derived the treatment effect <span class="math inline">\(\tau\)</span>.</p>
+<p>In this case the pattern of reasoning is akin to performing mean-imputation and then taking the difference of the averages. The imputation step is redundant in A/B testing, but it is highlighted by Aronow and Miller as a useful lens on more complex causal inference tasks on observed data. We are always (under the hood) trying to impute the missing values to gain a better view of the treatment effect distribution. ### Regression Estimators</p>
+<p>Again we rely on the idea of regression as an approximation to the CEF of the data generating process. The flexibility of regression modelling for automating a host of statistical test should be reasonably familiar. The point here is not to rehash the theory but just to note the similarity with the procedures used above for regression-based imputation. Regression modelling of the treatment effect proceeds on the <strong>strong ignorability</strong> assumption that - conditional on the observed covariates knowing whether or not an individual received the treatment adds no new information i.e.&nbsp;it is the insistence that assignment might as well be <em>random</em> after accounting for the background characteristics. These assumptions mirror the conditions required for imputation under the MAR regime.</p>
+<p>So we can derive estimates for the ATE from the data generating model</p>
+<p><span class="math display">\[ Y \sim \beta_0 + \beta_1 D + ... \beta_{n} \cdot X_{n} \]</span> such that out quantity of interest <span class="math inline">\(\tau\)</span> is cleanly identified in expectation by the quantity: <span class="math display">\[ E[\tau] = \beta_{1}\]</span> But this result can also be derived by predicting the outcomes under the different treatment regimes, using a fitted regression model, and taking the differences of the averaged predictions over the cases. The equivalence between these perspectives is the insight we want to record here. We drew out this connection in the discussion of <a href="https://nathanielf.github.io/oss/bambi/mr_p.html">poststratification estimators</a></p>
+<p><img src="predictions_imputation.jpg" class="img-fluid"></p>
+<p>This is a neat and beautiful connection between causal-inference and missing data analysis. Simultaneously a reminder of the versatility of regression analysis.</p>
+</section>
+<section id="propensity-functions-and-reweighting-estimators." class="level3">
+<h3 class="anchored" data-anchor-id="propensity-functions-and-reweighting-estimators.">Propensity Functions and Reweighting Estimators.</h3>
+<p>We will skip the detailed elaboration of propensity score matching, a technique for creating pseudo treatment and control groups, only noting that there is a rich and detailed literature on the topic for causal inference.</p>
+<p>We do want to draw out how propensity-scores can be used in the class of reweighting estimators. Where under the <strong>strong ignorability</strong> assumption we can estimate the treatment effect as a simple expectation:</p>
+<p><span class="math display">\[E[\tau] = E [\dfrac{YD}{p_D(X)} - \dfrac{Y(1-D)}{(1 - p_D (X))}] \]</span></p>
+<p>Using this formula we can scale each observation by the relative probabilities for the individual falling into each treatment regime. Then the expectation of the scaled differences is an estimate of our ATE. The logic of this inverse probability weighting (IPW) estimator stems from the idea that low propensity individuals are likely underrepresented in the treatment group and over represented in the control. So this estimator down weights and unweights each option accordingly to “balance” the groups before comparison.</p>
+<p>This balancing operation can work but is dependent on empirical properties of the sample data. Even if the data generating process ensures that <em>strong ignorability</em> holds, if our sample under represents the variety of possible individual in each group then reweighting the remaining individuals is no guarantee for sound inference. This is a small sample problem recurring.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>The sequence of complexity in missing data imputation is as follows:</p>
+<p><span class="math display">\[ MCAR \Rightarrow MAR \Rightarrow MNAR \]</span></p>
+<p>which mirrors the complexity of cases in causal inference. Here we have:</p>
+<p><span class="math display">\[ Ignorability \Rightarrow \text{Strong Ignorability} \Rightarrow \text{Non Ignorability} \]</span> As we consider circumstances moving up the hierarchy, we require an increase in assumptions or structural commitments to offset the risk of non-identifiability bringing us back down the hierarchy. The emphasis in the book stresses how properties of good experimental design can help recover sound inference by enforcing MAR conditions in MNAR circumstances. But the crucial role of modelling in defending the <strong>strong ignorability</strong> condition is underplayed.</p>
+<p>Yes, we need to justify our estimator but also our model! Are we including the right covariates? Have we an appropriate covariance structure? What is the functional form and why is it reasonable? Are we accounting for heterogeneity of outcome? All such questions centre the importance of domain knowledge for causal inference. This is not a criticism of boon focused on Agnostic statistics. Their focus is appropriately on the design aspects that enable inference. However it should be abundantly clear that you cannot get away with agnostic approaches in the real world. There is no way to justify stepping back down the hierarchy without substantial commitments about the world-model fit. Even if your aesthetic preferences drive you toward design based methods, this only serves to obscure the commitments. Statistics in the real world require real world commitments.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
