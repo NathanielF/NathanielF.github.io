@@ -14,6 +14,7 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/DiD-Card-Kreuger/DID.html",
       "/posts/post-with-code/Bayesian_AB_tests/bayesian_ab_tests.html",
       "/posts/post-with-code/replication_crisis/replication_and_cross_validation.html",
@@ -43,6 +44,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/DiD-Card-Kreuger/DID.html",
       "/posts/post-with-code/Bayesian_AB_tests/bayesian_ab_tests.html",
       "/posts/post-with-code/replication_crisis/replication_and_cross_validation.html",

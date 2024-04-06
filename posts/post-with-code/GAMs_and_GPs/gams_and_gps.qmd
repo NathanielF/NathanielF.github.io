@@ -5,10 +5,11 @@ date: "2024-02-15"
 categories: ["probability", "generalised additive models", "gaussian processes"]
 keep-ipynb: true
 self-contained: true
-draft: true
+draft: false
 execute: 
   enabled: true
 jupyter: pymc_causal
+image: "Spline.png"
 ---
 
 
@@ -18,33 +19,61 @@ import matplotlib.pyplot as plt
 import bambi as bmb
 import seaborn as sns
 from pygam.datasets import mcycle
-from pygam import LinearGAM, s, f, GAM, l
+from pygam import LinearGAM, s, f, GAM, l, utils
+import numpy as np
+import arviz as az
+import pymc as pm
+
+
+random_seed = 100
+
+import warnings
+
+warnings.simplefilter('ignore')
 
 ```
 
+# Flexibility and Calibration
 
-```{python}
+In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before preceding to look Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC` 
 
+Our interest in these models stems from their flexibility to approximate functions of arbitrary complexity. We'll see how the methods work in the case of relatively straightforward toy example and then we'll apply each of the methods to deriving insights into the functional form of insurance loss curves. In this application we adapt a data set discussed in Mick Cooney's `Stan` [case study](https://mc-stan.org/users/documentation/case-studies/losscurves_casestudy.html) to demonstrate the power of hierarchical spline models. Throughout we'll draw on the discussion of these methods in Osvaldo Martin's _"Bayesian Analysis with Python"_ for practical details implementing these models. 
 
-# url for the data is: 
-url = "https://raw.githubusercontent.com/m-clark/generalized-additive-models/master/data/pisasci2006.csv"
-pisa = pd.read_csv(url)
-pisa
+All of these methods need to be assessed with respect to their in-sample model fit and their out of sample performance. How can we best calibrate the model fits to perform reasonably well out of sample?
 
-```
+## Generalised Additive models
 
-## Variation due GAM penalisation and parameterisation
+The canonical reference for GAMs is Simon Wood's _"Generalised Additive Models: An Introduction with R"_ which outlines in some detail the theoretical background of splines and univariate smoothers. The book stresses the trade-offs between the flexibility of splines and the need for cross-validation and penalised estimation methods for spline based modelling. 
 
+In R these penalised models fits can be achieved in `mgcv` which incorporates a wilkinson like formula syntax for model specification: `y ~ s(x) + s(x1)`. 
+The closest implementation in python is available in `PyGam` and we will adopt this package to illustrate the application of smoothing terms and the penalities. 
+
+### PyGAM and Penalised Fits
+In the next code block we load in an example data set on which to demonstrate univariate smoothing patterns using penalised splines. These models can be optimised by fitting differing strength penalities over a varying number of splines
 ```{python}
 
 X, y = mcycle(return_X_y=True)
 
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.scatter(X, y)
+ax.set_ylabel("Acceleration")
+ax.set_xlabel("Time Step")
+ax.set_title("Crash Test Dummy Acceleration \n Simulated Motorcycle Crash", fontsize=20)
+
+```
+
+Next we fit a number of different models to account for the herky-jerky of the data generating processs. We vary the parameterisations to see how the numbers of splines and strength of the penalty help account for the variation in $y$ over the support of $X$. 
+
+```{python}
+
 gam1 = LinearGAM(s(0, n_splines=5)).fit(X, y)
-gam2 = LinearGAM(s(0, n_splines=10)).fit(X, y)
-gam3 = LinearGAM(s(0, n_splines=15)).fit(X, y)
-gam4 = LinearGAM(s(0, lam=.1)).fit(X, y)
-gam5 = LinearGAM(s(0, lam=.3)).fit(X, y)
-gam6 = LinearGAM(s(0, lam=.6)).fit(X, y)
+gam2 = LinearGAM(s(0, n_splines=7)).fit(X, y)
+gam3 = LinearGAM(s(0, n_splines=10)).fit(X, y)
+gam4 = LinearGAM(s(0, n_splines=15)).fit(X, y)
+gam5 = LinearGAM(s(0, lam=.1)).fit(X, y)
+gam6 = LinearGAM(s(0, lam=.5)).fit(X, y)
+gam7 = LinearGAM(s(0, lam=5)).fit(X, y)
+gam8 = LinearGAM(s(0, lam=15)).fit(X, y)
 
 
 def plot_fit(gam, X, y, ax, t, c1='b', c2='r'):
@@ -54,13 +83,13 @@ def plot_fit(gam, X, y, ax, t, c1='b', c2='r'):
     ax.plot(XX, gam.prediction_intervals(XX, width=.95), color=c1, ls='--')
 
     ax.scatter(X, y, facecolor='gray', edgecolors='none')
-    ax.set_title(f'95% prediction interval with {t}');
+    ax.set_title(f"""95% prediction interval with {t} \n LL: {gam.statistics_['loglikelihood']}""");
 
-fig, axs = plt.subplots(3,2, figsize=(10, 15))
+fig, axs = plt.subplots(4,2, figsize=(10, 20))
 axs = axs.flatten()
-titles = ['5_splines', '10_splines', '15_splines', 
-'lam=.1', 'lam=.3', 'lam=.6']
-gs = [gam1, gam2, gam3, gam4, gam5, gam6]
+titles = ['5_splines', '7_splines', '10_splines', '15_splines',
+'lam=.1', 'lam=.5', 'lam=5', 'lam=15']
+gs = [gam1, gam2, gam3, gam4, gam5, gam6, gam7, gam8]
 for ax, g, t in zip(axs, gs, titles):
     plot_fit(g, X, y, ax, t)
 
@@ -68,24 +97,37 @@ for ax, g, t in zip(axs, gs, titles):
 
 ```
 
+Here we've seen the `PyGAM` package applied to fitting our model to the data. In the formula specification we see `y ~ s(i)` where `i` denotes the index of the column variable in the X data. 
+
+Over the range of of the x-axis we can see how the conditional expectation is more or less well fit to the data depending on how the penalities and complexity of the model is specified. 
+
 ## Optimising The Parameter Setting
+
+We can see from the model summary what is going on under the hood. For a given model specification the summary will report a number of model-fit statistics such as the log-likelihood and the AIC. 
 
 ```{python}
 
-## model raw
+## Naive Model manually specified splines
 gam_raw = LinearGAM(s(0)).fit(X, y)
-gam_raw.summary()
+print("log_likelihood:", gam_raw.statistics_['loglikelihood'])
+print("AIC:", gam_raw.statistics_['AIC'])
+
 
 ```
 
+The question then becomes what changes are induced in the model as we seek to optimise these model fit statistics. 
+
 ```{python}
 ## model optimised
-gam = LinearGAM(s(0))
+gam = LinearGAM(s(0),  fit_intercept=False)
 gam.gridsearch(X, y)
 gam.summary()
 
 ```
 
+Fortunately, this routine can be performed directly and results in the following differences between the naive and optimised model. 
+
+### Plot the GAM fits
 
 ```{python}
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -94,68 +136,702 @@ plot_fit(gam, X, y, ax, "Optimised Fit")
 
 ```
 
+This is all well and good. We've seen an approach to modelling that can capture eccentric patterns in raw data. But how does it work and why should we care?
+
+If you're familiar with the nomenclature of machine learning, you should think of spline modelling as a variety of feature creation. It generates "synthetic" features over the range of the observed variable. These synthetic features are the splines in question. 
+
+### Digression on the usage of "Splines" 
+
+The history of the term "spline" is related to the history of draftmanship. Historically splines were thin strips of flexible wood or plastic that could be bent or shaped around a weight or "knot" points to express a traceable curve over the space of a "numberline". The elastic nature of the spline material allowed it to be bent around the knot points of curvature expressing a smooth or continuous bend. 
+
+The mathematical technique apes these properties by defining a curve over in an analogous way. We specify "knots"  to carve up the support of the random variable $X$ into portions that require different weighting schemes to represent the outcome $y$ 
+
+<img src="Spline.png" alt="spline" height="500"/>
+
+### Extracting the Splines
+
+We can extract the spline features used in the `PyGAM` by invoking the following commands to first identify the knot points and create the b-spline basis appropriate for the variable $X$. 
+
 ```{python}
-fig, ax = plt.subplots(figsize=(10, 6))
-plot_fit(gam, X, y, ax, "Optimised Fit")
+
+knot_edges=utils.gen_edge_knots(X,dtype='numerical')
+knots=np.linspace(knot_edges[0],knot_edges[-1],len(gam.coef_))
+
+splines = utils.b_spline_basis(X, edge_knots=knot_edges, sparse=False)
+
+splines_df = pd.DataFrame(splines, columns=[f'basis_{i}' for i in range(len(gam.coef_))])
+
+splines_df.head(10)
+
+```
+
+These spline features range the extent of the of covariate space $X$ defining "partitions" of the space. The model "learns" to capture the shape of the outcome variable $y$ by figuring out how to weight the different portion of this spline basis matrix i.e. the linear combination of this basis matrix with the derived coefficients is a model of our outcome variable. 
+
+Note how each row is 0 everywhere except within the columns that represent a partition of $X$. Additionally each row sum to unity. These properties are important because they ensure that any weighted combination of this basis represents the outcome variable in a controlled and quite granular manner. The more splines we use the more control we have of the representation.  
+
+### Plotting the Weighted Spline
+```{python}
+
+ax = splines_df.dot(gam.coef_).plot(title='Weighted Splines', label='Weighted Combination of Spline Basis', figsize=(10, 6))
+ax.set_ylabel("Acceleration")
+ax.set_xlabel("Time Steps")
+ax.legend();
+
+```
+
+In this manner we can see how the specification of a spline basis can help us model eccentric curves in an outcome space. 
+
+Next we'll see how to more directly work with the specification of basis splines, passing these feature matrices into Bambi models. 
+
+## Bayesian Splines with bambi
+
+Under the hood `Bambi` makes use of the patsy package formula syntax to specify spline basis terms.
+
+```{python}
+knots_6 = np.linspace(0, np.max(X), 6+2)[1:-1]
+knots_10 = np.linspace(0, np.max(X), 10+2)[1:-1]
+knots_15 = np.linspace(0, np.max(X), 15+2)[1:-1]
+
+df = pd.DataFrame({'X': X.flatten(), 'y': y})
+formula1 = 'bs(X, degree=0, knots=knots_6)'
+formula2 = 'bs(X, degree=1, knots=knots_6, intercept=True)'
+formula3 = 'bs(X, degree=3, knots=knots_6, intercept=True)'
+formula4 = 'bs(X, degree=3, knots=knots_10, intercept=True)'
+formula5 = 'bs(X, degree=3, knots=knots_15, intercept=True)'
+model_spline1 = bmb.Model(f"y ~ {formula1}", df)
+model_spline2 = bmb.Model(f"y ~ {formula2}", df)
+model_spline3 = bmb.Model(f"y ~ {formula3}", df)
+model_spline4 = bmb.Model(f"y ~ {formula4}", df)
+model_spline5 = bmb.Model(f"y ~ {formula5}", df)
+model_spline5
+```
+
+As you can see here we are specifying a range of different degrees of spline basis. The different degrees corresspond to the smoothness of the overlapping splines. 
+The `degree=0` splines mean we specify a piecewise constant basis i.e. 0 or 1 within each region of the partition. But we can add more degrees to see more flexible representations of the space. 
+
+```{python}
+
+model_spline5.build()
+model_spline5.graph()
+
+```
+
+This will become clearer as we plot the various spline basis matrices below. 
+
+### Plot the Spline Basis
+
+The below functions extract the basis specification from each model and plots the basis design for an increasingly complex series of spline basis matrices. 
+
+```{python}
+
+def plot_spline_basis(basis, X, ax, title="Spline Basis"):
+    df = (
+        pd.DataFrame(basis)
+        .assign(X=X)
+        .melt("X", var_name="basis_idx", value_name="y")
+    )
+
+
+    for idx in df.basis_idx.unique():
+        d = df[df.basis_idx == idx]
+        ax.plot(d["X"], d["y"])
+    
+    ax.set_title(title)
+    return ax
+
+def plot_knots(knots, ax):
+    for knot in knots:
+        ax.axvline(knot, color="0.1", alpha=0.4)
+    return ax
+
+
+
+fig, axs = plt.subplots(5, 1, figsize=(9, 20))
+axs = axs.flatten()
+axs.flatten()
+B1 = model_spline1.response_component.design.common[formula1]
+plot_spline_basis(B1, df["X"].values, ax=axs[0], title="Piecewise Constant Basis")
+plot_knots(knots_6, axs[0]);
+
+B2 = model_spline2.response_component.design.common[formula2]
+ax = plot_spline_basis(B2, df["X"].values, axs[1], 
+title="Piecewise Linear Basis")
+plot_knots(knots_6, axs[1]);
+
+B3 = model_spline3.response_component.design.common[formula3]
+ax = plot_spline_basis(B3, df["X"].values, axs[2], 
+title="Cubic Spline Basis (6 Knots)")
+plot_knots(knots_6, axs[2]);
+
+B4 = model_spline4.response_component.design.common[formula4]
+ax = plot_spline_basis(B4, df["X"].values, axs[3], 
+title="Cubic Spline Basis (10 Knots)")
+plot_knots(knots_10, axs[3]);
+
+
+B5 = model_spline5.response_component.design.common[formula5]
+ax = plot_spline_basis(B5, df["X"].values, axs[4], 
+title="Cubic Spline Basis (15 Knots)")
+plot_knots(knots_15, axs[4]);
+
+
+
+```
+
+Now that we've seen the nature of the modelling splines we'll fit each model to the data and plot how the weighted splines matrices are able to represent the raw data. 
+
+### Fit the Individual Spline Models
+
+```{python}
+#| output: false
+
+idata_spline1 = model_spline1.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
+
+idata_spline2 = model_spline2.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
+
+idata_spline3 = model_spline3.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
+
+idata_spline4 = model_spline4.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
+
+idata_spline5 = model_spline5.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
+
+```
+
+Plotting the fits
+
+### Plot the Weighted Mean
+
+```{python}
+
+def plot_weighted_splines(B, idata, formula, ax, knots):
+    posterior_stacked = az.extract(idata)
+    wp = posterior_stacked[formula].mean("sample").values
+
+    plot_spline_basis(B * wp.T, df["X"].values, ax)
+    ax.plot(df.X.values, np.dot(B, wp.T), color="black", lw=3, label='Weighted Splines')
+    plot_knots(knots, ax);
+    ax.legend()
+
+
+
+fig, axs = plt.subplots(5, 1, figsize=(10, 20))
+axs = axs.flatten()
+axs.flatten()
+
+plot_weighted_splines(B1, idata_spline1, formula1, axs[0], knots_6)
+plot_weighted_splines(B2, idata_spline2, formula2, axs[1], knots_6)
+plot_weighted_splines(B3, idata_spline3, formula3, axs[2], knots_6)
+plot_weighted_splines(B4, idata_spline4, formula4, axs[3], knots_10)
+plot_weighted_splines(B5, idata_spline5, formula5, axs[4], knots_15)
+
+```
+
+Here we can see how the models with increasingly complex splines are more exactly able to fit the herky jerky trajectory of the outcome variable in each interval. The fewer the intervals, the less flexibility available to the model. 
+
+### Compare Model Fits
+
+As before we can evaluate these model fits and compare them based on leave-one-out cross validation scores and information theoretic complexity measures. 
+
+```{python}
+
+fig, axs = plt.subplots(2, 1, figsize=(9, 16))
+axs = axs.flatten()
+models_dict = {"piecewise_constant": idata_spline1, "piecewise_linear": idata_spline2, "cubic_bspline": idata_spline3, "cubic_bspline_10": idata_spline4, 
+"cubic_bspline_15": idata_spline5}
+df_compare = az.compare(models_dict)
+az.plot_compare(df_compare, ax=axs[0])
+az.plot_compare(az.compare(models_dict, 'waic'), ax=axs[1])
+
+df_compare
+
+
+```
+
+Here we see that the extra complexity of using 15 splines leads to slightly worse performance measures than the less complex but seemingly adequate 10 splines.
+
+
+```{python}
+
+new_data = pd.DataFrame({"X": np.linspace(df.X.min(), df.X.max(), num=500)})
+    
+model_spline4.predict(idata_spline4, data=new_data, 
+kind='pps', inplace=True)
+
+idata_spline4
+
+```
+
+Next we plot the posterior predictive distribution of our observed variable and compare against the observed data. Additionally we plot the 89th and 50% HDI. 
+
+```{python}
+
+ax = az.plot_hdi(new_data['X'], idata_spline4['posterior_predictive']['y'], fill_kwargs={'alpha': 0.2, 'color':'firebrick'}, hdi_prob=0.89, figsize=(10, 8))
+
+az.plot_hdi(new_data['X'], idata_spline4['posterior_predictive']['y'], fill_kwargs={'alpha': 0.8, 'color':'firebrick'}, hdi_prob=0.5)
+
+y_mean = idata_spline4['posterior_predictive']['y'].mean(dim=('chain', 'draw'))
+
+ax.plot(new_data['X'], y_mean, label='Expected posterior predictive', color='k')
+ax.set_xlabel("Time Point")
+ax.set_ylabel("Acceleration")
+
+ax.scatter(df['X'], df['y'], label='Observed Datapoints')
+
+ax.legend()
+
+ax.set_title("Posterior Predictive Distribution \n Based on 10 Knots");
+```
+
+This represents a good a clean model fit to the observed data using univariate spline smoothers. Next we'll see another alternative approach to model this outcome variable using approximate gaussian processes. 
+
+## Gaussian processes
+
+The topic of gaussian processes is rich and detailed. Too rich to be fairly covered in this blog post, so we'll just say that we're using a method designed for function approximation that makes use of drawing samples from a multivariate normal distribution under a range of different covariance relationships. 
+
+These relationships can be somewhat intuitively interrogated by defining different combinations of covariance relationships with priors over the parameters governing the covariance of a sequence of points. For example consider the following parameterisations. 
+```{python}
+
+
+lengthscale = 3
+sigma = 13
+cov = sigma**2 * pm.gp.cov.ExpQuad(1, lengthscale)
+
+X = np.linspace(0, 60, 200)[:, None]
+K = cov(X).eval()
+
+fig, ax = plt.subplots(figsize=(9, 7))
+ax.plot(
+    X,
+    pm.draw(
+        pm.MvNormal.dist(mu=np.zeros(len(K)), cov=K, shape=K.shape[0]), draws=10, random_seed=random_seed
+    ).T,
+)
+plt.title(f"Samples from the GP prior \n lengthscale: {3}, sigma: {13}")
+plt.ylabel("y")
+plt.xlabel("X");
+```
+
+We've specified the range of X to reflect the support of the acceleration example and allowed the draws to be informed by a covariance function we have parameterised using the Exponentiated Quadratic kernel:
+
+$$k(x, x') = \mathrm{exp}\left[ -\frac{(x - x')^2}{2 \ell^2} \right]$$
+
+The patterns exhibited show a good range of "wiggliness" that they should be flexible enough to capture the shape of the acceleration, if we can calibrate the posterior of parameters against the observed data. 
+
+### Priors on Gaussian Priors
+
+Consider the following specification:
+
+```{python}
+fig, ax = plt.subplots(figsize=(9, 7))
+ax.hist(pm.draw(pm.InverseGamma.dist(mu=1, sigma=1), 1000), ec='black', bins=30);
 
 ```
 
 
 ```{python}
-plt.figure(figsize=(10,20), dpi= 80)
-g = sns.pairplot(pisa[['Overall', 'Health', 'Support', 'Edu']], kind="reg", diag_kind='kde')
-g.fig.suptitle("Pair Plot of Score Metrics", y=1.08, fontsize=20)
-
-``` 
-
-
-```{python}
-
-model_df = pisa[['Overall', 'Edu', 'Health', 'Support', 'Income']].dropna()
-X = model_df[['Income', 'Edu', 'Health']].values
-y = model_df['Overall'].values
-gam = LinearGAM(s(0, n_splines=20) + s(1, n_splines=15) +s(2, n_splines=10)).fit(X, y)
-gam.gridsearch(X, y)
-
-
-gam.summary()
+fig, ax = plt.subplots(figsize=(9, 7))
+ax.hist(pm.draw(pm.Exponential.dist(lam=1), 1000), ec='black', bins=30);
 
 ```
 
+We use these to specify priors on the Hilbert space approximation of gaussian priors available in the `Bambi` package. 
 
 ```{python}
 
+prior_hsgp = {
+    "sigma": bmb.Prior("Exponential", lam=1), # amplitude
+    "ell": bmb.Prior("InverseGamma", mu=1, sigma=1) # lengthscale
+}
 
-
-```
-
-
-
-```{python}
-import statsmodels.api as sm
-
-sm.OLS(y, sm.add_constant(X)).fit().summary()
-
+# This is the dictionary we pass to Bambi
+priors = {
+    "hsgp(X, m=10, c=1)": prior_hsgp,
+    "sigma": bmb.Prior("HalfNormal", sigma=4)
+}
+model_hsgp = bmb.Model("y ~ 0 + hsgp(X, m=10, c=1)", df, priors=priors)
+model_hsgp
 
 
 ```
 
 
+Here we've set the `m=10` to determine the number of basis vectors used in the Hilbert space approximation. The idea differs in detail from the spline based approximations we've seen, but it's perhaps useful to think of the process in the same vein. 
 
 ```{python}
 
-fig, axs = plt.subplots(1,3);
-titles = ['Edu', 'Health', 'Support']
-for i, ax in enumerate(axs):
-    XX = gam.generate_X_grid(term=i)
-    ax.plot(XX[:, i], gam.partial_dependence(term=i, X=XX))
-    ax.plot(XX[:, i], gam.partial_dependence(term=i, X=XX, width=.95)[1], c='r', ls='--')
-    if i == 0:
-        ax.set_ylim(-30,70)
-    ax.set_title(titles[i]);
+idata = model_hsgp.fit(inference_method="nuts_numpyro",target_accept=0.95, random_seed=121195, 
+idata_kwargs={"log_likelihood": True})
+print(idata.sample_stats["diverging"].sum().to_numpy())
+
+```
+
+This model fits and the sampling seems to have worked well. 
+
+```{python}
+az.plot_trace(idata, backend_kwargs={"layout": "constrained"}, figsize=(9, 15));
 
 
+```
+
+The lengthscale and sigma parameters we have learned by calibrating our priors against the data. The degree to which these parameters are meaningful depend a little on how familar you are with covariance matrix kernels and their properties, so we won't dwell on the point here. 
+
+```{python}
+az.summary(idata, var_names=['hsgp(X, m=10, c=1)_ell', 'hsgp(X, m=10, c=1)_sigma', 'y_sigma', 'hsgp(X, m=10, c=1)_weights'])
+
+
+```
+
+But again we can sample from the posterior predictive distribution of the outcome variable 
+
+```{python}
+
+model_hsgp.predict(idata, data=new_data, 
+kind='pps', inplace=True)
+
+idata
+```
+
+and plot the model fit to see if it can recover the observed data. 
+
+```{python}
+
+ax = az.plot_hdi(new_data['X'], idata['posterior_predictive']['y'], fill_kwargs={'alpha': 0.2, 'color':'firebrick'}, figsize=(9, 8))
+
+az.plot_hdi(new_data['X'], idata['posterior_predictive']['y'], fill_kwargs={'alpha': 0.8, 'color':'firebrick'}, hdi_prob=0.5)
+
+y_mean = idata['posterior_predictive']['y'].mean(dim=('chain', 'draw'))
+
+ax.plot(new_data['X'], y_mean, label='Expected posterior predictive', color='k')
+
+ax.scatter(df['X'], df['y'], label='Observed Datapoints')
+
+ax.legend()
+
+ax.set_title("Posterior Predictive Distribution \n Based on HSGP approximation")
+
+
+```
+
+And we can compare versus the spline models to see that by the aggregate performance measures our HSGP model seems to come out on top. 
+
+```{python}
+
+models_dict = {"piecewise_constant": idata_spline1, "piecewise_linear": idata_spline2, "cubic_bspline": idata_spline3, "cubic_bspline_10": idata_spline4, 
+"cubic_bspline_15": idata_spline5, 'hsgp': idata}
+df_compare = az.compare(models_dict)
+df_compare
+
+
+```
+
+### Recap
+
+So far we've seen how we can use splines and gauassian processes to model highly eccentric functional relationships where the function could be approximated with univariate smoothing routine. Next we'll show how to use hierarchical modelling over spline fits to extract insight into the data generating process over a family of curves. In particular we'll focus on the development of insurance loss curves. 
+
+## Insurance Loss Curves: Hierarchical Spline Models
+
+We draw on car insurance losses data set discussed in Mick Cooney's Stan case-study, but we simplify things for ourselves considerably by focusing on one type of loss and ensuring that each year under consideration has equal observations of the accruing losses. 
+
+```{python}
+
+loss_df = pd.read_csv('ppauto_pos.csv')
+loss_df = loss_df[(loss_df['GRCODE'].isin([43, 353])) & (loss_df['DevelopmentYear'] < 1998)]
+
+loss_df = loss_df[['GRCODE', 'AccidentYear', 'DevelopmentYear', 'DevelopmentLag', 'EarnedPremDIR_B', 'CumPaidLoss_B']]
+
+
+loss_df.columns = ['grcode', 'acc_year', 'dev_year', 'dev_lag', 'premium', 'cum_loss']
+loss_df['lr'] = loss_df['cum_loss'] / loss_df['premium']
+loss_df = loss_df[(loss_df['acc_year'] <= 1992) & (loss_df['dev_lag'] <= 6)].reset_index(drop=True)
+
+loss_df['year_code'] = loss_df['acc_year'].astype(str) + '_' + loss_df['grcode'].astype(str)
+loss_df.sort_values(by=['year_code', 'acc_year', 'dev_lag'], inplace=True)
+loss_df['standardised_premium'] = (loss_df.assign(mean_premium = np.mean(loss_df['premium']))
+.assign(std_premium = np.std(loss_df['premium']))
+.apply(lambda x: (x['mean_premium'] - x['premium']) /x['std_premium'], axis=1)
+)
+
+loss_df.head(12)
+
+```
+
+### Plot the Loss Curves
+Here we have plotted the developing loss curves from two different coded insurance products. 
+
+```{python}
+
+
+ax = (loss_df.pivot(index=['dev_lag'], columns=['grcode', 'acc_year'], values='lr')).plot(figsize=(10, 6))
+ax.set_title("Loss Ratios by Year");
 
 
 
 ```
+
+We want to model these curves collectively as instances of draws from a distribution of loss curves. To do so we will specify a `PyMC` hierarchical (mixed) spline model. To do so we will have a spline basis for the global hyper parameters `beta_g` and the individual parameters for each curve. Here we define a convenience function to generate the basis splines. 
+
+```{python}
+from patsy import bs, dmatrix
+
+def make_basis_splines(num_knots=3, max_dev=7):
+    knot_list = np.linspace(0, max_dev, num_knots+2)[1:-1]
+    dev_periods = np.arange(1, max_dev, 1)
+
+    Bi = dmatrix(
+        "bs(dev_periods, knots=knots, degree=3, include_intercept=True) - 1",
+        {"dev_periods": dev_periods, "knots": knot_list},
+    )
+
+    Bg = dmatrix(
+        "bs(dev_periods, knots=knots, degree=3, include_intercept=True) - 1",
+        {"dev_periods": dev_periods, "knots": knot_list})
+
+
+    return Bi, Bg
+
+Bi, Bg = make_basis_splines()
+Bg
+```
+
+Next we specify a model maker function to create the various pooled, unpooled and hierarhical (mixed) models of the insurance curve data. Note that even though we're specifying a hierarhical model we have not specified a hierarchy over the insurance codes, instead we have added this as a "fixed" effect feature into our regression model.
+
+
+```{python}
+
+#| output: false
+
+def make_model(loss_df, num_knots=3, max_dev=7, model_type='mixed'):
+    Bi, Bg = make_basis_splines(num_knots, max_dev)
+    observed = loss_df['lr'].values
+    uniques, unique_codes = pd.factorize(loss_df['year_code'])
+    coords= {'years': unique_codes, 
+            'splines': list(range(Bi.shape[1])) ,
+            'measurement': list(range(6)), 
+            'obs': uniques
+            }
+
+    with pm.Model(coords=coords) as sp_insur:
+        basis_g = pm.MutableData('Bg', np.asfortranarray(Bg))
+
+        tau = pm.HalfCauchy('tau', 1)
+        ## Global Hierarchical Spline Terms
+        beta_g = pm.Normal("beta_g", mu=0, sigma=tau, 
+        dims='splines')
+        mu_g = pm.Deterministic("mu_g", pm.math.dot(basis_g, beta_g), dims='measurement')
+
+        ## Individual or Year Specific Spline Modifications
+        if model_type in ['mixed', 'unpooled']:
+            basis_i = pm.MutableData('Bi', np.asfortranarray(Bi))
+            beta = pm.Normal("beta", mu=0, sigma=tau, dims=('splines', 'years'))
+            mui = pm.Deterministic("mui", pm.math.dot(basis_i, beta), dims=('measurement', 'years'))
+        
+        ## Features
+        prem = pm.MutableData('prem', loss_df['standardised_premium'].values)
+        grcode = pm.MutableData('grcode', loss_df['grcode'] == 43)
+
+        beta_prem = pm.Normal('beta_prem', 0, 1)
+        beta_grcode = pm.Normal('beta_grcode', 0, 1)
+        mu_prem = beta_prem*prem
+        mu_grcode = beta_grcode*grcode
+
+        ## Likelihood
+        sigma = pm.TruncatedNormal("sigma", 1, lower=0.05)
+        if model_type == 'mixed':
+            mu = pm.Deterministic('mu',  mu_grcode + mu_prem + (mu_g.T + mui.T).ravel(), dims='obs')
+            lr_likelihood = pm.Normal("lr", mu, sigma, observed=observed, dims=('obs'))
+        elif model_type == 'pooled': 
+             lr_likelihood = pm.Normal("lr",  np.repeat(mu_g, len(unique_codes)), sigma, observed=observed, dims='obs')
+        elif model_type == 'unpooled':
+            lr_likelihood = pm.Normal("lr",  mui.T.ravel(), sigma, observed=observed, dims=('obs'))
+
+
+        ## Sampling
+        idata_sp_insur = pm.sample(2000, return_inferencedata=True, target_accept=.99,
+        idata_kwargs={"log_likelihood": True})
+        idata_sp_insur = pm.sample_posterior_predictive(
+            idata_sp_insur,extend_inferencedata=True)
+
+    return idata_sp_insur, sp_insur
+
+
+idata_sp_insur_unpooled, sp_insur_unpooled = make_model(loss_df, model_type='unpooled')
+idata_sp_insur_pooled, sp_insur_pooled = make_model(loss_df, model_type='pooled')
+idata_sp_insur_mixed, sp_insur_mixed = make_model(loss_df, model_type='mixed')
+
+```
+
+The model structure can be seen more clearly in this graph
+
+```{python}
+
+pm.model_to_graphviz(sp_insur_mixed)
+
+
+```
+
+We can extract the effect of the differences grcodes and examine the baseline and annual spline related coefficients. 
+
+```{python}
+
+summary = az.summary(idata_sp_insur_mixed, var_names=['beta_grcode', 'beta_prem', 'beta_g', 'beta'])
+
+summary
+
+```
+
+Again we can compare the performance metrics of the various models. 
+
+```{python}
+
+compare_df = az.compare({'unpooled': idata_sp_insur_unpooled, 
+            'pooled': idata_sp_insur_pooled, 
+            'mixed': idata_sp_insur_mixed})
+
+compare_df
+
+```
+
+### Plot the Posterior Predictive Checks
+
+We can check how well the model can recapture the observed data.
+
+```{python}
+
+def plot_ppc_splines(idata):
+    fig, axs = plt.subplots(5, 2, figsize=(9, 30), sharey=True)
+    axs = axs.flatten()
+    dev_periods = np.arange(1, 7, 1)
+    uniques, unique_codes = pd.factorize(loss_df['year_code'])
+    for y, c in zip(unique_codes, range(10)):
+        az.plot_hdi(dev_periods, idata['posterior_predictive']['lr'].sel(obs=c), color='firebrick', ax=axs[c], fill_kwargs={'alpha': 0.2}, hdi_prob=.89)
+        az.plot_hdi(dev_periods, idata['posterior_predictive']['lr'].sel(obs=c), color='firebrick', ax=axs[c], hdi_prob=0.5)
+        axs[c].scatter(dev_periods, loss_df[(loss_df['year_code'] == y)]['lr'], color='k', label='Actual Loss Ratio')
+        axs[c].plot(dev_periods, loss_df[(loss_df['year_code'] == y)]['lr'], color='k')
+        axs[c].set_title(f"Posterior Predictive Loss Ratio \n 89% and 50% HDI: {y}")
+        axs[c].legend()
+        axs[c].set_xlabel('Default Lag');
+
+plot_ppc_splines(idata_sp_insur_mixed)
+
+```
+
+### Plot the Hierarchical Components
+
+In the following plot we show similarly how to recapture the observed data, but additionally we decompose the structure of the model in each case and extract baseline forecasts which would be our guide to future loss-ratio development curves in lieu of any other information. 
+
+```{python}
+
+mu_g = idata_sp_insur_mixed.posterior.stack(draws=("chain", "draw"))["mu_g"]
+
+mu_i = idata_sp_insur_mixed.posterior.stack(draws=("chain", "draw"))["mui"]
+
+mu  = idata_sp_insur_mixed.posterior.stack(draws=("chain", "draw"))['mu']
+
+beta_grcode = idata_sp_insur_mixed.posterior.stack(draws=("chain", "draw"))['beta_grcode']
+
+dev_periods = np.arange(1, 7, 1)
+uniques, unique_codes = pd.factorize(loss_df['year_code'])
+
+mosaic = """
+         AB
+         CD
+         EF
+         GH
+         IJ
+         KK
+"""
+fig, axs = plt.subplot_mosaic(mosaic, sharey=True, 
+figsize=(9, 30))
+axs = [axs[k] for k in axs.keys()] 
+
+mu_g_mean = mu_g.mean(dim='draws')
+for y, c in zip(unique_codes, range(10)):
+    group_effect = 0
+    if '43' in y: 
+        group_effect = beta_grcode.mean().item()
+    mu_i_mean = mu_i.sel(years=y).mean(dim='draws')
+    axs[c].plot(dev_periods, group_effect + mu_g_mean.values + mu_i_mean.values, label='Combined + E(grp_effect)', color='purple', linewidth=3.5)
+    axs[c].plot(dev_periods, group_effect + mu_g_mean.values, label='E(Hierarchical Baseline)', color='red', linestyle='--')
+    axs[c].plot(dev_periods,  group_effect + mu_i_mean.values, label='E(Year Specific Adjustment term)', color='blue', linestyle='--')
+    axs[c].scatter(dev_periods, loss_df[(loss_df['year_code'] == y)]['lr'], color='k', label='Actual Loss Ratio')
+    axs[c].legend()
+    az.plot_hdi(dev_periods,mu.sel(obs=c).T  , ax=axs[c], color='firebrick', fill_kwargs={'alpha': 0.2})
+    az.plot_hdi(dev_periods, mu.sel(obs=c).T , ax=axs[c], color='firebrick', fill_kwargs={'alpha': 0.5}, hdi_prob=.50)
+    axs[c].set_title(f"Components for Year {y}")
+
+axs[10].plot(dev_periods, mu_g_mean.values, label='E(Hierarchical Baseline)', color='black')
+axs[10].plot(dev_periods, mu_g_mean.values + group_effect, label='E(Hierarchical Baseline) + E(grp_effect)', color='black', linestyle='--')
+az.plot_hdi(dev_periods, mu_g.T.values, color='slateblue', ax=axs[10], fill_kwargs={'alpha': 0.2})
+az.plot_hdi(dev_periods, mu_g.T.values + group_effect, color='magenta', ax=axs[10], fill_kwargs={'alpha': 0.2})
+az.plot_hdi(dev_periods, mu_g.T.values, color='slateblue', ax=axs[10], hdi_prob=.5)
+az.plot_hdi(dev_periods, mu_g.T.values  + group_effect, color='magenta', ax=axs[10], hdi_prob=.5)
+axs[10].set_title("Baseline Forecast Loss Ratio \n with Uncertainty Intervals")
+axs[10].legend();
+
+
+```
+
+This plot is a bit clunky, because we're mixing expectations and posterior distributions over the parameters. The point is just to highlight the "compositional" structure of our model. A better way to interrogate the implications of the model is to "push" forward different data through the posterior predictive distribution and derive a kind of ceteris paribus rule for accrual of losses. We d
+
+```{python}
+
+with sp_insur_mixed: 
+    pm.set_data({'grcode': np.ones(len(loss_df)), 
+    })
+    idata_43 = pm.sample_posterior_predictive(idata_sp_insur_mixed, var_names=['lr'], extend_inferencedata =True)
+
+with sp_insur_mixed: 
+    pm.set_data({'grcode': np.zeros(len(loss_df))})
+    idata_353 = pm.sample_posterior_predictive(idata_sp_insur_mixed, var_names=['lr'], extend_inferencedata=True)
+
+idata_353
+
+```
+
+Even here though we want to average the curves over the specific years in the data and abstract a view of the model implications under different counterfactual settings. Here we define a helper function to effect this step. 
+
+```{python}
+
+def get_posterior_predictive_curve(idata, prem=2, grcode=1):
+    weighted_splines = [np.dot(np.asfortranarray(Bi), az.extract(idata['posterior']['beta'])['beta'].values[:, :, i]) for i in range(1000)]
+
+    weighted_splines_1 = [np.dot(np.asfortranarray(Bg), az.extract(idata['posterior']['beta_g'])['beta_g'].values[:, i]) for i in range(1000)]
+
+    beta_grcode = az.extract(idata['posterior']['beta_grcode'])['beta_grcode']
+
+    beta_prem = az.extract(idata['posterior']['beta_prem'])['beta_prem']
+    df1 = pd.DataFrame([beta_prem.values[i]*prem + beta_grcode.values[i]*grcode for i in range(1000)]).T
+
+    ## Crucial step averaging over the years to get
+    ## a view of the development period
+    df = pd.concat([pd.DataFrame(weighted_splines_1[i].T + weighted_splines[i].T).mean() for i in range(1000)], axis=1)
+
+    df = df1.iloc[0] + df
+
+    return df
+
+pred_df_1 = get_posterior_predictive_curve(idata_43, prem=1, grcode=1)
+
+pred_df_0 = get_posterior_predictive_curve(idata_353, prem=1, grcode=0) 
+
+fig, ax = plt.subplots(figsize=(9, 7), sharey=True)
+
+
+ax.plot(pred_df_1, color='firebrick', alpha=0.1)
+ax.plot(pred_df_0, color='slateblue', alpha=0.2);
+ax.plot(pred_df_0.mean(axis=1), linestyle='-', color='k', linewidth=4, label='grcode 353 prem 1')
+
+ax.plot(pred_df_1.mean(axis=1), linestyle='--', color='grey', linewidth=4, label='grcode 43 prem 1')
+
+ax.set_title("Posterior Samples of the Trajectories \n Under different Counterfactual settings")
+ax.set_ylabel("Loss Ratio")
+ax.set_xlabel("Development Period")
+ax.legend();
+
+```
+
+
+## Conclusion
+
+We've seen the application of splines as univariate smoothers to approximate wiggly curves of arbitrary shape. We've also tried gaussian process approximations of the same univariate functions. The suggested flexibility of both
+methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we incorporate spline basis modelling in a hierarchical bayesian model and recover very compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts. 
