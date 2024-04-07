@@ -889,9 +889,6 @@ spline_model.graph()
 
 base_idata = base_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
 spline_idata = spline_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True}, target_accept=.95)
-base_model.predict(base_idata, kind='pps')
-spline_model.predict(spline_idata, kind='pps')
-
 
 ```
 
@@ -924,6 +921,9 @@ az.summary(spline_idata)
 We can also check that the model seems to recover the observed data well. 
 
 ```{python}
+base_model.predict(base_idata, kind='pps')
+spline_model.predict(spline_idata, kind='pps')
+
 fig, axs = plt.subplots(2, 1, figsize=(8, 12))
 axs = axs.flatten()
 az.plot_ppc(base_idata, ax=axs[0])
@@ -931,11 +931,59 @@ az.plot_ppc(spline_idata, ax=axs[1])
 
 ```
 
-Next we'll dig into the spline basis features and decompose the predicted outcome. 
+Next we'll dig into the spline basis features and decompose the predicted outcome and show how the outcome varies for levels in the inputs variables. The Bambi interpret package offers some functionality to assess the conditional predictions for varying values of the input variables. 
+
+```{python}
+
+
+fig, axs = plt.subplots(3, 1, figsize=(9, 10))
+axs = axs.flatten()
+bmb.interpret.plot_predictions(
+    spline_model, spline_idata, "Income", ax=axs[0]
+)
+
+bmb.interpret.plot_predictions(
+    spline_model, spline_idata, "Edu", ax=axs[1]
+)
+
+bmb.interpret.plot_predictions(
+    spline_model, spline_idata, "Health", ax=axs[2]
+)
+
+```
+
+We can pull these types of values out into a table. Note here how we ask for predictions based on varying values of the `Edu` and `Income` variables where we keep the `Health` variable fixed at the mean value. 
+
+
+```{python}
+
+summary_df = bmb.interpret.predictions(
+    spline_model,
+    spline_idata,
+    conditional={
+        "Edu": list(np.linspace(0.5, 1, 10)),
+        "Income": list(np.linspace(0.4, 1, 10)),
+        },
+)
+summary_df
+
+
+```
+
+We can then plot these results based on the conditional realisations and see some interesting behaviour at the implausilble reaslisations. This should make us somewhat wary of using this model to extrapolate too far beyond the observable range of data
+
+```{python}
+
+g = sns.relplot(data=summary_df, x="Income", y="estimate", hue="Edu")
+
+g.fig.suptitle("Marginal Predictions of the Outcome Variable \n conditional on counterfactual values for Edu and Income", y=1.05)
+
+```
+
 
 ### The Component Contributions
 
-This will also serve as a kind of posterior predictive check for each country as we can show the degree which posterior draws from each component sum to achieve a plausible mirror of the observed data.  
+Finally, we'll pull out the component contributions of each variable and see how they combine additively. This will also serve as a kind of posterior predictive check for each country as we can show the degree which posterior draws from each component sum to achieve a plausible mirror of the observed data.  
 
 
 ```{python}
