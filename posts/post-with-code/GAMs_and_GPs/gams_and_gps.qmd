@@ -1,7 +1,6 @@
 ---
-title: "GAMs and GPs"
-author: "Nathaniel Forde"
-date: "2024-02-15"
+title: "GAMs and GPs: Flexibility and Calibration"
+date: "2024-04-07"
 categories: ["probability", "generalised additive models", "gaussian processes"]
 keep-ipynb: true
 self-contained: true
@@ -10,6 +9,10 @@ execute:
   enabled: true
 jupyter: pymc_causal
 image: "Spline.png"
+author:
+    - url: https://nathanielf.github.io/
+    - affiliation: PyMC dev
+citation: true
 ---
 
 
