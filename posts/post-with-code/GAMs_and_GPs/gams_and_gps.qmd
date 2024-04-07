@@ -33,9 +33,11 @@ warnings.simplefilter('ignore')
 
 ```
 
-# Flexibility and Calibration
+# GAMs and GPs: Flexibility and Calibration
 
-In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before preceding to look Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC` 
+Flexible Spline models risk overfit and need to be carefully calibrated against real data.
+
+In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before preceding to look Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
 
 Our interest in these models stems from their flexibility to approximate functions of arbitrary complexity. We'll see how the methods work in the case of relatively straightforward toy example and then we'll apply each of the methods to deriving insights into the functional form of insurance loss curves. In this application we adapt a data set discussed in Mick Cooney's `Stan` [case study](https://mc-stan.org/users/documentation/case-studies/losscurves_casestudy.html) to demonstrate the power of hierarchical spline models. Throughout we'll draw on the discussion of these methods in Osvaldo Martin's _"Bayesian Analysis with Python"_ for practical details implementing these models. 
 
@@ -334,14 +336,14 @@ As before we can evaluate these model fits and compare them based on leave-one-o
 
 ```{python}
 
-fig, axs = plt.subplots(2, 1, figsize=(9, 16))
+fig, axs = plt.subplots(1, 2, figsize=(10, 7))
 axs = axs.flatten()
 models_dict = {"piecewise_constant": idata_spline1, "piecewise_linear": idata_spline2, "cubic_bspline": idata_spline3, "cubic_bspline_10": idata_spline4, 
 "cubic_bspline_15": idata_spline5}
 df_compare = az.compare(models_dict)
 az.plot_compare(df_compare, ax=axs[0])
 az.plot_compare(az.compare(models_dict, 'waic'), ax=axs[1])
-
+axs[1].set_yticklabels([])
 df_compare
 
 
@@ -419,20 +421,18 @@ The patterns exhibited show a good range of "wiggliness" that they should be fle
 
 ### Priors on Gaussian Priors
 
-Consider the following specification:
+Consider the following specification for the priors
 
 ```{python}
-fig, ax = plt.subplots(figsize=(9, 7))
-ax.hist(pm.draw(pm.InverseGamma.dist(mu=1, sigma=1), 1000), ec='black', bins=30);
+fig, axs = plt.subplots(1, 2, figsize=(9, 6))
+axs = axs.flatten()
+axs[0].hist(pm.draw(pm.InverseGamma.dist(mu=1, sigma=1), 1000), ec='black', bins=30);
+axs[0].set_title("Priors for Lengthscale \n in ExpQuad Kernel")
+axs[1].hist(pm.draw(pm.Exponential.dist(lam=1), 1000), ec='black', bins=30);
+axs[1].set_title("Priors for Amplitude \n in ExpQuad Kernel")
 
 ```
 
-
-```{python}
-fig, ax = plt.subplots(figsize=(9, 7))
-ax.hist(pm.draw(pm.Exponential.dist(lam=1), 1000), ec='black', bins=30);
-
-```
 
 We use these to specify priors on the Hilbert space approximation of gaussian priors available in the `Bambi` package. 
 
@@ -530,7 +530,7 @@ So far we've seen how we can use splines and gauassian processes to model highly
 
 ## Insurance Loss Curves: Hierarchical Spline Models
 
-We draw on car insurance losses data set discussed in Mick Cooney's Stan case-study, but we simplify things for ourselves considerably by focusing on one type of loss and ensuring that each year under consideration has equal observations of the accruing losses. 
+We draw on car insurance losses data set discussed in Mick Cooney's Stan case-study, but we simplify things for ourselves considerably by focusing on two types of loss and ensuring that each year under consideration has equal observations of the accruing losses. 
 
 ```{python}
 
@@ -555,14 +555,24 @@ loss_df.head(12)
 
 ```
 
-### Plot the Loss Curves
+### Plot the Loss Curves
 Here we have plotted the developing loss curves from two different coded insurance products. 
 
 ```{python}
 
 
-ax = (loss_df.pivot(index=['dev_lag'], columns=['grcode', 'acc_year'], values='lr')).plot(figsize=(10, 6))
-ax.set_title("Loss Ratios by Year");
+pivot = loss_df.pivot(index=['dev_lag'], columns=['grcode', 'acc_year'], values='lr')
+fig, axs = plt.subplots(1, 2, figsize=(9, 7))
+pivot.plot(figsize=(10, 6), ax=axs[0])
+axs[0].set_title("Loss Ratios by Year");
+for c in pivot.columns:
+    if 43 in c:
+        color='red'
+    else: 
+        color='grey'
+    axs[1].plot(pivot[c], color=color, label=c)
+axs[1].legend()
+axs[1].set_title("Loss Ratio by Group")
 
 
 
@@ -593,7 +603,7 @@ Bi, Bg = make_basis_splines()
 Bg
 ```
 
-Next we specify a model maker function to create the various pooled, unpooled and hierarhical (mixed) models of the insurance curve data. Note that even though we're specifying a hierarhical model we have not specified a hierarchy over the insurance codes, instead we have added this as a "fixed" effect feature into our regression model.
+Next we specify a model maker function to create the various pooled, unpooled and hierarhical (mixed) models of the insurance curve data. Note that even though we're specifying a hierarhical model we have not specified a hierarchy over the insurance codes, instead we have added this as a "fixed" effect feature into our regression model. The idea is that this fixed effect will capture the differences in expected baseline per group code of insurance product. 
 
 
 ```{python}
@@ -687,6 +697,7 @@ compare_df = az.compare({'unpooled': idata_sp_insur_unpooled,
             'pooled': idata_sp_insur_pooled, 
             'mixed': idata_sp_insur_mixed})
 
+az.plot_compare(compare_df)
 compare_df
 
 ```
@@ -698,7 +709,7 @@ We can check how well the model can recapture the observed data.
 ```{python}
 
 def plot_ppc_splines(idata):
-    fig, axs = plt.subplots(5, 2, figsize=(9, 30), sharey=True)
+    fig, axs = plt.subplots(5, 2, figsize=(9, 20), sharey=True)
     axs = axs.flatten()
     dev_periods = np.arange(1, 7, 1)
     uniques, unique_codes = pd.factorize(loss_df['year_code'])
@@ -707,9 +718,9 @@ def plot_ppc_splines(idata):
         az.plot_hdi(dev_periods, idata['posterior_predictive']['lr'].sel(obs=c), color='firebrick', ax=axs[c], hdi_prob=0.5)
         axs[c].scatter(dev_periods, loss_df[(loss_df['year_code'] == y)]['lr'], color='k', label='Actual Loss Ratio')
         axs[c].plot(dev_periods, loss_df[(loss_df['year_code'] == y)]['lr'], color='k')
-        axs[c].set_title(f"Posterior Predictive Loss Ratio \n 89% and 50% HDI: {y}")
-        axs[c].legend()
-        axs[c].set_xlabel('Default Lag');
+        axs[c].set_title(f"PPC 89% and 50% HDI: {y}")
+        axs[c].set_ylabel("Loss Ratio")
+        axs[c].legend();
 
 plot_ppc_splines(idata_sp_insur_mixed)
 
@@ -741,7 +752,7 @@ mosaic = """
          KK
 """
 fig, axs = plt.subplot_mosaic(mosaic, sharey=True, 
-figsize=(9, 30))
+figsize=(9, 20))
 axs = [axs[k] for k in axs.keys()] 
 
 mu_g_mean = mu_g.mean(dim='draws')
@@ -754,10 +765,12 @@ for y, c in zip(unique_codes, range(10)):
     axs[c].plot(dev_periods, group_effect + mu_g_mean.values, label='E(Hierarchical Baseline)', color='red', linestyle='--')
     axs[c].plot(dev_periods,  group_effect + mu_i_mean.values, label='E(Year Specific Adjustment term)', color='blue', linestyle='--')
     axs[c].scatter(dev_periods, loss_df[(loss_df['year_code'] == y)]['lr'], color='k', label='Actual Loss Ratio')
-    axs[c].legend()
     az.plot_hdi(dev_periods,mu.sel(obs=c).T  , ax=axs[c], color='firebrick', fill_kwargs={'alpha': 0.2})
     az.plot_hdi(dev_periods, mu.sel(obs=c).T , ax=axs[c], color='firebrick', fill_kwargs={'alpha': 0.5}, hdi_prob=.50)
     axs[c].set_title(f"Components for Year {y}")
+    axs[c].set_ylabel("Loss Ratio")
+    if (c == 0) or (c == 1):
+         axs[c].legend()
 
 axs[10].plot(dev_periods, mu_g_mean.values, label='E(Hierarchical Baseline)', color='black')
 axs[10].plot(dev_periods, mu_g_mean.values + group_effect, label='E(Hierarchical Baseline) + E(grp_effect)', color='black', linestyle='--')
@@ -765,13 +778,13 @@ az.plot_hdi(dev_periods, mu_g.T.values, color='slateblue', ax=axs[10], fill_kwar
 az.plot_hdi(dev_periods, mu_g.T.values + group_effect, color='magenta', ax=axs[10], fill_kwargs={'alpha': 0.2})
 az.plot_hdi(dev_periods, mu_g.T.values, color='slateblue', ax=axs[10], hdi_prob=.5)
 az.plot_hdi(dev_periods, mu_g.T.values  + group_effect, color='magenta', ax=axs[10], hdi_prob=.5)
-axs[10].set_title("Baseline Forecast Loss Ratio \n with Uncertainty Intervals")
+axs[10].set_title("Baseline Forecast Loss Ratio")
 axs[10].legend();
 
 
 ```
 
-This plot is a bit clunky, because we're mixing expectations and posterior distributions over the parameters. The point is just to highlight the "compositional" structure of our model. A better way to interrogate the implications of the model is to "push" forward different data through the posterior predictive distribution and derive a kind of ceteris paribus rule for accrual of losses. We d
+This plot is a bit clunky, because we're mixing expectations and posterior distributions over the parameters. The point is just to highlight the "compositional" structure of our model. A better way to interrogate the implications of the model is to "push" forward different data through the posterior predictive distribution and derive a kind of ceteris paribus rule for accrual of losses.
 
 ```{python}
 
@@ -788,7 +801,7 @@ idata_353
 
 ```
 
-Even here though we want to average the curves over the specific years in the data and abstract a view of the model implications under different counterfactual settings. Here we define a helper function to effect this step. 
+Even here though we want to average the curves over the specific years in the data and abstract a view of the model implications under different counterfactual settings. Or put another way we a view of the average development curve between years not within a year. Here we define a helper function to effect this step. 
 
 ```{python}
 
@@ -848,9 +861,6 @@ pisa_df
 The relationships displayed between each of these measures is not obviously linear, and as such could plausibly benefit from being modelled with splines. 
 
 ```{python}
-
-
-
 g = sns.pairplot(pisa_df[['Overall', 'Income', 'Support', 'Health', 'Edu']],  kind="reg")
 g.fig.suptitle("Pair Plot of Complex Relations", y=1.05);
 
@@ -920,6 +930,8 @@ az.summary(spline_idata)
 
 We can also check that the model seems to recover the observed data well. 
 
+### Plotting Posterior Predictive Checks
+
 ```{python}
 base_model.predict(base_idata, kind='pps')
 spline_model.predict(spline_idata, kind='pps')
@@ -927,11 +939,16 @@ spline_model.predict(spline_idata, kind='pps')
 fig, axs = plt.subplots(2, 1, figsize=(8, 12))
 axs = axs.flatten()
 az.plot_ppc(base_idata, ax=axs[0])
-az.plot_ppc(spline_idata, ax=axs[1])
+az.plot_ppc(spline_idata, ax=axs[1]);
+axs[0].set_xlabel('')
+axs[1].set_title("PPC: Spline Model");
+axs[0].set_title("PPC: Regression Model");
 
 ```
 
 Next we'll dig into the spline basis features and decompose the predicted outcome and show how the outcome varies for levels in the inputs variables. The Bambi interpret package offers some functionality to assess the conditional predictions for varying values of the input variables. 
+
+### Model Interpretability Plots in Bambi
 
 ```{python}
 
@@ -948,7 +965,8 @@ bmb.interpret.plot_predictions(
 
 bmb.interpret.plot_predictions(
     spline_model, spline_idata, "Health", ax=axs[2]
-)
+);
+axs[0].set_title("Predictions over the Range of Observed Covariate Values");
 
 ```
 
@@ -976,12 +994,12 @@ We can then plot these results based on the conditional realisations and see som
 
 g = sns.relplot(data=summary_df, x="Income", y="estimate", hue="Edu")
 
-g.fig.suptitle("Marginal Predictions of the Outcome Variable \n conditional on counterfactual values for Edu and Income", y=1.05)
+g.fig.suptitle("Marginal Predictions of the Outcome Variable \n conditional on counterfactual values for Edu and Income", y=1.05);
 
 ```
 
 
-### The Component Contributions
+### The Spline Component Contributions
 
 Finally, we'll pull out the component contributions of each variable and see how they combine additively. This will also serve as a kind of posterior predictive check for each country as we can show the degree which posterior draws from each component sum to achieve a plausible mirror of the observed data.  
 
@@ -1008,7 +1026,7 @@ health = np.dot(Bhealth, health_coefs).T
 
 intercept = az.extract(spline_idata['posterior']['Intercept'])['Intercept'].values
 
-fig, ax = plt.subplots(figsize=(9, 7))
+fig, ax = plt.subplots(figsize=(10, 7))
 for i in range(100):
     if i == 1:
         ax.plot(income[i], label='Income Component', color='red')
@@ -1028,9 +1046,8 @@ ax.set_xticklabels(pisa_df.dropna(axis=0).reset_index()['Country']);
 
 ```
 
-We can see here how the combined components borrow the structure of the outcome variable primarily from the income variable. The health measures have closter to zero additive contribution while the uncertainty in the educational component varies wildly. But the blue educational component here is used primarily as a scaling contribution which adds to the level of the outcome variable rather than distorting the shape. 
+We can see here how the combined components borrow the structure of the outcome variable primarily from the income variable component. The health measures have closer to zero additive contribution while the uncertainty in the educational component varies wildly. But the blue educational component here is used primarily as a scaling contribution which adds to the level of the outcome variable rather than distorting the shape. 
 
 ## Conclusion
 
-We've seen the application of splines as univariate smoothers to approximate wiggly curves of arbitrary shape. We've also tried gaussian process approximations of the same univariate functions. The suggested flexibility of both
-methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we incorporate spline basis modelling in a hierarchical bayesian model and recover very compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts of insurance loss curves. Finally we showed how splines can be used additively to model non-linear functions of multiple covariates. These are a powerful tool to interrogate complex non-linear relationships. 
+We've seen the application of splines as univariate smoothers to approximate wiggly curves of arbitrary shape. We've also tried gaussian process approximations of the same univariate functions. The suggested flexibility of both methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we can incorporate spline basis modelling in a hierarchical bayesian model and recover more compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts of insurance loss curves. Finally we showed how splines can be used additively to model non-linear functions of multiple covariates. These are a powerful tool to interrogate complex non-linear relationships, but they offer interpolation of functions within a well understood domain. Applealing to these models for extrapolation needs to be done carefully.
