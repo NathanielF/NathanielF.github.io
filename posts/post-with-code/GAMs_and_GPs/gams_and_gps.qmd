@@ -571,19 +571,19 @@ ax.set_title("Loss Ratios by Year");
 We want to model these curves collectively as instances of draws from a distribution of loss curves. To do so we will specify a `PyMC` hierarchical (mixed) spline model. To do so we will have a spline basis for the global hyper parameters `beta_g` and the individual parameters for each curve. Here we define a convenience function to generate the basis splines. 
 
 ```{python}
-from patsy import bs, dmatrix
+from patsy import bs as bs_patsy, dmatrix
 
 def make_basis_splines(num_knots=3, max_dev=7):
     knot_list = np.linspace(0, max_dev, num_knots+2)[1:-1]
     dev_periods = np.arange(1, max_dev, 1)
 
     Bi = dmatrix(
-        "bs(dev_periods, knots=knots, degree=3, include_intercept=True) - 1",
+        "bs_patsy(dev_periods, knots=knots, degree=3, include_intercept=True) - 1",
         {"dev_periods": dev_periods, "knots": knot_list},
     )
 
     Bg = dmatrix(
-        "bs(dev_periods, knots=knots, degree=3, include_intercept=True) - 1",
+        "bs_patsy(dev_periods, knots=knots, degree=3, include_intercept=True) - 1",
         {"dev_periods": dev_periods, "knots": knot_list})
 
 
@@ -830,8 +830,159 @@ ax.legend();
 
 ```
 
+## Multiple Smoother Regression Models
+
+To demonstrate how spline modelling can be further adapting to the multiple regression like cases we use the PISA data set discussed in [this case study](https://m-clark.github.io/generalized-additive-models/application.html) from Michael Clark. 
+
+The data set has been constructed using average Science scores by country from the Programme for International Student Assessment (PISA) 2006, along with GNI per capita (Purchasing Power Parity, 2005 dollars), Educational Index, Health Index, and Human Development Index from UN data. We want to model the overall outcome score as a function of these broad demographic features. 
+
+```{python}
+
+pisa_df = pd.read_csv("https://raw.githubusercontent.com/m-clark/generalized-additive-models/master/data/pisasci2006.csv")
+
+pisa_df
+
+
+```
+
+The relationships displayed between each of these measures is not obviously linear, and as such could plausibly benefit from being modelled with splines. 
+
+```{python}
+
+
+
+g = sns.pairplot(pisa_df[['Overall', 'Income', 'Support', 'Health', 'Edu']],  kind="reg")
+g.fig.suptitle("Pair Plot of Complex Relations", y=1.05);
+
+```
+
+We define two basic models for contrasting. Note here how we have to define a seperate spline basis for each of the covariates. 
+
+```{python}
+
+formula = "Overall ~ Income + Edu + Health"
+base_model = bmb.Model(formula, pisa_df, dropna=True)
+
+knots_income = np.linspace(np.min(pisa_df['Income']), np.max(pisa_df['Income']), 5+2)[1:-1]
+
+knots_edu = np.linspace(np.min(pisa_df['Edu']), np.max(pisa_df['Edu']), 5+2)[1:-1]
+
+knots_health = np.linspace(np.min(pisa_df['Health']), np.max(pisa_df['Health']), 5+2)[1:-1]
+
+formula_spline = """Overall ~ bs(Income, degree=3, knots=knots_income) + bs(Edu, degree=3, knots=knots_edu) + bs(Health, degree=3, knots=knots_health)"""
+
+spline_model = bmb.Model(formula_spline, pisa_df, dropna=True)
+
+spline_model
+
+```
+
+
+```{python}
+spline_model.build()
+spline_model.graph()
+
+```
+
+
+```{python}
+
+base_idata = base_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
+spline_idata = spline_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True}, target_accept=.95)
+base_model.predict(base_idata, kind='pps')
+spline_model.predict(spline_idata, kind='pps')
+
+
+```
+
+We can compare the simple regression approach to the spline based regression in the now usual way. 
+
+```{python}
+compare_df = az.compare({'spline': spline_idata, 'raw': base_idata})
+
+compare_df
+
+
+```
+
+The coefficients comparisons are harder
+
+```{python}
+
+az.summary(base_idata)
+
+```
+
+since it's less clear what the spline coefficient terms mean. 
+
+```{python}
+
+az.summary(spline_idata)
+
+```
+
+We can also check that the model seems to recover the observed data well. 
+
+```{python}
+fig, axs = plt.subplots(2, 1, figsize=(8, 12))
+axs = axs.flatten()
+az.plot_ppc(base_idata, ax=axs[0])
+az.plot_ppc(spline_idata, ax=axs[1])
+
+```
+
+Next we'll dig into the spline basis features and decompose the predicted outcome. 
+
+### The Component Contributions
+
+This will also serve as a kind of posterior predictive check for each country as we can show the degree which posterior draws from each component sum to achieve a plausible mirror of the observed data.  
+
+
+```{python}
+
+
+Bincome = spline_model.response_component.design.common['bs(Income, degree=3, knots=knots_income)']
+
+income_coefs = az.extract(spline_idata['posterior']['bs(Income, degree=3, knots=knots_income)'])['bs(Income, degree=3, knots=knots_income)']
+
+Bedu = spline_model.response_component.design.common['bs(Edu, degree=3, knots=knots_edu)']
+
+edu_coefs = az.extract(spline_idata['posterior']['bs(Edu, degree=3, knots=knots_edu)'])['bs(Edu, degree=3, knots=knots_edu)']
+
+
+Bhealth = spline_model.response_component.design.common['bs(Health, degree=3, knots=knots_health)']
+
+health_coefs = az.extract(spline_idata['posterior']['bs(Health, degree=3, knots=knots_health)'])['bs(Health, degree=3, knots=knots_health)']
+
+income = np.dot(Bincome, income_coefs).T 
+edu = np.dot(Bedu, edu_coefs).T
+health = np.dot(Bhealth, health_coefs).T
+
+intercept = az.extract(spline_idata['posterior']['Intercept'])['Intercept'].values
+
+fig, ax = plt.subplots(figsize=(9, 7))
+for i in range(100):
+    if i == 1:
+        ax.plot(income[i], label='Income Component', color='red')
+        ax.plot(edu[i], label='Edu Component', color='blue')
+        ax.plot(health[i], label='Health Component', color='darkgreen')
+        ax.plot(intercept[i] + income[i] + edu[i] + health[i], label='Combined Components', color='purple')
+    else: 
+        ax.plot(income[i], alpha=0.1, color='red')
+        ax.plot(edu[i], alpha=0.1, color='blue')
+        ax.plot(health[i], alpha=0.1, color='darkgreen')
+        ax.plot(intercept[i] + income[i] + edu[i] + health[i], color='purple', alpha=0.3)
+
+ax.scatter(range(len(spline_idata['observed_data']['Overall'])), spline_idata['observed_data']['Overall'], label='Observed', color='grey', s=56, ec='black')
+ax.set_title("Additive Spline Components", fontsize=20)
+ax.legend();
+ax.set_xticklabels(pisa_df.dropna(axis=0).reset_index()['Country']);
+
+```
+
+We can see here how the combined components borrow the structure of the outcome variable primarily from the income variable. The health measures have closter to zero additive contribution while the uncertainty in the educational component varies wildly. But the blue educational component here is used primarily as a scaling contribution which adds to the level of the outcome variable rather than distorting the shape. 
 
 ## Conclusion
 
 We've seen the application of splines as univariate smoothers to approximate wiggly curves of arbitrary shape. We've also tried gaussian process approximations of the same univariate functions. The suggested flexibility of both
-methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we incorporate spline basis modelling in a hierarchical bayesian model and recover very compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts. 
+methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we incorporate spline basis modelling in a hierarchical bayesian model and recover very compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts of insurance loss curves. Finally we showed how splines can be used additively to model non-linear functions of multiple covariates. These are a powerful tool to interrogate complex non-linear relationships. 
