@@ -648,7 +648,7 @@ def make_model(loss_df, num_knots=3, max_dev=7, model_type='mixed'):
         mu_grcode = beta_grcode*grcode
 
         ## Likelihood
-        sigma = pm.TruncatedNormal("sigma", 1, lower=0.05)
+        sigma = pm.TruncatedNormal("sigma", 1, lower=0.005)
         if model_type == 'mixed':
             mu = pm.Deterministic('mu',  mu_grcode + mu_prem + (mu_g.T + mui.T).ravel(), dims='obs')
             lr_likelihood = pm.Normal("lr", mu, sigma, observed=observed, dims=('obs'))
@@ -686,7 +686,7 @@ We can extract the effect of the differences grcodes and examine the baseline an
 
 ```{python}
 
-summary = az.summary(idata_sp_insur_mixed, var_names=['beta_grcode', 'beta_prem', 'beta_g', 'beta'])
+summary = az.summary(idata_sp_insur_mixed, var_names=['sigma', 'beta_grcode', 'beta_prem', 'beta_g', 'beta'])
 
 summary
 
@@ -809,32 +809,39 @@ Even here though we want to average the curves over the specific years in the da
 ```{python}
 
 def get_posterior_predictive_curve(idata, prem=2, grcode=1):
-    weighted_splines = [np.dot(np.asfortranarray(Bi), az.extract(idata['posterior']['beta'])['beta'].values[:, :, i]) for i in range(1000)]
+    weighted_splines = [np.dot(np.asfortranarray(Bi), az.extract(idata['posterior']['beta'])['beta'].values[:, :, i]) for i in range(2000)]
 
-    weighted_splines_1 = [np.dot(np.asfortranarray(Bg), az.extract(idata['posterior']['beta_g'])['beta_g'].values[:, i]) for i in range(1000)]
+    weighted_splines_1 = [np.dot(np.asfortranarray(Bg), az.extract(idata['posterior']['beta_g'])['beta_g'].values[:, i]) for i in range(2000)]
 
     beta_grcode = az.extract(idata['posterior']['beta_grcode'])['beta_grcode']
 
     beta_prem = az.extract(idata['posterior']['beta_prem'])['beta_prem']
-    df1 = pd.DataFrame([beta_prem.values[i]*prem + beta_grcode.values[i]*grcode for i in range(1000)]).T
+    df1 = pd.DataFrame([beta_prem.values[i]*prem + beta_grcode.values[i]*grcode for i in range(2000)]).T
+
 
     ## Crucial step averaging over the years to get
     ## a view of the development period
-    df = pd.concat([pd.DataFrame(weighted_splines_1[i].T + weighted_splines[i].T).mean() for i in range(1000)], axis=1)
+    #df = pd.concat([pd.DataFrame(weighted_splines_1[i].T + weighted_splines[i].T).mean() for i in range(1000)], axis=1)
 
-    df = df1.iloc[0] + df
+    ## Sample random group each draw from posterior
+    df = pd.concat([pd.DataFrame((weighted_splines_1[i].T + weighted_splines[i].T)[np.random.choice(list(range(10))), :]) for i in range(2000)], axis=1)
+
+    ## Average random subset of of groups
+    #df = pd.concat([pd.DataFrame((weighted_splines_1[i].T + weighted_splines[i].T)[np.random.choice(list(range(10)), 5), :]).mean() for i in range(2000)], axis=1)
+
+    df = df1.iloc[0].values + df
 
     return df
 
 pred_df_1 = get_posterior_predictive_curve(idata_43, prem=1, grcode=1)
-
 pred_df_0 = get_posterior_predictive_curve(idata_353, prem=1, grcode=0) 
 
 fig, ax = plt.subplots(figsize=(9, 7), sharey=True)
 
-
-ax.plot(pred_df_1, color='firebrick', alpha=0.1)
-ax.plot(pred_df_0, color='slateblue', alpha=0.2);
+az.plot_hdi(range(6), pred_df_0.values.T, ax=ax, color='slateblue', fill_kwargs={'alpha': 0.2})
+az.plot_hdi(range(6), pred_df_1.values.T, ax=ax, color='firebrick', fill_kwargs={'alpha': 0.2})
+az.plot_hdi(range(6), pred_df_0.values.T, ax=ax, color='slateblue', fill_kwargs={'alpha': 0.5}, hdi_prob=.5)
+az.plot_hdi(range(6), pred_df_1.values.T, ax=ax, color='firebrick', fill_kwargs={'alpha': 0.5}, hdi_prob=.5)
 ax.plot(pred_df_0.mean(axis=1), linestyle='-', color='k', linewidth=4, label='grcode 353 prem 1')
 
 ax.plot(pred_df_1.mean(axis=1), linestyle='--', color='grey', linewidth=4, label='grcode 43 prem 1')
@@ -882,9 +889,20 @@ knots_edu = np.linspace(np.min(pisa_df['Edu']), np.max(pisa_df['Edu']), 5+2)[1:-
 
 knots_health = np.linspace(np.min(pisa_df['Health']), np.max(pisa_df['Health']), 5+2)[1:-1]
 
-formula_spline = """Overall ~ bs(Income, degree=3, knots=knots_income) + bs(Edu, degree=3, knots=knots_edu) + bs(Health, degree=3, knots=knots_health)"""
+
+knots_income1 = np.linspace(np.min(pisa_df['Income']), np.max(pisa_df['Income']), 3+2)[1:-1]
+
+knots_edu1 = np.linspace(np.min(pisa_df['Edu']), np.max(pisa_df['Edu']), 3+2)[1:-1]
+
+knots_health1 = np.linspace(np.min(pisa_df['Health']), np.max(pisa_df['Health']), 3+2)[1:-1]
+
+formula_spline = """Overall ~ bs(Income, degree=3, knots=knots_income) + bs(Edu, degree=3, knots=knots_edu) + bs(Health, degree=3, knots=knots_health) """
+
+formula_spline1 = """Overall ~ bs(Income, degree=3, knots=knots_income1) + bs(Edu, degree=3, knots=knots_edu1) + bs(Health, degree=3, knots=knots_health1) + (1 | Country) """
 
 spline_model = bmb.Model(formula_spline, pisa_df, dropna=True)
+
+spline_model1 = bmb.Model(formula_spline, pisa_df, dropna=True)
 
 spline_model
 
@@ -902,13 +920,14 @@ spline_model.graph()
 
 base_idata = base_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
 spline_idata = spline_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True}, target_accept=.95)
+spline_idata1 = spline_model1.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True}, target_accept=.95)
 
 ```
 
 We can compare the simple regression approach to the spline based regression in the now usual way. 
 
 ```{python}
-compare_df = az.compare({'spline': spline_idata, 'raw': base_idata})
+compare_df = az.compare({'spline': spline_idata, 'raw': base_idata, 'spline_hierarchy':spline_idata1})
 
 compare_df
 
@@ -938,6 +957,8 @@ We can also check that the model seems to recover the observed data well.
 ```{python}
 base_model.predict(base_idata, kind='pps')
 spline_model.predict(spline_idata, kind='pps')
+spline_model1.predict(spline_idata1, kind='pps')
+
 
 fig, axs = plt.subplots(2, 1, figsize=(8, 12))
 axs = axs.flatten()
@@ -987,6 +1008,17 @@ summary_df = bmb.interpret.predictions(
         },
 )
 summary_df
+
+
+summary_df1 = bmb.interpret.predictions(
+    spline_model1,
+    spline_idata1,
+    conditional={
+        "Edu": list(np.linspace(0.5, 1, 10)),
+        "Income": list(np.linspace(0.4, 1, 10)),
+        },
+)
+summary_df1
 
 
 ```
