@@ -15,7 +15,6 @@ author:
 citation: true
 ---
 
-
 ```{python}
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -36,15 +35,23 @@ warnings.simplefilter('ignore')
 
 ```
 
+
 # GAMs and GPs: Flexibility and Calibration
 
 Flexible Spline models risk overfit and need to be carefully calibrated against real data.
 
-In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before preceding to look Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
+
+## Theoretical Posits and Scientific Commitments
+
+The scientific enterprise must abstract away details of reality to provide insight into the structure of reality. Statistical models of reality are cobbled together from a variety of abstractions; probability distributions and functional relations cojoined and calibrated against observed data. We are building on shifting foundations. 
+
+> There is no way to establish fully secured, ... starting point of the sciences. There is no tabula rasa. We are like sailors who have to rebuild their ship on the open sea, without ever being able to dismantle it in dry-dock and reconstruct it from its best components. - Otto Neurath
+
+Spline models are like the panes of wood we use to construct the ship, ride the next wave. In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before proceeding to look at Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
 
 Our interest in these models stems from their flexibility to approximate functions of arbitrary complexity. We'll see how the methods work in the case of relatively straightforward toy example and then we'll apply each of the methods to deriving insights into the functional form of insurance loss curves. In this application we adapt a data set discussed in Mick Cooney's `Stan` [case study](https://mc-stan.org/users/documentation/case-studies/losscurves_casestudy.html) to demonstrate the power of hierarchical spline models. Throughout we'll draw on the discussion of these methods in Osvaldo Martin's _"Bayesian Analysis with Python"_ for practical details implementing these models. 
 
-All of these methods need to be assessed with respect to their in-sample model fit and their out of sample performance. How can we best calibrate the model fits to perform reasonably well out of sample?
+All of these methods need to be assessed with respect to their in-sample model fit and their out of sample performance. How can we best calibrate the model fits to perform reasonably well out of sample? How does the spline-constructs reflect an underlying reality, how can our posit's aid generalisation. 
 
 ## Generalised Additive models
 
@@ -529,7 +536,13 @@ df_compare
 
 ### Recap
 
-So far we've seen how we can use splines and gauassian processes to model highly eccentric functional relationships where the function could be approximated with univariate smoothing routine. Next we'll show how to use hierarchical modelling over spline fits to extract insight into the data generating process over a family of curves. In particular we'll focus on the development of insurance loss curves. 
+So far we've seen how we can use splines and gauassian processes to model highly eccentric functional relationships where the function could be approximated with univariate smoothing routine. These are two distinct abstractions which seem adequately fit to the world, but demand very different ways of thinking about the underlying reality. This is no fundamental contradiction in so far as the world admits many descriptions. 
+
+> [K]nowledge develops in a multiplicity of theories, each with it's limited utility ... These theories overlap very considerable in their logical laws and in much else, but that they add up to an integrated and consistent whole is only a worthy ideal and not a pre-requistite of scientific progress ... Let reconciliations proceed.  - W.V.O Quine in _Word and Object_
+
+Another observation in a similar vein is that penalised spline models are provably [equivalent](https://www.tjmahr.com/random-effects-penalized-splines-same-thing/) to hierarchical regression (random effects) models. This is striking because the character of these types of model seems diametrically opposed. With spline models you jerry-rig your features to an optimisation goal, with hierarchical model you tend to impose theoretical structure to induce shrinkage. It's hard to see how this works - with a penalised spline model are you inducing a hierarchy of latent features you can't name? Should you even try to translate between the two!? The abstract components of our model is less graspable than the predictive performance. 
+
+Next we'll step up our abstractions and show how to use hierarchical modelling over spline fits to extract insight into the data generating process over a family of curves. In particular we'll focus on the development of insurance loss curves.
 
 ## Insurance Loss Curves: Hierarchical Spline Models
 
