@@ -74,7 +74,7 @@ ax.set_title("Crash Test Dummy Acceleration \n Simulated Motorcycle Crash", font
 
 ```
 
-Next we fit a number of different models to account for the herky-jerky of the data generating processs. We vary the parameterisations to see how the numbers of splines and strength of the penalty help account for the variation in $y$ over the support of $X$. 
+Next we fit a number of different models to account for the herky-jerky nature of the data generating processs. We vary the parameterisations to see how the numbers of splines and strength of the penalty help account for the variation in $y$ over the support of $X$. 
 
 ```{python}
 
@@ -294,6 +294,8 @@ Now that we've seen the nature of the modelling splines we'll fit each model to 
 
 ### Fit the Individual Spline Models
 
+We now combine the spline components within a linear model fit, pulling and tying them together in such a way as to ape the shape of the observed sequence. 
+
 ```{python}
 #| output: false
 
@@ -396,11 +398,11 @@ ax.set_title("Posterior Predictive Distribution \n Based on 10 Knots");
 
 This represents a good a clean model fit to the observed data using univariate spline smoothers. Next we'll see another alternative approach to model this outcome variable using approximate gaussian processes. 
 
-## Gaussian processes
+## Approximate Gaussian processes
 
-The topic of gaussian processes is rich and detailed. Too rich to be fairly covered in this blog post, so we'll just say that we're using a method designed for function approximation that makes use of drawing samples from a multivariate normal distribution under a range of different covariance relationships. 
+The topic of gaussian processes is rich and detailed. Too rich to be fairly covered in this blog post, so we'll just say that we're using a method designed for function approximation that makes use of drawing samples from a multivariate normal distribution under a range of different covariance relationships. We are in fact using the HSGP approximation of gaussian processes. 
 
-These relationships can be somewhat intuitively interrogated by defining different combinations of covariance relationships with priors over the parameters governing the covariance of a sequence of points. For example consider the following parameterisations. 
+Nevertheless the gaussian relationships can be somewhat intuitively interrogated by defining different combinations of covariance relationships with priors over the parameters governing the covariance of a sequence of points. For example consider the following parameterisations. 
 ```{python}
 
 
@@ -429,7 +431,7 @@ $$k(x, x') = \mathrm{exp}\left[ -\frac{(x - x')^2}{2 \ell^2} \right]$$
 
 The patterns exhibited show a good range of "wiggliness" that they should be flexible enough to capture the shape of the acceleration, if we can calibrate the posterior of parameters against the observed data. 
 
-### Priors on Gaussian Priors
+### Priors on Gaussian Processes
 
 Consider the following specification for the priors
 
@@ -465,7 +467,7 @@ model_hsgp
 ```
 
 
-Here we've set the `m=10` to determine the number of basis vectors used in the Hilbert space approximation. The idea differs in detail from the spline based approximations we've seen, but it's perhaps useful to think of the process in the same vein. 
+Here we've set the `m=10` to determine the number of basis vectors used in the Hilbert space approximation. The idea differs in detail from the spline based approximations we've seen, but it's perhaps useful to think of the process in the same vein. Here again we have a theory of the world expressed as a function of opaque components jerry-rigged for modelling some phenomena. 
 
 ```{python}
 
@@ -540,7 +542,7 @@ So far we've seen how we can use splines and gauassian processes to model highly
 
 > [K]nowledge develops in a multiplicity of theories, each with it's limited utility ... These theories overlap very considerable in their logical laws and in much else, but that they add up to an integrated and consistent whole is only a worthy ideal and not a pre-requistite of scientific progress ... Let reconciliations proceed.  - W.V.O Quine in _Word and Object_
 
-Another observation in a similar vein is that penalised spline models are provably [equivalent](https://www.tjmahr.com/random-effects-penalized-splines-same-thing/) to hierarchical regression (random effects) models. This is striking because the character of these types of model seems diametrically opposed. With spline models you jerry-rig your features to an optimisation goal, with hierarchical model you tend to impose theoretical structure to induce shrinkage. It's hard to see how this works - with a penalised spline model are you inducing a hierarchy of latent features you can't name? Should you even try to translate between the two!? The abstract components of our model is less graspable than the predictive performance. 
+Another observation in a similar vein is that penalised spline models are provably [equivalent](https://www.tjmahr.com/random-effects-penalized-splines-same-thing/) to hierarchical regression (random effects) models. This is striking because the character of these types of model seems diametrically opposed. With spline models you jerry-rig your features to an optimisation goal, with hierarchical model you tend to impose theoretical structure to induce shrinkage. It's hard to see how this works - with a penalised spline model are you inducing a hierarchy of latent features you can't name? Should you even try to translate between the two!? The abstract components of our model is less graspable than the predictive performance. The qualitative character of theory buiding differs markedly across these abstractions and aesthetics and explainability feature heavily in model preference. 
 
 Next we'll step up our abstractions and show how to use hierarchical modelling over spline fits to extract insight into the data generating process over a family of curves. In particular we'll focus on the development of insurance loss curves.
 
@@ -868,7 +870,7 @@ ax.legend();
 
 ## Multiple Smoother Regression Models
 
-To demonstrate how spline modelling can be further adapting to the multiple regression like cases we use the PISA data set discussed in [this case study](https://m-clark.github.io/generalized-additive-models/application.html) from Michael Clark. 
+To demonstrate how spline modelling can be further adapted to the multiple regression like cases we use the PISA data set discussed in [this case study](https://m-clark.github.io/generalized-additive-models/application.html) from Michael Clark. 
 
 The data set has been constructed using average Science scores by country from the Programme for International Student Assessment (PISA) 2006, along with GNI per capita (Purchasing Power Parity, 2005 dollars), Educational Index, Health Index, and Human Development Index from UN data. We want to model the overall outcome score as a function of these broad demographic features. 
 
@@ -915,9 +917,9 @@ formula_spline1 = """Overall ~ bs(Income, degree=3, knots=knots_income1) + bs(Ed
 
 spline_model = bmb.Model(formula_spline, pisa_df, dropna=True)
 
-spline_model1 = bmb.Model(formula_spline, pisa_df, dropna=True)
+spline_model1 = bmb.Model(formula_spline1, pisa_df, dropna=True)
 
-spline_model
+spline_model1
 
 ```
 
@@ -933,7 +935,7 @@ spline_model.graph()
 
 base_idata = base_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
 spline_idata = spline_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True}, target_accept=.95)
-spline_idata1 = spline_model1.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True}, target_accept=.95)
+spline_idata1 = spline_model1.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True}, target_accept=.99)
 
 ```
 
@@ -965,7 +967,7 @@ az.summary(spline_idata)
 
 We can also check that the model seems to recover the observed data well. 
 
-### Plotting Posterior Predictive Checks
+### Plotting Posterior Predictive Checks
 
 ```{python}
 base_model.predict(base_idata, kind='pps')
@@ -973,13 +975,15 @@ spline_model.predict(spline_idata, kind='pps')
 spline_model1.predict(spline_idata1, kind='pps')
 
 
-fig, axs = plt.subplots(2, 1, figsize=(8, 12))
+fig, axs = plt.subplots(3, 1, figsize=(8, 15))
 axs = axs.flatten()
 az.plot_ppc(base_idata, ax=axs[0])
 az.plot_ppc(spline_idata, ax=axs[1]);
+az.plot_ppc(spline_idata1, ax=axs[2]);
 axs[0].set_xlabel('')
 axs[1].set_title("PPC: Spline Model");
 axs[0].set_title("PPC: Regression Model");
+axs[2].set_title("PPC: Hierarchical Spline Model");
 
 ```
 
@@ -987,23 +991,47 @@ Next we'll dig into the spline basis features and decompose the predicted outcom
 
 ### Model Interpretability Plots in Bambi
 
+In particular we want to highlight the differences between the hierarchical and non-hierarchical multivariable spline models. The shrinkage effects of hierarchically modelling country intercepts are clearly evident and constrain the poor extrapolation effects of the simpler spline model.
+
 ```{python}
 
 
-fig, axs = plt.subplots(3, 1, figsize=(9, 10))
+fig, axs = plt.subplots(3, 2, figsize=(9, 14))
 axs = axs.flatten()
 bmb.interpret.plot_predictions(
     spline_model, spline_idata, "Income", ax=axs[0]
 )
 
+axs[0].set_title("Non-Hierarchical Income")
+axs[2].set_title("Non-Hierarchical Edu")
+axs[4].set_title("Non-Hierarchical Health")
+
+axs[1].set_title("Hierarchical Income")
+axs[3].set_title("Hierarchical Edu")
+axs[5].set_title("Hierarchical Health")
+
+
 bmb.interpret.plot_predictions(
-    spline_model, spline_idata, "Edu", ax=axs[1]
+    spline_model, spline_idata, "Edu", ax=axs[2]
 )
 
 bmb.interpret.plot_predictions(
-    spline_model, spline_idata, "Health", ax=axs[2]
+    spline_model, spline_idata, "Health", ax=axs[4]
 );
-axs[0].set_title("Predictions over the Range of Observed Covariate Values");
+
+bmb.interpret.plot_predictions(
+    spline_model1, spline_idata1, "Income", 
+    sample_new_groups=True, ax=axs[1]
+)
+
+bmb.interpret.plot_predictions(
+    spline_model1, spline_idata1, "Edu", sample_new_groups=True, ax=axs[3]
+)
+
+bmb.interpret.plot_predictions(
+    spline_model1, spline_idata1, "Health",sample_new_groups=True, ax=axs[5]
+);
+
 
 ```
 
@@ -1016,8 +1044,8 @@ summary_df = bmb.interpret.predictions(
     spline_model,
     spline_idata,
     conditional={
-        "Edu": list(np.linspace(0.5, 1, 10)),
-        "Income": list(np.linspace(0.4, 1, 10)),
+        "Edu": list(np.linspace(0.5, .98, 10)),
+        "Income": list(np.linspace(0.4, .98, 10)),
         },
 )
 summary_df
@@ -1027,9 +1055,10 @@ summary_df1 = bmb.interpret.predictions(
     spline_model1,
     spline_idata1,
     conditional={
-        "Edu": list(np.linspace(0.5, 1, 10)),
-        "Income": list(np.linspace(0.4, 1, 10)),
+        "Edu": list(np.linspace(0.5, .98, 10)),
+        "Income": list(np.linspace(0.4, .98, 10)),
         },
+    sample_new_groups=True
 )
 summary_df1
 
@@ -1044,13 +1073,18 @@ g = sns.relplot(data=summary_df, x="Income", y="estimate", hue="Edu")
 
 g.fig.suptitle("Marginal Predictions of the Outcome Variable \n conditional on counterfactual values for Edu and Income", y=1.05);
 
+
+g = sns.relplot(data=summary_df1, x="Income", y="estimate", hue="Edu")
+
+g.fig.suptitle("Hierarchical Marginal Predictions of the Outcome Variable \n conditional on counterfactual values for Edu and Income", y=1.05);
+
 ```
 
+We can see here how the hierarchical component shrinks the predicted values back towards a reasonable range constraining the poor extrapolation of the more naive spline model. This demonstrates something of the interplay between in-sample approximation and out of sample generalisation we saw above in the case of the insurance curve development. 
 
 ### The Spline Component Contributions
 
 Finally, we'll pull out the component contributions of each variable and see how they combine additively. This will also serve as a kind of posterior predictive check for each country as we can show the degree which posterior draws from each component sum to achieve a plausible mirror of the observed data.  
-
 
 ```{python}
 
@@ -1098,4 +1132,4 @@ We can see here how the combined components borrow the structure of the outcome 
 
 ## Conclusion
 
-We've seen the application of splines as univariate smoothers to approximate wiggly curves of arbitrary shape. We've also tried gaussian process approximations of the same univariate functions. The suggested flexibility of both methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we can incorporate spline basis modelling in a hierarchical bayesian model and recover more compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts of insurance loss curves. Finally we showed how splines can be used additively to model non-linear functions of multiple covariates. These are a powerful tool to interrogate complex non-linear relationships, but they offer interpolation of functions within a well understood domain. Applealing to these models for extrapolation needs to be done carefully.
+We've seen the application of splines as univariate smoothers to approximate wiggly curves of arbitrary shape. We've also tried gaussian process approximations of the same univariate functions. The suggested flexibility of both methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we can incorporate spline basis modelling in a hierarchical bayesian model and recover more compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts of insurance loss curves. Finally we showed how splines can be used additively to model non-linear functions of multiple covariates. These are a powerful tool to interrogate complex non-linear relationships, but they offer interpolation of functions within a well understood domain. Applealing to these models for extrapolation needs to be done carefully. 
