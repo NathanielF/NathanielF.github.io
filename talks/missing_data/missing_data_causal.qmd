@@ -9,7 +9,7 @@ author:
 format: 
     revealjs:
          theme: [default, clean.scss]
-         logo: images/pycon_ireland.jpeg
+         logo: images/pydata.jpeg
          footer: "Missing Data with PyMC"
 categories: [bayesian, missing data, causal inference]
 image: "images/final_empowerment_imputed.png"
