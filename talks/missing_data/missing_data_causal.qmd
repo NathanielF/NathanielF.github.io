@@ -390,7 +390,7 @@ In which we consider how management structure and team membership can induce dif
 
 ![Team Empowerment Scores](images/team_empowerment.png)
 
-We can try to recover __[ignorable missing-ness]{.blue}__ i.e moving to MAR from MNAR conditional on group specific fixed effects.
+We can try to recover __[ignorable missing-ness]{.blue}__ i.e moving to MAR from MNAR conditional on group specific random effects.
 
 ## Hierarchies and Human Relations
 ### Power Structures Interactions
