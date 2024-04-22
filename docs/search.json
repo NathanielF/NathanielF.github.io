@@ -2497,5 +2497,12 @@
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Hierarchies and Human Relations",
     "text": "Hierarchies and Human Relations\nPower Structures Interactions\n\n\n\n\n\nMilitary Hierarchy\n\n\n\n\n\n\nCapitalism"
+  },
+  {
+    "objectID": "talks/missing_data/missing_data_causal.html#recap-and-conclusion",
+    "href": "talks/missing_data/missing_data_causal.html#recap-and-conclusion",
+    "title": "Missing Data and Bayesian Imputation with PyMC",
+    "section": "Recap and Conclusion",
+    "text": "Recap and Conclusion\nWe’ve seen the application of missing data analysis to survey data in the context of People Analytics.\n\nMultivariate approaches are effective but cannot help address confounding bias,\nThe flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.\nHierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates.\n\nReveal inefficiencies and mismatches between team and management.\n\nImputation gives “voice” to the missing.\n\n\n\n\nMissing Data with PyMC"
   }
 ]
