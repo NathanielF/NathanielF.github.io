@@ -19,8 +19,9 @@ date: last-modified
 ## Preliminaries {.smaller}
 
 :::{.callout-warning}
-## I am not an Economist
+## Background
 - I'm a __data scientist__ at __[Personio]{.blue}__ 
+- Contributor at PyMC and __[PyMC labs]{.blue}__
     - Bayesian statistician, 
     - Reformed philosopher and logician. 
 - Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
@@ -39,7 +40,7 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 # The Pitch
 Causal inference techniques are __required__ for Non-response in People Analytics survey data 
 
-Bayesian imputation methods are state of the art for theory-informed imputation of missing data 
+Bayesian imputation methods are state of the art for theory-informed imputation of missing data. __Missing data imputation is important.__  
 
 ## Agenda
 
@@ -246,8 +247,8 @@ The idea
 
 - When gaps in survey data are not random
 - We need to understand the drivers of missing-ness
-- The "topology" around the gaps gives us a clue
-- Bayesian inference helps to imputes the probable gradients, inclines and curves of the space in the gaps conditional on the observed data.
+- The "topology" around the gaps gives us clues
+- Bayesian inference helps to imputes the probable inclines and curves of the space in the gaps conditional on the observed data.
 - In our employee engagement data the question becomes - What are the __[enviromental influences on the probable]{.blue}__ responses?
 :::
 
@@ -279,7 +280,7 @@ Priors can be used flexibly to regularise and improve reliability of estimation 
 ## The Model
 ### Sensitivity Analysis with Priors in PyMC
 
-```{.python code-line-numbers="|13-16|37-43|55-61|62-66|68-72"}
+```{.python code-line-numbers="|13-17|37-43|55-61|62-66|68-72"}
 data = df_employee[["lmx", "empower", "climate", "male"]]
 lmx_mean = data["lmx"].mean()
 lmx_min = data["lmx"].min()
@@ -293,8 +294,10 @@ cli_sd = data["climate"].std()
 
 
 priors = {
-    "climate": {"normal": [lmx_mean, lmx_sd, lmx_sd], "uniform": [lmx_min, lmx_max]},
-    "lmx": {"normal": [cli_mean, cli_sd, cli_sd], "uniform": [cli_min, cli_max]},
+    "climate": {"normal": [lmx_mean, lmx_sd, lmx_sd], 
+                "uniform": [lmx_min, lmx_max]},
+    "lmx": {"normal": [cli_mean, cli_sd, cli_sd], 
+            "uniform": [cli_min, cli_max]},
 }
 
 
@@ -377,6 +380,8 @@ Imputing the values and feeding them forward into the ultimate likelihood terms 
 
 ![The Effect of choosing the right Priors](images/different_priors_imputation.png)
 
+Model choice using predictive adequacy as a constraint. Bayesian model adequacy **workflow** applies here too
+
 # Hierarchcial Structures impacting Missing-ness
 In which we consider how management structure and team membership can induce different patterns of imputation. 
 
@@ -386,6 +391,22 @@ In which we consider how management structure and team membership can induce dif
 ![Team Empowerment Scores](images/team_empowerment.png)
 
 We can try to recover __[ignorable missing-ness]{.blue}__ i.e moving to MAR from MNAR conditional on group specific fixed effects.
+
+## Hierarchies and Human Relations
+### Power Structures Interactions
+
+::: {.columns}
+
+::: {.column width="50%"}
+![Military Hierarchy](images/military-hierarchy-icon.jpg)
+:::
+
+::: {.column width="50%"}
+
+![Capitalism](images/anticapitalism.png)
+:::
+
+:::
 
 ## Hierarchies in Code
 ### Specifying the hierarchical model in PyMC
@@ -453,7 +474,7 @@ with pm.Model(coords=coords) as hierarchical_model:
 # Imputation and Causal Narratives
 In which we digress on the importance for imputation in causal inference more generally.
 
-## Feature Selection is not Causal Modelling{.smaller}
+## Industry Questions are Causal{.smaller}
 ### On the Importance of Theory Construction
 
 ::: {.columns}
@@ -487,31 +508,24 @@ The Fundamental problem of Causal Inference as Missing Data
 ::: {.fragment .fade-in}
 - This is crucial for model explainability in the human-centric domains, where the decisions need to be justifiable.
 :::
-:::
 
-
-:::
-
-
-## SOTA: Bayesian Probabilistic Imputation.
-
-- Bayesian Imputation can be highly customisable method of imputation in almost any domain.
-
-- Imputed treatment effect distributions need not be specified simply as a linear combination of observables. 
-    - __[Non-parametric methods]{.blue}__ such as BART and Dirichlet Process Mixtures can also be used. 
-
-- In [PyMC](https://www.pymc.io/projects/examples/en/latest/causal_inference/interventional_distribution.html#interventions-and-the-operatorname-do-operator) you can implement the __do-operator__ to intervene on the graph that represents your data generating process. 
-
+::: {.fragment .fade-in}
 - Used to answer Counterfactuals
     - How do patterns of Employee empowerment change if we can intervene on their relationship with their manager?
+:::
+
+:::
+
+:::
 
 
 ## Conclusion
 
 We've seen the application of missing data analysis to survey data in the context of People Analytics.
 
-- Multivariate approaches are effective but cannot help address confounding bias
+- Multivariate approaches are effective but cannot help address confounding bias, 
 
-- The flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.
+- The [__flexibility__]{.blue} of the Bayesian approach can be [__tailored__]{.blue} to the appropriate complexity of our theory about why our data is missing.
 
 - Hierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates. 
+    - Reveal inefficiencies and mismatches between team and management. Imputation gives "voice" to the missing.
