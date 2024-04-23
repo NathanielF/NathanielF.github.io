@@ -128,7 +128,7 @@ by maximising the likelihood based across the different patterns of missing-ness
 
 FIML in code
 
-```{.python code-line-numbers="|5-12|39-39|51-54|69-70"}
+```{.python code-line-numbers="|5-12|39-39|45-54|69-70"}
 
 data = df_employee[["worksat", "empower", "lmx"]]
 
