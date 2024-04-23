@@ -530,4 +530,4 @@ We've seen the application of missing data analysis to survey data in the contex
 - Hierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates. 
     - Reveal inefficiencies and mismatches between team and management. 
   
-- Imputation gives "voice" to the missing.
+- Imputation gives "voice" to the missing. Inverse Propensity weighting corrects mis-representative samples. Both are [__correctives__]{.blue} for selection effect bias.

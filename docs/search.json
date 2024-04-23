@@ -1124,7 +1124,7 @@
     "href": "talks/missing_data/missing_data_causal.html#hierarchical-structures-of-non-response",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Hierarchical Structures of Non-response",
-    "text": "Hierarchical Structures of Non-response\nTeam dynamics determine probability of response\n\nTeam Empowerment ScoresWe can try to recover ignorable missing-ness i.e moving to MAR from MNAR conditional on group specific fixed effects."
+    "text": "Hierarchical Structures of Non-response\nTeam dynamics determine probability of response\n\nTeam Empowerment ScoresWe can try to recover ignorable missing-ness i.e moving to MAR from MNAR conditional on group specific random effects."
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#hierarchies-in-code",
@@ -2503,6 +2503,6 @@
     "href": "talks/missing_data/missing_data_causal.html#recap-and-conclusion",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Recap and Conclusion",
-    "text": "Recap and Conclusion\nWe’ve seen the application of missing data analysis to survey data in the context of People Analytics.\n\nMultivariate approaches are effective but cannot help address confounding bias,\nThe flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.\nHierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates.\n\nReveal inefficiencies and mismatches between team and management.\n\nImputation gives “voice” to the missing.\n\n\n\n\nMissing Data with PyMC"
+    "text": "Recap and Conclusion\nWe’ve seen the application of missing data analysis to survey data in the context of People Analytics.\n\nMultivariate approaches are effective but cannot help address confounding bias,\nThe flexibility of the Bayesian approach can be tailored to the appropriate complexity of our theory about why our data is missing.\nHierarchical structures pervade business - conduits for leadership influence/communication channels. Hierarchical modelling can isolate estimates of this impact and control for biases of naive aggregates.\n\nReveal inefficiencies and mismatches between team and management.\n\nImputation gives “voice” to the missing. Inverse Propensity weighting corrects mis-representative samples. Both are correctives for selection effect bias.\n\n\n\n\nMissing Data with PyMC"
   }
 ]
