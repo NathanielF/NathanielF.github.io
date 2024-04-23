@@ -38,7 +38,7 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 :::
 
 # The Pitch
-Causal inference techniques are __required__ for Non-response in People Analytics survey data 
+Causal inference techniques are __required__ for Non-response bias in People Analytics survey data 
 
 Bayesian imputation methods are state of the art for theory-informed imputation of missing data. __Missing data imputation is important.__  
 
@@ -69,20 +69,20 @@ Bayesian imputation methods are state of the art for theory-informed imputation 
 ## Typology of Missing-ness
 
 ::: {.fragment .fade-in}
-- Missing Completely at Random (MCAR)
+- Missing Completely at Random (MCAR) for $Y$
     - $P(M = 1 | Y_{obs}, Y_{miss}, \phi) = P(M=1 | \phi)$
     - where $\phi$ is the haphazard circumstance of the world
     - missing-ness cannot be predicted from the $Y$ variable
 :::
 ::: {.fragment .fade-in}
-- Missing at Random (MAR)
+- Missing at Random (MAR) for $Y$
     - $P(M = 1 | Y_{obs}, Y_{miss}, \phi) = P(M=1 | Y_{obs}, \phi)$
     - missing-ness can be predicted from $Y$ variable
 :::
 
 
 ::: {.fragment .fade-in}
-- Missing Not at Random (MNAR)
+- Missing Not at Random (MNAR) for $Y$
     - $P(M = 1 | Y_{obs}, Y_{miss}, \phi)$
     - non-ignorable missing-ness. Need to account for why!
 :::

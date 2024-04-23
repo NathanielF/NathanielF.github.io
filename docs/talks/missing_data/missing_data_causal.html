@@ -460,7 +460,7 @@ Nathaniel Forde
 <section>
 <section id="the-pitch" class="title-slide slide level1 center">
 <h1>The Pitch</h1>
-<p>Causal inference techniques are <strong>required</strong> for Non-response in People Analytics survey data</p>
+<p>Causal inference techniques are <strong>required</strong> for Non-response bias in People Analytics survey data</p>
 <p>Bayesian imputation methods are state of the art for theory-informed imputation of missing data. <strong>Missing data imputation is important.</strong></p>
 </section>
 <section id="agenda" class="slide level2">
@@ -506,7 +506,7 @@ Nathaniel Forde
 <h2>Typology of Missing-ness</h2>
 <div class="fragment fade-in">
 <ul>
-<li>Missing Completely at Random (MCAR)
+<li>Missing Completely at Random (MCAR) for <span class="math inline">\(Y\)</span>
 <ul>
 <li><span class="math inline">\(P(M = 1 | Y_{obs}, Y_{miss}, \phi) = P(M=1 | \phi)\)</span></li>
 <li>where <span class="math inline">\(\phi\)</span> is the haphazard circumstance of the world</li>
@@ -516,7 +516,7 @@ Nathaniel Forde
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>Missing at Random (MAR)
+<li>Missing at Random (MAR) for <span class="math inline">\(Y\)</span>
 <ul>
 <li><span class="math inline">\(P(M = 1 | Y_{obs}, Y_{miss}, \phi) = P(M=1 | Y_{obs}, \phi)\)</span></li>
 <li>missing-ness can be predicted from <span class="math inline">\(Y\)</span> variable</li>
@@ -525,7 +525,7 @@ Nathaniel Forde
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>Missing Not at Random (MNAR)
+<li>Missing Not at Random (MNAR) for <span class="math inline">\(Y\)</span>
 <ul>
 <li><span class="math inline">\(P(M = 1 | Y_{obs}, Y_{miss}, \phi)\)</span></li>
 <li>non-ignorable missing-ness. Need to account for why!</li>

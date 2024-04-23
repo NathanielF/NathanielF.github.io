@@ -1033,7 +1033,7 @@
     "href": "talks/missing_data/missing_data_causal.html#typology-of-missing-ness",
     "title": "Missing Data and Bayesian Imputation with PyMC",
     "section": "Typology of Missing-ness",
-    "text": "Typology of Missing-ness\n\n\nMissing Completely at Random (MCAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | \\phi)\\)\nwhere \\(\\phi\\) is the haphazard circumstance of the world\nmissing-ness cannot be predicted from the \\(Y\\) variable\n\n\n\n\n\nMissing at Random (MAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | Y_{obs}, \\phi)\\)\nmissing-ness can be predicted from \\(Y\\) variable\n\n\n\n\n\nMissing Not at Random (MNAR)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi)\\)\nnon-ignorable missing-ness. Need to account for why!"
+    "text": "Typology of Missing-ness\n\n\nMissing Completely at Random (MCAR) for \\(Y\\)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | \\phi)\\)\nwhere \\(\\phi\\) is the haphazard circumstance of the world\nmissing-ness cannot be predicted from the \\(Y\\) variable\n\n\n\n\n\nMissing at Random (MAR) for \\(Y\\)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi) = P(M=1 | Y_{obs}, \\phi)\\)\nmissing-ness can be predicted from \\(Y\\) variable\n\n\n\n\n\nMissing Not at Random (MNAR) for \\(Y\\)\n\n\\(P(M = 1 | Y_{obs}, Y_{miss}, \\phi)\\)\nnon-ignorable missing-ness. Need to account for why!"
   },
   {
     "objectID": "talks/missing_data/missing_data_causal.html#identifiability-under-missing-ness",
