@@ -49,7 +49,7 @@ Bayesian imputation methods are state of the art for theory-informed imputation 
 - Typology of Missing-ness
 ::: 
 ::: {.fragment .fade-in}
-- Multivariate imputation using FIML
+- Multivariate Missing-ness with FIML
 :::
 ::: {.fragment .fade-in}
 - Bayesian Imputation by Chained Equations
@@ -94,7 +94,7 @@ Bayesian imputation methods are state of the art for theory-informed imputation 
 :::
 
 ::: {.fragment .fade-in}
-- Under MNAR there __does not exist__ in general consistent estimators of $Y.$ 
+- Under MNAR there __does not exist__ in general consistent estimators for functions of $Y.$ 
 :::
 
 ::: {.fragment .fade-in}
@@ -128,7 +128,7 @@ by maximising the likelihood based across the different patterns of missing-ness
 
 FIML in code
 
-```{.python code-line-numbers="|5-5|37-37|49-51|67-69"}
+```{.python code-line-numbers="|5-12|39-39|51-54|69-70"}
 
 data = df_employee[["worksat", "empower", "lmx"]]
 
@@ -138,7 +138,9 @@ def split_data_by_missing_pattern(data):
     # and save each sub-set of our data in a structure that can be used to feed into a log-likelihood function
     grouped_patterns = []
     patterns = data.notnull().drop_duplicates().values
-    # A pattern is whether the values in each column e.g. [True, True, True] or [True, True, False]
+    # A pattern is whether the 
+    # values in each column e.g. 
+    # [True, True, True] or [True, True, False]
     observed = data.notnull()
     for p in range(len(patterns)):
         temp = observed[
@@ -280,7 +282,7 @@ Priors can be used flexibly to regularise and improve reliability of estimation 
 ## The Model
 ### Sensitivity Analysis with Priors in PyMC
 
-```{.python code-line-numbers="|13-17|37-43|55-61|62-66|68-72"}
+```{.python code-line-numbers="|13-17|39-46|57-63|64-69|70-75"}
 data = df_employee[["lmx", "empower", "climate", "male"]]
 lmx_mean = data["lmx"].mean()
 lmx_min = data["lmx"].min()
@@ -411,7 +413,7 @@ We can try to recover __[ignorable missing-ness]{.blue}__ i.e moving to MAR from
 ## Hierarchies in Code
 ### Specifying the hierarchical model in PyMC
 
-```{.python code-line-numbers="|10|11|18|20-24"}
+```{.python code-line-numbers="|10|11|12|20-24"}
 team_idx, teams = pd.factorize(df_employee["team"], sort=True)
 employee_idx, _ = pd.factorize(df_employee["employee"], sort=True)
 coords = {"team": teams, "employee": np.arange(len(df_employee))}
