@@ -2,11 +2,11 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/missing_data/missing_data_causal.html",
       "/talks/bayesian_mixer/bayesian_mixer_london.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
       "/talks/mister_p/mister_p.html",
       "/talks/survival_regression/time_to_attrition.html",
-      "/talks/missing_data/missing_data_causal.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
       "/talks/tenuous_relations/first_talk.html"
     ]
@@ -14,6 +14,7 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/post-with-code/Bayesian_Trial_Design/bayesian_trial_design.html",
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/DiD-Card-Kreuger/DID.html",
       "/posts/post-with-code/Bayesian_AB_tests/bayesian_ab_tests.html",
@@ -44,6 +45,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/post-with-code/Bayesian_Trial_Design/bayesian_trial_design.html",
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/DiD-Card-Kreuger/DID.html",
       "/posts/post-with-code/Bayesian_AB_tests/bayesian_ab_tests.html",

@@ -197,7 +197,7 @@ Next we'll see how to more directly work with the specification of basis splines
 
 ## Bayesian Splines with bambi
 
-Under the hood `Bambi` makes use of the patsy package formula syntax to specify spline basis terms.
+Under the hood `Bambi` makes use of the ['formulae'](github.com/bambinos/formulae) package to allow for formula-like syntax to specify spline basis terms and mixed effect model terms. We leverage this to streamline the specification of spline models. 
 
 ```{python}
 knots_6 = np.linspace(0, np.max(X), 6+2)[1:-1]
@@ -206,10 +206,10 @@ knots_15 = np.linspace(0, np.max(X), 15+2)[1:-1]
 
 df = pd.DataFrame({'X': X.flatten(), 'y': y})
 formula1 = 'bs(X, degree=0, knots=knots_6)'
-formula2 = 'bs(X, degree=1, knots=knots_6, intercept=True)'
-formula3 = 'bs(X, degree=3, knots=knots_6, intercept=True)'
-formula4 = 'bs(X, degree=3, knots=knots_10, intercept=True)'
-formula5 = 'bs(X, degree=3, knots=knots_15, intercept=True)'
+formula2 = 'bs(X, degree=1, knots=knots_6, intercept=False)'
+formula3 = 'bs(X, degree=3, knots=knots_6, intercept=False)'
+formula4 = 'bs(X, degree=3, knots=knots_10, intercept=False)'
+formula5 = 'bs(X, degree=3, knots=knots_15, intercept=False)'
 model_spline1 = bmb.Model(f"y ~ {formula1}", df)
 model_spline2 = bmb.Model(f"y ~ {formula2}", df)
 model_spline3 = bmb.Model(f"y ~ {formula3}", df)
@@ -354,6 +354,7 @@ models_dict = {"piecewise_constant": idata_spline1, "piecewise_linear": idata_sp
 "cubic_bspline_15": idata_spline5}
 df_compare = az.compare(models_dict)
 az.plot_compare(df_compare, ax=axs[0])
+axs[0].get_legend().remove()
 az.plot_compare(az.compare(models_dict, 'waic'), ax=axs[1])
 axs[1].set_yticklabels([])
 df_compare
@@ -405,31 +406,36 @@ The topic of gaussian processes is rich and detailed. Too rich to be fairly cove
 Nevertheless the gaussian relationships can be somewhat intuitively interrogated by defining different combinations of covariance relationships with priors over the parameters governing the covariance of a sequence of points. For example consider the following parameterisations. 
 ```{python}
 
+fig, axs = plt.subplots(2, 2, figsize=(9, 10))
+axs = axs.flatten()
 
-lengthscale = 3
-sigma = 13
-cov = sigma**2 * pm.gp.cov.ExpQuad(1, lengthscale)
+def plot_cov_draws(ax1, ax2, lengthscale=3, sigma=13):
+    cov = sigma**2 * pm.gp.cov.ExpQuad(1, lengthscale)
+    X = np.linspace(0, 60, 200)[:, None]
+    K = cov(X).eval()
 
-X = np.linspace(0, 60, 200)[:, None]
-K = cov(X).eval()
+    sns.heatmap(pd.DataFrame(K), center=0, xticklabels=[], yticklabels=[], ax=ax1, cmap='crest');
+    ax1.set_title(f"Covariance Length Scale {lengthscale}")
+    ax2.plot(
+        X,
+        pm.draw(
+            pm.MvNormal.dist(mu=np.zeros(len(K)), cov=K, shape=K.shape[0]), draws=10, random_seed=random_seed
+        ).T, color='blue', alpha=0.5
+    )
+    ax2.set_title(f"Samples from the GP prior \n lengthscale: {lengthscale}, sigma: {sigma}")
+    plt.ylabel("y")
+    plt.xlabel("X");
 
-fig, ax = plt.subplots(figsize=(9, 7))
-ax.plot(
-    X,
-    pm.draw(
-        pm.MvNormal.dist(mu=np.zeros(len(K)), cov=K, shape=K.shape[0]), draws=10, random_seed=random_seed
-    ).T,
-)
-plt.title(f"Samples from the GP prior \n lengthscale: {3}, sigma: {13}")
-plt.ylabel("y")
-plt.xlabel("X");
+plot_cov_draws(axs[0], axs[1])
+plot_cov_draws(axs[2], axs[3], lengthscale=10, sigma=13)
+
 ```
 
 We've specified the range of X to reflect the support of the acceleration example and allowed the draws to be informed by a covariance function we have parameterised using the Exponentiated Quadratic kernel:
 
 $$k(x, x') = \mathrm{exp}\left[ -\frac{(x - x')^2}{2 \ell^2} \right]$$
 
-The patterns exhibited show a good range of "wiggliness" that they should be flexible enough to capture the shape of the acceleration, if we can calibrate the posterior of parameters against the observed data. 
+The patterns exhibited show a good range of "wiggliness" that they should be flexible enough to capture the shape of the acceleration, if we can calibrate the model and derive posterior parameters against the observed data. 
 
 ### Priors on Gaussian Processes
 
@@ -649,8 +655,9 @@ def make_model(loss_df, num_knots=3, max_dev=7, model_type='mixed'):
 
         ## Individual or Year Specific Spline Modifications
         if model_type in ['mixed', 'unpooled']:
+            sigma = pm.HalfCauchy('sigma_i', 1)
             basis_i = pm.MutableData('Bi', np.asfortranarray(Bi))
-            beta = pm.Normal("beta", mu=0, sigma=tau, dims=('splines', 'years'))
+            beta = pm.Normal("beta", mu=0, sigma=sigma, dims=('splines', 'years'))
             mui = pm.Deterministic("mui", pm.math.dot(basis_i, beta), dims=('measurement', 'years'))
         
         ## Features
@@ -878,7 +885,7 @@ The data set has been constructed using average Science scores by country from t
 
 pisa_df = pd.read_csv("https://raw.githubusercontent.com/m-clark/generalized-additive-models/master/data/pisasci2006.csv")
 
-pisa_df
+pisa_df.head()
 
 
 ```
@@ -891,25 +898,29 @@ g.fig.suptitle("Pair Plot of Complex Relations", y=1.05);
 
 ```
 
-We define two basic models for contrasting. Note here how we have to define a seperate spline basis for each of the covariates. 
+We define three models for contrasting the implications. Note here how we have to define a seperate spline basis for each of the covariates. Here we create the knots for defining our basis on each covariate. 
 
 ```{python}
-
-formula = "Overall ~ Income + Edu + Health"
-base_model = bmb.Model(formula, pisa_df, dropna=True)
-
 knots_income = np.linspace(np.min(pisa_df['Income']), np.max(pisa_df['Income']), 5+2)[1:-1]
 
 knots_edu = np.linspace(np.min(pisa_df['Edu']), np.max(pisa_df['Edu']), 5+2)[1:-1]
 
 knots_health = np.linspace(np.min(pisa_df['Health']), np.max(pisa_df['Health']), 5+2)[1:-1]
 
-
 knots_income1 = np.linspace(np.min(pisa_df['Income']), np.max(pisa_df['Income']), 3+2)[1:-1]
 
 knots_edu1 = np.linspace(np.min(pisa_df['Edu']), np.max(pisa_df['Edu']), 3+2)[1:-1]
 
 knots_health1 = np.linspace(np.min(pisa_df['Health']), np.max(pisa_df['Health']), 3+2)[1:-1]
+
+```
+
+Now we initialise these models
+
+```{python}
+
+formula = "Overall ~ Income + Edu + Health"
+base_model = bmb.Model(formula, pisa_df, dropna=True)
 
 formula_spline = """Overall ~ bs(Income, degree=3, knots=knots_income) + bs(Edu, degree=3, knots=knots_edu) + bs(Health, degree=3, knots=knots_health) """
 
