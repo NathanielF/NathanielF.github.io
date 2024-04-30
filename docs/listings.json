@@ -14,7 +14,6 @@
   {
     "listing": "/archive.html",
     "items": [
-      "/posts/post-with-code/Bayesian_Trial_Design/bayesian_trial_design.html",
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/DiD-Card-Kreuger/DID.html",
       "/posts/post-with-code/Bayesian_AB_tests/bayesian_ab_tests.html",
@@ -45,7 +44,6 @@
   {
     "listing": "/blog.html",
     "items": [
-      "/posts/post-with-code/Bayesian_Trial_Design/bayesian_trial_design.html",
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/DiD-Card-Kreuger/DID.html",
       "/posts/post-with-code/Bayesian_AB_tests/bayesian_ab_tests.html",

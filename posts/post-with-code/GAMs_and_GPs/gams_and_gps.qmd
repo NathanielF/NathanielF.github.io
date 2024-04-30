@@ -435,7 +435,7 @@ We've specified the range of X to reflect the support of the acceleration exampl
 
 $$k(x, x') = \mathrm{exp}\left[ -\frac{(x - x')^2}{2 \ell^2} \right]$$
 
-The patterns exhibited show a good range of "wiggliness" that they should be flexible enough to capture the shape of the acceleration, if we can calibrate the model and derive posterior parameters against the observed data. 
+The plot on the left highlights the importance of the lengthscale parameter over the sequence. The wider the central shading is the more pronounced is the correlation among more points in the sequence. The patterns to the right show a good range of "wiggliness" that they should be flexible enough to capture the shape of the acceleration, if we can calibrate the model and derive posterior parameters against the observed data. 
 
 ### Priors on Gaussian Processes
 
