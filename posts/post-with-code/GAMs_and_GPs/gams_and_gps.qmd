@@ -943,7 +943,8 @@ spline_model.graph()
 
 
 ```{python}
-
+#| output: false
+#| 
 base_idata = base_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True})
 spline_idata = spline_model.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True}, target_accept=.95)
 spline_idata1 = spline_model1.fit(random_seed=random_seed, idata_kwargs={"log_likelihood": True}, target_accept=.99)
