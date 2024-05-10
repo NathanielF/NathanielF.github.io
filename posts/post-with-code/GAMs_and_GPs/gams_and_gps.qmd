@@ -40,14 +40,13 @@ warnings.simplefilter('ignore')
 
 Flexible Spline models risk overfit and need to be carefully calibrated against real data.
 
-
 ## Theoretical Posits and Scientific Commitments
 
-The scientific enterprise must abstract away details of reality to provide insight into the structure of reality. Statistical models of reality are cobbled together from a variety of abstractions; probability distributions and functional relations cojoined and calibrated against observed data. We are building on shifting foundations. 
+The scientific enterprise must abstract away details of reality to provide insight into the structure of reality. Statistical models of reality are cobbled together from a variety of abstractions; probability distributions and functional relations cojoined and calibrated against observed data. We are building on shifting foundations. Good abstractions aim at modelling the structures or _real patterns_ that matter.  
 
 > There is no way to establish fully secured, ... starting point of the sciences. There is no tabula rasa. We are like sailors who have to rebuild their ship on the open sea, without ever being able to dismantle it in dry-dock and reconstruct it from its best components. - Otto Neurath
 
-Spline models are like the panes of wood we use to construct the ship, ride the next wave. In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before proceeding to look at Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
+Spline models are like the panes of wood we use to construct the ship and ride the next wave. In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before proceeding to look at Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
 
 Our interest in these models stems from their flexibility to approximate functions of arbitrary complexity. We'll see how the methods work in the case of relatively straightforward toy example and then we'll apply each of the methods to deriving insights into the functional form of insurance loss curves. In this application we adapt a data set discussed in Mick Cooney's `Stan` [case study](https://mc-stan.org/users/documentation/case-studies/losscurves_casestudy.html) to demonstrate the power of hierarchical spline models. Throughout we'll draw on the discussion of these methods in Osvaldo Martin's _"Bayesian Analysis with Python"_ for practical details implementing these models. 
 
@@ -61,7 +60,7 @@ In R these penalised models fits can be achieved in `mgcv` which incorporates a 
 The closest implementation in python is available in `PyGam` and we will adopt this package to illustrate the application of smoothing terms and the penalities. 
 
 ### PyGAM and Penalised Fits
-In the next code block we load in an example data set on which to demonstrate univariate smoothing patterns using penalised splines. These models can be optimised by fitting differing strength penalities over a varying number of splines
+In the next code block we load in an example data set on which to demonstrate univariate smoothing patterns using penalised splines. These models can be optimised by fitting differing strength penalities over a varying number of splines. Splines are used to construct non-linear functions of the input variable which are combined additively in our model equation. The penalities used in the optimisation routines constrain how "wiggly" these constructions will be. 
 ```{python}
 
 X, y = mcycle(return_X_y=True)
@@ -120,7 +119,7 @@ We can see from the model summary what is going on under the hood. For a given m
 ```{python}
 
 ## Naive Model manually specified splines
-gam_raw = LinearGAM(s(0)).fit(X, y)
+gam_raw = LinearGAM(s(0, n_splines=10), fit_intercept=False).fit(X, y)
 print("log_likelihood:", gam_raw.statistics_['loglikelihood'])
 print("AIC:", gam_raw.statistics_['AIC'])
 
@@ -191,7 +190,7 @@ ax.legend();
 
 ```
 
-In this manner we can see how the specification of a spline basis can help us model eccentric curves in an outcome space. 
+In this manner we can see how the specification of a spline basis can help us model eccentric curves in an outcome space.They are like duct-tape tying down our rigging. Filling the gaps in our theory. If we hold this part down there, and jiggle another part here, our theory stays afloat. Spline constructions exemplify the contorted nature of empirically informed theory construction.
 
 Next we'll see how to more directly work with the specification of basis splines, passing these feature matrices into Bambi models. 
 

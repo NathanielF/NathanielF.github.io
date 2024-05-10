@@ -5,3 +5,6 @@
 /.luarc.json
 /notes/certain_things/Wedding/
 /docs/notes/certain_things/Wedding/
+.Rproj.user
+#Temp remove when complete
+posts/post-with-code/Survey_Analytics_Design/*
