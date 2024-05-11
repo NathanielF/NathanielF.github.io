@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nathaniel Forde">
-<meta name="dcterms.date" content="2024-02-27">
+<meta name="dcterms.date" content="2024-05-11">
 
-<title>Examined Algorithms - Bayesian Non Parametric Causal Inference in PyMC</title>
+<title>Examined Algorithms - Inverse Propensity Score Weighting in CausalPy</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -121,7 +121,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Bayesian Non Parametric Causal Inference in PyMC</h1>
+      <h1 class="quarto-secondary-nav-title">Inverse Propensity Score Weighting in CausalPy</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -203,7 +203,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#bayesian-non-parametric-causal-inference" id="toc-bayesian-non-parametric-causal-inference" class="nav-link active" data-scroll-target="#bayesian-non-parametric-causal-inference">Bayesian Non Parametric Causal Inference</a></li>
+  <li><a href="#inverse-propensity-score-weighting" id="toc-inverse-propensity-score-weighting" class="nav-link active" data-scroll-target="#inverse-propensity-score-weighting">Inverse Propensity Score Weighting</a></li>
   </ul>
 </nav>
     </div>
@@ -212,12 +212,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Bayesian Non Parametric Causal Inference in PyMC</h1>
+<h1 class="title d-none d-lg-block">Inverse Propensity Score Weighting in CausalPy</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">probability</div>
-    <div class="quarto-category">pymc</div>
-    <div class="quarto-category">non parametric</div>
+    <div class="quarto-category">regression</div>
+    <div class="quarto-category">propensity</div>
     <div class="quarto-category">causal inference</div>
+    <div class="quarto-category">weighting</div>
   </div>
   </div>
 
@@ -235,7 +235,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 27, 2024</p>
+      <p class="date">May 11, 2024</p>
     </div>
   </div>
   
@@ -245,23 +245,10 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="bayesian-non-parametric-causal-inference" class="level1">
-<h1>Bayesian Non Parametric Causal Inference</h1>
-<p>In this project I demonstrated how to fit and use BART propensity score models in the assessment of causal inference questions. We showed the conditions under which these methods work well and an example of where they break down due to overfit. We showed how they could be fixed using debiasing techniques and how appropriate analysis of this case could be achieved using non-parametric mediation analysis.</p>
-<p>The project culminated in a publication to the official PyMC documentation that can be found online <a href="https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html">here</a> or downloaded as notebook <a href="bayesian_nonparametric_causal.html">here</a></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="bnp_cate.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">Conditional Average Treatment Effects of Smoking</figcaption><p></p>
-</figure>
-</div>
-<p>I also recorded a youtube modeling webinair on this topic with <a href="https://www.youtube.com/@learningbayesianstatistics8147">Alex Andorra</a></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="https://www.youtube.com/watch?v=y9BeOr0AETw&amp;list=PL7RjIaSLWh5lDvhGf6qs_im0fRzOeFN5_" title="Learning Bayesian Statistics"><img src="snapshot.png" class="img-fluid figure-img"></a></p>
-<p></p><figcaption class="figure-caption">Youtube Webinair</figcaption><p></p>
-</figure>
-</div>
+<section id="inverse-propensity-score-weighting" class="level1">
+<h1>Inverse Propensity Score Weighting</h1>
+<p>In this project I sought to add the functionality for bayesian inverse propensity weighting functionality to the <a href="https://causalpy.readthedocs.io/en/latest/">CausalPy</a> package. I adapted earlier work with <a href="https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html">PyMC</a> to contribute the base classes to the package and demonstrated how these classes can be used to esitmate various treatment effect estimands. The demonstration can be seen <a href="https://causalpy.readthedocs.io/en/latest/notebooks/inv_prop_pymc.html">here</a></p>
+<p><img src="weights.png" class="img-fluid"></p>
 
 
 </section>

@@ -28,6 +28,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/causalpy/inv_prop_weights.html",
       "/oss/pymc/bnp.html",
       "/oss/pymc/frailty_survival.html",
       "/oss/bambi/mr_p.html",
