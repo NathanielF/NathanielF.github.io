@@ -726,7 +726,7 @@ compare_df
 
 ```
 
-The hierarchical splne model is by far the best fit to our data. What does it represent? Yes, splines are function approximation tools. Extrapolation is dangerous, but in this domain where the range of the development curves is constrained they seem to offer an elegant way of articulating the structure of the risk profile.
+The hierarchical splne model is by far the best fit to our data. What does it represent? Yes, splines are function approximation tools. Sure, extrapolation is dangerous, but in this domain where the range of the development curves is constrained they seem to offer an elegant way of articulating the structure of the risk profile.
 
 ### Plot the Posterior Predictive Checks
 
@@ -754,7 +754,7 @@ plot_ppc_splines(idata_sp_insur_mixed)
 
 ### Plot the Hierarchical Components
 
-In the following plot we show similarly how to recapture the observed data, but additionally we decompose the structure of the model in each case and extract baseline forecasts which would be our guide to future loss-ratio development curves in lieu of any other information. 
+In the following plot we show similarly how to recapture the observed data, but additionally we can decompose the structure of the model in each case and extract baseline forecasts which would be our guide to future loss-ratio development curves in lieu of any other information. 
 
 ```{python}
 
@@ -770,15 +770,12 @@ dev_periods = np.arange(1, 7, 1)
 uniques, unique_codes = pd.factorize(loss_df['year_code'])
 
 mosaic = """
-         AB
-         CD
-         EF
-         GH
-         IJ
-         KK
+         ABCDE
+         FGHIJ
+         KKKKK
 """
 fig, axs = plt.subplot_mosaic(mosaic, sharey=True, 
-figsize=(9, 20))
+figsize=(20, 15))
 axs = [axs[k] for k in axs.keys()] 
 
 mu_g_mean = mu_g.mean(dim='draws')
@@ -1141,8 +1138,10 @@ ax.set_xticklabels(pisa_df.dropna(axis=0).reset_index()['Country']);
 
 ```
 
-We can see here how the combined components borrow the structure of the outcome variable primarily from the income variable component. The health measures have closer to zero additive contribution while the uncertainty in the educational component varies wildly. But the blue educational component here is used primarily as a scaling contribution which adds to the level of the outcome variable rather than distorting the shape. 
+We can see here how the combined components borrow the structure of the outcome variable primarily from the income variable component. The health measures have closer to zero additive contribution while the uncertainty in the educational component varies wildly. But the blue educational component here is used primarily as a scaling contribution which adds to the level of the outcome variable rather than distorting the shape. These initially opaque synthetic features of splines can offer deep insight into the structure of our data generating process when seen correctly. 
 
 ## Conclusion
 
 We've seen the application of splines as univariate smoothers to approximate wiggly curves of arbitrary shape. We've also tried gaussian process approximations of the same univariate functions. The suggested flexibility of both methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we can incorporate spline basis modelling in a hierarchical bayesian model and recover more compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts of insurance loss curves. Finally we showed how splines can be used additively to model non-linear functions of multiple covariates. These are a powerful tool to interrogate complex non-linear relationships, but they offer interpolation of functions within a well understood domain. Applealing to these models for extrapolation needs to be done carefully. 
+
+We can, I think, draw a broad moral from this presentation. Observed phenomena admit description with a wide variety of the mathematical abstraction. The "correctness" of the abstraction is never the right question. The manner in which one abstraction distils the structure of reality is not fundamentally any better than the manner in which an alternative scheme will do so. Predictive success achieved applying one abstraction can be traded off for interpretive tractability in another. What matters is the task at hand - solving the problem. Sometimes problems can be solved with new information, but mostly they're resolved by re-arranging assumptions and phrasing the problem anew - seeing through a different lens, pulling the door handle where we previously pushed. Splines, hierarhical splines, gaussian process modelling are all attempts at approximating an answer by rephrasing the question. The more of these tools we have the better we are prepared to tackle novel problems, discern the pertinent structure in the world. 
