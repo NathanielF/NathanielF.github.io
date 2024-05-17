@@ -50,7 +50,7 @@ Spline models are like the panes of wood we use to construct the ship and ride t
 
 Our interest in these models stems from their flexibility to approximate functions of arbitrary complexity. We'll see how the methods work in the case of relatively straightforward toy example and then we'll apply each of the methods to deriving insights into the functional form of insurance loss curves. In this application we adapt a data set discussed in Mick Cooney's `Stan` [case study](https://mc-stan.org/users/documentation/case-studies/losscurves_casestudy.html) to demonstrate the power of hierarchical spline models. Throughout we'll draw on the discussion of these methods in Osvaldo Martin's _"Bayesian Analysis with Python"_ for practical details implementing these models. 
 
-All of these methods need to be assessed with respect to their in-sample model fit and their out of sample performance. How can we best calibrate the model fits to perform reasonably well out of sample? How does the spline-constructs reflect an underlying reality, how can our posit's aid generalisation. 
+All of these methods need to be assessed with respect to their in-sample model fit and their out of sample performance. How can we best calibrate the model fits to perform reasonably well out of sample? How does the spline-constructs reflect an underlying reality, how can our posit's aid generalisation?
 
 ## Generalised Additive models
 
@@ -400,7 +400,7 @@ This represents a good a clean model fit to the observed data using univariate s
 
 ## Approximate Gaussian processes
 
-The topic of gaussian processes is rich and detailed. Too rich to be fairly covered in this blog post, so we'll just say that we're using a method designed for function approximation that makes use of drawing samples from a multivariate normal distribution under a range of different covariance relationships. We are in fact using the HSGP approximation of gaussian processes. 
+The topic of gaussian processes is rich and complex. Too rich to be fairly covered in this blog post, so we'll just say that we're using a method designed for function approximation that makes use of drawing samples from a multivariate normal distribution under a range of different covariance relationships. We are in fact using the HSGP approximation of gaussian processes. 
 
 Nevertheless the gaussian relationships can be somewhat intuitively interrogated by defining different combinations of covariance relationships with priors over the parameters governing the covariance of a sequence of points. For example consider the following parameterisations. 
 ```{python}
@@ -694,7 +694,7 @@ idata_sp_insur_mixed, sp_insur_mixed = make_model(loss_df, model_type='mixed')
 
 ```
 
-The model structure can be seen more clearly in this graph
+The model structure can be seen more clearly in this graph. The important features to note are the spline components and the manner of their combination. We are postulating a kind of hierarchy of development curves. We specify the "global" curve in 7 development steps and allow that each distinct year is a realisation of a curve that can be thought of as modifying the profile of "global" curve as `mui` is combined with `mu_g`. These structures are then combined into a more traditional regression and fed into our likelihood term.  
 
 ```{python}
 
@@ -726,6 +726,8 @@ compare_df
 
 ```
 
+The hierarchical splne model is by far the best fit to our data. What does it represent? Yes, splines are function approximation tools. Extrapolation is dangerous, but in this domain where the range of the development curves is constrained they seem to offer an elegant way of articulating the structure of the risk profile.
+
 ### Plot the Posterior Predictive Checks
 
 We can check how well the model can recapture the observed data.
@@ -733,7 +735,7 @@ We can check how well the model can recapture the observed data.
 ```{python}
 
 def plot_ppc_splines(idata):
-    fig, axs = plt.subplots(5, 2, figsize=(9, 20), sharey=True)
+    fig, axs = plt.subplots(2, 5, figsize=(20, 10), sharey=True)
     axs = axs.flatten()
     dev_periods = np.arange(1, 7, 1)
     uniques, unique_codes = pd.factorize(loss_df['year_code'])
@@ -859,10 +861,10 @@ pred_df_0 = get_posterior_predictive_curve(idata_353, prem=1, grcode=0)
 
 fig, ax = plt.subplots(figsize=(9, 7), sharey=True)
 
-az.plot_hdi(range(6), pred_df_0.values.T, ax=ax, color='slateblue', fill_kwargs={'alpha': 0.2})
-az.plot_hdi(range(6), pred_df_1.values.T, ax=ax, color='firebrick', fill_kwargs={'alpha': 0.2})
-az.plot_hdi(range(6), pred_df_0.values.T, ax=ax, color='slateblue', fill_kwargs={'alpha': 0.5}, hdi_prob=.5)
-az.plot_hdi(range(6), pred_df_1.values.T, ax=ax, color='firebrick', fill_kwargs={'alpha': 0.5}, hdi_prob=.5)
+az.plot_hdi(range(6), pred_df_0.values.T, ax=ax, color='slateblue', smooth=False, fill_kwargs={'alpha': 0.2})
+az.plot_hdi(range(6), pred_df_1.values.T, ax=ax, color='firebrick', smooth=False, fill_kwargs={'alpha': 0.2})
+az.plot_hdi(range(6), pred_df_0.values.T, ax=ax, color='slateblue', smooth=False, fill_kwargs={'alpha': 0.5}, hdi_prob=.5)
+az.plot_hdi(range(6), pred_df_1.values.T, ax=ax, color='firebrick', smooth=False, fill_kwargs={'alpha': 0.5}, hdi_prob=.5)
 ax.plot(pred_df_0.mean(axis=1), linestyle='-', color='k', linewidth=4, label='grcode 353 prem 1')
 
 ax.plot(pred_df_1.mean(axis=1), linestyle='--', color='grey', linewidth=4, label='grcode 43 prem 1')
