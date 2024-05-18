@@ -824,7 +824,7 @@ idata_353
 
 ```
 
-Even here though we want to average the curves over the specific years in the data and abstract a view of the model implications under different counterfactual settings. Or put another way we a view of the average development curve between years not within a year. Here we define a helper function to effect this step. 
+Even here though we want to average the curves over the specific years in the data and abstract a view of the model implications under different counterfactual settings. Or put another way, we want a view of the average development curve between years, not within a year. If we want to predict the novel insurance loss for next year we need some way to aggregate between the annual trajectories. Here we define a helper function to effect this step. 
 
 ```{python}
 
@@ -839,8 +839,8 @@ def get_posterior_predictive_curve(idata, prem=2, grcode=1):
     df1 = pd.DataFrame([beta_prem.values[i]*prem + beta_grcode.values[i]*grcode for i in range(2000)]).T
 
 
-    ## Crucial step averaging over the years to get
-    ## a view of the development period
+    ## How do we averaging over the years to get
+    ## a view of a new development period?
     #df = pd.concat([pd.DataFrame(weighted_splines_1[i].T + weighted_splines[i].T).mean() for i in range(1000)], axis=1)
 
     ## Sample random group each draw from posterior
@@ -873,6 +873,8 @@ ax.legend();
 
 ```
 
+Note how we've varied the preditor inputs to showcase the expected realisation under different product codes. 
+
 ## Multiple Smoother Regression Models
 
 To demonstrate how spline modelling can be further adapted to the multiple regression like cases we use the PISA data set discussed in [this case study](https://m-clark.github.io/generalized-additive-models/application.html) from Michael Clark. 
@@ -891,7 +893,7 @@ pisa_df.head()
 The relationships displayed between each of these measures is not obviously linear, and as such could plausibly benefit from being modelled with splines. 
 
 ```{python}
-g = sns.pairplot(pisa_df[['Overall', 'Income', 'Support', 'Health', 'Edu']],  kind="reg")
+g = sns.pairplot(pisa_df[['Overall', 'Income', 'Support', 'Health', 'Edu']],  kind="reg", height=2)
 g.fig.suptitle("Pair Plot of Complex Relations", y=1.05);
 
 ```
@@ -922,7 +924,7 @@ base_model = bmb.Model(formula, pisa_df, dropna=True)
 
 formula_spline = """Overall ~ bs(Income, degree=3, knots=knots_income) + bs(Edu, degree=3, knots=knots_edu) + bs(Health, degree=3, knots=knots_health) """
 
-formula_spline1 = """Overall ~ bs(Income, degree=3, knots=knots_income1) + bs(Edu, degree=3, knots=knots_edu1) + bs(Health, degree=3, knots=knots_health1) + (1 | Country) """
+formula_spline1 = """Overall ~ (1 | Country) + bs(Income, degree=3, knots=knots_income1) + bs(Edu, degree=3, knots=knots_edu1) + bs(Health, degree=3, knots=knots_health1) """
 
 spline_model = bmb.Model(formula_spline, pisa_df, dropna=True)
 
@@ -985,7 +987,7 @@ spline_model.predict(spline_idata, kind='pps')
 spline_model1.predict(spline_idata1, kind='pps')
 
 
-fig, axs = plt.subplots(3, 1, figsize=(8, 15))
+fig, axs = plt.subplots(1, 3, figsize=(20, 8))
 axs = axs.flatten()
 az.plot_ppc(base_idata, ax=axs[0])
 az.plot_ppc(spline_idata, ax=axs[1]);
@@ -1090,14 +1092,13 @@ g.fig.suptitle("Hierarchical Marginal Predictions of the Outcome Variable \n con
 
 ```
 
-We can see here how the hierarchical component shrinks the predicted values back towards a reasonable range constraining the poor extrapolation of the more naive spline model. This demonstrates something of the interplay between in-sample approximation and out of sample generalisation we saw above in the case of the insurance curve development. 
+However, we can see here how the hierarchical component shrinks the predicted values back towards a reasonable range! Constraining the poor extrapolation of the more naive spline model. This demonstrates something of the interplay between in-sample approximation and out of sample generalisation we saw above in the case of the insurance curve development. The additional structure insists on commensurate realisations under different counterfactual settings reflective of the fact that countries do not vary so radically. 
 
 ### The Spline Component Contributions
 
 Finally, we'll pull out the component contributions of each variable and see how they combine additively. This will also serve as a kind of posterior predictive check for each country as we can show the degree which posterior draws from each component sum to achieve a plausible mirror of the observed data.  
 
 ```{python}
-
 
 Bincome = spline_model.response_component.design.common['bs(Income, degree=3, knots=knots_income)']
 
@@ -1144,4 +1145,4 @@ We can see here how the combined components borrow the structure of the outcome 
 
 We've seen the application of splines as univariate smoothers to approximate wiggly curves of arbitrary shape. We've also tried gaussian process approximations of the same univariate functions. The suggested flexibility of both methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we can incorporate spline basis modelling in a hierarchical bayesian model and recover more compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts of insurance loss curves. Finally we showed how splines can be used additively to model non-linear functions of multiple covariates. These are a powerful tool to interrogate complex non-linear relationships, but they offer interpolation of functions within a well understood domain. Applealing to these models for extrapolation needs to be done carefully. 
 
-We can, I think, draw a broad moral from this presentation. Observed phenomena admit description with a wide variety of the mathematical abstraction. The "correctness" of the abstraction is never the right question. The manner in which one abstraction distils the structure of reality is not fundamentally any better than the manner in which an alternative scheme will do so. Predictive success achieved applying one abstraction can be traded off for interpretive tractability in another. What matters is the task at hand - solving the problem. Sometimes problems can be solved with new information, but mostly they're resolved by re-arranging assumptions and phrasing the problem anew - seeing through a different lens, pulling the door handle where we previously pushed. Splines, hierarhical splines, gaussian process modelling are all attempts at approximating an answer by rephrasing the question. The more of these tools we have the better we are prepared to tackle novel problems, discern the pertinent structure in the world. 
+We can, I think, draw a broad moral from this presentation. Observed phenomena admit description with a wide variety of mathematical abstraction. The "correctness" of the abstraction is never the right question. The manner in which one abstraction distils the structure of reality is not fundamentally any better than the manner in which an alternative scheme will do so. Predictive success achieved applying one abstraction can be traded off for interpretive tractability in another. What matters is the task at hand - solving the problem. Sometimes problems can be solved with new information, but mostly they're resolved by re-arranging assumptions and phrasing the problem anew - seeing through a different lens, pulling the door handle where we previously pushed. Splines, hierarhical splines, gaussian process modelling are all attempts at approximating an answer by rephrasing the question. The more of these tools we have the better we are prepared to tackle novel problems, discern the pertinent structure in the world. 
