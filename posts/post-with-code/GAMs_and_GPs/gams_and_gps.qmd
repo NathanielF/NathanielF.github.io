@@ -40,11 +40,18 @@ warnings.simplefilter('ignore')
 
 Flexible Spline models risk overfit and need to be carefully calibrated against real data.
 
+::: {.callout-note}
+## Summary 
+Statistical models both encode structure in their definition and learn structure as they are calibrated against real data. There is a tension between how much structure we encode and how much we allow the model to discover. Too much discovery turns the model into a black-box and we lose some interpretability, too much encoded structure and we bias the discovery and risk losing sight of the data genersting process. 
+
+Generalised Additive spline models and Gaussian process models are a tractable set of mathematical abstractions fit for arbitrary function approximation. We demonstrate their flexibility and continue to explore the interplay between such free function approximation and theoretically imposed constraints in the case of hierarchical spline modelling of insurance losses.
+:::
+
 ## Theoretical Posits and Scientific Commitments
 
 The scientific enterprise must abstract away details of reality to provide insight into the structure of reality. Statistical models of reality are cobbled together from a variety of abstractions; probability distributions and functional relations cojoined and calibrated against observed data. We are building on shifting foundations. Good abstractions aim at modelling the structures or _real patterns_ that matter.  
 
-> There is no way to establish fully secured, ... starting point of the sciences. There is no tabula rasa. We are like sailors who have to rebuild their ship on the open sea, without ever being able to dismantle it in dry-dock and reconstruct it from its best components. - Otto Neurath
+> [Yet] there is no way to establish fully secured, ... starting point of the sciences. There is no tabula rasa. We are like sailors who have to rebuild their ship on the open sea, without ever being able to dismantle it in dry-dock and reconstruct it from its best components. - Otto Neurath
 
 Spline models are like the panes of wood we use to construct the ship and ride the next wave. In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before proceeding to look at Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
 

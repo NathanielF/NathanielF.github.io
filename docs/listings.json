@@ -15,13 +15,6 @@
     "listing": "/archive.html",
     "items": [
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
-      "/posts/post-with-code/DiD-Card-Kreuger/DID.html",
-      "/posts/post-with-code/Bayesian_AB_tests/bayesian_ab_tests.html",
-      "/posts/post-with-code/replication_crisis/replication_and_cross_validation.html",
-      "/posts/post-with-code/spatial_correlation/spatial_correlation.html",
-      "/posts/post-with-code/occams_razor/wheat_from_chaff.html",
-      "/posts/post-with-code/bayesian_model_comparison/bayes_decision.html",
-      "/posts/post-with-code/mle_utility_and_choice/mle_utility_and_choice.html",
       "/posts/post-with-code/theoretical_risks_meehl/theoretical_risks_meehl.html"
     ]
   },
@@ -46,13 +39,6 @@
     "listing": "/blog.html",
     "items": [
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
-      "/posts/post-with-code/DiD-Card-Kreuger/DID.html",
-      "/posts/post-with-code/Bayesian_AB_tests/bayesian_ab_tests.html",
-      "/posts/post-with-code/replication_crisis/replication_and_cross_validation.html",
-      "/posts/post-with-code/spatial_correlation/spatial_correlation.html",
-      "/posts/post-with-code/occams_razor/wheat_from_chaff.html",
-      "/posts/post-with-code/bayesian_model_comparison/bayes_decision.html",
-      "/posts/post-with-code/mle_utility_and_choice/mle_utility_and_choice.html",
       "/posts/post-with-code/theoretical_risks_meehl/theoretical_risks_meehl.html"
     ]
   }

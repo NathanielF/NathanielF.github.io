@@ -6,6 +6,7 @@ categories: ["probability", "experiments", "bayesian-AB-tests", "histogram-trick
 image: "mixture.png"
 keep-ipynb: true
 self-contained: true
+draft: true
 execute: 
   enabled: true
 ---

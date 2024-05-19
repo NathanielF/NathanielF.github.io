@@ -6,6 +6,7 @@ categories: [card-kreuger, causal-inference, diff-in-diff]
 keep-ipynb: true
 image: "cholera_small_map.jpg"
 self-contained: true
+draft: true
 execute: 
   enabled: true
 jupyter: python3

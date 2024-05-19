@@ -4,6 +4,7 @@ title: "Gaussian Processes and Inferred Networks"
 subtitle: "This post describes the idea of spatial correlation outlined using a gaussian process model"
 categories: ["probability", "information", "optimisation", "spatial correlation", "gaussian_process"]
 image: "islands.jpeg"
+draft: True
 ---
 
 Of the varied ways in which you add to the world, you might imagine a modest influence over your social network. Of all those connections their cumulative impact is likely less than you imagine. Maybe you're a new parent hopeful to leave a positive impression on your children, but conscious of friends ignored. Attention is a resource, so the periphery of our network may suffer neglect or fall out altogether - some individuals are sacrificed, others deliberately culled. Your influence may wax and wane, but you aspire to a level of appropriate influence on family and friends. Your aspirations change over time and this has to corressponding effect of shrinking or shifting your sphere of influence. But this phenomena is not unique to new parents, we all struggle to allot time and attention and the residual impact of our past influence always degrades.

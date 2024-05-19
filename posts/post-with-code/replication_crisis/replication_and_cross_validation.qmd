@@ -4,7 +4,7 @@ page: "replication_and_cross_validation/"
 desc: "Problems of replicability and evidence"
 categories: ["replication_crisis", "bayesian", "hypothesis_tests"]
 date: "2021-08-01"
-draft: false
+draft: true
 image: psi.jpeg
 ---
 
