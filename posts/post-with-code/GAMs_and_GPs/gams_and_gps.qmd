@@ -42,18 +42,18 @@ Flexible Spline models risk overfit and need to be carefully calibrated against 
 
 ::: {.callout-note}
 ## Summary 
-Statistical models both encode structure in their definition and learn structure as they are calibrated against real data. There is a tension between how much structure we encode and how much we allow the model to discover. Too much discovery turns the model into a black-box and we lose some interpretability, too much encoded structure and we bias the discovery and risk losing sight of the data genersting process. 
+_Statistical models both encode structure in their definition and learn structure as they are calibrated against real data.There is a tension between how much structure we encode and how much we allow the model to discover. Too much discovery turns the model into a black-box and we lose some interpretability, too much encoded structure and we bias the discovery and risk losing sight of the data genersting process._ 
 
-Generalised Additive spline models and Gaussian process models are a tractable set of mathematical abstractions fit for arbitrary function approximation. We demonstrate their flexibility and continue to explore the interplay between such free function approximation and theoretically imposed constraints in the case of hierarchical spline modelling of insurance losses.
+_Generalised Additive spline models and Gaussian process models are a tractable set of mathematical abstractions fit for arbitrary function approximation. We demonstrate their flexibility and continue to explore the interplay between such free function approximation and theoretically imposed constraints in the case of hierarchical spline modelling of insurance losses._
 :::
 
 ## Theoretical Posits and Scientific Commitments
 
-The scientific enterprise must abstract away details of reality to provide insight into the structure of reality. Statistical models of reality are cobbled together from a variety of abstractions; probability distributions and functional relations cojoined and calibrated against observed data. We are building on shifting foundations. Good abstractions aim at modelling the structures or _real patterns_ that matter.  
+__The scientific enterprise must abstract away details of reality to provide insight into the structure of reality.__ Statistical models of reality are cobbled together from a variety of abstractions; probability distributions and functional relations cojoined and calibrated against observed data. We are building on shifting foundations. Good abstractions aim at modelling the structures or _real patterns_ that matter.  
 
 > [Yet] there is no way to establish fully secured, ... starting point of the sciences. There is no tabula rasa. We are like sailors who have to rebuild their ship on the open sea, without ever being able to dismantle it in dry-dock and reconstruct it from its best components. - Otto Neurath
 
-Spline models are like the panes of wood we use to construct the ship and ride the next wave. In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before proceeding to look at Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
+Spline models are like these ships, constructed from ad-hoc materials fished from the ocean. Linear approxiations to ride the next wave form. In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before proceeding to look at Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
 
 Our interest in these models stems from their flexibility to approximate functions of arbitrary complexity. We'll see how the methods work in the case of relatively straightforward toy example and then we'll apply each of the methods to deriving insights into the functional form of insurance loss curves. In this application we adapt a data set discussed in Mick Cooney's `Stan` [case study](https://mc-stan.org/users/documentation/case-studies/losscurves_casestudy.html) to demonstrate the power of hierarchical spline models. Throughout we'll draw on the discussion of these methods in Osvaldo Martin's _"Bayesian Analysis with Python"_ for practical details implementing these models. 
 
@@ -61,7 +61,7 @@ All of these methods need to be assessed with respect to their in-sample model f
 
 ## Generalised Additive models
 
-The canonical reference for GAMs is Simon Wood's _"Generalised Additive Models: An Introduction with R"_ which outlines in some detail the theoretical background of splines and univariate smoothers. The book stresses the trade-offs between the flexibility of splines and the need for cross-validation and penalised estimation methods for spline based modelling. 
+__Nonlinear functions can be approximated with additive combinations of linear components.__ The canonical reference for these additive models is Simon Wood's _"Generalised Additive Models: An Introduction with R"_ which outlines in some detail the theoretical background of splines and univariate smoothers. The book stresses the trade-offs between the flexibility of splines and the need for cross-validation and penalised estimation methods for spline based modelling. 
 
 In R these penalised models fits can be achieved in `mgcv` which incorporates a wilkinson like formula syntax for model specification: `y ~ s(x) + s(x1)`. 
 The closest implementation in python is available in `PyGam` and we will adopt this package to illustrate the application of smoothing terms and the penalities. 
@@ -121,7 +121,7 @@ Over the range of of the x-axis we can see how the conditional expectation is mo
 
 ## Optimising The Parameter Setting
 
-We can see from the model summary what is going on under the hood. For a given model specification the summary will report a number of model-fit statistics such as the log-likelihood and the AIC. 
+__The manner of the the linear combination achieved by GAMs is constrained by the optimisation goal in their model fit.__ We can see from the model summary what is going on under the hood. For a given model specification the summary will report a number of model-fit statistics such as the log-likelihood and the AIC. 
 
 ```{python}
 
@@ -203,7 +203,7 @@ Next we'll see how to more directly work with the specification of basis splines
 
 ## Bayesian Splines with bambi
 
-Under the hood `Bambi` makes use of the ['formulae'](github.com/bambinos/formulae) package to allow for formula-like syntax to specify spline basis terms and mixed effect model terms. We leverage this to streamline the specification of spline models. 
+__Spline models can be constructed and assessed using Bayesian approaches to quantify the uncertainty in the constructed function__. Under the hood `Bambi` makes use of the ['formulae'](github.com/bambinos/formulae) package to allow for formula-like syntax to specify spline basis terms and mixed effect model terms. We leverage this to streamline the specification of spline models. 
 
 ```{python}
 knots_6 = np.linspace(0, np.max(X), 6+2)[1:-1]
@@ -407,7 +407,7 @@ This represents a good a clean model fit to the observed data using univariate s
 
 ## Approximate Gaussian processes
 
-The topic of gaussian processes is rich and complex. Too rich to be fairly covered in this blog post, so we'll just say that we're using a method designed for function approximation that makes use of drawing samples from a multivariate normal distribution under a range of different covariance relationships. We are in fact using the HSGP approximation of gaussian processes. 
+__In a sense Gaussian processes models allow us to express our beliefs about the structure of a function and calibrate these beliefs against the observed data.__ The topic of gaussian processes is rich and complex. Too rich to be fairly covered in this blog post, so we'll just say that we're using a method designed for function approximation that makes use of drawing samples from a multivariate normal distribution under a range of different covariance relationships. The properties of these covariance relations determine the shape and fluidity of the function realisations. We will use the HSGP approximation of gaussian processes models.  
 
 Nevertheless the gaussian relationships can be somewhat intuitively interrogated by defining different combinations of covariance relationships with priors over the parameters governing the covariance of a sequence of points. For example consider the following parameterisations. 
 ```{python}
@@ -441,7 +441,7 @@ We've specified the range of X to reflect the support of the acceleration exampl
 
 $$k(x, x') = \mathrm{exp}\left[ -\frac{(x - x')^2}{2 \ell^2} \right]$$
 
-The plot on the left highlights the importance of the lengthscale parameter over the sequence. The wider the central shading is the more pronounced is the correlation among more points in the sequence. The patterns to the right show a good range of "wiggliness" that they should be flexible enough to capture the shape of the acceleration, if we can calibrate the model and derive posterior parameters against the observed data. 
+The plot on the left highlights the importance of the lengthscale parameter over the sequence. The wider the central shading is the more pronounced is the correlation among more points in the sequence. The patterns to the right show a good range of "wiggliness" that they should be flexible enough to capture the shape of the acceleration. These are the constraints of structure we can impose of the theoretical realisations of our model. If we can calibrate the model and derive posterior parameters against the observed data, we can learn the probable shape of our functional relationship. 
 
 ### Priors on Gaussian Processes
 
@@ -560,7 +560,7 @@ Next we'll step up our abstractions and show how to use hierarchical modelling o
 
 ## Insurance Loss Curves: Hierarchical Spline Models
 
-We draw on car insurance losses data set discussed in Mick Cooney's Stan case-study, but we simplify things for ourselves considerably by focusing on two types of loss and ensuring that each year under consideration has equal observations of the accruing losses. 
+__Hierarchical models of spline fits allow us to characterise and sample from fits over a family of curves while improving out of sample predictive accuracy.__ We draw on car insurance losses data set discussed in Mick Cooney's Stan case-study, but we simplify things for ourselves considerably by focusing on two types of loss and ensuring that each year under consideration has equal observations of the accruing losses. 
 
 ```{python}
 
@@ -884,7 +884,7 @@ Note how we've varied the preditor inputs to showcase the expected realisation u
 
 ## Multiple Smoother Regression Models
 
-To demonstrate how spline modelling can be further adapted to the multiple regression like cases we use the PISA data set discussed in [this case study](https://m-clark.github.io/generalized-additive-models/application.html) from Michael Clark. 
+__Non-linear spline relationships can be additively combined across multiple variables in simple and hierarchical regressions.__ To demonstrate how spline modelling can be further adapted to the multiple regression like cases we use the PISA data set discussed in [this case study](https://m-clark.github.io/generalized-additive-models/application.html) from Michael Clark. We'll see how crucial it is to carefully assess the implications of these model fits. 
 
 The data set has been constructed using average Science scores by country from the Programme for International Student Assessment (PISA) 2006, along with GNI per capita (Purchasing Power Parity, 2005 dollars), Educational Index, Health Index, and Human Development Index from UN data. We want to model the overall outcome score as a function of these broad demographic features. 
 
@@ -900,7 +900,7 @@ pisa_df.head()
 The relationships displayed between each of these measures is not obviously linear, and as such could plausibly benefit from being modelled with splines. 
 
 ```{python}
-g = sns.pairplot(pisa_df[['Overall', 'Income', 'Support', 'Health', 'Edu']],  kind="reg", height=2)
+g = sns.pairplot(pisa_df[['Overall', 'Income', 'Support', 'Health', 'Edu']],  kind="reg", height=1.5)
 g.fig.suptitle("Pair Plot of Complex Relations", y=1.05);
 
 ```
