@@ -6,7 +6,7 @@ keep-ipynb: true
 self-contained: true
 draft: false
 execute: 
-  enabled: true
+  enabled: True
 jupyter: pymc_causal
 image: "Spline.png"
 author:
@@ -25,6 +25,9 @@ from pygam import LinearGAM, s, f, GAM, l, utils
 import numpy as np
 import arviz as az
 import pymc as pm
+import scipy as sp
+from patsy import bs as bs_patsy, dmatrix
+import pytensor.tensor as pt
 
 
 random_seed = 100
@@ -208,14 +211,14 @@ __Spline models can be constructed and assessed using Bayesian approaches to qua
 ```{python}
 knots_6 = np.linspace(0, np.max(X), 6+2)[1:-1]
 knots_10 = np.linspace(0, np.max(X), 10+2)[1:-1]
-knots_15 = np.linspace(0, np.max(X), 15+2)[1:-1]
+knots_20 = np.linspace(0, np.max(X), 20+2)[1:-1]
 
 df = pd.DataFrame({'X': X.flatten(), 'y': y})
 formula1 = 'bs(X, degree=0, knots=knots_6)'
 formula2 = 'bs(X, degree=1, knots=knots_6, intercept=False)'
 formula3 = 'bs(X, degree=3, knots=knots_6, intercept=False)'
 formula4 = 'bs(X, degree=3, knots=knots_10, intercept=False)'
-formula5 = 'bs(X, degree=3, knots=knots_15, intercept=False)'
+formula5 = 'bs(X, degree=3, knots=knots_20, intercept=False)'
 model_spline1 = bmb.Model(f"y ~ {formula1}", df)
 model_spline2 = bmb.Model(f"y ~ {formula2}", df)
 model_spline3 = bmb.Model(f"y ~ {formula3}", df)
@@ -289,8 +292,8 @@ plot_knots(knots_10, axs[3]);
 
 B5 = model_spline5.response_component.design.common[formula5]
 ax = plot_spline_basis(B5, df["X"].values, axs[4], 
-title="Cubic Spline Basis (15 Knots)")
-plot_knots(knots_15, axs[4]);
+title="Cubic Spline Basis (20 Knots)")
+plot_knots(knots_20, axs[4]);
 
 
 
@@ -342,7 +345,7 @@ plot_weighted_splines(B1, idata_spline1, formula1, axs[0], knots_6)
 plot_weighted_splines(B2, idata_spline2, formula2, axs[1], knots_6)
 plot_weighted_splines(B3, idata_spline3, formula3, axs[2], knots_6)
 plot_weighted_splines(B4, idata_spline4, formula4, axs[3], knots_10)
-plot_weighted_splines(B5, idata_spline5, formula5, axs[4], knots_15)
+plot_weighted_splines(B5, idata_spline5, formula5, axs[4], knots_20)
 
 ```
 
@@ -357,7 +360,7 @@ As before we can evaluate these model fits and compare them based on leave-one-o
 fig, axs = plt.subplots(1, 2, figsize=(10, 7))
 axs = axs.flatten()
 models_dict = {"piecewise_constant": idata_spline1, "piecewise_linear": idata_spline2, "cubic_bspline": idata_spline3, "cubic_bspline_10": idata_spline4, 
-"cubic_bspline_15": idata_spline5}
+"cubic_bspline_20": idata_spline5}
 df_compare = az.compare(models_dict)
 az.plot_compare(df_compare, ax=axs[0])
 axs[0].get_legend().remove()
@@ -368,7 +371,7 @@ df_compare
 
 ```
 
-Here we see that the extra complexity of using 15 splines leads to slightly worse performance measures than the less complex but seemingly adequate 10 splines.
+Here we see that the extra complexity of using 20 splines leads to slightly worse performance measures than the less complex but seemingly adequate 10 splines. In other words, it's starting to overfit to the data at 20.
 
 
 ```{python}
@@ -483,16 +486,16 @@ Here we've set the `m=10` to determine the number of basis vectors used in the H
 
 ```{python}
 
-idata = model_hsgp.fit(inference_method="nuts_numpyro",target_accept=0.95, random_seed=121195, 
+idata_hsgp = model_hsgp.fit(inference_method="nuts_numpyro",target_accept=0.95, random_seed=121195, 
 idata_kwargs={"log_likelihood": True})
-print(idata.sample_stats["diverging"].sum().to_numpy())
+print(idata_hsgp.sample_stats["diverging"].sum().to_numpy())
 
 ```
 
 This model fits and the sampling seems to have worked well. 
 
 ```{python}
-az.plot_trace(idata, backend_kwargs={"layout": "constrained"}, figsize=(9, 15));
+az.plot_trace(idata_hsgp, backend_kwargs={"layout": "constrained"}, figsize=(9, 15));
 
 
 ```
@@ -500,7 +503,7 @@ az.plot_trace(idata, backend_kwargs={"layout": "constrained"}, figsize=(9, 15));
 The lengthscale and sigma parameters we have learned by calibrating our priors against the data. The degree to which these parameters are meaningful depend a little on how familar you are with covariance matrix kernels and their properties, so we won't dwell on the point here. 
 
 ```{python}
-az.summary(idata, var_names=['hsgp(X, m=10, c=1)_ell', 'hsgp(X, m=10, c=1)_sigma', 'y_sigma', 'hsgp(X, m=10, c=1)_weights'])
+az.summary(idata_hsgp, var_names=['hsgp(X, m=10, c=1)_ell', 'hsgp(X, m=10, c=1)_sigma', 'y_sigma', 'hsgp(X, m=10, c=1)_weights'])
 
 
 ```
@@ -509,21 +512,21 @@ But again we can sample from the posterior predictive distribution of the outcom
 
 ```{python}
 
-model_hsgp.predict(idata, data=new_data, 
+model_hsgp.predict(idata_hsgp, data=new_data, 
 kind='pps', inplace=True)
 
-idata
+idata_hsgp
 ```
 
 and plot the model fit to see if it can recover the observed data. 
 
 ```{python}
 
-ax = az.plot_hdi(new_data['X'], idata['posterior_predictive']['y'], fill_kwargs={'alpha': 0.2, 'color':'firebrick'}, figsize=(9, 8))
+ax = az.plot_hdi(new_data['X'], idata_hsgp['posterior_predictive']['y'], fill_kwargs={'alpha': 0.2, 'color':'firebrick'}, figsize=(9, 8))
 
-az.plot_hdi(new_data['X'], idata['posterior_predictive']['y'], fill_kwargs={'alpha': 0.8, 'color':'firebrick'}, hdi_prob=0.5)
+az.plot_hdi(new_data['X'], idata_hsgp['posterior_predictive']['y'], fill_kwargs={'alpha': 0.8, 'color':'firebrick'}, hdi_prob=0.5)
 
-y_mean = idata['posterior_predictive']['y'].mean(dim=('chain', 'draw'))
+y_mean = idata_hsgp['posterior_predictive']['y'].mean(dim=('chain', 'draw'))
 
 ax.plot(new_data['X'], y_mean, label='Expected posterior predictive', color='k')
 
@@ -541,12 +544,110 @@ And we can compare versus the spline models to see that by the aggregate perform
 ```{python}
 
 models_dict = {"piecewise_constant": idata_spline1, "piecewise_linear": idata_spline2, "cubic_bspline": idata_spline3, "cubic_bspline_10": idata_spline4, 
-"cubic_bspline_15": idata_spline5, 'hsgp': idata}
+"cubic_bspline_15": idata_spline5, 'hsgp': idata_hsgp}
 df_compare = az.compare(models_dict)
 df_compare
 
 
 ```
+
+## Bayesian Penalised Splines (Smoothing Priors)
+
+__Priors can be used in the same way to that regularisation techniques are deployed in machine learning.__ They serve as a kind of extra model parameter used to effect a variable selection routine. In the case of splines we are creating these synthetic features and this can be seen as a generating a feature selection problem. So far we have discussed priors as a means of imposing structure based on our knowledge of the problem but we can also use priors to automate feature selection over spline features. 
+
+Here we fit a two spline models to the speed-test data set but we use 60 knot points to generate our spline features. This is wildy excessive for the data set in question. We show how to use non-centered parameterisation with a "smoothing" trick to induce a good fit despite excessive features. In this way we're removing the burden of manually specifying the spline structure. This is akin to penalisation methods used in `PyGam` but with a Bayesian flavour. 
+
+```{python}
+#| output: false
+
+max_dev= len(y)
+num_knots=60
+knot_list = np.linspace(0, np.max(X), num_knots)[2:-2]
+dev_periods = np.linspace(0, np.max(X), len(y))
+
+Bx = dmatrix(
+    "bs_patsy(dev_periods, knots=knots, degree=3, include_intercept=False)",
+    {"dev_periods": dev_periods, "knots": knot_list},
+)
+Bx
+
+def penalised_model(Bx, penalised=True):
+    with pm.Model() as model:
+        basis = pm.MutableData('basis', np.asfortranarray(Bx))
+
+        if penalised:
+            sigma_a = pm.HalfCauchy('sigma_a', 5.)
+            a0 = pm.Normal('a0', 0., 10.)
+            delta_a = pm.Normal('delta_a', 0., 1.,shape=num_knots)
+            a = pm.Deterministic('a', a0 + (sigma_a * delta_a).cumsum())
+        else: 
+            b = pm.Normal('delta_a', 0., 25,
+            shape=num_knots)
+            a0 = pm.Normal('a0', 0, 10)
+            a = pm.Deterministic('a', a0 + b)
+        
+        sigma = pm.HalfCauchy('sigma', 5.)
+        obs = pm.Normal('obs', pm.math.dot(basis, a), sigma, observed=y)
+        idata = pm.sample(target_accept=.95, idata_kwargs={"log_likelihood": True})
+    
+    return model, idata
+
+model_raw, idata_raw = penalised_model(Bx, penalised=False)
+model_penalised, idata_penalised = penalised_model(Bx, penalised=True)
+```
+
+The model structure is as follows:
+
+```{python}
+
+pm.model_to_graphviz(model_penalised)
+
+```
+
+This parameterisation trick is owed to work by Austin Rochford and Adrian Seyboldt discussed [here](https://gist.github.com/AustinRochford/d640a240af12f6869a7b9b592485ca15). We can see how the two parameterisations induce quite distinct values on the coefficients for splines. 
+
+```{python}
+fig, ax = plt.subplots(figsize=(9, 20))
+az.plot_forest([idata_raw, idata_penalised], var_names=['a'], combined=True, ax=ax, model_names=['raw', 'penalised'])
+ax.fill_betweenx(range(160), -25, 25, alpha=0.2, color='red');
+
+
+```
+
+This results in much different posterior predictive fits. The un-smoothed spline fit overfits to the small partitions of the spline features, whereas the smoothing spline model achieves a reasonable fit recovering the smooth structure of the data generating process. 
+
+```{python}
+
+B_df = pd.DataFrame(Bx)
+weights = az.summary(idata_penalised, var_names='a')['mean']
+fig, ax = plt.subplots(figsize=(8, 7))
+processed = np.array([np.dot(B_df, az.extract(idata_penalised['posterior']['a'])['a'].to_numpy()[:, i]) for i in range(4000)])
+az.plot_hdi(range(len(y)), processed, ax=ax,  fill_kwargs={'alpha': 0.4, 'color':'firebrick'})
+az.plot_hdi(range(len(y)), processed, ax=ax,  fill_kwargs={'alpha': 0.8, 'color':'firebrick'}, hdi_prob=.50)
+weights_raw = az.summary(idata_raw, var_names='a')['mean']
+ax.plot(range(len(y)), np.dot(B_df, weights), color='black', label='Cubic_Bsplines_60_Penalised')
+ax.plot(range(len(y)), np.dot(B_df, weights_raw), color='blue', linestyle='--', label='Cubic_Bsplines_60_unpenalised')
+ax.set_title("Bayesian Automatic Regularisation \n Smoothing Priors over 60 Knots")
+ax.legend();
+
+
+```
+
+This is reflected in the model performance measures as well. 
+
+```{python}
+
+
+models_dict = {"piecewise_constant": idata_spline1, "piecewise_linear": idata_spline2, "cubic_bspline": idata_spline3, "cubic_bspline_10": idata_spline4, 
+"cubic_bspline_20": idata_spline5, 'hsgp': idata_hsgp, 'spline_penalised_bayes': idata_penalised, 'cubic_bspline_60': idata_raw}
+df_compare = az.compare(models_dict)
+df_compare
+
+
+
+```
+
+This functionality of Bayesian priors is not unique to spline models. We can mirror Lasso regression models with double-exponential prior specifications. Ridge regrssion is provably a species of regression models with Normal priors pulled toward 0. Other alternatives such horse-shoe and slab and spike specifications offer a rich range of bayesian approaches to variable selection methods with sparse data.  
 
 ### Recap
 
@@ -611,7 +712,7 @@ axs[1].set_title("Loss Ratio by Group")
 We want to model these curves collectively as instances of draws from a distribution of loss curves. To do so we will specify a `PyMC` hierarchical (mixed) spline model. To do so we will have a spline basis for the global hyper parameters `beta_g` and the individual parameters for each curve. Here we define a convenience function to generate the basis splines. 
 
 ```{python}
-from patsy import bs as bs_patsy, dmatrix
+
 
 def make_basis_splines(num_knots=3, max_dev=7):
     knot_list = np.linspace(0, max_dev, num_knots+2)[1:-1]
@@ -793,13 +894,13 @@ for y, c in zip(unique_codes, range(10)):
     mu_i_mean = mu_i.sel(years=y).mean(dim='draws')
     axs[c].plot(dev_periods, group_effect + mu_g_mean.values + mu_i_mean.values, label='Combined + E(grp_effect)', color='purple', linewidth=3.5)
     axs[c].plot(dev_periods, group_effect + mu_g_mean.values, label='E(Hierarchical Baseline)', color='red', linestyle='--')
-    axs[c].plot(dev_periods,  group_effect + mu_i_mean.values, label='E(Year Specific Adjustment term)', color='blue', linestyle='--')
+    axs[c].plot(dev_periods,  group_effect + mu_i_mean.values, label='E(Year Specific Adjustment)', color='blue', linestyle='--')
     axs[c].scatter(dev_periods, loss_df[(loss_df['year_code'] == y)]['lr'], color='k', label='Actual Loss Ratio')
     az.plot_hdi(dev_periods,mu.sel(obs=c).T  , ax=axs[c], color='firebrick', fill_kwargs={'alpha': 0.2})
     az.plot_hdi(dev_periods, mu.sel(obs=c).T , ax=axs[c], color='firebrick', fill_kwargs={'alpha': 0.5}, hdi_prob=.50)
     axs[c].set_title(f"Components for Year {y}")
     axs[c].set_ylabel("Loss Ratio")
-    if (c == 0) or (c == 1):
+    if (c == 0):
          axs[c].legend()
 
 axs[10].plot(dev_periods, mu_g_mean.values, label='E(Hierarchical Baseline)', color='black')

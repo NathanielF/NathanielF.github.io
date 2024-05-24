@@ -2,7 +2,145 @@
 date: "2023-11-21T10:19:36Z"
 title: "Non Parametric Bayesian Causal Inference"
 categories: ["probability", "non-parametrics", "dirichlet mixtures"]
+keep-ipynb: true
+self-contained: true
 draft: true
+execute: 
+  enabled: false
+jupyter: pymc_causal
 ---
+
+
+```{python}
+import pymc as pm
+import numpy as np
+import pytensor.tensor as pt
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+
+
+
+
+```
+
+
+```{python}
+
+K = 10
+
+def stick_breaking(a, K):
+    beta = pm.Beta('beta', 1., a, shape=K)
+    w = beta*pt.concatenate([[1.], pt.extra_ops.cumprod(1. - beta)[:-1]]) + 1E-6
+    return w/w.sum()
+
+cs = pd.read_csv('chemical_shifts_theo_exp.csv')
+cs_exp = cs['exp']
+
+with pm.Model() as model_DP:
+    α = pm.Gamma('α', 2, 1)
+    w = pm.Deterministic('w', stick_breaking(α, K)) 
+    means = pm.Normal('means',
+                      mu=np.linspace(cs_exp.min(), cs_exp.max(), K),
+                      sigma=5, shape=K,
+                      transform=pm.distributions.transforms.univariate_ordered,
+                     )
+    
+    sd = pm.HalfNormal('sd', sigma=5, shape=K)
+    obs = pm.NormalMixture('obs', w, means, sigma=sd, observed=cs_exp.values)
+    idata = pm.sample(random_seed=123, target_accept=0.9)
+
+```
+
+
+```{python}
+n_samples = 150
+cluster_std = [1.0, 2.5, 0.5, 1.5, .8]
+X, y = make_blobs(n_samples=n_samples, 
+                  cluster_std=cluster_std,
+                  centers=len(cluster_std))
+
+with pm.Model() as dp_model:
+    α = pm.Gamma('α', 2, 1)
+    w0 = pm.Deterministic('w0', stick_breaking(α, K)) 
+     # use sort to break multimodality
+    w = pm.Deterministic('w', pt.sort(w0))
+  
+    mus = pm.Normal('mu', 0, sigma=10, shape=(2, K))
+    Mvdist = [pm.MvNormal.dist(mu=mus[:, i], tau=np.eye(2), shape=(2,)) for i in range(K)]
+    
+    xs = pm.Mixture('x', w, Mvdist, observed=X)
+    idata = pm.sample_prior_predictive()
+    idata.extend(pm.sample(500))
+
+
+
+pm.model_to_graphviz(dp_model)
+
+
+```
+
+
+```{python}
+
+N = 100
+e1 = np.random.normal(0, 3, N)
+e2 = np.random.normal(0, 1, N)
+Z = np.random.uniform(0, 1, N)
+## Ensure the endogeneity of the the treatment variable
+X = -1 + 4 * Z + e2 + 2 * e1
+y = 2 + 3 * X + 3 * e1
+
+test_data = pd.DataFrame({"y": y, "X": X, "Z": Z})
+coords = {'instruments': ['Intercept', 'Z'], 'covariates': ['Intercept', 'X']}
+
+priors = {"mus": [[-2,4], [0.5, 3]],
+          "sigmas": [1, 1],
+          "eta": 2, 
+          "lkj_sd": 2,
+           }
+
+with pm.Model(coords=coords) as current: 
+    beta_t = pm.Normal(
+                name="beta_t",
+                mu=priors["mus"][0],
+                sigma=priors["sigmas"][0],
+                dims="instruments",
+            )
+            beta_z = pm.Normal(
+                name="beta_z",
+                mu=priors["mus"][1],
+                sigma=priors["sigmas"][1],
+                dims="covariates",
+            )
+            sd_dist = pm.HalfCauchy.dist(beta=priors["lkj_sd"], shape=2)
+            chol, corr, sigmas = pm.LKJCholeskyCov(
+                name="chol_cov",
+                eta=priors["eta"],
+                n=2,
+                sd_dist=sd_dist,
+            )
+            # compute and store the covariance matrix
+            pm.Deterministic(name="cov", var=pt.dot(l=chol, r=chol.T))
+
+            # --- Parameterization ---
+            mu_y = pm.Deterministic(name="mu_y", var=pm.math.dot(X, beta_z))
+            # focal regression
+            mu_t = pm.Deterministic(name="mu_t", var=pm.math.dot(Z, beta_t))
+            # instrumental regression
+            mu = pm.Deterministic(name="mu", var=pt.stack(tensors=(mu_y, mu_t), axis=1))
+
+            # --- Likelihood ---
+            pm.MvNormal(
+                name="likelihood",
+                mu=mu,
+                chol=chol,
+                observed=np.stack(arrays=(y.flatten(), t.flatten()), axis=1),
+                shape=(X.shape[0], 2),
+            )
+
+
+
 
 ```
