@@ -1169,8 +1169,8 @@ summary_df = bmb.interpret.predictions(
     spline_model,
     spline_idata,
     conditional={
-        "Edu": list(np.linspace(0.5, .98, 10)),
-        "Income": list(np.linspace(0.4, .98, 10)),
+        "Edu": list(np.linspace(0.5, .95, 10)),
+        "Income": list(np.linspace(0.4, .95, 10)),
         },
 )
 summary_df
@@ -1180,8 +1180,8 @@ summary_df1 = bmb.interpret.predictions(
     spline_model1,
     spline_idata1,
     conditional={
-        "Edu": list(np.linspace(0.5, .98, 10)),
-        "Income": list(np.linspace(0.4, .98, 10)),
+        "Edu": list(np.linspace(0.5, .95, 10)),
+        "Income": list(np.linspace(0.4, .95, 10)),
         },
     sample_new_groups=True
 )
@@ -1246,9 +1246,10 @@ for i in range(100):
         ax.plot(intercept[i] + income[i] + edu[i] + health[i], color='purple', alpha=0.3)
 
 ax.scatter(range(len(spline_idata['observed_data']['Overall'])), spline_idata['observed_data']['Overall'], label='Observed', color='grey', s=56, ec='black')
-ax.set_title("Additive Spline Components", fontsize=20)
+ax.set_title("PISA Outcomes \n Additive Spline Components", fontsize=20)
 ax.legend();
-ax.set_xticklabels(pisa_df.dropna(axis=0).reset_index()['Country']);
+ax.set_ylabel("Overall Score", fontsize=12)
+ax.set_xticklabels(pisa_df.dropna(axis=0).reset_index()['Country'], fontsize=12);
 
 ```
 
