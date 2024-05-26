@@ -41,36 +41,37 @@ warnings.simplefilter('ignore')
 
 # GAMs and GPs: Flexibility and Calibration
 
-Flexible Spline models risk overfit and need to be carefully calibrated against real data.
+Flexible Spline models risk overfit and need to be carefully calibrated against real data. Hierarchical models impose structure and aid calibration. We combine them.
 
 ::: {.callout-note}
 ## Summary 
-_Statistical models both encode structure in their definition and learn structure as they are calibrated against real data.There is a tension between how much structure we encode and how much we allow the model to discover. Too much discovery turns the model into a black-box and we lose some interpretability, too much encoded structure and we bias the discovery and risk losing sight of the data genersting process._ 
+_Statistical models both encode structure in their definition and learn structure as they are calibrated against real data. There is a tension between how much structure we encode and how much we allow the model to discover. Too much discovery turns the model into a black-box and we lose interpretability, too much encoded structure and we bias the discovery process and risk losing sight of the data generating mechanism._ 
 
-_Generalised Additive spline models and Gaussian process models are a tractable set of mathematical abstractions fit for arbitrary function approximation. We demonstrate their flexibility and continue to explore the interplay between such free function approximation and theoretically imposed constraints in the case of hierarchical spline modelling of insurance losses._
+_Generalised Additive spline models and Gaussian process models are a tractable set of mathematical abstractions fit for arbitrary function approximation. We demonstrate their flexibility and continue to explore the interplay between such free wheeling function-approximation and theoretically imposed constraints in the case of hierarchical spline modelling of insurance losses._
 :::
 
 ## Theoretical Posits and Scientific Commitments
 
-__The scientific enterprise must abstract away details of reality to provide insight into the structure of reality.__ Statistical models of reality are cobbled together from a variety of abstractions; probability distributions and functional relations cojoined and calibrated against observed data. We are building on shifting foundations. Good abstractions aim at modelling the structures or _real patterns_ that matter.  
+__The scientific enterprise must abstract away details of reality to provide insight into the structure of reality.__ Statistical models of real mechanisms are cobbled together from a variety of abstractions; probability distributions and functional relations cojoined, are then calibrated against observed data. We are building on disparate foundations. Good abstractions aim at modelling the structures or _real patterns_ that matter. It doesn't matter if those abstractions are themselves reflective of reality.
 
-> [Yet] there is no way to establish fully secured, ... starting point of the sciences. There is no tabula rasa. We are like sailors who have to rebuild their ship on the open sea, without ever being able to dismantle it in dry-dock and reconstruct it from its best components. - Otto Neurath
+> [T]here is no way to establish [a] fully secured, ... starting point of the sciences. There is no tabula rasa. We are like sailors who have to rebuild their ship on the open sea, without ever being able to dismantle it in dry-dock and reconstruct it from its best components. - Otto Neurath
 
-Spline models are like these ships, constructed from ad-hoc materials fished from the ocean. Linear approxiations to ride the next wave form. In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before proceeding to look at Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
+This is an apt metaphor for spline models in particular - like these ships built at sea, spline models are constructed from ad-hoc materials fished from the vast ocean of possible models. They are linear approxiations invoked to ride the next wave form.
+
+In this blog post we're going to dive into modelling of non-linear functions and explore some of the tooling available in the python eco-system. We'll start by looking into Generalised Additive Models with splines in `pyGAM` before proceeding to look at Bayesian versions of spline modelling comparing the splines to Gaussian processes in `Bambi` and `PyMC`. Before showing how hierarchical bayesian models avoid some of the issues of overfit in simpler spline models. 
 
 Our interest in these models stems from their flexibility to approximate functions of arbitrary complexity. We'll see how the methods work in the case of relatively straightforward toy example and then we'll apply each of the methods to deriving insights into the functional form of insurance loss curves. In this application we adapt a data set discussed in Mick Cooney's `Stan` [case study](https://mc-stan.org/users/documentation/case-studies/losscurves_casestudy.html) to demonstrate the power of hierarchical spline models. Throughout we'll draw on the discussion of these methods in Osvaldo Martin's _"Bayesian Analysis with Python"_ for practical details implementing these models. 
 
-All of these methods need to be assessed with respect to their in-sample model fit and their out of sample performance. How can we best calibrate the model fits to perform reasonably well out of sample? How does the spline-constructs reflect an underlying reality, how can our posit's aid generalisation?
-
 ## Generalised Additive models
 
-__Nonlinear functions can be approximated with additive combinations of linear components.__ The canonical reference for these additive models is Simon Wood's _"Generalised Additive Models: An Introduction with R"_ which outlines in some detail the theoretical background of splines and univariate smoothers. The book stresses the trade-offs between the flexibility of splines and the need for cross-validation and penalised estimation methods for spline based modelling. 
+__Nonlinear functions can be approximated with linearly  additive combinations of component features.__ Before delving into the practicalities we'll quickly note some of the theoretical background. The canonical reference for these additive models is Simon Wood's _"Generalised Additive Models: An Introduction with R"_ which outlines in some detail the theoretical background of splines and univariate smoothers. The book stresses the trade-offs between the flexibility of splines and the need for cross-validation and penalised estimation methods for spline based modelling. Spline models ape the complexities of esoteric functions by regression-like formulas combining functions of observed variables to to predict another:
 
-In R these penalised models fits can be achieved in `mgcv` which incorporates a wilkinson like formula syntax for model specification: `y ~ s(x) + s(x1)`. 
-The closest implementation in python is available in `PyGam` and we will adopt this package to illustrate the application of smoothing terms and the penalities. 
+$$y \sim f(x_1) + f(x_2) ...$$
+
+The structure of the individual $f$ functions is approximated. So we are approximating $y$ with a series of input approximations. In R these penalised models fits can be achieved in `mgcv` which incorporates a Wilkinson like formula syntax for model specification: `y ~ s(x) + s(x1)`. The closest implementation in python is available in `PyGam` and we will adopt this package to illustrate the application of smoothing terms and the penalities. This is a little too abstract. 
 
 ### PyGAM and Penalised Fits
-In the next code block we load in an example data set on which to demonstrate univariate smoothing patterns using penalised splines. These models can be optimised by fitting differing strength penalities over a varying number of splines. Splines are used to construct non-linear functions of the input variable which are combined additively in our model equation. The penalities used in the optimisation routines constrain how "wiggly" these constructions will be. 
+Let's first look at an example data set on which to demonstrate univariate smoothing patterns using penalised splines. These models can be optimised by fitting differing strength penalities over a varying number of splines. Splines are used to construct non-linear functions of the input variable which are combined additively in our model equation. The penalities used in the optimisation routines constrain how "wiggly" these constructions will be. 
 ```{python}
 
 X, y = mcycle(return_X_y=True)
@@ -79,11 +80,11 @@ fig, ax = plt.subplots(figsize=(10, 6))
 ax.scatter(X, y)
 ax.set_ylabel("Acceleration")
 ax.set_xlabel("Time Step")
-ax.set_title("Crash Test Dummy Acceleration \n Simulated Motorcycle Crash", fontsize=20)
+ax.set_title("Crash Test Dummy Acceleration \n Simulated Motorcycle Crash", fontsize=20);
 
 ```
 
-Next we fit a number of different models to account for the herky-jerky nature of the data generating processs. We vary the parameterisations to see how the numbers of splines and strength of the penalty help account for the variation in $y$ over the support of $X$. 
+Now we fit a number of different models to account for the herky-jerky nature of the data generating processs. We vary the parameterisations to see how the numbers of splines and strength of the penalty help account for the variation in $y$ over the support of $X$. 
 
 ```{python}
 
@@ -120,7 +121,7 @@ for ax, g, t in zip(axs, gs, titles):
 
 Here we've seen the `PyGAM` package applied to fitting our model to the data. In the formula specification we see `y ~ s(i)` where `i` denotes the index of the column variable in the X data. 
 
-Over the range of of the x-axis we can see how the conditional expectation is more or less well fit to the data depending on how the penalities and complexity of the model is specified. 
+Over the range of of the x-axis we can see how the conditional expectation is more or less well fit to the data depending on how the penalities and complexity of the model is specified. The art and science of developing a GAM model is finding the constraints on the approximation that help capture the observed patterns but do not excessively overfit to the observed data. 
 
 ## Optimising The Parameter Setting
 
@@ -157,21 +158,19 @@ plot_fit(gam, X, y, ax, "Optimised Fit")
 
 ```
 
-This is all well and good. We've seen an approach to modelling that can capture eccentric patterns in raw data. But how does it work and why should we care?
-
-If you're familiar with the nomenclature of machine learning, you should think of spline modelling as a variety of feature creation. It generates "synthetic" features over the range of the observed variable. These synthetic features are the splines in question. 
+This is all well and good! We've seen an approach to modelling that can capture eccentric patterns in raw data. But how does it work and why should we care? If you're familiar with the nomenclature of machine learning, you should think of spline modelling as a variety of feature creation. It generates "synthetic" features over the range of the observed variable. These synthetic features are the splines in question. Model building here too then relies on feature selection and principles for model-comparison. 
 
 ### Digression on the usage of "Splines" 
 
 The history of the term "spline" is related to the history of draftmanship. Historically splines were thin strips of flexible wood or plastic that could be bent or shaped around a weight or "knot" points to express a traceable curve over the space of a "numberline". The elastic nature of the spline material allowed it to be bent around the knot points of curvature expressing a smooth or continuous bend. 
 
-The mathematical technique apes these properties by defining a curve over in an analogous way. We specify "knots"  to carve up the support of the random variable $X$ into portions that require different weighting schemes to represent the outcome $y$ 
+The mathematical technique apes these properties by defining a curve over in an analogous way. We specify "knots"  to carve up the support of the random variable $X$ into portions that require different weighting schemes to represent the outcome $y$ in each partition of the support variable. 
 
 <img src="Spline.png" alt="spline" height="500"/>
 
 ### Extracting the Splines
 
-We can extract the spline features used in the `PyGAM` by invoking the following commands to first identify the knot points and create the b-spline basis appropriate for the variable $X$. 
+Returning to our model we can extract the spline features used in the `PyGAM` by invoking the following commands. We first identify the knot points and create the b-spline basis appropriate for the variable $X$. 
 
 ```{python}
 
@@ -188,7 +187,7 @@ splines_df.head(10)
 
 These spline features range the extent of the of covariate space $X$ defining "partitions" of the space. The model "learns" to capture the shape of the outcome variable $y$ by figuring out how to weight the different portion of this spline basis matrix i.e. the linear combination of this basis matrix with the derived coefficients is a model of our outcome variable. 
 
-Note how each row is 0 everywhere except within the columns that represent a partition of $X$. Additionally each row sum to unity. These properties are important because they ensure that any weighted combination of this basis represents the outcome variable in a controlled and quite granular manner. The more splines we use the more control we have of the representation.  
+Note how each row is 0 everywhere except within the columns that represent a partition of $X$. Additionally each row sum to unity. These properties are important because they ensure that any weighted combination of this basis represents the outcome variable in a controlled and quite granular manner. The more splines we use the more control we have of the representation, but we also risk overfit. 
 
 ### Plotting the Weighted Spline
 ```{python}
@@ -200,13 +199,13 @@ ax.legend();
 
 ```
 
-In this manner we can see how the specification of a spline basis can help us model eccentric curves in an outcome space.They are like duct-tape tying down our rigging. Filling the gaps in our theory. If we hold this part down there, and jiggle another part here, our theory stays afloat. Spline constructions exemplify the contorted nature of empirically informed theory construction.
+In this manner we can see how the specification of a spline basis can help us model eccentric curves and waves in an outcome space. Spline features are like ad-hoc joists structuring our rigging. Filling the gaps in our theory, duct-tape binding the pieces together. If we hold this part down there, and jiggle another part here, our theory stays afloat. Spline features exemplify the contorted nature of empirically informed theory construction.
 
 Next we'll see how to more directly work with the specification of basis splines, passing these feature matrices into Bambi models. 
 
-## Bayesian Splines with bambi
+## Bayesian Splines with `bambi`
 
-__Spline models can be constructed and assessed using Bayesian approaches to quantify the uncertainty in the constructed function__. Under the hood `Bambi` makes use of the ['formulae'](github.com/bambinos/formulae) package to allow for formula-like syntax to specify spline basis terms and mixed effect model terms. We leverage this to streamline the specification of spline models. 
+__Spline models can be built and assessed using Bayesian approaches to quantify the uncertainty in the constructed function__. Under the hood `Bambi` makes use of the ['formulae'](github.com/bambinos/formulae) package to allow for formula-like syntax to specify spline basis terms and mixed effect model terms. We leverage this to streamline the specification of spline models and demonstrate different kinds of spline-features. 
 
 ```{python}
 knots_6 = np.linspace(0, np.max(X), 6+2)[1:-1]
@@ -237,7 +236,7 @@ model_spline5.graph()
 
 ```
 
-This will become clearer as we plot the various spline basis matrices below. 
+The differences here will become clearer as we plot the various spline basis matrices below, but the main thought is that there are different degrees of "smoothness" to the linear basis of the spline features.  
 
 ### Plot the Spline Basis
 
@@ -299,7 +298,7 @@ plot_knots(knots_20, axs[4]);
 
 ```
 
-Now that we've seen the nature of the modelling splines we'll fit each model to the data and plot how the weighted splines matrices are able to represent the raw data. 
+Here we've seen the nature of the modelling splines we'll fit to the data. By "fit" we mean estimate a set of linear coefficients that we can use to additively combine these spline features creating a smooth linear representation of the outcome. 
 
 ### Fit the Individual Spline Models
 
@@ -320,7 +319,7 @@ idata_spline5 = model_spline5.fit(random_seed=random_seed, idata_kwargs={"log_li
 
 ```
 
-Plotting the fits
+Finally we can plot fits achieved by each of the models and compare how the different spline smooths contribute to approxiating the outcome variable.
 
 ### Plot the Weighted Mean
 
@@ -371,12 +370,12 @@ df_compare
 
 ```
 
-Here we see that the extra complexity of using 20 splines leads to slightly worse performance measures than the less complex but seemingly adequate 10 splines. In other words, it's starting to overfit to the data at 20.
+Here we see that the extra complexity of using 20 splines leads to slightly worse performance measures than the less complex but seemingly adequate 10 splines. In other words, it's starting to overfit to the data at 20. This is the price of flexibility and a sign of a model unlikely to generalise well on out-of-sample data. 
 
 
 ```{python}
 
-new_data = pd.DataFrame({"X": np.linspace(df.X.min(), df.X.max(), num=500)})
+new_data = pd.DataFrame({"X": np.linspace(df.X.min() - 5, df.X.max() + 5, num=500)})
     
 model_spline4.predict(idata_spline4, data=new_data, 
 kind='pps', inplace=True)
@@ -406,13 +405,13 @@ ax.legend()
 ax.set_title("Posterior Predictive Distribution \n Based on 10 Knots");
 ```
 
-This represents a good a clean model fit to the observed data using univariate spline smoothers. Next we'll see another alternative approach to model this outcome variable using approximate gaussian processes. 
+This represents a good a clean model fit to the observed data using univariate spline smoothers. However, it's clear that the uncertainty spikes massively with data points even slightly out of the training data. Next we'll see another alternative approach to model this outcome variable using approximate gaussian processes. 
 
 ## Approximate Gaussian processes
 
-__In a sense Gaussian processes models allow us to express our beliefs about the structure of a function and calibrate these beliefs against the observed data.__ The topic of gaussian processes is rich and complex. Too rich to be fairly covered in this blog post, so we'll just say that we're using a method designed for function approximation that makes use of drawing samples from a multivariate normal distribution under a range of different covariance relationships. The properties of these covariance relations determine the shape and fluidity of the function realisations. We will use the HSGP approximation of gaussian processes models.  
+__Gaussian processes models allow us to express our beliefs about the structure of a function and calibrate these beliefs against the observed data.__ The topic of gaussian processes is rich and complex. Too rich to be fairly covered in this blog post, so we'll just say that we're using a method designed for function approximation that makes use of drawing samples from a multivariate normal distribution under a range of different covariance relationships. The properties of these covariance relations determine the shape and fluidity of the function realisations. We will use the HSGP approximation of gaussian processes models.  
 
-Nevertheless the gaussian relationships can be somewhat intuitively interrogated by defining different combinations of covariance relationships with priors over the parameters governing the covariance of a sequence of points. For example consider the following parameterisations. 
+The gaussian process models can be somewhat interrogated by examining the different combinations of covariance relationships with priors over the parameters governing the covariance of a sequence of points. For example consider the following parameterisations. 
 ```{python}
 
 fig, axs = plt.subplots(2, 2, figsize=(9, 10))
@@ -440,7 +439,7 @@ plot_cov_draws(axs[2], axs[3], lengthscale=10, sigma=13)
 
 ```
 
-We've specified the range of X to reflect the support of the acceleration example and allowed the draws to be informed by a covariance function we have parameterised using the Exponentiated Quadratic kernel:
+We've specified the range of X to reflect the support of the acceleration example and allowed the draws to be informed by a covariance function we have parameterised using the Exponentiated Quadratic kernel. We've additionally tweaked the lengthscale to demonstrate how proximity in the sequence informs the kernel and determines the shape of the covariance structure. 
 
 $$k(x, x') = \mathrm{exp}\left[ -\frac{(x - x')^2}{2 \ell^2} \right]$$
 
@@ -534,12 +533,12 @@ ax.scatter(df['X'], df['y'], label='Observed Datapoints')
 
 ax.legend()
 
-ax.set_title("Posterior Predictive Distribution \n Based on HSGP approximation")
+ax.set_title("Posterior Predictive Distribution \n Based on HSGP approximation");
 
 
 ```
 
-And we can compare versus the spline models to see that by the aggregate performance measures our HSGP model seems to come out on top. 
+Here again we've allowed the model to extrapolate beyond the observed data but we achieve far more reasonable extrapolation than with the Spline model. And we can compare other performance metrics versus the spline models to see that by the aggregate performance measures our HSGP model seems to come out on top too. 
 
 ```{python}
 
@@ -550,6 +549,8 @@ df_compare
 
 
 ```
+
+For a deeper dive on HSGP you might consult [Juan Orduz's](https://juanitorduz.github.io/) work [here](https://www.pymc.io/projects/examples/en/latest/gaussian_processes/GP-Births.html)
 
 ## Bayesian Penalised Splines (Smoothing Priors)
 
@@ -655,9 +656,9 @@ So far we've seen how we can use splines and gauassian processes to model highly
 
 > [K]nowledge develops in a multiplicity of theories, each with it's limited utility ... These theories overlap very considerable in their logical laws and in much else, but that they add up to an integrated and consistent whole is only a worthy ideal and not a pre-requistite of scientific progress ... Let reconciliations proceed.  - W.V.O Quine in _Word and Object_
 
-Another observation in a similar vein is that penalised spline models are provably [equivalent](https://www.tjmahr.com/random-effects-penalized-splines-same-thing/) to hierarchical regression (random effects) models. This is striking because the character of these types of model seems diametrically opposed. With spline models you jerry-rig your features to an optimisation goal, with hierarchical model you tend to impose theoretical structure to induce shrinkage. It's hard to see how this works - with a penalised spline model are you inducing a hierarchy of latent features you can't name? Should you even try to translate between the two!? The abstract components of our model is less graspable than the predictive performance. The qualitative character of theory buiding differs markedly across these abstractions and aesthetics and explainability feature heavily in model preference. 
+Another observation in a similar vein is that penalised spline models are provably [equivalent](https://www.tjmahr.com/random-effects-penalized-splines-same-thing/) to hierarchical regression (random effects) models. This is striking because the character of these types of model seems diametrically opposed. With spline models you jerry-rig your features to an optimisation goal, with hierarchical model you tend to impose theoretical structure to induce shrinkage. It's hard to see how this would work? With a penalised spline model are you inducing a hierarchy of latent features you can't name? Should you even try to translate between the two!? How can we leverage our prior knowledge of the data generating process to add structure to spline model predictions?
 
-Next we'll step up our abstractions and show how to use hierarchical modelling over spline fits to extract insight into the data generating process over a family of curves. In particular we'll focus on the development of insurance loss curves.
+The abstract components of our model are less graspable than their predictive performance yet the qualitative character of theory buiding differs markedly between these abstractions and aesthetics and explainability feature heavily in model preference. Next we'll add another layer to our abstractions and show how to use hierarchical modelling over spline fits can be used to extract insight into the data generating process over a family of curves. In particular we'll focus on the development of insurance loss curves and how to constrain our predictions within reasonable bounds. This is an apt problem for spline modelling in that the process is repeatable annually, but the domain of the support i.e. development in time is fixed year-on-year so the extrapolation problem is muted. 
 
 ## Insurance Loss Curves: Hierarchical Spline Models
 
@@ -703,7 +704,7 @@ for c in pivot.columns:
         color='grey'
     axs[1].plot(pivot[c], color=color, label=c)
 axs[1].legend()
-axs[1].set_title("Loss Ratio by Group")
+axs[1].set_title("Loss Ratio by Group");
 
 
 
@@ -834,7 +835,7 @@ compare_df
 
 ```
 
-The hierarchical splne model is by far the best fit to our data. What does it represent? Yes, splines are function approximation tools. Sure, extrapolation is dangerous, but in this domain where the range of the development curves is constrained they seem to offer an elegant way of articulating the structure of the risk profile.
+The hierarchical splne model is by far the best fit to our data. What does it represent? Yes, splines are function approximation tools. Sure, extrapolation is dangerous, but in this domain where the range of the development curves is constrained they seem to offer an elegant way of articulating the structure of the risk profiles for various products.
 
 ### Plot the Posterior Predictive Checks
 
@@ -856,7 +857,7 @@ def plot_ppc_splines(idata):
         axs[c].set_ylabel("Loss Ratio")
         axs[c].legend();
 
-plot_ppc_splines(idata_sp_insur_mixed)
+plot_ppc_splines(idata_sp_insur_mixed);
 
 ```
 
@@ -915,7 +916,11 @@ axs[10].legend();
 
 ```
 
-This plot is a bit clunky, because we're mixing expectations and posterior distributions over the parameters. The point is just to highlight the "compositional" structure of our model. A better way to interrogate the implications of the model is to "push" forward different data through the posterior predictive distribution and derive a kind of ceteris paribus rule for accrual of losses.
+This plot is a bit clunky, because we're mixing expectations and posterior distributions over the parameters. The point is just to highlight the "compositional" structure of our model.
+
+### Predicting Next Year's Losses
+
+A better way to interrogate the implications of the model is to "push" forward different data through the posterior predictive distribution and derive a kind of ceteris paribus rule for accrual of losses.
 
 ```{python}
 
@@ -981,7 +986,7 @@ ax.legend();
 
 ```
 
-Note how we've varied the preditor inputs to showcase the expected realisation under different product codes. 
+Note how we've varied the predictor inputs to showcase the expected realisation under different product codes. In this manner we can construct a hierarchical spline model with informed by the historic trajectories of the development curves but with predictions modulated by more recent information.  
 
 ## Multiple Smoother Regression Models
 
@@ -1095,7 +1100,7 @@ spline_model.predict(spline_idata, kind='pps')
 spline_model1.predict(spline_idata1, kind='pps')
 
 
-fig, axs = plt.subplots(1, 3, figsize=(20, 8))
+fig, axs = plt.subplots(1, 3, figsize=(20, 6))
 axs = axs.flatten()
 az.plot_ppc(base_idata, ax=axs[0])
 az.plot_ppc(spline_idata, ax=axs[1]);
@@ -1253,4 +1258,4 @@ We can see here how the combined components borrow the structure of the outcome 
 
 We've seen the application of splines as univariate smoothers to approximate wiggly curves of arbitrary shape. We've also tried gaussian process approximations of the same univariate functions. The suggested flexibility of both methods is a strength, but we need to be careful where splines have a tendency to over-fit to individual curves. As such we have tried to show that we can incorporate spline basis modelling in a hierarchical bayesian model and recover more compelling posterior predictive checks and additionally derive predictiions from the mixed variant of the hierarhical model which helps us understand the implications of the data for generic forecasts of insurance loss curves. Finally we showed how splines can be used additively to model non-linear functions of multiple covariates. These are a powerful tool to interrogate complex non-linear relationships, but they offer interpolation of functions within a well understood domain. Applealing to these models for extrapolation needs to be done carefully. 
 
-We can, I think, draw a broad moral from this presentation. Observed phenomena admit description with a wide variety of mathematical abstraction. The "correctness" of the abstraction is never the right question. The manner in which one abstraction distils the structure of reality is not fundamentally any better than the manner in which an alternative scheme will do so. Predictive success achieved applying one abstraction can be traded off for interpretive tractability in another. What matters is the task at hand - solving the problem. Sometimes problems can be solved with new information, but mostly they're resolved by re-arranging assumptions and phrasing the problem anew - seeing through a different lens, pulling the door handle where we previously pushed. Splines, hierarhical splines, gaussian process modelling are all attempts at approximating an answer by rephrasing the question. The more of these tools we have the better we are prepared to tackle novel problems, discern the pertinent structure in the world. 
+We can, I think, draw a broad moral from this presentation. Observed phenomena admit description with a wide variety of mathematical abstraction. The "correctness" of the abstraction is never the right question. The manner in which one abstraction distils the structure of reality is not fundamentally any better than the manner in which an alternative scheme will do so. Predictive success achieved applying one abstraction can be traded off for interpretive tractability in another. What matters is the task at hand - solving the problem. Sometimes problems can be solved with new information, but mostly they're resolved by re-arranging assumptions and phrasing the problem anew - seeing through a different lens, pulling the door handle where we previously pushed. Splines, hierarhical splines, gaussian process modelling are all attempts at approximating an answer by rephrasing the question. The more of these tools we have, the better we are prepared to tackle novel problems and discern the pertinent structure in the world. 
