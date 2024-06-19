@@ -1,0 +1,14 @@
+---
+title: "Justifying Instruments in CausalPy"
+author: "Nathaniel Forde"
+date: "2024-06-15"
+categories: ["regression", "instrumental variables", "causal inference" ]
+image: "instrument.png"
+---
+
+# The Strength of Instruments
+
+In this project I sought to outline the process of justifying instrumental variable regressions in [CausalPy](https://causalpy.readthedocs.io/en/latest/) using the Bayesian modelling workflow. We emphasised the role of exploratory data analysis and plotting in how we come to understand the causal dynamics at play in our data generating process. The focus was on the manner of justification and role of comparative assessment in credible inference. The demonstration can be seen [here](https://causalpy.readthedocs.io/en/latest/notebooks/iv_weak_instruments.html). 
+
+
+![Comparison with OLS](comparison.png)

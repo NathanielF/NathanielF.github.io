@@ -21,6 +21,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/causalpy/justifying_instruments.html",
       "/oss/causalpy/inv_prop_weights.html",
       "/oss/pymc/bnp.html",
       "/oss/pymc/frailty_survival.html",
