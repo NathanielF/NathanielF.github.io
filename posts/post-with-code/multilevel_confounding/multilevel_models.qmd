@@ -1,0 +1,1014 @@
+---
+title: "Freedom, Hierarchies and Saturated Regression (WIP)"
+date: "2024-07-01"
+categories: ["probability", "multilevel models", "hierarchical models", "differences in differences"]
+keep-ipynb: true
+self-contained: true
+draft: false
+execute: 
+  enabled: true
+jupyter: pymc_causal
+image: "castles_in_clouds.png"
+author:
+    - url: https://nathanielf.github.io/
+    - affiliation: PyMC dev
+citation: true
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import bambi as bmb
+import pymc as pm
+import arviz as az
+import matplotlib.pyplot as plt
+from matplotlib import transforms
+from itertools import product
+import pyfixest as pf
+import statsmodels.formula.api as smf
+from patsy import dmatrices, dmatrix
+
+np.random.seed(100)
+
+
+```
+
+
+::: {.callout-note}
+## Summary 
+__WORK IN PROGRESS__
+
+_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Questions become more complicated again when we have to account for variation across multiple groups interactions._
+
+_Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences causal inference designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. We will explore the relationship between TWFE and Mundlak like regressions in DiD and Event Study designs, showing how sound inferential strategies rely on saturated models with heavily parameterised specifications. In particular we'll see how TWFE breaks down in cases of staggered treatment regimes, and how to fix it._
+:::
+
+# Architectures and Free Parameters
+
+> “There are no rules of architecture for a castle in the clouds.” - G.K. Chesterton
+
+Freedom is not whimsy. You act and learn within constraints, struggling to discern the shape of the tracks on which you travel. Hurtling into the future, you pivot at junctions, hoping for the best. You may imagine your next choice will be the one where everything falls into place. All the plans are arrayed, but outcomes are confounded by a plethora of interaction effects and understanding only arrives incrementally. You may seek to learn from the past with a cursory review of history, but detail matters because it structures the implications. It is these structural details of group membership and hierarchies that determine the path of the tracks, and the architecture the holds up your future. 
+
+In statistical modelling we seek to learn from the past to discern the shape of the processes which determine the future. Different models yield different insights into those structures which govern our trajectories. Which parameters are "free", and which are decisively characterised? Which realities are contestable and which non-negotiable? In this post we will dive into the way in which different inferential methodologies yield different insights into how group-level confounding constrains the realisations of our parameter space and shapes the architecture of causal inference.
+
+## Estimation and Group Effects
+
+First consider an example due to Richard McElreath's [lecture series](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) where we examine the various parameter recovery options available in the case of group level confounding. We define a data generating process determined by group level effects:
+
+
+```{python}
+def inv_logit(p):
+    return np.exp(p) / (1 + np.exp(p))
+
+N_groups = 30
+N_id = 3000
+a0 = -2
+bXY = 1
+bZY = -0.5
+g = np.random.choice(range(N_groups), size=N_id, replace=True)
+Ug = np.random.normal(1.5, size=N_groups)
+
+X = np.random.normal(Ug[g], size=N_id)
+Z = np.random.normal(size=N_groups)
+
+s = a0 + bXY*X + Ug[g] + bZY*Z[g]
+p = inv_logit(s)
+Y = np.random.binomial(n=1, p=p)
+
+
+sim_df = pd.DataFrame({'Y': Y, 'p': p, 's': s, 'g': g, 'X': X, 'Z': Z[g]})
+sim_df
+
+```
+
+This is a bernoulli outcome with group level confounds. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. Seeing different results as we explore different ways of parameterising the relationships.
+
+::: {.callout-warning title="Terminology Warning"}
+There is a huge degree of confusion over the meaing of the terms "Fixed Effects" and "Random Effects". Within this blog post we will mean the population level parameters. 
+ $$\beta X$$ 
+ 
+ for an individual variable $X$ when we refer to __fixed effects__. Corresspondingly we will refer to group-level parameters $\beta_{g}$
+
+ $$\Big(\underbrace{\beta}_{pop} + \underbrace{\beta_{g}}_{group}\Big)X$$
+ 
+  which are incorporated into our model equation modifying population level parameters as __random effects.__ We will generally use Wilkison notation to specify these choices where random effects for modifying a population are denoted with a conditional bar over the variable `( X | group)` and fixed effects are specified by just including the variable in the equation i.e. `y ~ X + (Z | group)` where X has a fixed effect parameterisation and Z a random effects parameterisation. We can also create indicator variables for group membership using this syntax with `y ~ C(group) + X + Z` where under the hood we pivot the group category into a zero-one variable indicating group membership. This parameterisation means each indicator variable for each level of the grouping variable will receive a fixed effects population parameter.   
+:::
+
+### Naive Model
+
+```{python}
+#| output: false
+#| 
+naive_model = bmb.Model(f"Y['>.5'] ~ X + Z ", sim_df, 
+family="bernoulli")
+naive_idata = naive_model.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True},)
+
+```
+
+```{python}
+az.summary(naive_idata, var_names=['Intercept', 'X', 'Z'])
+
+```
+
+Here we see that all three parameter estimates are biased away from their true values. Let's try a simple fixed effects approach that adds indicator variables for all but one of the group levels.  
+
+### Fixed Effects Model
+
+```{python}
+#| output: false
+#| 
+fixed_effects_model = bmb.Model(f"Y['>.5'] ~ C(g) + X + Z", sim_df, 
+family="bernoulli")
+fixed_effects_idata = fixed_effects_model.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True},)
+
+```
+
+```{python}
+az.summary(fixed_effects_idata, var_names=['Intercept', 'X', 'Z'])
+
+```
+
+Now we see the intercept term and the coefficient on the $X$ variable seem correct, but the coefficient on $Z$ is wildly wrong. Indeed the uncertainty interval on the $Z$ coefficient is huge. The fixed effect model was unable to learn anything about the correct parameter. Whereas the naive model seems to learn the correct $Z$ parameter but over estimates the $X$ coefficient.  
+
+```{python}
+
+fig, axs = plt.subplots(2, 1, figsize=(10, 12))
+axs = axs.flatten()
+
+az.plot_posterior(naive_idata, var_names=['X'], ax=axs[0], 
+point_estimate=None, color='red', label='Naive Model')
+axs[0].axvline(1)
+
+az.plot_posterior(fixed_effects_idata , var_names=['X'], ax=axs[0], point_estimate=None, hdi_prob='hide', label='Fixed Effect Models')
+axs[0].set_title("Naive/Fixed Model X Coefficient")
+
+az.plot_posterior(naive_idata, var_names=['Z'], ax=axs[1], point_estimate=None,  color='red', ref_val_color='black')
+
+
+az.plot_posterior(fixed_effects_idata , var_names=['Z'], ax=axs[1], point_estimate=None, hdi_prob='hide')
+
+axs[1].set_title("Naive/Fixed Effect Model Z Coefficient")
+axs[1].axvline(-0.5);
+
+
+```
+
+We now want to try another approach to handle to the group confounding that involves a hierarchical approach to add group level effects to the intercept term. 
+
+### Multilevel Model
+
+```{python}
+#| output: false
+
+multilevel_model = bmb.Model(f"Y['>.5'] ~ (1 | g) + X + Z", sim_df, 
+family="bernoulli")
+multilevel_model_idata = multilevel_model.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True},)
+
+```
+
+```{python}
+az.summary(multilevel_model_idata)
+
+```
+
+This now starts to recover the $X$ coefficient properly but is biased in the intercept an the $Z$ coefficient leaves something to be desired. Next we'll apply the Mundlak device method which adds the group mean back to each observation as a covariate. 
+
+### Mundlak Model
+
+```{python}
+
+#| output: false
+
+sim_df['group_mean'] = sim_df.groupby('g')['X'].transform(np.mean)
+
+sim_df['group_mean_Z'] = sim_df.groupby('g')['Z'].transform(np.mean)
+
+mundlak_model = bmb.Model(f"Y['>.5'] ~ (1 | g) + X + Z + group_mean", sim_df, 
+family="bernoulli")
+mundlak_idata = mundlak_model.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True},)
+
+```
+
+```{python}
+az.summary(mundlak_idata, var_names=['Intercept', 'X', 'Z'])
+
+```
+
+We can plot all the parameter recovery models together and we'll see that there are some trade-offs between the fixed effects and random effects varieties of the modelling. 
+
+### Plotting the Comparisons
+
+```{python}
+
+fig, axs = plt.subplots(3, 1, figsize=(10, 12))
+axs = axs.flatten()
+
+az.plot_posterior(naive_idata, var_names=['X'], ax=axs[0], 
+point_estimate=None, color='red', label='Naive')
+axs[0].axvline(1, color='k', linestyle='--', label='True value')
+
+az.plot_posterior(fixed_effects_idata , var_names=['X'], ax=axs[0], point_estimate=None, hdi_prob='hide', label='Fixed')
+
+az.plot_posterior(multilevel_model_idata, var_names=['X'], ax=axs[0], point_estimate=None, hdi_prob='hide', color='green', label='Hierarchical')
+
+az.plot_posterior(mundlak_idata, var_names=['X'], ax=axs[0], point_estimate=None, hdi_prob='hide', color='purple', label='Mundlak')
+
+
+axs[0].set_title("X Coefficient")
+
+az.plot_posterior(naive_idata, var_names=['Z'], ax=axs[1], point_estimate=None,  color='red', ref_val_color='black')
+
+
+az.plot_posterior(fixed_effects_idata , var_names=['Z'], ax=axs[1], point_estimate=None, hdi_prob='hide')
+
+az.plot_posterior(multilevel_model_idata, var_names=['Z'], ax=axs[1], point_estimate=None, hdi_prob='hide', color='green')
+
+az.plot_posterior(mundlak_idata, var_names=['Z'], ax=axs[1], point_estimate=None, hdi_prob='hide', color='purple')
+
+axs[1].set_title("Z Coefficient")
+axs[1].axvline(-0.5, color='k', linestyle='--');
+
+az.plot_posterior(naive_idata, var_names=['Intercept'], ax=axs[2], point_estimate=None,  color='red', ref_val_color='black')
+
+
+az.plot_posterior(fixed_effects_idata , var_names=['Intercept'], ax=axs[2], point_estimate=None, hdi_prob='hide')
+
+az.plot_posterior(multilevel_model_idata, var_names=['Intercept'], ax=axs[2], point_estimate=None, hdi_prob='hide', color='green')
+
+az.plot_posterior(mundlak_idata, var_names=['Intercept'], ax=axs[2], point_estimate=None, hdi_prob='hide', color='purple')
+
+axs[2].axvline(-2, color='k', linestyle='--');
+
+```
+
+Importantly, the fixed effects model is focused on recovering the treatment effect on the $X$ covariate somewhat at the expense of accuracy on the other systematic components of the model. However, this focus renders the model less predictively accurate. Compare the models on the cross-validation score and we see how the hierarchical mundlak model is to be preferred.
+
+```{python}
+
+compare_df = az.compare({'naive': naive_idata, 'fixed': fixed_effects_idata, 'hierarchical': multilevel_model_idata, 
+'mundlak': mundlak_idata})
+compare_df
+
+```
+
+```{python}
+
+az.plot_compare(compare_df);
+
+```
+
+### Full Luxury Bayesian Mundlak Machine
+
+As good Bayesians we might be worry about the false precision of adding simple point estimates for the group mean covariates in the Mundlak model. We can remedy this by explicitly incorporating these values as an extra parameter and adding uncertainty to the draws on these parameters.  
+
+```{python}
+#| output: false
+
+id_indx, unique_ids = pd.factorize(sim_df["g"])
+
+coords = {'ids': list(range(N_groups))}
+with pm.Model(coords=coords) as model: 
+
+    x_data = pm.Data('X_data', sim_df['X'])
+    z_data = pm.Data('Z_data', sim_df['Z'])
+    y_data = pm.Data('Y_data', sim_df['Y'])
+
+    alpha0 = pm.Normal('Intercept', 0, 1)
+    alpha_j = pm.Normal('alpha_j', 0, 1, dims='ids')
+    beta_xy = pm.Normal('X', 0, 1)
+    beta_zy = pm.Normal('Z', 0, 1)
+
+    group_means = pm.Normal('group_means', sim_df.groupby('g')['X'].mean().values, .1, dims='ids')
+
+    mu = pm.Deterministic('mu', (alpha0 + alpha_j[id_indx]) + beta_xy*x_data + beta_zy*z_data + group_means[id_indx])
+    p = pm.Deterministic("p", pm.math.invlogit(mu))
+    # likelihood
+    pm.Binomial("y", n=1, p=p, observed=y_data)
+
+    idata = pm.sample(idata_kwargs={"log_likelihood": True})
+
+```
+
+
+```{python}
+
+az.summary(idata, var_names=['Intercept', 'X', 'Z'])
+
+```
+
+This model bakes more uncertainty into the process assuming a kind of measurement-error model which may be more or less apt depending on how much data you've acquired and your view of the underlying process. We'll now examine how these considerations play out when there are multiple group-level influences. 
+
+## Nested Groups and Fixed Effects
+
+We've seen how various attempts to account for the group effects can more or less recover the parameters of a complex data generating process with group confounding. Now we want to look at a case where we can have interacting group effects at multiple levels. 
+
+### Pupils within Class Rooms within Schools
+
+A natural three level group hierarchy occurs in the context of educational organisations and business org-charts. We can use this fact to interrogate briefly how inferential statements about treatment effects vary as a function of what and how we control for group level variation. We draw the following data set from _Linear Mixed Models: A Practical Guide Using Statistical Software_.
+
+```{python}
+
+df = pd.read_csv('classroom.csv')
+df['class_mean'] = df.groupby(['classid'])['mathprep'].transform(np.mean)
+df['school_mean'] = df.groupby(['schoolid'])['mathprep'].transform(np.mean)
+df.head()
+
+```
+
+The data has three distinct levels: (1) the child or pupil and their demographic attributes and outcome variable `mathgain`, (2) the classroom and the teacher level attributes such as their experience `yearstea` and a record of their mathematics courses taken `mathprep`, (3) school and neighbourhood level with features describing poverty measures in the vicinity `housepov`. 
+
+We'll plot the child's outcome `mathgain` against the `mathprep` and distinguish the patterns by school.  
+
+```{python}
+
+def rand_jitter(arr):
+    stdev = .01 * (max(arr) - min(arr))
+    return arr + np.random.randn(len(arr)) * stdev
+
+
+schools = df['schoolid'].unique()
+schools_10 = [schools[i:i+10] for i in range(0, len(schools), 10)]
+fig, axs = plt.subplots(3,4, figsize=(20, 10), 
+sharey=True, sharex=True)
+axs = axs.flatten()
+for s, ax in zip(schools_10, axs):
+    temp = df[df['schoolid'].isin(s)]
+    ax.scatter(rand_jitter(temp['mathprep']), temp['mathgain'], 
+    c=temp['schoolid'], cmap='tab10')
+    ax.set_title(f"Schools \n {s}");
+
+
+```
+
+There is a small number of observed students per school so the individual school level distributions show some extreme outliers but the overall distribution nicely converges to an approximately normal symmetric shape.
+
+```{python}
+fig, axs = plt.subplots(1, 2, figsize=(10, 6))
+axs = axs.flatten()
+for school in schools:
+    temp = df[df['schoolid'] ==school]
+    axs[0].hist(temp['mathgain'], color='grey', alpha=0.3, density=True, histtype='step', cumulative=True)
+
+axs[0].hist(df['mathgain'], bins=30, ec='black', density=True, cumulative=True, histtype='step')
+axs[1].hist(df['mathgain'], bins=30, ec='black', density=True, cumulative=False)
+axs[0].set_title("Cumulative Distribution Function by School")
+axs[1].set_title("Overall Distribution");
+
+```
+
+With these kinds of structures we need to be careful in how we evaluate any treatment effects when there are reasons to believe in group-level effects that impact the outcome variable. Consider the following ways in which we could model the outcome and treatment.
+
+### Interaction Effects and Computational Complexity
+
+```{python}
+
+y, X = dmatrices("mathgain ~ mathprep + C(schoolid)+ C(classid)", df, return_type="dataframe")
+print(X.shape)
+
+y, X1 = dmatrices("mathgain ~ mathprep + C(schoolid)/C(classid)", df, return_type="dataframe")
+print(X1.shape)
+
+
+y, X2 = dmatrices("mathgain ~ mathprep + C(schoolid):C(childid)", df, return_type="dataframe")
+print(X2.shape)
+
+```
+
+We see here how different ways in which to account for group level variation and interaction effects lead to vastly inflated feature matrices. However not all interaction terms matter, or put another way... nor all the possible interactions feature in the data. So we have inflated the data matrix beyond necessity. 
+
+Here we define a helper function to parse a complex interaction formula, remove the columns entirely composed of zeros and return a new formula and dataframe which has a suitable range of features to capture the variation structures in the data. 
+
+```{python}
+def make_interactions_df(formula, df):
+    y, X = dmatrices(formula, df, return_type="dataframe")
+    n = X.shape[1]
+    X = X[X.columns[~(np.abs(X) < 1e-12).all()]]
+    n1 = X.shape[1]
+    target_name = y.columns[0]
+    d = pd.concat([y, X], axis=1)
+    d.drop(['Intercept'], axis=1, inplace=True)
+    d.columns = [c.replace('[', '').replace(']','').replace('C(', '').replace(')', '').replace('.', '_').replace(':', '_') for c in d.columns]
+    cols = ' + '.join([col for col in d.columns if col != target_name])
+    formula = f"{target_name} ~ {cols}"
+    print(f"""Size of original interaction features: {n} \nSize of reduced feature set: {n1}""")
+    return formula, d
+
+formula, interaction_df = make_interactions_df("mathgain ~ mathprep + C(schoolid):C(childid)", df)
+
+interaction_df.head()
+
+```
+
+We have reduced the number of interactions by an order of magnitude! We can now fit a regression model to the revised feature matrix. 
+
+### Comparing Interaction Models
+
+Consider the variation in the coefficient values estimated for `mathprep` as we add more and more interaction effects. The addition of interaction effects generates a large number of completely 0 interaction terms which we remove here. 
+
+```{python}
+
+formulas = ["""mathgain ~ mathprep + C(schoolid)""",
+""" mathgain ~ mathprep + school_mean*class_mean""" , 
+"""mathgain ~ mathprep + C(schoolid) + C(classid)""", 
+"""mathgain ~ mathprep + C(schoolid)*C(classid)""",
+"""mathgain ~ mathprep + C(classid):C(childid)""", 
+]
+
+estimates_df = []
+for f in formulas:
+    formula, interaction_df = make_interactions_df(f, df)
+    result = smf.ols(formula, interaction_df).fit()
+    estimates = [[result.params['mathprep']], list(result.conf_int().loc['mathprep', :]), [formula]]
+    estimates = [e for est in estimates for e in est]
+    estimates_df.append(estimates)
+
+estimates_df = pd.DataFrame(estimates_df, columns=['mathprep_estimate', 'lower bound', 'upper bound', 'formula'])
+
+estimates_df
+```
+
+The point here (perhap obvious) is that the estimate of treatment effects due to some policy or programme can be differently understood when the regression model is able to account for increasing aspects of individual variation. Choice of the __right__ way to "saturate" your regression specification are at the heart of causal inference.
+We will consider a number of specifications below that incorporate these group effects in a hierarchical model which nests the effect of class-membership within school membership. This choice allows us to control for group specific interactions without worrying about over-indexing on the observed interaction effects in the current data requiring that we handle more fixed effects parameters than we have data points. 
+
+
+```{python}
+#| output: false
+#| 
+model = bmb.Model(f"mathgain ~ mathprep + (1 | schoolid / classid)", df)
+idata = model.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True})
+
+```
+
+The model specification here is deliberately minimalist we want to observe how much of the variation in the outcome can be accounted for by solely adding extensive controls for interactions of group level effects. 
+
+```{python}
+
+model.graph()
+
+```
+
+We can see the derive sigma parameters here which can be understood as partialling out the variance of the outcome into components due to those group level effects and the unexplained residuals. 
+
+```{python}
+az.summary(idata, var_names=['Intercept', '1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma', 'mathprep'])
+
+
+```
+
+Note here the relative proportion of the school specifc variances `1|schoolid_sigma` to the overall variance of the residuals `mathgain_sigma`.
+
+### Calculating the IntraClass Correlation Coefficient
+
+These models faciliate the calculation of the ICC statistics which is a measure of "explained variance". The thought is to gauge the proportion of variance ascribed to one set of random effects over and above the total estimated variance in the baseline model, including the residuals `mathgain_sigma`.
+
+```{python}
+
+a = idata['posterior']['1|schoolid_sigma']**2
+
+b = (idata['posterior']['1|schoolid:classid_sigma']**2 + idata['posterior']['1|schoolid_sigma']**2)
+
+c = (idata['posterior']['1|schoolid:classid_sigma']**2 + idata['posterior']['1|schoolid_sigma']**2 + idata['posterior']['mathgain_sigma']**2)
+
+(a / c).mean().item() 
+
+
+```
+
+
+
+```{python}
+
+((a + b) / c).mean().item()
+
+```
+
+We can see here that the interaction terms do seem to account for a goodly portion of the variance in the outcome and we ought to consider retaining their inclusion in our modelling work. 
+
+### Augmenting the Models
+
+Next we augment our model with more pupil level control variables aiming to pin down some of the aspects of the variation in the outcome. 
+
+```{python}
+#| output: false
+
+model_fixed = bmb.Model(f"mathgain ~ mathkind + sex + minority + ses + mathprep + (1 | schoolid / classid)", df)
+idata_fixed = model_fixed.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True})
+
+```
+
+```{python}
+az.summary(idata_fixed, var_names=['Intercept', 
+'mathkind', 'sex', 'minority', 'ses', 'mathprep',
+'1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma'])
+
+```
+
+
+Now we add a further class level control. 
+
+```{python}
+#| output: false
+
+model_fixed_1 = bmb.Model(f"mathgain ~ mathkind + sex + minority + ses + yearstea +	mathknow + mathprep + (1 | schoolid / classid)", df.dropna())
+idata_fixed_1 = model_fixed_1.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True})
+
+```
+
+```{python}
+az.summary(idata_fixed_1, var_names=['Intercept', 
+'mathkind', 'sex', 'minority', 'ses', 'yearstea', 'mathknow', 'mathprep','1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma'])
+
+```
+
+We now make use of `bambi`s model interpretation module to plot the marginal effect on the outcome due to changes in the treatment intensity. 
+
+```{python}
+
+fig, axs = plt.subplots(3, 1, figsize=(10, 15), 
+dpi=120, sharey=True, sharex=True)
+axs = axs.flatten()
+bmb.interpret.plot_predictions(model, idata, "mathprep", ax=axs[0]);
+bmb.interpret.plot_predictions(model_fixed, idata_fixed, "mathprep", ax=axs[1]);
+bmb.interpret.plot_predictions(model_fixed_1, idata_fixed_1, "mathprep", ax=axs[2]);
+axs[0].set_title("Baseline Interaction model")
+axs[1].set_title("Class Level Controls \n and Interactions model")
+axs[2].set_title("Neighbourhood and  Class Level Controls \n and Interactions model");
+
+
+```
+
+As we can see here across all the different model specifications we see modest effects of treatment with very wide uncertainty. So far, so what?! You might be sceptical that teacher training has any real discernible impact on child outcomes? Maybe you believe other interventions are more important to fund? 
+
+These kinds of questions determine policy. Misguided policy interventions on child-hood education can have radical consequences for the children. It's, therefore, vital that we have robust and justifiable approaches to the analysis of these policy questions in the face of group level confounding.  
+
+## Two Way Fixed Effects and Temporal Confounding
+
+Difference in Differences designs are the overworked donkeys of social science. Many, many studies stand or fall by the assumptions baked into DiD designs. There are at least two aspects to these assumptions (i) the substantive commitments about the data generating process and (ii) the appropriateness of the functional form used to model (i). We will look first at a case where all the assumptions can be met, and then examine how things break-down. 
+
+### Event Studies and Change in Time
+
+We take this panel data set from the `pyfixest`.
+
+```{python}
+
+url = "https://raw.githubusercontent.com/py-econometrics/pyfixest/master/pyfixest/did/data/df_het.csv"
+df_het = pd.read_csv(url)
+df_het.head()
+```
+
+Panel data of this kind is difficulty to envisage unless visualised.
+
+```{python}
+fig, axs = plt.subplots(2, 1, figsize=(10, 12))
+axs = axs.flatten()
+for u in df_het['unit'].unique():
+    temp = df_het[df_het['unit']==u]
+    axs[0].plot(temp['year'], temp['dep_var'], color='grey', alpha=0.01)
+    axs[1].plot(temp['year'], temp['dep_var'], color='grey', alpha=0.01)
+df_het.groupby(['year', 'state'])[['dep_var']].mean().reset_index().pivot(index='year', columns='state', values='dep_var').plot(ax=axs[0], legend=False, color='blue', 
+alpha=0.4)
+
+df_het.groupby(['year', 'g'])[['dep_var']].mean().reset_index().pivot(index='year', columns='g', values='dep_var').plot(ax=axs[1], legend=False)
+
+axs[0].set_title("Difference in Differences \n State Mean Change an Individual Trajectories")
+axs[1].set_title("Difference in Differences \n Mean Change an Individual Trajectories");
+
+```
+
+Note how the blue line represents a cohort that never undergoes a treatment and is maintained as a coherent control group throughout the sequence even though we have two other cohorts. 
+
+### TWFE in `pyfixest`
+
+A natural way to interrogate these kinds of question is to wonder how the treatment effect evolves over time. Is it initially impactful with with quick plateau or a slowly building pattern of consistent growth?
+
+```{python}
+fit_twfe_event = pf.feols(
+    "dep_var ~ i(rel_year, ref=-1.0) | state + year ",
+    df_het,
+    vcov={"CRV1": "state"},
+)
+
+fit_twfe_event.tidy()
+
+```
+
+The model specification defines indicator variables for the relative years before and after the penultimate year before treatment is applied, it then includes the fixed effects for state and year indicators. The coefficient values ascribed the the relative year indicators are used to plot the event-study trajectories. This is a two-way fixed effects estimation routine where the fixed effects for state and year indicators absorb the variance due to those groupings. 
+
+```{python}
+
+figsize = [1200, 900]
+fit_twfe_event.iplot(
+    coord_flip=False,
+    title="TWFE-Estimator",
+    figsize=figsize,
+    xintercept=18.5,
+    yintercept=0,
+).show()
+
+
+```
+
+We can also aim to marginalise over the details of the state trajectories by defining the similar estimation routine on the individuals are their treatment indicator. 
+
+```{python}
+
+fit_twfe = pf.feols(
+    "dep_var ~ i(treat) | unit + year",
+    df_het,
+    vcov={"CRV1": "state"},
+)
+
+fit_twfe.tidy()
+
+
+```
+
+
+### De-meaning and TWFEs
+
+We've seen above that the fixed-effect estimators in these DiD designs involve a lot of indicator variables. These are largely not the focus on the question at hand but are used exlusively to absorb the noise that takes away from our understanding of the treatment effect. We can achieve similar results with less parameters required if we "de-mean" the focus variables by the group averages of the control factors of `state` and `year` or `unit`. This operation which makes for more efficient TWFE estimation routines is provably a variety of mundlak regression. 
+
+```{python}
+
+def demean(df, col_to_demean, group):
+    return df.assign(**{col_to_demean: (df[col_to_demean]
+                                        - df.groupby(group)[col_to_demean].transform("mean")
+                                        )})
+
+
+def apply_demeaning(df_het, by=['state', 'year'], event=True):
+    if event: 
+        d = pd.get_dummies(df_het['rel_year']).drop(-1, axis=1) 
+        d.columns = ['rel_year_' +str(c).replace('-', 'minus_') for c in d.columns]
+    else:
+        d = df_het[['treat']]
+    d[by[0]] = df_het[by[0]]
+    d[by[1]] = df_het[by[1]]
+    for col in d.columns: 
+        if col in by:
+            pass
+        else: 
+            for c in by:
+                d = demean(d, col, c)
+    d = d.drop(by, axis=1)
+    d['dep_var'] = df_het['dep_var']
+    return d
+
+d_event = apply_demeaning(df_het, by=['state', 'year'], event=True)
+d = apply_demeaning(df_het, by=['unit', 'year'], event=False)
+
+d_event.head()
+
+```
+
+We now have a data set with 42 columns focused on the treatment structures but that implicitly controls for the variation due to state and time. We'll see below that this representation of the data will correctly estimate the treatment effects. 
+
+### Event Study and De-Meaning
+Now we'll use the de-meaned data structure above to estimate an event study using `Bambi`. 
+
+```{python}
+#| output: false
+#| 
+x_cols = ' + '.join([c for c in d_event.columns if c != 'dep_var'])
+model_twfe_event = bmb.Model(f"dep_var ~ + {x_cols}", d_event)
+idata_twfe_event = model_twfe_event.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True},)
+
+
+```
+
+```{python}
+
+model_twfe_event
+
+```
+
+We can then plot the event-study and observe a similar pattern to the one observed with `pyfixest`. 
+
+```{python}
+
+def plot_event_study(idata, ax, color='blue', model='demeaned'):
+    summary_df = az.summary(idata)
+    cols = [i for i in summary_df.index if 'rel' in i]
+    summary_df = summary_df[summary_df.index.isin(cols)]
+    x = range(len(summary_df))
+    ax.scatter(x, summary_df['mean'], label=model, color=color)
+    ax.plot([x, x], [summary_df['hdi_3%'],summary_df['hdi_97%']],   color=color)
+    ax.set_title("Event Study", fontsize=20)
+    return ax
+
+fig, ax = plt.subplots(figsize=(10, 7))
+plot_event_study(idata_twfe_event, ax)
+ax.legend()
+
+```
+
+Similarly, we can de-mean the simple treatment indicator using the group means and marginalise over time periods to find a single treatment effect estimate. 
+
+```{python}
+
+#| output: false
+
+model_twfe_trt_demean = bmb.Model(f"dep_var ~ treat", d)
+idata_twfe_trt_demean = model_twfe_trt_demean.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True},)
+
+
+```
+
+```{python}
+
+az.summary(idata_twfe_trt_demean)
+
+```
+
+Which again accords with the reported values from `pyfixest`. This is equivalent to using a Mundlak device as we can see below: 
+
+### TWFE by Mundlak Device
+
+```{python}
+
+#| output: false
+
+df_het['unit_mean'] = df_het.groupby('unit')['treat'].transform(np.mean)
+df_het['time_mean'] = df_het.groupby('year')['treat'].transform(np.mean)
+
+model_twfe_trt = bmb.Model(f"dep_var ~ treat", df_het)
+idata_twfe_trt = model_twfe_trt.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True},)
+
+model_twfe_trt_mundlak = bmb.Model(f"dep_var ~ treat + unit_mean + time_mean", df_het)
+idata_twfe_trt_mundlak = model_twfe_trt_mundlak.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True},)
+
+```
+
+```{python}
+az.plot_forest([idata_twfe_trt_demean, idata_twfe_trt_mundlak, idata_twfe_trt], combined=True, var_names=['treat'], model_names=['De-meaned', 'Mundlak', 'Simple']);
+
+```
+
+We've seen here how the de-meaned TWFE estimator and the Mundlak specification result in identical estimates and differ from the naive estimate that fails to control group level confounds.
+
+### Functional Form and Saturated Regression
+
+We've seen how the vanilla TWFE estimator can successfully recover the treatment effects and facilitate event studies. However, the details of the estimation matter because this functional form is not always robust. Here we'll see other options that can recover substantially the same inferences and may prove more robust as we'll see below. The key to each is to articulate enough structural features that allow the model to modify effects based on the suspected group level confounds. 
+
+```{python}
+
+#| output: false
+
+df_het['state_mean'] = df_het.groupby('state')['treat'].transform(np.mean)
+df_het['time_mean'] = df_het.groupby('year')['treat'].transform(np.mean)
+df_het['cohort_mean'] = df_het.groupby('group')['treat'].transform(np.mean)
+
+model_twfe_event_1 = bmb.Model(f"dep_var ~ 1 + C(year) + state_mean + C(rel_year, Treatment(reference=-1)) ", df_het)
+idata_twfe_event_1 = model_twfe_event_1.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True})
+
+
+formula = """ dep_var ~ 1 + time_mean:state_mean + C(rel_year, Treatment(reference=-1))"""
+twfe_model_ols = smf.ols(formula, data=df_het).fit()
+twfe_model_ols.summary()
+param_est = pd.DataFrame(twfe_model_ols.params, columns=['estimate']).iloc[1:-1]
+param_est['index_number'] = list(range(len(param_est)))
+temp = (param_est.reset_index()
+)
+param_est = temp[(~temp['index'].str.contains(':')) & (temp['index'].str.contains('rel'))]
+param_est.reset_index(inplace=True)
+
+
+model_twfe_event_2 = bmb.Model(f"dep_var ~ (1 | year) + state_mean + C(rel_year, Treatment(reference=-1)) ", df_het)
+idata_twfe_event_2 = model_twfe_event_2.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True})
+
+
+```
+
+Having estimated the various alternatives model specifications we compare each against our baseline de-meaned event-study.
+
+```{python}
+fig, axs = plt.subplots(2, 2, figsize=(20, 10))
+axs = axs.flatten()
+plot_event_study(idata_twfe_event, axs[0], model='Manual DeMeaned')
+plot_event_study(idata_twfe_event, axs[1], model='Manual DeMeaned')
+plot_event_study(idata_twfe_event, axs[2], model='Manual DeMeaned')
+plot_event_study(idata_twfe_event, axs[3], model='Manual DeMeaned')
+plot_event_study(idata_twfe_event_1, axs[0], color='green', model='Fixed Effects Saturated Bayes')
+plot_event_study(idata_twfe_event_2, axs[1], color='purple', model='Hierarchical Effects Saturated Bayes')
+axs[2].scatter(param_est['index'], param_est['estimate'], color='red', label='Mundlak Interaction Features OLS')
+tidy = fit_twfe_event.tidy()
+xs = range(len(tidy))
+tidy.reset_index(inplace=True)
+axs[3].scatter(xs, tidy['Estimate'], color='orange', label='pyfixest TWFE')
+axs[3].plot([xs, xs], [tidy['2.5%'],tidy['97.5%']], color='orange')
+axs[2].set_xticks([])
+axs[0].set_title("dep_var ~ 1 + C(year) + state_mean + C(rel_year, Treatment(reference=-1))")
+axs[1].set_title("dep_var ~ (1 | year) + state_mean + C(rel_year, Treatment(reference=-1))")
+axs[2].set_title("dep_var ~ 1 + time_mean:state_mean + C(rel_year, Treatment(reference=-1))")
+axs[3].set_title("dep_var ~ i(rel_year, ref=-1.0) | state + year")
+axs[0].legend()
+axs[1].legend()
+axs[2].legend()
+axs[3].legend();
+
+```
+`
+
+This suggests that there are a variety of functional forms even just using regression specifications that seek to control from different types of group level confounding. In this example data most of the functional forms that seek to control for time and state level effects seem to converge in their answers. We will now switch to an example where the vanilla TWFE breaks down. 
+
+## Issues with TWFE and Richly Parameterised Linear Models
+
+We draw on the example from Pedro Sant'Anna [here](https://psantanna.com/posts/twfe) where it is demonstrated that the vanilla TWFE estimator breaks down under various conditions. These conditions are often related to staggered roll out of a treatment and thereby induces dynamic changes in the treatment group over time. Appropriate inference needs to carefully control for the interaction effects due to staggered treatment. 
+
+Let's generate some data. 
+```{python}
+true_mu = 1
+
+def make_data(nobs = 1000, nstates = 40):
+    ids = list(range(nobs))
+    states = np.random.choice(range(nstates), size=nobs, replace=True)
+    unit = pd.DataFrame({'unit': ids, 
+                        'state': states, 
+                        'unit_fe': np.random.normal(states/5, 1, size=nobs),
+                        'mu': true_mu})
+    
+    year = pd.DataFrame({'year': pd.date_range('1980-01-01', '2010-01-01', freq='y'), 
+    'year_fe': np.random.normal(0, 1, 30) })
+    year['year'] = year['year'].dt.year
+
+    treat_taus = pd.DataFrame({'state': np.random.choice(range(nstates), size=nstates, replace=False),
+    'cohort_year': np.sort([1986, 1992, 1998, 2004]*10)
+    })
+
+    cross_join = pd.DataFrame([row for row in product(range(nobs), year['year'].unique())], columns =['unit', 'year'])
+    cross_join = cross_join.merge(unit, how='left', left_on='unit', 
+    right_on='unit')
+    cross_join = cross_join.merge(year, how='left', left_on='year', 
+    right_on='year')
+    cross_join = cross_join.merge(treat_taus, how='left', left_on='state', right_on='state')
+    cross_join = cross_join.assign(
+        error = np.random.normal(0, 1, len(cross_join)),
+        treat = lambda x: np.where(x['year'] >= x['cohort_year'], 1, 0)
+    )
+    cross_join = cross_join.assign(tau = np.where(cross_join['treat'] == 1, cross_join['mu'], 0), 
+    ).assign(year_fe = lambda x: x['year_fe'] + 0.1*(x['year']-x['cohort_year']))
+
+    cross_join['tau_cum'] = cross_join.groupby('unit')['tau'].transform(np.cumsum)
+    cross_join = cross_join.assign(dep_var = lambda x: 2010-x['cohort_year'] + 
+    x['unit_fe'] + x['year_fe'] + x['tau_cum'] + x['error'])
+    cross_join['rel_year'] =  cross_join['year'] - cross_join['cohort_year']
+
+    
+    return cross_join
+
+sim_df = make_data(500, 40)
+sim_df.head()
+
+```
+
+We can now plot the staggered nature of the imagined treatment regime. 
+
+```{python}
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+for unit in sim_df['unit'].unique()[0:100]:
+    temp = sim_df[sim_df['unit'] == unit]
+    ax.plot(temp['year'], temp['dep_var'], alpha=0.1, color='grey')
+
+sim_df.groupby(['cohort_year', 'year'])[['dep_var']].mean().reset_index().pivot(index='year', columns='cohort_year', values='dep_var').plot(ax=ax)
+ax.axvline(1986)
+ax.axvline(1992, color='orange')
+ax.axvline(1998, color='green')
+ax.axvline(2004, color='red')
+ax.set_title("Simulated Cohorts Homogenous Treatment Effects \n All Eventually Treated", fontsize=20)
+ax.legend()
+
+```
+
+This data will present problems for the vanilla TWFE estimator in part because we can see how each cohort receives a treatment and there are periods in the data when no group is in the "control". We can see how this plays out with de-meaning TWFE strategy. 
+
+```{python}
+
+from pyfixest.did.estimation import did2s, lpdid
+fit_twfe = pf.feols(
+    "dep_var ~ i(rel_year, ref=-1.0) | state + year",
+    sim_df,
+    vcov={"CRV1": "state"},
+)
+
+
+figsize = [1200, 400]
+fit_twfe.iplot(
+    coord_flip=False,
+    title="TWFE-Estimator",
+    figsize=figsize,
+    xintercept=18.5,
+    yintercept=0,
+).show()
+
+```
+
+This is not the expected pattern. For contrast, consider an alternative estimator.
+
+```{python}
+
+fit_lpdid = lpdid(
+    data=sim_df,
+    yname="dep_var",
+    gname="cohort_year",
+    tname="year",
+    idname="unit",
+    vcov={"CRV1": "state"},
+    pre_window=-17,
+    post_window=17,
+    att=False,
+)
+
+fit_lpdid.iplot(
+    coord_flip=False,
+    title="Local-Projections-Estimator",
+    figsize=figsize,
+    yintercept=0,
+    xintercept=18.5,
+).show()
+```
+
+The initial TWFE estimate is frankly bizarre and utterly skewed. Something dreadful has gone wrong under the hood. For contrast, we've included the Local Projections estimator from the `pyfixest` to show that we can recover the actual treatment effect under this event study with alternative strategies. However, there is more machinary involves in the local-projections estimator. Instead we want show how to use mundlak devices to recover more reasonable estimates. No fancy estimators, just more regressions. 
+
+
+```{python}
+
+#| output: false
+
+sim_df['unit_mean'] = sim_df.groupby('unit')['treat'].transform(np.mean)
+
+sim_df['state_mean'] = sim_df.groupby('state')['treat'].transform(np.mean)
+
+sim_df['cohort_mean'] = sim_df.groupby('cohort_year')['treat'].transform(np.mean)
+
+sim_df['time_mean'] = sim_df.groupby('year')['treat'].transform(np.mean)
+
+
+model_twfe = bmb.Model(f"""dep_var ~ 1  + time_mean + state_mean + C(cohort_year) + C(rel_year, Treatment(reference=-1))""", sim_df)
+
+idata_twfe = model_twfe.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True})
+
+
+model_twfe1 = bmb.Model(f"""dep_var ~ 1  + time_mean* state_mean + C(cohort_year) + C(rel_year, Treatment(reference=-1))""", sim_df)
+
+idata_twfe1 = model_twfe1.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True})
+
+
+model_twfe2 = bmb.Model(f"""dep_var ~ 1  + cohort_mean: state_mean + C(rel_year, Treatment(reference=-1))""", sim_df)
+
+idata_twfe2 = model_twfe2.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True})
+
+model_twfe3 = bmb.Model(f"""dep_var ~ (1| year)  + state_mean + C(rel_year, Treatment(reference=-1))""", sim_df)
+idata_twfe3 = model_twfe3.fit( inference_method="nuts_numpyro",
+    idata_kwargs={"log_likelihood": True})
+
+```
+
+
+These latter models will recover the appropriate treatment effects with slight variations due to the functional form. 
+
+```{python}
+fig, axs = plt.subplots(4, 1, figsize=(10, 15), sharey=True)
+axs = axs.flatten()
+plot_event_study(idata_twfe, ax=axs[0], model='Additive Mundlak')
+plot_event_study(idata_twfe1, ax=axs[1], color='red', model='Mundlak State & Time Interactions')
+plot_event_study(idata_twfe2, ax=axs[2], color='green', model='Mundlak Cohort & State Interactions')
+plot_event_study(idata_twfe3, ax=axs[3], color='purple', model='Mundlak Cohort & State Interactions')
+axs[0].set_title("dep_var ~ 1  + time_mean + state_mean + C(rel_year, Treatment(reference=-1))")
+axs[1].set_title("dep_var ~ 1  + time_mean* state_mean + C(rel_year, Treatment(reference=-1))")
+axs[2].set_title("dep_var ~ 1  + cohort_mean:state_mean + C(rel_year, Treatment(reference=-1))")
+axs[3].set_title("dep_var ~ (1| year)  + state_mean + C(rel_year, Treatment(reference=-1))")
+axs[0].legend()
+axs[1].legend()
+```
+
+Note how the the naive mundlak approach replicates the odd behaviour we saw in the TWFE estimation routine above. Adding additional interactions and controlling for the staggered launch dates seems to help isolate the real pattern in the data. 
+
+```{python}
+
+az.compare({'fe_mundlak_naive': idata_twfe, 
+            'mundlak_state_time_interactions_cohort': idata_twfe1, 
+            'mundlak_cohort_state_interactions': idata_twfe2, 
+            'mundlak_state_hierarchical_year': idata_twfe3})
+
+```
+
+## Conclusion
+

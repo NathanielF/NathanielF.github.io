@@ -14,6 +14,7 @@
   {
     "listing": "/archive.html",
     "items": [
+      "/posts/post-with-code/multilevel_confounding/multilevel_models.html",
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/theoretical_risks_meehl/theoretical_risks_meehl.html"
     ]
@@ -39,6 +40,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/post-with-code/multilevel_confounding/multilevel_models.html",
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/theoretical_risks_meehl/theoretical_risks_meehl.html"
     ]
