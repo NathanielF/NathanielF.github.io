@@ -27,6 +27,9 @@ from itertools import product
 import pyfixest as pf
 import statsmodels.formula.api as smf
 from patsy import dmatrices, dmatrix
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+pd.options.mode.chained_assignment = None 
 
 np.random.seed(100)
 
@@ -38,22 +41,24 @@ np.random.seed(100)
 ## Summary 
 __WORK IN PROGRESS__
 
-_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Questions become more complicated again when we have to account for variation across multiple groups interactions._
+_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Question of correct functional form become more complicated again when we have to account for variation across multiple groups interactions._
 
-_Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences causal inference designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. We will explore the relationship between TWFE and Mundlak like regressions in DiD and Event Study designs, showing how sound inferential strategies rely on saturated models with heavily parameterised specifications. In particular we'll see how TWFE breaks down in cases of staggered treatment regimes, and how to fix it._
+_Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences causal inference designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. We will explore the relationship between TWFE and Mundlak like regressions in DiD and Event Study designs, showing how sound inferential strategies rely on saturated models with richly parameterised specifications. In particular we'll see how TWFE breaks down in cases of staggered treatment regimes, and how to fix it._
 :::
 
 # Architectures and Free Parameters
 
 > “There are no rules of architecture for a castle in the clouds.” - G.K. Chesterton
 
-Freedom is not whimsy. You act and learn within constraints, struggling to discern the shape of the tracks on which you travel. Hurtling into the future, you pivot at junctions, hoping for the best. You may imagine your next choice will be the one where everything falls into place. All the plans are arrayed, but outcomes are confounded by a plethora of interaction effects and understanding only arrives incrementally. You may seek to learn from the past with a cursory review of history, but detail matters because it structures the implications. It is these structural details of group membership and hierarchies that determine the path of the tracks, and the architecture the holds up your future. 
+You act and learn within constraints - struggling to discern the shape of the tracks on which you travel and the paths available. Hurtling into the future, you pivot at junctions, hoping for the best. You may imagine your next choice will be the one where everything falls into place. All the plans are arrayed, but outcomes are confounded by a plethora of interaction effects and understanding only arrives incrementally. You may seek to learn from the past with a cursory review of history, but detail matters because it structures the implications of future choice. It is these structural details of group membership and hierarchies that determine the path of the tracks, and the architecture the holds up your future. Freedom is not whimsy or wanton action.Choice is free when taken within the confines of tolerable bounds. 
 
-In statistical modelling we seek to learn from the past to discern the shape of the processes which determine the future. Different models yield different insights into those structures which govern our trajectories. Which parameters are "free", and which are decisively characterised? Which realities are contestable and which non-negotiable? In this post we will dive into the way in which different inferential methodologies yield different insights into how group-level confounding constrains the realisations of our parameter space and shapes the architecture of causal inference.
+In statistical modelling we seek to discover what is plausibly realised within such bounds. We learn from the past to discern the shape of the processes which determine the future. Different models yield different insights into those structures which govern our trajectories. Which parameters are "free", and which are decisively characterised? Which realities are contestable and which non-negotiable? In this post we will dive into the way in which different inferential methodologies yield different insights into how group-level confounding constrains the realisations of our parameter space and shapes the architecture of causal inference.
+
+Difference in Differences estimation is core a topic in contemporary social science. It is a compelling methodology for licensing inferential statements, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. Two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time. Imagine the true-effect is a sprinter running too fast to cleanly measure - each group interaction effect is added to his load as a weight. Enough weights absorb enough of the variation in the treatment that he is dragged to a crawl and whatever movement he can make while dragging this burden is the effect we attribute to the treatment. We will see how these models and their intended attribution interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix them.   
 
 ## Estimation and Group Effects
 
-First consider an example due to Richard McElreath's [lecture series](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) where we examine the various parameter recovery options available in the case of group level confounding. We define a data generating process determined by group level effects:
+First consider an estimation example due to Richard McElreath's [lecture series](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) where we examine the various parameter recovery options available in the case of group level confounding. Define a data generating process determined by group level effects:
 
 
 ```{python}
@@ -130,7 +135,7 @@ az.summary(fixed_effects_idata, var_names=['Intercept', 'X', 'Z'])
 
 ```
 
-Now we see the intercept term and the coefficient on the $X$ variable seem correct, but the coefficient on $Z$ is wildly wrong. Indeed the uncertainty interval on the $Z$ coefficient is huge. The fixed effect model was unable to learn anything about the correct parameter. Whereas the naive model seems to learn the correct $Z$ parameter but over estimates the $X$ coefficient.  
+Now we see that the coefficient on the $X$ variable seem correct, but the coefficient on $Z$ is wildly wrong. Indeed the uncertainty interval on the $Z$ coefficient is huge. The fixed effect model was unable to learn anything about the correct parameter. Whereas the naive model seems to learn the correct $Z$ parameter but over estimates the $X$ coefficient. These are the kinds of trade-offs we need to be wary of as we account for the complexities of extensive group interactions in our model's functional form. 
 
 ```{python}
 
@@ -169,14 +174,18 @@ multilevel_model_idata = multilevel_model.fit( inference_method="nuts_numpyro",
 
 ```
 
+This method posits a view that there is a shared underlying process generating each instance of group-behaviour i.e. the reliased values of the outcome within each group. We replace the indivdual fixed effects indicator columns with additional parameters modifying the intercept.
+
 ```{python}
 az.summary(multilevel_model_idata)
 
 ```
 
-This now starts to recover the $X$ coefficient properly but is biased in the intercept an the $Z$ coefficient leaves something to be desired. Next we'll apply the Mundlak device method which adds the group mean back to each observation as a covariate. 
+Next we'll apply the Mundlak device method which adds the group mean back to each observation as a covariate. 
 
 ### Mundlak Model
+
+For this technique we supply group aggregate mean values as additional columns. This somewhat absolves of the requirement to include an extra multiplicity of parameters. It's more akin to feature creation than model specification, but it serves the same purpose - it accounts for group level variation and provides a mechanism for the model to learn the appropriate weights to accord each group in the final calculation. 
 
 ```{python}
 
@@ -999,7 +1008,43 @@ axs[0].legend()
 axs[1].legend()
 ```
 
-Note how the the naive mundlak approach replicates the odd behaviour we saw in the TWFE estimation routine above. Adding additional interactions and controlling for the staggered launch dates seems to help isolate the real pattern in the data. 
+Note how the the naive mundlak approach replicates the odd behaviour we saw in the TWFE estimation routine above. Adding additional interactions and controlling for the staggered launch dates seems to help isolate the real pattern in the data. We've seen approximate success in a number of these richly parameterised versions of simple event study regressions. But the idiosyncracies of the sample contort and distort the estimates away from the true values. We might hope for more stability in expectation over repeated draws from this kind of data-generating process. 
+
+```{python}
+fig, ax = plt.subplots(figsize=(10, 8))
+events_coefs = []
+for i in range(100):
+    df_het = make_data(500, 40)
+    df_het['state_mean'] = df_het.groupby('state')['treat'].transform(np.mean)
+    df_het['time_mean'] = df_het.groupby('year')['treat'].transform(np.mean)
+    df_het['cohort_mean'] = df_het.groupby('cohort_year')['treat'].transform(np.mean)
+    
+    formula = """ dep_var ~ 1 + C(cohort_year) + time_mean:state_mean + C(rel_year, Treatment(reference=-1))"""
+    twfe_model_ols = smf.ols(formula, data=df_het).fit()
+    twfe_model_ols.summary()
+    param_est = pd.DataFrame(twfe_model_ols.params, columns=['estimate']).iloc[1:-1]
+    param_est['index_number'] = list(range(len(param_est)))
+    temp = (param_est.reset_index())
+    param_est = temp[(~temp['index'].str.contains(':')) & (temp['index'].str.contains('rel'))]
+    param_est.reset_index(inplace=True)
+    events_coefs.append(param_est['estimate'])
+    param_est['rel_year'] =(param_est['index'].str.split('[', expand=True)[1].str.replace('T.', '')
+    .str.replace(']', ''))
+    param_est['rel_year'] = param_est['rel_year'].astype(int)
+    param_est.set_index('rel_year', inplace=True)
+
+    ax.plot(param_est['estimate'], color='blue', alpha=0.3)
+
+bootstrap_df = pd.DataFrame(events_coefs)
+mean_df = bootstrap_df.mean(axis=0)
+mean_df.index = param_est.index
+mean_df.plot(ax=ax, color='red')
+ax.set_title(f"""Bootstrapped Estimates of Event Study DGP \n
+{formula}""")
+
+```
+
+We can also compare these models on standard adequacy measures. 
 
 ```{python}
 
