@@ -41,7 +41,7 @@ np.random.seed(100)
 ## Summary 
 __WORK IN PROGRESS__
 
-_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Question of correct functional form become more complicated again when we have to account for variation across multiple groups interactions._
+_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Question of correct functional form become more complicated again when we have to account for variation across multiple groups interactions. We explore these questions in assessing class/school/pupil dynamics before applying these considerations to causal inference more directly. _
 
 _Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences causal inference designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. We will explore the relationship between TWFE and Mundlak like regressions in DiD and Event Study designs, showing how sound inferential strategies rely on saturated models with richly parameterised specifications. In particular we'll see how TWFE breaks down in cases of staggered treatment regimes, and how to fix it._
 :::
@@ -50,11 +50,11 @@ _Two Way Fixed Effects (TWFE) regression models are often used in Differences-in
 
 > “There are no rules of architecture for a castle in the clouds.” - G.K. Chesterton
 
-You learn, act and build within constraints. It's an ongoing struggle to discern the shape of the tracks on which you travel and the off-ramps available. Hurtling into the future, you pivot at junctions, hoping for the best. You may imagine your next choice will be the one where everything falls into place! All the plans are arrayed, details pinned down - but the final outcomes are confounded by a plethora of interaction effects and that understanding only arrives incrementally. You may seek to learn from the past with a cursory review of history, but the details matters because they structure the implied future choices. It is the structural details of hierarchies that determine the path of the tracks, and the architecture the holds up your future. Freedom is not whimsy or wanton action. Choice is free when taken within the confines of tolerable bounds. 
+It's an ongoing struggle to discern the shape of the tracks on which you travel and the off-ramps available. Hurtling into the future, you pivot at junctions, hoping for the best. You may imagine your next choice will be the one where everything falls into place! All the plans are arrayed, details pinned down - but the final outcomes are confounded by a plethora of interaction effects and that understanding only arrives incrementally. You may seek to learn from the past with a cursory review of history, but the details matters because they structure the implied future choices. It is the structural details of hierarchies and interactions that determine the path of the tracks, and the architecture the holds up your future. Freedom is not whimsy or wanton action. Choice is free when taken within the confines of tolerable bounds. 
 
 In statistical modelling we seek to discover what is plausibly realised within such bounds. We learn from the past to discern the shape of the processes which determine the future. Different models yield different insights into those structures which govern our trajectories. Which parameters are "free", and which are decisively characterised? Which realities are contestable and which non-negotiable? In this post we will dive into the way in which different inferential methodologies yield different insights into how group-level confounding constrains the realisations of our parameter space and shapes the architecture of causal inference.
 
-Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time. Imagine the true-effect is a sprinter running too fast to cleanly measure - each group interaction effect is added to his load as a weight. Enough weights absorb enough of the variation in the treatment that he is dragged to a crawl. Whatever movement he can make while dragging this burden is the effect we attribute to the treatment. We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues. 
+Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time.  We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues. 
 
 ## Estimation and Group Effects
 
@@ -96,7 +96,7 @@ There is a huge degree of confusion over the meaing of the terms "Fixed Effects"
 
  $$\Big(\underbrace{\beta}_{pop} + \underbrace{\beta_{g}}_{group}\Big)X$$
  
-  which are incorporated into our model equation modifying population level parameters as __random effects.__ We will generally use Wilkison notation to specify these choices where random effects for modifying a population are denoted with a conditional bar over the variable `( X | group)` and fixed effects are specified by just including the variable in the equation i.e. `y ~ X + (Z | group)` where X has a fixed effect parameterisation and Z a random effects parameterisation. We can also create indicator variables for group membership using this syntax with `y ~ C(group) + X + Z` where under the hood we pivot the group category into a zero-one variable indicating group membership. This parameterisation means each indicator variable (one for each level of the grouping variable) will receive a fixed effects population parameter.   
+  which are incorporated into our model equation modifying population level parameters as __random effects.__ We will generally use Wilkison notation to specify these choices where random effects for modifying a population are denoted with a conditional bar over the variable `( X | group)` and fixed effects are specified by just including the variable in the equation i.e. `y ~ X + (Z | group)` where X has a fixed effect parameterisation and Z a random effects parameterisation. We can also create indicator variables for group membership using this syntax with `y ~ C(group) + X + Z` where under the hood we pivot the group category into a zero-one variables indicating group membership. This parameterisation means each indicator variable (one for each level of the grouping variable) will receive a fixed effects population parameter.   
 :::
 
 ### Naive Model
@@ -143,7 +143,7 @@ Now we see that the coefficient on the $X$ variable seem correct, but the coeffi
 
 ```{python}
 
-fig, axs = plt.subplots(2, 1, figsize=(10, 12))
+fig, axs = plt.subplots(2, 1, figsize=(10, 9))
 axs = axs.flatten()
 
 az.plot_posterior(naive_idata, var_names=['X'], ax=axs[0], 
@@ -376,9 +376,15 @@ axs[1].set_title("Overall Distribution");
 
 ```
 
-With these kinds of structures we need to be careful in how we evaluate any treatment effects when there are reasons to believe in group-level effects that impact the outcome variable. Consider the following ways in which we could model the outcome and treatment.
+With these kinds of structures we need to be careful in how we evaluate any treatment effects when there are reasons to believe in group-level effects that impact the outcome variable. Imagine the true treatment effect is a sprinter running too fast to cleanly measure - each group interaction effect is added to his load as a weight. Enough weights absorb enough of the variation in the treatment that he is dragged to a crawl. Whatever movement he can make while dragging this burden is the effect we attribute to the treatment. Or put another way - the effects of various group interactions will modify the treatment effectiveness in some way and unless we account for this impact in our model, then the inferences regarding the treatment will be clouded. 
 
 ### Interaction Effects and Computational Complexity
+
+Not all possible interactions will be present in the data. But if we specify the model to account for various interactions we may explode the number of parameters beyond the number of data points. This can cause issues in estimation routines and requires consideration about what the group parameters are aimed at capturing. 
+
+Why add covariates for group-membership when no observation reflects outcomes in that group? We cannot learn anything about these cases. At least if we add the group effects as a hierarchical random effect we induce shrinkage on the parameter estimates towards the mean of the hierarchical parameter in the model. This means that when predicting on "new" data with examples of these missing cases we can predict a sensible default. The distinction rests in the role we have in mind for these tools. If we seriously commit to the idea that group variation reflects a real "common" process in the larger population and we want to learn about that over-arching process then we deploy a random effects model. But if we only see these as tools for accounting to variation in the sample, allowing us to pin down an alternative focal estimate then the group indicator covariates are just "nuisance" parameters and missing cases are irrelevant.  
+
+To see the extent of this problem we can examine the dimensions of the covariate matrix 
 
 ```{python}
 
@@ -394,7 +400,7 @@ print(X2.shape)
 
 ```
 
-We see here how different ways in which to account for group level variation and interaction effects lead to vastly inflated feature matrices. However not all interaction terms matter, or put another way... nor all the possible interactions feature in the data. So we have inflated the data matrix beyond necessity. 
+We see here how different ways in which to account for group level variation and interaction effects lead to vastly inflated feature matrices. However not all interaction terms matter, or put another way... nor all the possible interactions feature in the data. So we have likely inflated the data matrix beyond necessity. 
 
 Here we define a helper function to parse a complex interaction formula, remove the columns entirely composed of zeros and return a new formula and dataframe which has a suitable range of features to capture the variation structures in the data. 
 
@@ -450,6 +456,9 @@ estimates_df
 The point here (perhap obvious) is that the estimate of treatment effects due to some policy or programme can be differently understood when the regression model is able to account for increasing aspects of individual variation. Choice of the __right__ way to "saturate" your regression specification are at the heart of causal inference.
 We will consider a number of specifications below that incorporate these group effects in a hierarchical model which nests the effect of class-membership within school membership. This choice allows us to control for group specific interactions without worrying about over-indexing on the observed interaction effects in the current data requiring that we handle more fixed effects parameters than we have data points. 
 
+In what follows we'll specify a nested approach to the parameter specifcation using a random effects model. The idea here is that classes are already implicitly nested in schools and so we don't need to add parameters for classes at multiple schools. Additionally we're positing that there is independent interest in the effectiveness school/class effects i.e. the degree to which variation in a school/class nest can account for variation in the outcome. 
+
+#### Minimal Model
 
 ```{python}
 #| output: false
@@ -460,7 +469,7 @@ idata = model.fit( inference_method="nuts_numpyro",
 
 ```
 
-The model specification here is deliberately minimalist we want to observe how much of the variation in the outcome can be accounted for by solely adding extensive controls for interactions of group level effects. 
+The model specification here is deliberately minimalist we want to observe how much of the variation in the outcome can be accounted for by solely adding extensive controls for interactions of group level effects and the treatment but ignoring all else. 
 
 ```{python}
 
@@ -468,7 +477,7 @@ model.graph()
 
 ```
 
-We can see the derive sigma parameters here which can be understood as partialling out the variance of the outcome into components due to those group level effects and the unexplained residuals. 
+We can see the derived sigma parameters here which can be understood as partialling out the variance of the outcome into components due to those group level effects and the unexplained residuals. 
 
 ```{python}
 az.summary(idata, var_names=['Intercept', '1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma', 'mathprep'])
@@ -503,11 +512,13 @@ c = (idata['posterior']['1|schoolid:classid_sigma']**2 + idata['posterior']['1|s
 
 ```
 
-We can see here that the interaction terms do seem to account for a goodly portion of the variance in the outcome and we ought to consider retaining their inclusion in our modelling work. 
+We can see here that the interaction terms do seem to account for a goodly portion of the variance in the outcome and we ought to consider retaining their inclusion in our modelling work. The structure of the problem drives us towards their inclusion. Class/school effects are going to absorb a sufficient portion of the variation. So they merit study in their own right, lest the individual class/school dynamics obscure the effectiveness of the `mathprep` treatment. Similarly, it's likely valuable to consider the efficacy of the average class/school in a wider policy conversation. 
 
 ### Augmenting the Models
 
 Next we augment our model with more pupil level control variables aiming to pin down some of the aspects of the variation in the outcome. 
+
+#### Adding Pupil Fixed Effects
 
 ```{python}
 #| output: false
@@ -528,6 +539,8 @@ az.summary(idata_fixed, var_names=['Intercept',
 
 Now we add a further class level control. 
 
+#### Adding Class Level Fixed Effects
+
 ```{python}
 #| output: false
 
@@ -543,19 +556,26 @@ az.summary(idata_fixed_1, var_names=['Intercept',
 
 ```
 
+```{python}
+
+fig, ax = plt.subplots(figsize=(10, 7))
+az.plot_forest([idata, idata_fixed, idata_fixed_1], combined=True, var_names=['mathprep', '1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma'], ax=ax)
+ax.axvline(1)
+
+```
+
 We now make use of `bambi`s model interpretation module to plot the marginal effect on the outcome due to changes in the treatment intensity. 
 
 ```{python}
 
-fig, axs = plt.subplots(3, 1, figsize=(10, 15), 
+fig, ax = plt.subplots(figsize=(10, 8), 
 dpi=120, sharey=True, sharex=True)
-axs = axs.flatten()
-bmb.interpret.plot_predictions(model, idata, "mathprep", ax=axs[0]);
-bmb.interpret.plot_predictions(model_fixed, idata_fixed, "mathprep", ax=axs[1]);
-bmb.interpret.plot_predictions(model_fixed_1, idata_fixed_1, "mathprep", ax=axs[2]);
-axs[0].set_title("Baseline Interaction model")
-axs[1].set_title("Class Level Controls \n and Interactions model")
-axs[2].set_title("Neighbourhood and  Class Level Controls \n and Interactions model");
+bmb.interpret.plot_predictions(model, idata, "mathprep", ax=ax);
+bmb.interpret.plot_predictions(model_fixed, idata_fixed, "mathprep", ax=ax);
+bmb.interpret.plot_predictions(model_fixed_1, idata_fixed_1, "mathprep", ax=ax);
+ax.set_title("Variation in Implied Outcome by Treatment \n Multiple models")
+ax.legend();
+
 
 
 ```
@@ -1028,8 +1048,10 @@ for i in range(100):
     df_het['state_mean'] = df_het.groupby('state')['treat'].transform(np.mean)
     df_het['time_mean'] = df_het.groupby('year')['treat'].transform(np.mean)
     df_het['cohort_mean'] = df_het.groupby('cohort_year')['treat'].transform(np.mean)
+    df_het['unit_mean'] = df_het.groupby('unit')['treat'].transform(np.mean)
     
     formula = """ dep_var ~ 1 + C(cohort_year) + time_mean:state_mean + C(rel_year, Treatment(reference=-1))"""
+    #formula = """ dep_var ~ 1 + C(cohort_year) + time_mean:unit_mean + C(rel_year, Treatment(reference=-1))"""
     twfe_model_ols = smf.ols(formula, data=df_het).fit()
     twfe_model_ols.summary()
     param_est = pd.DataFrame(twfe_model_ols.params, columns=['estimate']).iloc[1:-1]
