@@ -8,7 +8,7 @@ draft: false
 execute: 
   enabled: true
 jupyter: pymc_causal
-image: "castles_in_clouds.png"
+image: "sky_castle.png"
 author:
     - url: https://nathanielf.github.io/
     - affiliation: PyMC dev
@@ -50,11 +50,11 @@ _Two Way Fixed Effects (TWFE) regression models are often used in Differences-in
 
 > “There are no rules of architecture for a castle in the clouds.” - G.K. Chesterton
 
-You act and learn within constraints - struggling to discern the shape of the tracks on which you travel and the paths available. Hurtling into the future, you pivot at junctions, hoping for the best. You may imagine your next choice will be the one where everything falls into place. All the plans are arrayed, but outcomes are confounded by a plethora of interaction effects and understanding only arrives incrementally. You may seek to learn from the past with a cursory review of history, but detail matters because it structures the implications of future choice. It is these structural details of group membership and hierarchies that determine the path of the tracks, and the architecture the holds up your future. Freedom is not whimsy or wanton action.Choice is free when taken within the confines of tolerable bounds. 
+You learn, act and build within constraints. It's an ongoing struggle to discern the shape of the tracks on which you travel and the off-ramps available. Hurtling into the future, you pivot at junctions, hoping for the best. You may imagine your next choice will be the one where everything falls into place! All the plans are arrayed, details pinned down - but the final outcomes are confounded by a plethora of interaction effects and that understanding only arrives incrementally. You may seek to learn from the past with a cursory review of history, but the details matters because they structure the implied future choices. It is the structural details of hierarchies that determine the path of the tracks, and the architecture the holds up your future. Freedom is not whimsy or wanton action. Choice is free when taken within the confines of tolerable bounds. 
 
 In statistical modelling we seek to discover what is plausibly realised within such bounds. We learn from the past to discern the shape of the processes which determine the future. Different models yield different insights into those structures which govern our trajectories. Which parameters are "free", and which are decisively characterised? Which realities are contestable and which non-negotiable? In this post we will dive into the way in which different inferential methodologies yield different insights into how group-level confounding constrains the realisations of our parameter space and shapes the architecture of causal inference.
 
-Difference in Differences estimation is core a topic in contemporary social science. It is a compelling methodology for licensing inferential statements, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. Two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time. Imagine the true-effect is a sprinter running too fast to cleanly measure - each group interaction effect is added to his load as a weight. Enough weights absorb enough of the variation in the treatment that he is dragged to a crawl and whatever movement he can make while dragging this burden is the effect we attribute to the treatment. We will see how these models and their intended attribution interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix them.   
+Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time. Imagine the true-effect is a sprinter running too fast to cleanly measure - each group interaction effect is added to his load as a weight. Enough weights absorb enough of the variation in the treatment that he is dragged to a crawl. Whatever movement he can make while dragging this burden is the effect we attribute to the treatment. We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues. 
 
 ## Estimation and Group Effects
 
@@ -96,10 +96,12 @@ There is a huge degree of confusion over the meaing of the terms "Fixed Effects"
 
  $$\Big(\underbrace{\beta}_{pop} + \underbrace{\beta_{g}}_{group}\Big)X$$
  
-  which are incorporated into our model equation modifying population level parameters as __random effects.__ We will generally use Wilkison notation to specify these choices where random effects for modifying a population are denoted with a conditional bar over the variable `( X | group)` and fixed effects are specified by just including the variable in the equation i.e. `y ~ X + (Z | group)` where X has a fixed effect parameterisation and Z a random effects parameterisation. We can also create indicator variables for group membership using this syntax with `y ~ C(group) + X + Z` where under the hood we pivot the group category into a zero-one variable indicating group membership. This parameterisation means each indicator variable for each level of the grouping variable will receive a fixed effects population parameter.   
+  which are incorporated into our model equation modifying population level parameters as __random effects.__ We will generally use Wilkison notation to specify these choices where random effects for modifying a population are denoted with a conditional bar over the variable `( X | group)` and fixed effects are specified by just including the variable in the equation i.e. `y ~ X + (Z | group)` where X has a fixed effect parameterisation and Z a random effects parameterisation. We can also create indicator variables for group membership using this syntax with `y ~ C(group) + X + Z` where under the hood we pivot the group category into a zero-one variable indicating group membership. This parameterisation means each indicator variable (one for each level of the grouping variable) will receive a fixed effects population parameter.   
 :::
 
 ### Naive Model
+
+The formula syntax for `Bambi` also enables us to specify generalised linear models with bernoulli outcomes. 
 
 ```{python}
 #| output: false
@@ -119,6 +121,8 @@ az.summary(naive_idata, var_names=['Intercept', 'X', 'Z'])
 Here we see that all three parameter estimates are biased away from their true values. Let's try a simple fixed effects approach that adds indicator variables for all but one of the group levels.  
 
 ### Fixed Effects Model
+
+The additional syntax for creating the group level indicator variables is specified here. 
 
 ```{python}
 #| output: false
@@ -164,6 +168,8 @@ We now want to try another approach to handle to the group confounding that invo
 
 ### Multilevel Model
 
+The syntax for the random effects model is similar. 
+
 ```{python}
 #| output: false
 
@@ -177,7 +183,7 @@ multilevel_model_idata = multilevel_model.fit( inference_method="nuts_numpyro",
 This method posits a view that there is a shared underlying process generating each instance of group-behaviour i.e. the reliased values of the outcome within each group. We replace the indivdual fixed effects indicator columns with additional parameters modifying the intercept.
 
 ```{python}
-az.summary(multilevel_model_idata)
+az.summary(multilevel_model_idata, var_names=['X', 'Z', 'Intercept'])
 
 ```
 
@@ -207,13 +213,14 @@ az.summary(mundlak_idata, var_names=['Intercept', 'X', 'Z'])
 
 ```
 
-We can plot all the parameter recovery models together and we'll see that there are some trade-offs between the fixed effects and random effects varieties of the modelling. 
+We can now plot all the parameter recovery models together and we'll see that there are some trade-offs between the fixed effects and random effects varieties of the modelling. 
 
 ### Plotting the Comparisons
 
+
 ```{python}
 
-fig, axs = plt.subplots(3, 1, figsize=(10, 12))
+fig, axs = plt.subplots(3, 1, figsize=(10, 9))
 axs = axs.flatten()
 
 az.plot_posterior(naive_idata, var_names=['X'], ax=axs[0], 
@@ -624,7 +631,7 @@ fit_twfe_event.iplot(
 
 ```
 
-We can also aim to marginalise over the details of the state trajectories by defining the similar estimation routine on the individuals are their treatment indicator. 
+We can also aim to marginalise over the details of the state trajectories by defining the similar estimation routine on the individuals and their treatment indicator. 
 
 ```{python}
 
@@ -642,8 +649,9 @@ fit_twfe.tidy()
 
 ### De-meaning and TWFEs
 
-We've seen above that the fixed-effect estimators in these DiD designs involve a lot of indicator variables. These are largely not the focus on the question at hand but are used exlusively to absorb the noise that takes away from our understanding of the treatment effect. We can achieve similar results with less parameters required if we "de-mean" the focus variables by the group averages of the control factors of `state` and `year` or `unit`. This operation which makes for more efficient TWFE estimation routines is provably a variety of mundlak regression. 
+We've seen above that the fixed-effect estimators in these DiD designs involve a lot of indicator variables. These are largely not the focus on the question at hand but are used exlusively to absorb the noise that takes away from our understanding of the treatment effect. We can achieve similar results with less parameters required if we "de-mean" the focus variables by the group averages of the control factors of `state` and `year` or `unit`. This operation makes for more efficient TWFE estimation routines is [provably](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3906345) a variety of mundlak regression as shown by Woolridge 2021. 
 
+We implement the de-meaning technique and show "equivalence by python" as follows:
 ```{python}
 
 def demean(df, col_to_demean, group):
@@ -669,8 +677,10 @@ def apply_demeaning(df_het, by=['state', 'year'], event=True):
     d = d.drop(by, axis=1)
     d['dep_var'] = df_het['dep_var']
     return d
-
+## Demean the relative years features for event studies
 d_event = apply_demeaning(df_het, by=['state', 'year'], event=True)
+
+## Demean the treatment indicator for ATT estimation
 d = apply_demeaning(df_het, by=['unit', 'year'], event=False)
 
 d_event.head()
@@ -764,11 +774,11 @@ az.plot_forest([idata_twfe_trt_demean, idata_twfe_trt_mundlak, idata_twfe_trt], 
 
 ```
 
-We've seen here how the de-meaned TWFE estimator and the Mundlak specification result in identical estimates and differ from the naive estimate that fails to control group level confounds.
+The de-meaned TWFE estimator and the Mundlak specification result in identical estimates and differ from the naive estimate that fails to control group level confounds.
 
 ### Functional Form and Saturated Regression
 
-We've seen how the vanilla TWFE estimator can successfully recover the treatment effects and facilitate event studies. However, the details of the estimation matter because this functional form is not always robust. Here we'll see other options that can recover substantially the same inferences and may prove more robust as we'll see below. The key to each is to articulate enough structural features that allow the model to modify effects based on the suspected group level confounds. 
+The vanilla TWFE estimator _can_ successfully recover the treatment effects in DiD designs and facilitate event studies of the same. However, the details of the estimation matter because this functional form is not always robust. Here we'll see other options that can recover substantially the same inferences and may prove more robust as we'll see below. The key to each is to articulate enough structural features that allow the model to modify effects based on the suspected group level confounds. 
 
 ```{python}
 
