@@ -92,11 +92,12 @@ This is a bernoulli outcome with group level confounds. If we model this relatio
 There is a huge degree of confusion over the meaing of the terms "Fixed Effects" and "Random Effects". Within this blog post we will mean the population level parameters. 
  $$\beta X$$ 
  
- for an individual variable $X$ when we refer to __fixed effects__. Corresspondingly we will refer to group-level parameters $\beta_{g}$
+for an individual variable $X$ when we refer to __fixed effects__. Corresspondingly we will refer to group-level parameters $\beta_{g}$
 
  $$\Big(\underbrace{\beta}_{pop} + \underbrace{\beta_{g}}_{group}\Big)X$$
  
-  which are incorporated into our model equation modifying population level parameters as __random effects.__ We will generally use Wilkison notation to specify these choices where random effects for modifying a population are denoted with a conditional bar over the variable `( X | group)` and fixed effects are specified by just including the variable in the equation i.e. `y ~ X + (Z | group)` where X has a fixed effect parameterisation and Z a random effects parameterisation. We can also create indicator variables for group membership using this syntax with `y ~ C(group) + X + Z` where under the hood we pivot the group category into a zero-one variables indicating group membership. This parameterisation means each indicator variable (one for each level of the grouping variable) will receive a fixed effects population parameter.   
+
+which are incorporated into our model equation modifying population level parameters as __random effects.__ We will generally use Wilkison notation to specify these choices where random effects for modifying a population are denoted with a conditional bar over the variable `( X | group)` and fixed effects are specified by just including the variable in the equation i.e. `y ~ X + (Z | group)` where X has a fixed effect parameterisation and Z a random effects parameterisation. We can also create indicator variables for group membership using this syntax with `y ~ C(group) + X + Z` where under the hood we pivot the group category into a zero-one variables indicating group membership. This parameterisation means each indicator variable (one for each level of the grouping variable) will receive a fixed effects population parameter.   
 :::
 
 ### Naive Model
@@ -378,11 +379,18 @@ axs[1].set_title("Overall Distribution");
 
 With these kinds of structures we need to be careful in how we evaluate any treatment effects when there are reasons to believe in group-level effects that impact the outcome variable. Imagine the true treatment effect is a sprinter running too fast to cleanly measure - each group interaction effect is added to his load as a weight. Enough weights absorb enough of the variation in the treatment that he is dragged to a crawl. Whatever movement he can make while dragging this burden is the effect we attribute to the treatment. Or put another way - the effects of various group interactions will modify the treatment effectiveness in some way and unless we account for this impact in our model, then the inferences regarding the treatment will be clouded. 
 
-### Interaction Effects and Computational Complexity
+### Interaction Effects and Nuisance Parameters
 
 Not all possible interactions will be present in the data. But if we specify the model to account for various interactions we may explode the number of parameters beyond the number of data points. This can cause issues in estimation routines and requires consideration about what the group parameters are aimed at capturing. 
 
 Why add covariates for group-membership when no observation reflects outcomes in that group? We cannot learn anything about these cases. At least if we add the group effects as a hierarchical random effect we induce shrinkage on the parameter estimates towards the mean of the hierarchical parameter in the model. This means that when predicting on "new" data with examples of these missing cases we can predict a sensible default. The distinction rests in the role we have in mind for these tools. If we seriously commit to the idea that group variation reflects a real "common" process in the larger population and we want to learn about that over-arching process then we deploy a random effects model. But if we only see these as tools for accounting to variation in the sample, allowing us to pin down an alternative focal estimate then the group indicator covariates are just "nuisance" parameters and missing cases are irrelevant.  
+
+
+::: {.callout-tip}
+## Philosophical Digression
+This last point skips a little quickly over a fundamental feature of interpreting these models. If we aim to interpret these models as reflecting a common process across these groups that exists in a "population", then we're endorsing an inferential view that extends beyond the sample. We're actively seeking to learn a general truth about the data generating process which we deem to be adequately expressed in our model. If we seek to "soak up" the variation ue to group effects, we're treating these group effects as noise in the sample data and making inferential commitments only about the focal parameter in the model. This approach to learning differentiates approaches to credible causal inference. On the one hand, fixing your estimand and designing estimators to specifically capture that estimate seems like a modest and compelling strategy. On the other hand if your model ignores aspects of underlying phenomena or fails to retrodict the observable data, it's dubious as to why anyone would trust its output. 
+:::
+
 
 To see the extent of this problem we can examine the dimensions of the covariate matrix 
 
@@ -539,7 +547,7 @@ az.summary(idata_fixed, var_names=['Intercept',
 
 Now we add a further class level control. 
 
-#### Adding Class Level Fixed Effects
+#### Adding Class Level Fixed Effects
 
 ```{python}
 #| output: false
@@ -573,8 +581,7 @@ dpi=120, sharey=True, sharex=True)
 bmb.interpret.plot_predictions(model, idata, "mathprep", ax=ax);
 bmb.interpret.plot_predictions(model_fixed, idata_fixed, "mathprep", ax=ax);
 bmb.interpret.plot_predictions(model_fixed_1, idata_fixed_1, "mathprep", ax=ax);
-ax.set_title("Variation in Implied Outcome by Treatment \n Multiple models")
-ax.legend();
+ax.set_title("Variation in Implied Outcome by Treatment \n Multiple models");
 
 
 
@@ -707,7 +714,7 @@ d_event.head()
 
 ```
 
-We now have a data set with 42 columns focused on the treatment structures but that implicitly controls for the variation due to state and time. We'll see below that this representation of the data will correctly estimate the treatment effects. 
+We now have a data set with 42 columns focused on the treatment structures, but implicitly controls for the variation due to state and time. We'll see below that this representation of the data will correctly estimate the treatment effects. 
 
 ### Event Study and De-Meaning
 Now we'll use the de-meaned data structure above to estimate an event study using `Bambi`. 
@@ -1041,17 +1048,12 @@ axs[1].legend()
 Note how the the naive mundlak approach replicates the odd behaviour we saw in the TWFE estimation routine above. Adding additional interactions and controlling for the staggered launch dates seems to help isolate the real pattern in the data. We've seen approximate success in a number of these richly parameterised versions of simple event study regressions. But the idiosyncracies of the sample contort and distort the estimates away from the true values. We might hope for more stability in expectation over repeated draws from this kind of data-generating process. 
 
 ```{python}
-fig, ax = plt.subplots(figsize=(10, 8))
-events_coefs = []
-for i in range(100):
-    df_het = make_data(500, 40)
-    df_het['state_mean'] = df_het.groupby('state')['treat'].transform(np.mean)
-    df_het['time_mean'] = df_het.groupby('year')['treat'].transform(np.mean)
-    df_het['cohort_mean'] = df_het.groupby('cohort_year')['treat'].transform(np.mean)
-    df_het['unit_mean'] = df_het.groupby('unit')['treat'].transform(np.mean)
-    
-    formula = """ dep_var ~ 1 + C(cohort_year) + time_mean:state_mean + C(rel_year, Treatment(reference=-1))"""
-    #formula = """ dep_var ~ 1 + C(cohort_year) + time_mean:unit_mean + C(rel_year, Treatment(reference=-1))"""
+fig, axs = plt.subplots(2, 1, figsize=(10, 15))
+axs = axs.flatten()
+event_coefs = []
+event_coefs1 = []
+
+def fit_ols(formula, df_het):
     twfe_model_ols = smf.ols(formula, data=df_het).fit()
     twfe_model_ols.summary()
     param_est = pd.DataFrame(twfe_model_ols.params, columns=['estimate']).iloc[1:-1]
@@ -1059,20 +1061,44 @@ for i in range(100):
     temp = (param_est.reset_index())
     param_est = temp[(~temp['index'].str.contains(':')) & (temp['index'].str.contains('rel'))]
     param_est.reset_index(inplace=True)
-    events_coefs.append(param_est['estimate'])
-    param_est['rel_year'] =(param_est['index'].str.split('[', expand=True)[1].str.replace('T.', '')
-    .str.replace(']', ''))
+    try:
+        param_est['rel_year'] =(param_est['index'].str.split('[', expand=True)[1].str.replace('T.', '')
+        .str.replace(']', ''))
+    except Exception as e:
+        param_est['rel_year'] = param_est['level_0'] - 22
     param_est['rel_year'] = param_est['rel_year'].astype(int)
     param_est.set_index('rel_year', inplace=True)
+    return param_est
 
-    ax.plot(param_est['estimate'], color='blue', alpha=0.3)
+for i in range(100):
+    df_het = make_data(500, 40)
+    df_het['state_mean'] = df_het.groupby('state')['treat'].transform(np.mean)
+    df_het['time_mean'] = df_het.groupby('year')['treat'].transform(np.mean)
+    df_het['cohort_mean'] = df_het.groupby('cohort_year')['treat'].transform(np.mean)
+    df_het['unit_mean'] = df_het.groupby('unit')['treat'].transform(np.mean)
 
-bootstrap_df = pd.DataFrame(events_coefs)
+    formula = """ dep_var ~ 1 + time_mean + state_mean + cohort_mean  + C(rel_year, Treatment(reference=-1)) """
+    formula1 = """ dep_var ~ 1 + C(cohort_year) + time_mean:unit_mean + C(rel_year, Treatment(reference=-1))"""
+
+    param_est = fit_ols(formula, df_het)
+    axs[0].plot(param_est['estimate'], color='blue', alpha=0.3)
+    event_coefs.append(param_est['estimate'])
+    param_est1 = fit_ols(formula1, df_het)
+    axs[1].plot(param_est1['estimate'], color='blue', alpha=0.3)
+    event_coefs1.append(param_est1['estimate'])
+
+bootstrap_df = pd.DataFrame(event_coefs)
 mean_df = bootstrap_df.mean(axis=0)
 mean_df.index = param_est.index
-mean_df.plot(ax=ax, color='red')
-ax.set_title(f"""Bootstrapped Estimates of Event Study DGP \n
-{formula}""")
+mean_df.plot(ax=axs[0], color='red')
+axs[0].set_title(f"""Bootstrapped Estimates of Demean Event Study DGP \n {formula}""")
+
+bootstrap_df1 = pd.DataFrame(event_coefs1)
+mean_df = bootstrap_df1.mean(axis=0)
+mean_df.index = param_est1.index
+mean_df.plot(ax=axs[1], color='red')
+axs[1].set_title(f"""Bootstrapped Estimates of Event Study DGP \n
+{formula1}""")
 
 ```
 
