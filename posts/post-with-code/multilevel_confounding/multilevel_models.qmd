@@ -27,6 +27,7 @@ from itertools import product
 import pyfixest as pf
 import statsmodels.formula.api as smf
 from patsy import dmatrices, dmatrix
+from pyfixest.did.estimation import did2s, lpdid
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.options.mode.chained_assignment = None 
@@ -41,18 +42,22 @@ np.random.seed(100)
 ## Summary 
 __WORK IN PROGRESS__
 
-_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Question of correct functional form become more complicated again when we have to account for variation across multiple groups interactions. We explore these questions in assessing class/school/pupil dynamics before applying these considerations to causal inference more directly. _
+_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the _right_ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Question of correct functional form become more complicated again when we have to account for variation across multiple groups interactions. We explore these questions in assessing class/school/pupil dynamics before applying these considerations to causal inference more directly. _
 
-_Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences causal inference designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. We will explore the relationship between TWFE and Mundlak like regressions in DiD and Event Study designs, showing how sound inferential strategies rely on saturated models with richly parameterised specifications. In particular we'll see how TWFE breaks down in cases of staggered treatment regimes, and how to fix it._
+_Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences causal inference designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. We will explore the relationship between TWFE and Mundlak regressions in DiD and Event Study designs, showing how sound inferential strategies rely on saturated models with richly parameterised specifications. In particular we'll see how TWFE breaks down in cases of staggered treatment regimes, and how to fix it._
+
+_Throughout we'll show how the different model architectures promote different interepretations of the group confounding and conclude by teasing out some of these implications for model choice._ 
 :::
 
 # Architectures and Free Parameters
 
 > “There are no rules of architecture for a castle in the clouds.” - G.K. Chesterton
 
-It's an ongoing struggle to discern the shape of the tracks on which you travel and the off-ramps available. Hurtling into the future, you pivot at junctions, hoping for the best. You may imagine your next choice will be the one where everything falls into place! All the plans are arrayed, details pinned down - but the final outcomes are confounded by a plethora of interaction effects and that understanding only arrives incrementally. You may seek to learn from the past with a cursory review of history, but the details matters because they structure the implied future choices. It is the structural details of hierarchies and interactions that determine the path of the tracks, and the architecture the holds up your future. Freedom is not whimsy or wanton action. Choice is free when taken within the confines of tolerable bounds. 
+It's an ongoing struggle to discern the shape of the tracks on which you travel, - especially if you're looking for the off-ramps. Hurtling into the future, you pivot at junctions, hoping for the best. You may imagine your next choice will be the one where everything falls into place! All the plans are arrayed, details pinned down - but the final outcomes are confounded by a plethora of interaction effects and that understanding only arrives incrementally. You may seek to learn from the past with a cursory review of history, but the details matters because they structure the implied future choices. It is the structural details of these hierarchies and interactions that determine the paths off the tracks, and the architecture the holds up your future. Free choice is not whimsy or wanton action. Choice is free when taken within the confines of tolerable bounds. 
 
 In statistical modelling we seek to discover what is plausibly realised within such bounds. We learn from the past to discern the shape of the processes which determine the future. Different models yield different insights into those structures which govern our trajectories. Which parameters are "free", and which are decisively characterised? Which realities are contestable and which non-negotiable? In this post we will dive into the way in which different inferential methodologies yield different insights into how group-level confounding constrains the realisations of our parameter space and shapes the architecture of causal inference.
+
+![free choice](free_choice.png)
 
 Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time.  We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues. 
 
@@ -144,6 +149,8 @@ Now we see that the coefficient on the $X$ variable seem correct, but the coeffi
 
 ```{python}
 
+#| code-fold: true
+
 fig, axs = plt.subplots(2, 1, figsize=(10, 9))
 axs = axs.flatten()
 
@@ -218,14 +225,17 @@ We can now plot all the parameter recovery models together and we'll see that th
 
 ### Plotting the Comparisons
 
+The parameter recovery exercise shows striking differences across each of the models 
 
 ```{python}
 
-fig, axs = plt.subplots(3, 1, figsize=(10, 9))
+#| code-fold: true
+
+fig, axs = plt.subplots(3, 1, figsize=(10, 11))
 axs = axs.flatten()
 
 az.plot_posterior(naive_idata, var_names=['X'], ax=axs[0], 
-point_estimate=None, color='red', label='Naive')
+point_estimate=None, color='red', label='Naive', hdi_prob='hide')
 axs[0].axvline(1, color='k', linestyle='--', label='True value')
 
 az.plot_posterior(fixed_effects_idata , var_names=['X'], ax=axs[0], point_estimate=None, hdi_prob='hide', label='Fixed')
@@ -237,7 +247,7 @@ az.plot_posterior(mundlak_idata, var_names=['X'], ax=axs[0], point_estimate=None
 
 axs[0].set_title("X Coefficient")
 
-az.plot_posterior(naive_idata, var_names=['Z'], ax=axs[1], point_estimate=None,  color='red', ref_val_color='black')
+az.plot_posterior(naive_idata, var_names=['Z'], ax=axs[1], point_estimate=None,  color='red', ref_val_color='black', hdi_prob='hide')
 
 
 az.plot_posterior(fixed_effects_idata , var_names=['Z'], ax=axs[1], point_estimate=None, hdi_prob='hide')
@@ -249,7 +259,7 @@ az.plot_posterior(mundlak_idata, var_names=['Z'], ax=axs[1], point_estimate=None
 axs[1].set_title("Z Coefficient")
 axs[1].axvline(-0.5, color='k', linestyle='--');
 
-az.plot_posterior(naive_idata, var_names=['Intercept'], ax=axs[2], point_estimate=None,  color='red', ref_val_color='black')
+az.plot_posterior(naive_idata, var_names=['Intercept'], ax=axs[2], point_estimate=None,  color='red', ref_val_color='black', hdi_prob='hide')
 
 
 az.plot_posterior(fixed_effects_idata , var_names=['Intercept'], ax=axs[2], point_estimate=None, hdi_prob='hide')
@@ -262,7 +272,7 @@ axs[2].axvline(-2, color='k', linestyle='--');
 
 ```
 
-Importantly, the fixed effects model is focused on recovering the treatment effect on the $X$ covariate somewhat at the expense of accuracy on the other systematic components of the model. However, this focus renders the model less predictively accurate. Compare the models on the cross-validation score and we see how the hierarchical mundlak model is to be preferred.
+Importantly, we see that while the fixed effects model is focused on recovering the treatment effect on the $X$ covariate, it does so somewhat at the expense of accuracy on the other systematic components of the model. This focus renders the model less predictively accurate. Compare the models on the cross-validation score and we see how the hierarchical mundlak model is to be preferred.
 
 ```{python}
 
@@ -277,6 +287,8 @@ compare_df
 az.plot_compare(compare_df);
 
 ```
+
+This is not the only way to assess viability of the model's functional form but it's not a bad way. 
 
 ### Full Luxury Bayesian Mundlak Machine
 
@@ -341,6 +353,7 @@ The data has three distinct levels: (1) the child or pupil and their demographic
 We'll plot the child's outcome `mathgain` against the `mathprep` and distinguish the patterns by school.  
 
 ```{python}
+#| code-fold: true
 
 def rand_jitter(arr):
     stdev = .01 * (max(arr) - min(arr))
@@ -388,11 +401,11 @@ Why add covariates for group-membership when no observation reflects outcomes in
 
 ::: {.callout-tip}
 ## Philosophical Digression
-This last point skips a little quickly over a fundamental feature of interpreting these models. If we aim to interpret these models as reflecting a common process across these groups that exists in a "population", then we're endorsing an inferential view that extends beyond the sample. We're actively seeking to learn a general truth about the data generating process which we deem to be adequately expressed in our model. If we seek to "soak up" the variation ue to group effects, we're treating these group effects as noise in the sample data and making inferential commitments only about the focal parameter in the model. This approach to learning differentiates approaches to credible causal inference. On the one hand, fixing your estimand and designing estimators to specifically capture that estimate seems like a modest and compelling strategy. On the other hand if your model ignores aspects of underlying phenomena or fails to retrodict the observable data, it's dubious as to why anyone would trust its output. 
+This last point skips a little quickly over a fundamental feature of interpreting these models. If we aim to interpret these models as reflecting a common process across these groups that exists in a "population", then we're endorsing an inferential view that extends beyond the sample. We're actively seeking to learn a general truth about the data generating process which we deem to be adequately expressed in our model. If we seek to "soak up" the variation due to group effects, we're treating these group effects as noise in the sample data and making inferential commitments only about the focal parameter in the model. This approach to learning differentiates approaches to credible causal inference. On the one hand, fixing your estimand and designing estimators to specifically capture that estimate seems like a modest and compelling strategy. On the other hand if your model ignores aspects of underlying phenomena or fails to retrodict the observable data, it's dubious as to why anyone would trust its output. 
 :::
 
 
-To see the extent of this problem we can examine the dimensions of the covariate matrix 
+To see the extent of redundany we can examine the dimensions of the covariate matrices that result from including more or less interaction terms. 
 
 ```{python}
 
@@ -462,7 +475,7 @@ estimates_df
 ```
 
 The point here (perhap obvious) is that the estimate of treatment effects due to some policy or programme can be differently understood when the regression model is able to account for increasing aspects of individual variation. Choice of the __right__ way to "saturate" your regression specification are at the heart of causal inference.
-We will consider a number of specifications below that incorporate these group effects in a hierarchical model which nests the effect of class-membership within school membership. This choice allows us to control for group specific interactions without worrying about over-indexing on the observed interaction effects in the current data requiring that we handle more fixed effects parameters than we have data points. 
+We will consider a number of specifications below that incorporate these group effects in a hierarchical model which nests the effect of class-membership within school membership. This choice allows us to control for group specific interactions without worrying about over-indexing on the observed interaction effects in the sample data requiring that we handle more fixed effects parameters than we have data points. 
 
 In what follows we'll specify a nested approach to the parameter specifcation using a random effects model. The idea here is that classes are already implicitly nested in schools and so we don't need to add parameters for classes at multiple schools. Additionally we're positing that there is independent interest in the effectiveness school/class effects i.e. the degree to which variation in a school/class nest can account for variation in the outcome. 
 
@@ -527,6 +540,7 @@ We can see here that the interaction terms do seem to account for a goodly porti
 Next we augment our model with more pupil level control variables aiming to pin down some of the aspects of the variation in the outcome. 
 
 #### Adding Pupil Fixed Effects
+Here we add these fixed effects population parameters. But note they are not merely devices for controlling variance in the outcome, they're interpretation is likely of independent interest. 
 
 ```{python}
 #| output: false
@@ -575,29 +589,39 @@ ax.axvline(1)
 We now make use of `bambi`s model interpretation module to plot the marginal effect on the outcome due to changes in the treatment intensity. 
 
 ```{python}
-
-fig, ax = plt.subplots(figsize=(10, 8), 
+#| code-fold: true
+fig, axs = plt.subplots(3, 1, figsize=(10, 14), 
 dpi=120, sharey=True, sharex=True)
-bmb.interpret.plot_predictions(model, idata, "mathprep", ax=ax);
-bmb.interpret.plot_predictions(model_fixed, idata_fixed, "mathprep", ax=ax);
-bmb.interpret.plot_predictions(model_fixed_1, idata_fixed_1, "mathprep", ax=ax);
-ax.set_title("Variation in Implied Outcome by Treatment \n Multiple models");
+axs = axs.flatten()
+axs[0].axhline(50, color='red', label='Reference Line', 
+linestyle='--')
+axs[1].axhline(50, color='red', label='Reference Line', 
+linestyle='--')
+axs[2].axhline(50, color='red', label='Reference Line', 
+linestyle='--')
+bmb.interpret.plot_predictions(model, idata, "mathprep", ax=axs[0]);
+bmb.interpret.plot_predictions(model_fixed, idata_fixed, "mathprep", ax=axs[1]);
+bmb.interpret.plot_predictions(model_fixed_1, idata_fixed_1, "mathprep", ax=axs[2]);
+axs[0].set_title("Variation in Implied Outcome by Treatment \n mathgain ~ mathprep + (1 | schoolid / classid) ")
+axs[1].set_title("Variation in Implied Outcome by Treatment \n mathgain ~ mathkind + sex + minority + ses + mathprep + (1 | schoolid / classid) ")
+axs[2].set_title("Variation in Implied Outcome by Treatment \n mathgain ~ mathkind + sex + minority + ses + yearstea + \n mathknow + mathprep + (1 | schoolid / classid")
+axs[0].set_xlabel('')
+axs[1].set_xlabel('')
+axs[0].legend();
 
 
 
 ```
 
-As we can see here across all the different model specifications we see modest effects of treatment with very wide uncertainty. So far, so what?! You might be sceptical that teacher training has any real discernible impact on child outcomes? Maybe you believe other interventions are more important to fund? 
-
-These kinds of questions determine policy. Misguided policy interventions on child-hood education can have radical consequences for the children. It's, therefore, vital that we have robust and justifiable approaches to the analysis of these policy questions in the face of group level confounding.  
+As we can see here across all the different model specifications we see quite modest effects of treatment with very wide uncertainty. So far, so what?! You might be sceptical that teacher training has any real discernible impact on child outcomes? Maybe you believe other interventions are more important to fund? These kinds of questions determine policy. So misguided policy interventions on child-hood education can have radical consequences. It's, therefore, vital that we have robust and justifiable approaches to the analysis of these policy questions in the face of group level confounding. This last point is crucial - when model complexity balloons due extensive interaction effects, then we need efficient tools to interrogate the outcome level differences implied by the model choices.   
 
 ## Two Way Fixed Effects and Temporal Confounding
 
-Difference in Differences designs are the overworked donkeys of social science. Many, many studies stand or fall by the assumptions baked into DiD designs. There are at least two aspects to these assumptions (i) the substantive commitments about the data generating process and (ii) the appropriateness of the functional form used to model (i). We will look first at a case where all the assumptions can be met, and then examine how things break-down. 
+Difference in Differences designs are the overworked donkeys of social science. Many, many studies stand or fall by the assumptions baked into DiD designs. There are at least two aspects to these assumptions (i) the substantive commitments about the data generating process (e.g. parrallel trends) and (ii) the appropriateness of the functional form used to model (i). We will look first at a case where all the assumptions can be met, and then examine how things break-down under challenging staggered treatment regimes. 
 
 ### Event Studies and Change in Time
 
-We take this panel data set from the `pyfixest`.
+We take this panel data set from the `pyfixest` package.
 
 ```{python}
 
@@ -606,9 +630,11 @@ df_het = pd.read_csv(url)
 df_het.head()
 ```
 
-Panel data of this kind is difficulty to envisage unless visualised.
+Panel data of this kind of structure is difficult to intuit unless visualised. The key structures on which this DiD estimator works are the averages across state and time. We depict these here:
 
 ```{python}
+#| code-fold: true
+#| 
 fig, axs = plt.subplots(2, 1, figsize=(10, 12))
 axs = axs.flatten()
 for u in df_het['unit'].unique():
@@ -625,11 +651,11 @@ axs[1].set_title("Difference in Differences \n Mean Change an Individual Traject
 
 ```
 
-Note how the blue line represents a cohort that never undergoes a treatment and is maintained as a coherent control group throughout the sequence even though we have two other cohorts. 
+Note how the blue line represents a cohort that never undergoes a treatment and is maintained as a coherent control group throughout the sequence even though we have two other cohorts. It's also worth calling out that we have different patterns in the treatment effects across the cohorts. 
 
 ### TWFE in `pyfixest`
 
-A natural way to interrogate these kinds of question is to wonder how the treatment effect evolves over time. Is it initially impactful with with quick plateau or a slowly building pattern of consistent growth?
+A natural way to interrogate these kinds of question is to wonder how the treatment effect evolves over time? Is it initially impactful converging to a quick plateau or a slowly building pattern of consistent growth?
 
 ```{python}
 fit_twfe_event = pf.feols(
@@ -841,6 +867,8 @@ idata_twfe_event_2 = model_twfe_event_2.fit( inference_method="nuts_numpyro",
 Having estimated the various alternatives model specifications we compare each against our baseline de-meaned event-study.
 
 ```{python}
+#| code-fold: true
+#| 
 fig, axs = plt.subplots(2, 2, figsize=(20, 10))
 axs = axs.flatten()
 plot_event_study(idata_twfe_event, axs[0], model='Manual DeMeaned')
@@ -923,6 +951,7 @@ sim_df.head()
 We can now plot the staggered nature of the imagined treatment regime. 
 
 ```{python}
+#| code-fold: true
 
 fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -943,8 +972,6 @@ ax.legend()
 This data will present problems for the vanilla TWFE estimator in part because we can see how each cohort receives a treatment and there are periods in the data when no group is in the "control". We can see how this plays out with de-meaning TWFE strategy. 
 
 ```{python}
-
-from pyfixest.did.estimation import did2s, lpdid
 fit_twfe = pf.feols(
     "dep_var ~ i(rel_year, ref=-1.0) | state + year",
     sim_df,
@@ -988,7 +1015,9 @@ fit_lpdid.iplot(
 ).show()
 ```
 
-The initial TWFE estimate is frankly bizarre and utterly skewed. Something dreadful has gone wrong under the hood. For contrast, we've included the Local Projections estimator from the `pyfixest` to show that we can recover the actual treatment effect under this event study with alternative strategies. However, there is more machinary involves in the local-projections estimator. Instead we want show how to use mundlak devices to recover more reasonable estimates. No fancy estimators, just more regressions. 
+The initial TWFE estimate is frankly bizarre and utterly skewed. Something dreadful has gone wrong under the hood. For contrast, we've included the Local Projections estimator from the `pyfixest` to show that we can recover the actual treatment effect under this event study with alternative strategies. However, there is more machinary involved in the local-projections estimator. Instead we want show how to use mundlak devices to recover more reasonable estimates. No fancy estimators, just more regressions. 
+
+![Believe it or Not](moreregression.png)
 
 
 ```{python}
@@ -1031,6 +1060,8 @@ idata_twfe3 = model_twfe3.fit( inference_method="nuts_numpyro",
 These latter models will recover the appropriate treatment effects with slight variations due to the functional form. 
 
 ```{python}
+#| code-fold: true
+#| 
 fig, axs = plt.subplots(4, 1, figsize=(10, 15), sharey=True)
 axs = axs.flatten()
 plot_event_study(idata_twfe, ax=axs[0], model='Additive Mundlak')
@@ -1045,9 +1076,10 @@ axs[0].legend()
 axs[1].legend()
 ```
 
-Note how the the naive mundlak approach replicates the odd behaviour we saw in the TWFE estimation routine above. Adding additional interactions and controlling for the staggered launch dates seems to help isolate the real pattern in the data. We've seen approximate success in a number of these richly parameterised versions of simple event study regressions. But the idiosyncracies of the sample contort and distort the estimates away from the true values. We might hope for more stability in expectation over repeated draws from this kind of data-generating process. 
+Note how naive mundlak approach also exhibit odd behaviour we saw in the TWFE estimation routine above. Adding additional interactions and controlling for the staggered launch dates seems to help isolate the real pattern in the data. We've seen approximate success in a number of these richly parameterised versions of simple event study regressions. But the idiosyncracies of any one sample will contort and distort the estimates away from the true values. We might hope for more stability in expectation over repeated draws from this kind of data-generating process. Consier the following Bootstrapping estimation routine. 
 
 ```{python}
+#| code-fold: true
 fig, axs = plt.subplots(2, 1, figsize=(10, 15))
 axs = axs.flatten()
 event_coefs = []
@@ -1102,7 +1134,7 @@ axs[1].set_title(f"""Bootstrapped Estimates of Event Study DGP \n
 
 ```
 
-We can also compare these models on standard adequacy measures. 
+Here we see the importance of robustness tests in estimation techniques. In the above plot we see something like the correct pattern emerging in expectation, but absurd estimates occuring on individual cases. Whereas the bottom appears much more consistent across multiple draws from the data generating process. We can also compare these models on standard adequacy measures. 
 
 ```{python}
 
