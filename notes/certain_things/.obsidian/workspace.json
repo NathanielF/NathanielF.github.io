@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "ac40ed86ec33785f",
+        "id": "ebaa2980e04d0888",
         "type": "tabs",
         "children": [
           {
-            "id": "d041b25e5c8ebdcb",
+            "id": "ec043bac226ad593",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -138,7 +138,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "143b8df37714e30f",
+  "active": "ec043bac226ad593",
   "lastOpenFiles": [
     "Wedding/Speech.html",
     "Wedding/Speech_files/mediabag",
