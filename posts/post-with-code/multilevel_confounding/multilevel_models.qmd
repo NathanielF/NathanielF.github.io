@@ -42,7 +42,7 @@ np.random.seed(100)
 ## Summary 
 __WORK IN PROGRESS__
 
-_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Additionally we'll see how mundlak devices can be used to express these models. Questions of correct functional form become more complicated again when we have to account for variation across multiple groups interactions. We explore these questions in assessing class/school/pupil dynamics before applying these considerations to causal inference more directly._
+_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Additionally we'll see how Mundlak devices can be used to express variants of these models. Questions of correct functional form become more complicated again when we have to account for variation across multiple groups interactions. We explore these questions in assessing class/school/pupil dynamics before applying these considerations to causal inference more directly._
 
 _Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences causal inference designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. We will explore the relationship between TWFE and Mundlak regressions in DiD and Event Study designs, showing how sound inferential strategies rely on saturated models with richly parameterised specifications. In particular we'll see how TWFE breaks down in cases of staggered treatment regimes, and how to fix it._
 
@@ -57,7 +57,7 @@ Free choice is not whimsy or wanton action. Choice is free when taken within the
 
 <img src="free_choice.png" width="500" height="300" />
 
-Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time.  We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues. 
+Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements about policy effects, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time.  We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues. 
 
 ### Structure of the Presentation
 In this post we will structure the discussion as follows: 
@@ -98,7 +98,7 @@ Y = np.random.binomial(n=1, p=p)
 
 
 sim_df = pd.DataFrame({'Y': Y, 'p': p, 's': s, 'g': g, 'X': X, 'Z': Z[g]})
-sim_df
+sim_df.head()
 
 ```
 
@@ -166,7 +166,7 @@ fig, axs = plt.subplots(2, 1, figsize=(10, 9))
 axs = axs.flatten()
 
 az.plot_posterior(naive_idata, var_names=['X'], ax=axs[0], 
-point_estimate=None, color='red', label='Naive Model')
+point_estimate=None,  hdi_prob='hide', color='red', label='Naive Model')
 axs[0].axvline(1)
 
 az.plot_posterior(fixed_effects_idata , var_names=['X'], ax=axs[0], point_estimate=None, hdi_prob='hide', label='Fixed Effect Models')
@@ -679,7 +679,7 @@ fit_twfe_event.tidy()
 
 ```
 
-The model specification defines indicator variables for the relative years before and after the penultimate year before treatment is applied, it then includes the fixed effects for state and year indicators. The coefficient values ascribed the the relative year indicators are used to plot the event-study trajectories. This is a two-way fixed effects estimation routine where the fixed effects for state and year indicators absorb the variance due to those groupings. 
+The model specification defines indicator variables for the relative years before and after the penultimate year before treatment is applied, it then  incorporates the fixed effects for state and year. The coefficient values ascribed the the relative year indicators are used to plot the event-study trajectories. This is a two-way fixed effects estimation routine where the fixed effects for state and year indicators absorb the variance due to those groupings. It is often estimated using a de-meaning technique which we will demonstrate below.
 
 ```{python}
 
@@ -695,7 +695,7 @@ fit_twfe_event.iplot(
 
 ```
 
-We can also aim to marginalise over the details of the state trajectories by defining the similar estimation routine on the individuals and their treatment indicator. 
+We can also aim to marginalise over the details of the state trajectories by defining the similar estimation routine on the individuals and their treatment indicator.
 
 ```{python}
 
@@ -816,6 +816,12 @@ Which again accords with the reported values from `pyfixest`. This is equivalent
 
 ### TWFE by Mundlak Device
 
+Woolridge recounts that the TWFE is equivalent to a Mundlak regression where: 
+
+> [The Mundlak devices] $\bar{X_{i}}$ and $\bar{X_{t}}$ effectively act as sufficient statistics in accounting for any unit-specific heterogeneity and time-specific heterogeneity that
+is correlated with $X_{it}$. Rather than having to include (N − 1) + (T − 1) control variables, it suffices to include 2K control variables, $\bar{X_{i}}$, $\bar{X_{t}}$
+
+We will see an example of this equivalence here.
 ```{python}
 
 #| output: false
@@ -838,7 +844,7 @@ az.plot_forest([idata_twfe_trt_demean, idata_twfe_trt_mundlak, idata_twfe_trt], 
 
 ```
 
-The de-meaned TWFE estimator and the Mundlak specification result in identical estimates and differ from the naive estimate that fails to control group level confounds.
+The de-meaned TWFE estimator and the Mundlak specification result in identical estimates and differ from the naive estimate that fails to control group level confounds. The Mundlak specification is far easier to implement. 
 
 ### Functional Form and Saturated Regression
 
@@ -1030,6 +1036,13 @@ The initial TWFE estimate is frankly bizarre and utterly skewed. Something dread
 
 <img src="moreregression.png" width="500" height="300" />
 
+Woolridge argues for this approach when he states that
+
+> [T]hat there is nothing inherently wrong with TWFE, which is an estimation method. The problem with how TWFE is implemented in DiD settings is that it is applied to a restrictive model...
+
+We want to explore different ways of isolating the treatment effects under a variety of model specifications that controls for
+time-constant treatment intensities, covariates, and interactions between them.
+
 ### Fitting a Variety of Models
 
 ```{python}
@@ -1069,7 +1082,7 @@ idata_twfe3 = model_twfe3.fit( inference_method="nuts_numpyro",
 ```
 
 
-These latter models will recover the appropriate treatment effects with slight variations due to the functional form. 
+These latter models will recover the appropriate treatment effects with slight variations due to the adapted functional form. 
 
 ```{python}
 #| code-fold: true
@@ -1155,11 +1168,13 @@ mean_df = bootstrap_df1.mean(axis=0)
 mean_df.index = param_est1.index
 mean_df.plot(ax=axs[1], color='red')
 axs[1].set_title(f"""Bootstrapped Estimates of Event Study DGP \n
-{formula1}""")
+{formula1}""");
 
 ```
 
-Here we see the importance of robustness tests in estimation techniques. In the above plot we see something like the correct pattern emerging in expectation, but absurd estimates occuring on individual cases. Whereas the bottom appears much more consistent across multiple draws from the data generating process. We can also compare these models on standard adequacy measures. 
+Here we see the importance of robustness tests in estimation techniques. In the above plot we see something like the correct pattern emerging in expectation, but absurd estimates occuring on individual cases. Whereas the bottom plot appears much more consistent across multiple draws from the data generating process. This points to something about the justification required for a credible result. Asymptotic accuracy is generally not sufficient for inducing credibility in any particular analysis of finite data.
+
+We can also compare these models on standard adequacy measures. 
 
 ```{python}
 
@@ -1183,7 +1198,7 @@ az.plot_ppc(idata_twfe, ax=axs[1]);
 
 ```
 
-It's certainly possible that parameter recovery accuracy and predictive performance come apart. But in lieu of knowledge of the true data generating processes, the route to credible models is via their calibration against real data. 
+It's certainly possible that parameter recovery accuracy and predictive performance come apart. But in lieu of knowledge of the true data generating processes, the route to credible models is via their calibration against real data.
 
 ## Conclusion
 
