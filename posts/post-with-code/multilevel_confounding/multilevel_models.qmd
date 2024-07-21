@@ -38,11 +38,13 @@ np.random.seed(100)
 ```
 
 
+Two-way fixed effects estimators in Difference in Differences designs can be seen as a species of Mundlak regression. We unpack what this means and what it implies for model development in causal inference.
+
 ::: {.callout-note}
 ## Summary 
 __WORK IN PROGRESS__
 
-_Inference, causal and otherwise, is biased in the presence of implicit group level confounds. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Additionally we'll see how Mundlak devices can be used to express variants of these models. Questions of correct functional form become more complicated again when we have to account for variation across multiple groups interactions. We explore these questions in assessing class/school/pupil dynamics before applying these considerations to causal inference more directly._
+_Inference, causal and otherwise, is biased in the presence of implicit group level confounding. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Additionally we'll see how Mundlak devices can be used to express variants of these models. Questions of correct functional form become more complicated again when we have to account for variation across multiple groups interactions. We explore these questions in assessing class/school/pupil dynamics before applying these considerations to causal inference more directly._
 
 _Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences causal inference designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. We will explore the relationship between TWFE and Mundlak regressions in DiD and Event Study designs, showing how sound inferential strategies rely on saturated models with richly parameterised specifications. In particular we'll see how TWFE breaks down in cases of staggered treatment regimes, and how to fix it._
 
@@ -63,13 +65,13 @@ Difference in Differences estimation is core a topic in contemporary social scie
 In this post we will structure the discussion as follows: 
 
 - Estimation Strategies and Group Effects
-    - We go through a paired down example of group-confounding and a range of estimation strategies aiming to account for group effect bias.
+    - We go through a paired down parameter recovery examples of group-confounding and a range of estimation strategies aiming to account for group effect bias.
 - Nested Groups, Hierarchies and Fixed Effects
-    - We work through a real example of three-level group nesting; pupils in classes, in schools. 
+    - We work through a real example of three-level group nesting; pupils in classes, in schools. Where we need to make decisions about the estimation strategy. 
 - Two Way Fixed Effects and Temporal Confounding
-    - We branch off into examining a canonical estimation strategy used in DiD designs. We show how it works and how to specify these regression designs using Fixed Effects and Mundlak devices.
+    - We branch off into examining an analogous case of confouning addressed in DiD designs. We show how TWFE works and how to specify these regression designs using Fixed Effects and Mundlak devices.
 - Issues with TWFE and Richly Parameterised Linear Models
-    - We examine the problems arising for the TWFE estimator in the case of staggered roll-outs. We also see how to address the issue with Mundlak devices. 
+    - We examine the problems arising for the TWFE estimator in the case of staggered roll-outs. We also see how to address the issue with Mundlak devices, and reflect on what we've seen.
     
 
 ## Estimation Strategies and Group Effects
@@ -102,7 +104,7 @@ sim_df.head()
 
 ```
 
-This is a bernoulli outcome with group level confounds. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. We will see different results as we explore different ways of parameterising the relationships, and the trade-offs for model specifications become clearer.
+This data generating process is characterised by the bernoulli outcome with group level confounds. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. We will see different results as we explore different ways of parameterising the relationships, and the trade-offs for model specifications will become clearer.
 
 ::: {.callout-warning title="Terminology Warning"}
 There is a huge degree of confusion over the meaing of the terms "Fixed Effects" and "Random Effects". Within this blog post we will mean the population level parameters. 
@@ -199,7 +201,7 @@ multilevel_model_idata = multilevel_model.fit( inference_method="nuts_numpyro",
 
 ```
 
-This method posits a view that there is a shared underlying process generating each instance of group-behaviour i.e. the reliased values of the outcome within each group. We replace the indivdual fixed effects indicator columns with additional parameters modifying the intercept term.
+This method posits a view that there is a shared underlying process generating each instance of group-behaviour i.e. the realised values of the outcome within each group. In the random effects multilevel model we replace the indivdual fixed effects indicator columns with additional parameters modifying the intercept term. This is the "hierarchy" or multi-level aspect of the specification.
 
 ```{python}
 az.summary(multilevel_model_idata, var_names=['X', 'Z', 'Intercept'])
@@ -258,7 +260,7 @@ az.plot_posterior(mundlak_idata, var_names=['X'], ax=axs[0], point_estimate=None
 
 axs[0].set_title("X Coefficient")
 
-az.plot_posterior(naive_idata, var_names=['Z'], ax=axs[1], point_estimate=None,  color='red', ref_val_color='black', hdi_prob='hide')
+az.plot_posterior(naive_idata, var_names=['Z'], ax=axs[1], point_estimate=None, hdi_prob='hide',  color='red', ref_val_color='black')
 
 
 az.plot_posterior(fixed_effects_idata , var_names=['Z'], ax=axs[1], point_estimate=None, hdi_prob='hide')
@@ -283,7 +285,7 @@ axs[2].axvline(-2, color='k', linestyle='--');
 
 ```
 
-Importantly, we see that while the fixed effects model is focused on recovering the treatment effect on the $X$ covariate, it does so somewhat at the expense of accuracy on the other systematic components of the model. This focus renders the model less predictively accurate. Compare the models on the cross-validation score and we see how the hierarchical mundlak model is to be preferred.
+Importantly, we see that while the fixed effects model is focused on recovering the treatment effect on the $X$ covariate, it does so somewhat at the expense of accuracy on the other systematic components of the model. This focus renders the model less predictively accurate. If we compare the models on the cross-validation score, we see how the hierarchical mundlak model is to be preferred.
 
 ```{python}
 
@@ -299,7 +301,7 @@ az.plot_compare(compare_df);
 
 ```
 
-This is not the only way to assess viability of the model's functional form but it's not a bad way. 
+This is not the only way to assess viability of the model's functional form but it's not a bad way.
 
 ### Full Luxury Bayesian Mundlak Machine
 
@@ -340,11 +342,17 @@ az.summary(idata, var_names=['Intercept', 'X', 'Z'])
 
 ```
 
-This model bakes more uncertainty into the process assuming a kind of measurement-error model which may be more or less apt depending on how much data you've acquired and your view of the underlying process. We'll now examine how these considerations play out when there are multiple group-level influences. 
+This model bakes more uncertainty into the process assuming a kind of measurement-error model which may be more or less apt depending on how much data you've acquired and your view of the underlying process. 
+
+### Recap
+
+We've just a number of different modelling specifications that attempt to deal with the threat of group level confounding. We'll now look at a case-study where group level confounding remains highly plausible and the choice of estimation routine is not trivial. This will highlight aspects of how what we seek learn determines our model choice. 
 
 ## Nested Groups, Hierarchies and Fixed Effects
 
 We've seen how various attempts to account for the group effects can more or less recover the parameters of a complex data generating process with group confounding. Now we want to look at a case where we can have interacting group effects at multiple levels. 
+
+![Structure](hierarchy.png)
 
 ### Pupils within Class Rooms within Schools
 
@@ -662,7 +670,7 @@ axs[1].set_title("Difference in Differences \n Mean Change an Individual Traject
 
 ```
 
-Note how the blue line represents a cohort that never undergoes a treatment and is maintained as a coherent control group throughout the sequence even though we have two other cohorts. It's also worth calling out that we have different patterns in the treatment effects across the cohorts. 
+Note how the blue line represents a cohort that never undergoes a treatment and is maintained as a coherent control group throughout the sequence even though we have two other cohorts. This ensures we have a constant contrast case allowing us to identify the causal estimand of interest. It's also worth calling out that we have heterogenous patterns in the treatment effects across the cohorts i.e. the the intensity of the treatment effect differs across the cohorts. 
 
 ### TWFE in `pyfixest`
 
@@ -789,7 +797,7 @@ def plot_event_study(idata, ax, color='blue', model='demeaned'):
 
 fig, ax = plt.subplots(figsize=(10, 7))
 plot_event_study(idata_twfe_event, ax)
-ax.legend()
+ax.legend();
 
 ```
 
@@ -819,7 +827,7 @@ Which again accords with the reported values from `pyfixest`. This is equivalent
 Woolridge recounts that the TWFE is equivalent to a Mundlak regression where: 
 
 > [The Mundlak devices] $\bar{X_{i}}$ and $\bar{X_{t}}$ effectively act as sufficient statistics in accounting for any unit-specific heterogeneity and time-specific heterogeneity that
-is correlated with $X_{it}$. Rather than having to include (N − 1) + (T − 1) control variables, it suffices to include 2K control variables, $\bar{X_{i}}$, $\bar{X_{t}}$
+is correlated with $X_{it}$. Rather than having to include (N − 1) + (T − 1) control variables, it suffices to include 2K control variables, $\bar{X_{i}}$, $\bar{X_{t}}$ - _Two-Way Fixed Effects, the Two-Way Mundlak Regression, and Difference-in-Differences Estimators_
 
 We will see an example of this equivalence here.
 ```{python}
@@ -1039,6 +1047,7 @@ The initial TWFE estimate is frankly bizarre and utterly skewed. Something dread
 Woolridge argues for this approach when he states that
 
 > [T]hat there is nothing inherently wrong with TWFE, which is an estimation method. The problem with how TWFE is implemented in DiD settings is that it is applied to a restrictive model...
+- _Two-Way Fixed Effects, the Two-Way Mundlak Regression, and Difference-in-Differences Estimators_
 
 We want to explore different ways of isolating the treatment effects under a variety of model specifications that controls for
 time-constant treatment intensities, covariates, and interactions between them.
@@ -1187,11 +1196,11 @@ az.compare({'fe_mundlak_naive': idata_twfe,
 
 Again, we can plot the predictive performance of these models. Here we compare two via posterior predictive checks. Notable we see how the model with the better predictive performance also correctly estimates the treatement effects in the above plots. 
 ```{python}
-model_twfe2.predict(idata_twfe2, kind='pps')
+model_twfe3.predict(idata_twfe3, kind='pps')
 model_twfe.predict(idata_twfe, kind='pps')
 fig, axs = plt.subplots(2, 1, figsize=(10, 12))
 axs = axs.flatten()
-az.plot_ppc(idata_twfe2, ax=axs[0])
+az.plot_ppc(idata_twfe3, ax=axs[0])
 axs[0].set_title("PPC checks for Mundlak State Cohort Interactions")
 axs[1].set_title("PPC checks for FE Mundlak Naive")
 az.plot_ppc(idata_twfe, ax=axs[1]);
@@ -1201,4 +1210,10 @@ az.plot_ppc(idata_twfe, ax=axs[1]);
 It's certainly possible that parameter recovery accuracy and predictive performance come apart. But in lieu of knowledge of the true data generating processes, the route to credible models is via their calibration against real data.
 
 ## Conclusion
+
+> "A schema may be transported almost anywhere. The choice of territory for invasion is arbitrary; but the operation within that territory is almost never completely so." - Nelson Goodman in _Languages of Art_
+
+We've now seen various cases of group-level confounding and strategies to address these issues. We've seen how they give rise to non-trivial questions about the effects of policy, and what can be learned in the face of group-level confounds. The case of TWFE's estimation is especially instructive - here we have an estimation technique applied well in limited circumstances, which ran into trouble when applied in contexts with a diverging data generating process. 
+
+
 
