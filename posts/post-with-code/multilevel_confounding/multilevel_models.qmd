@@ -169,18 +169,18 @@ axs = axs.flatten()
 
 az.plot_posterior(naive_idata, var_names=['X'], ax=axs[0], 
 point_estimate=None,  hdi_prob='hide', color='red', label='Naive Model')
-axs[0].axvline(1)
+axs[0].axvline(1, color='k')
 
 az.plot_posterior(fixed_effects_idata , var_names=['X'], ax=axs[0], point_estimate=None, hdi_prob='hide', label='Fixed Effect Models')
 axs[0].set_title("Naive/Fixed Model X Coefficient")
 
-az.plot_posterior(naive_idata, var_names=['Z'], ax=axs[1], point_estimate=None,  color='red', ref_val_color='black')
+az.plot_posterior(naive_idata, var_names=['Z'], ax=axs[1], point_estimate=None,  hdi_prob='hide', color='red', ref_val_color='black')
 
 
 az.plot_posterior(fixed_effects_idata , var_names=['Z'], ax=axs[1], point_estimate=None, hdi_prob='hide')
 
 axs[1].set_title("Naive/Fixed Effect Model Z Coefficient")
-axs[1].axvline(-0.5);
+axs[1].axvline(-0.5, color='k');
 
 
 ```
@@ -212,7 +212,7 @@ Next we'll apply the Mundlak device method which adds the group mean back to eac
 
 ### Mundlak Model
 
-For this technique we supply group aggregate mean values as additional columns. This somewhat absolves of the requirement to include an extra multiplicity of parameters. It's more akin to feature creation than model specification, but it serves the same purpose - it accounts for group level variation and provides a mechanism for the model to learn the appropriate weights to accord each group in the final calculation. 
+For this technique we supply group aggregate mean values per group as an additional column. This somewhat absolves of the requirement to include an extra multiplicity of parameters. It's more akin to feature creation than model specification, but it serves the same purpose - it accounts for group level variation and provides a mechanism for the model to learn the appropriate weights to accord each group in the final calculation. 
 
 ```{python}
 
@@ -324,7 +324,11 @@ with pm.Model(coords=coords) as model:
     beta_xy = pm.Normal('X', 0, 1)
     beta_zy = pm.Normal('Z', 0, 1)
 
+    alpha_groups = pm.Normal('Intercept_group', 0, 1)
     group_means = pm.Normal('group_means', sim_df.groupby('g')['X'].mean().values, .1, dims='ids')
+    group_sigma = pm.HalfNormal('group_sigma', 0.1)
+    
+    group_mu = pm.Normal('group_mu', (alpha_groups + group_means[id_indx]), group_sigma, observed=sim_df['X'].values)
 
     mu = pm.Deterministic('mu', (alpha0 + alpha_j[id_indx]) + beta_xy*x_data + beta_zy*z_data + group_means[id_indx])
     p = pm.Deterministic("p", pm.math.invlogit(mu))
@@ -1201,7 +1205,7 @@ model_twfe.predict(idata_twfe, kind='pps')
 fig, axs = plt.subplots(2, 1, figsize=(10, 12))
 axs = axs.flatten()
 az.plot_ppc(idata_twfe3, ax=axs[0])
-axs[0].set_title("PPC checks for Mundlak State Cohort Interactions")
+axs[0].set_title("PPC checks for Mundlak State Hierarchical Year")
 axs[1].set_title("PPC checks for FE Mundlak Naive")
 az.plot_ppc(idata_twfe, ax=axs[1]);
 
