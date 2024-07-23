@@ -27,7 +27,10 @@ from itertools import product
 import pyfixest as pf
 import statsmodels.formula.api as smf
 from patsy import dmatrices, dmatrix
+import seaborn as sns
 from pyfixest.did.estimation import did2s, lpdid
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.options.mode.chained_assignment = None 
@@ -38,17 +41,9 @@ np.random.seed(100)
 ```
 
 
-Two-way fixed effects estimators in Difference in Differences designs can be seen as a species of Mundlak regression. We unpack what this means and what it implies for model development in causal inference.
-
 ::: {.callout-note}
 ## Summary 
-__WORK IN PROGRESS__
-
-_Inference, causal and otherwise, is biased in the presence of implicit group level confounding. Regression modelling can account for these risks but we have to appropriately condition our inference steps on the __right__ group level effects. It is not always obvious how to incorporate these factors in our modelling. Fixed Effects and (Hierarchical) Random Effects are variously use to to express variation in the outcome due to group level effects. Additionally we'll see how Mundlak devices can be used to express variants of these models. Questions of correct functional form become more complicated again when we have to account for variation across multiple groups interactions. We explore these questions in assessing class/school/pupil dynamics before applying these considerations to causal inference more directly._
-
-_Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences causal inference designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. We will explore the relationship between TWFE and Mundlak regressions in DiD and Event Study designs, showing how sound inferential strategies rely on saturated models with richly parameterised specifications. In particular we'll see how TWFE breaks down in cases of staggered treatment regimes, and how to fix it._
-
-_Throughout we'll show how the different model architectures promote different interepretations of the group confounding and conclude by teasing out some of these implications for model choice._ 
+_Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. In recent years econometricians have discovered a number of issues with the TWFE estimator and clever diagnostics and corrections have been suggested. Woolridge recently has shown that TWFE can be seen as a species of Mundlak regression offering further insight into the problem. We unpack what this means and what it suggests for model development in causal inference._
 :::
 
 # Architectures and Free Parameters
@@ -59,7 +54,7 @@ Free choice is not whimsy or wanton action. Choice is free when taken within the
 
 <img src="free_choice.png" width="500" height="300" />
 
-Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements about policy effects, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time.  We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues. 
+Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements about policy effects, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time.  We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues by enriching our regression specification. 
 
 ### Structure of the Presentation
 In this post we will structure the discussion as follows: 
@@ -76,8 +71,9 @@ In this post we will structure the discussion as follows:
 
 ## Estimation Strategies and Group Effects
 
-First consider an estimation example due to Richard McElreath's [lecture series](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) where we examine the various parameter recovery options available in the case of group level confounding. Define a data generating process determined by group level effects:
+First consider an estimation example due to Richard McElreath's [lecture series](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) where we examine the various parameter recovery options available in the case of group level confounding. We want to move through these parameterisations to highlight the usefulness of Mundlak regressions. The source of these models is a paper Mundlak's 1978 paper _"On the pooling of time series and cross section data"_ in which he shows a method for adjusting for group-levels which proves to be a viable alternative to richly specified fixed effects model as we'll see. 
 
+First define a data generating process determined by group level effects:
 
 ```{python}
 def inv_logit(p):
@@ -106,16 +102,23 @@ sim_df.head()
 
 This data generating process is characterised by the bernoulli outcome with group level confounds. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. We will see different results as we explore different ways of parameterising the relationships, and the trade-offs for model specifications will become clearer.
 
+```{python}
+
+g = sns.pairplot(sim_df[['Y', 'X', 'Z']], diag_kind="kde", corner=True)
+g
+
+```
+
 ::: {.callout-warning title="Terminology Warning"}
-There is a huge degree of confusion over the meaing of the terms "Fixed Effects" and "Random Effects". Within this blog post we will mean the population level parameters. 
+There is a huge degree of confusion over the meaning of the terms "Fixed Effects" and "Random Effects". Within this blog post when we refer to __fixed effects__ we will mean the population level parameters. 
  $$\beta X$$ 
  
-for an individual variable $X$ when we refer to __fixed effects__. Corresspondingly we will refer to group-level parameters $\beta_{g}$
+In contrast we will refer to group-level parameters $\beta_{g}$
 
  $$\Big(\underbrace{\beta}_{pop} + \underbrace{\beta_{g}}_{group}\Big)X$$
  
 
-which are incorporated into our model equation modifying population level parameters as __random effects.__ We will generally use Wilkinson notation to specify these choices where random effects for modifying a population are denoted with a conditional bar over the variable `( X | group)` and fixed effects are specified by just including the variable in the equation i.e. `y ~ X + (Z | group)` where X has a fixed effect parameterisation and Z a random effects parameterisation. We can also create indicator variables for group membership using this syntax with `y ~ C(group) + X + Z` where under the hood we pivot the group category into a zero-one variables indicating group membership. This parameterisation means each indicator variable (one for each level of the grouping variable) will receive a fixed effects population parameter.   
+which are incorporated into our model equation modifying population level parameters as __random effects.__ We will generally use Wilkinson notation to specify these choices. Random effects for modifying a population parameter `X` are denoted with a conditional bar over the variable `( X | group)` and fixed effects are specified by just including the variable in the equation i.e. `y ~ X + (Z | group)` where X has a fixed effect parameterisation and Z a random effects parameterisation. We can also create indicator variables for group membership using this syntax with `y ~ C(group) + X + Z` where under the hood we pivot the group category into a zero-one variables indicating group membership. This parameterisation means each indicator variable (one for each level of the grouping variable) will receive a fixed effects population parameter.   
 :::
 
 ### Naive Model
@@ -212,7 +215,7 @@ Next we'll apply the Mundlak device method which adds the group mean back to eac
 
 ### Mundlak Model
 
-For this technique we supply group aggregate mean values per group as an additional column. This somewhat absolves of the requirement to include an extra multiplicity of parameters. It's more akin to feature creation than model specification, but it serves the same purpose - it accounts for group level variation and provides a mechanism for the model to learn the appropriate weights to accord each group in the final calculation. 
+For this technique we augment the model by supplying group an additional column. This column records the group-level means of the "confounded variable" i.e. the variable which is realised under group level influences. Adding the group mean(s) to the model in this sense somewhat absolves of the requirement to include an extra multiplicity of parameters. It's more akin to feature creation than model specification, but it serves the same purpose - it accounts for group level variation and provides a mechanism for the model to learn the appropriate weights to accord each group in the final calculation. 
 
 ```{python}
 
@@ -228,6 +231,8 @@ mundlak_idata = mundlak_model.fit( inference_method="nuts_numpyro",
     idata_kwargs={"log_likelihood": True},)
 
 ```
+
+Mundlak's insight is that this mechanism is akin to adding a whole slew of fixed-effect indicator variables for each group. It is a corrective mechanism for group confounding in our focal variable. We'll see how it allows for more flexible model specifications and has a role in making adjustments to aid identification in causal inference. 
 
 ```{python}
 az.summary(mundlak_idata, var_names=['Intercept', 'X', 'Z'])
@@ -339,13 +344,12 @@ with pm.Model(coords=coords) as model:
 ```
 
 Instead of merely adding a new feature to a regression we've added a second likelihood term for the predictor $X$ and seek to model this outcome as a function of the group means. Calibrating the `group_mean` parameter that is also included in our likelihood term for the $Y$ outcome. 
-
 ```{python}
 pm.model_to_graphviz(model)
 
 ```
 
-This model bakes more uncertainty into the process assuming a kind of measurement-error model which may be more or less apt depending on how much data you've acquired and your view of the underlying process. 
+This model bakes more uncertainty into the process assuming a kind of measurement-error model, but again, the focus here is that we need to estimate a corrective adjustment factor for confounding effects that impact the estimation of impact due to our focal variable $X$. It's perhaps easier to see in this parameter recovery exercise than it is in real cases, but wherever we suspect plausible group level confounding you should consider Mundlak adjustments alongside your go-to fixed effects or random effects controls. 
 
 
 ```{python}
@@ -354,7 +358,7 @@ az.summary(idata, var_names=['Intercept', 'X', 'Z'])
 
 ```
 
-It also recovers the correct parameter specifcation well. 
+You can see it also recovers the correct parameter specifcation well. 
 
 ### Recap
 
@@ -390,22 +394,36 @@ def rand_jitter(arr):
     stdev = .01 * (max(arr) - min(arr))
     return arr + np.random.randn(len(arr)) * stdev
 
+legend_elements = [Line2D([0], [0], marker='x', label='Minority', markerfacecolor='k'),
+                   Line2D([0], [0], marker='x', label='Minority + Poverty', markersize=14, markerfacecolor='k'), 
+                   ]
 
 schools = df['schoolid'].unique()
 schools_10 = [schools[i:i+10] for i in range(0, len(schools), 10)]
-fig, axs = plt.subplots(3,4, figsize=(20, 10), 
+fig, axs = plt.subplots(3,4, figsize=(15, 13), 
 sharey=True, sharex=True)
 axs = axs.flatten()
+mkr_dict = {1: 'x', 0: '+'}
 for s, ax in zip(schools_10, axs):
     temp = df[df['schoolid'].isin(s)]
-    ax.scatter(rand_jitter(temp['mathprep']), temp['mathgain'], 
-    c=temp['schoolid'], cmap='tab10')
+    temp['m'] = temp['minority'].map(mkr_dict)
+    for m in temp['m'].unique():
+        temp1 = temp[temp['m'] == m]
+        ax.scatter(rand_jitter(temp1['mathprep']), 
+        temp1['mathgain'], 
+        c=temp1['schoolid'], cmap='tab10', 
+        s=temp1['housepov']*100, 
+        marker = m)
     ax.set_title(f"Schools \n {s}");
+    ax.set_xlabel("MathPrep")
+    ax.set_ylabel("MathGain")
+
+axs[0].legend(handles=legend_elements)
 
 
 ```
 
-There is a small number of observed students per school so the individual school level distributions show some extreme outliers but the overall distribution nicely converges to an approximately normal symmetric shape.
+We've plotted here the individual student outcomes. We've sized the dots by the poverty in their neighbourhoods and differentiated the markers by whether the student was in minority group. There are, in short, reasons here to worry about group-level confounding. There is a small number of observed students per school so the individual school level distributions show some extreme outliers but the overall distribution nicely converges to an approximately normal symmetric shape.
 
 ```{python}
 fig, axs = plt.subplots(1, 2, figsize=(10, 6))
@@ -487,6 +505,7 @@ Consider the variation in the coefficient values estimated for `mathprep` as we 
 
 formulas = ["""mathgain ~ mathprep + C(schoolid)""",
 """ mathgain ~ mathprep + school_mean*class_mean""" , 
+""" mathgain ~ mathprep + mathkind + sex + school_mean*class_mean""" , 
 """mathgain ~ mathprep + C(schoolid) + C(classid)""", 
 """mathgain ~ mathprep + C(schoolid)*C(classid)""",
 """mathgain ~ mathprep + C(classid):C(childid)""", 
@@ -505,7 +524,8 @@ estimates_df = pd.DataFrame(estimates_df, columns=['mathprep_estimate', 'lower b
 estimates_df
 ```
 
-The point here (perhap obvious) is that the estimate of treatment effects due to some policy or programme can be differently understood when the regression model is able to account for increasing aspects of individual variation. Choice of the __right__ way to "saturate" your regression specification are at the heart of causal inference.
+The point here (perhap obvious) is that the estimate of treatment effects due to some policy or programme can be differently understood when the regression model is able to account for increasing aspects of individual variation. Choice of the __right__ way to "saturate" your regression specification are at the heart of causal inference. The right control structures determine the freedom available to vary your focal treatment effect parameter. 
+
 We will consider a number of specifications below that incorporate these group effects in a hierarchical model which nests the effect of class-membership within school membership. This choice allows us to control for group specific interactions without worrying about over-indexing on the observed interaction effects in the sample data requiring that we handle more fixed effects parameters than we have data points. 
 
 In what follows we'll specify a nested approach to the parameter specifcation using a random effects model. The idea here is that classes are already implicitly nested in schools and so we don't need to add parameters for classes at multiple schools. Additionally we're positing that there is independent interest in the effectiveness school/class effects i.e. the degree to which variation in a school/class nest can account for variation in the outcome. 
@@ -576,15 +596,14 @@ Here we add these fixed effects population parameters. But note they are not mer
 ```{python}
 #| output: false
 
-model_fixed = bmb.Model(f"mathgain ~ mathkind + sex + minority + ses + mathprep + (1 | schoolid / classid)", df)
+model_fixed = bmb.Model(f"mathgain ~  sex + minority + ses + mathprep + (1 | schoolid / classid)", df)
 idata_fixed = model_fixed.fit( inference_method="nuts_numpyro",
     idata_kwargs={"log_likelihood": True})
 
 ```
 
 ```{python}
-az.summary(idata_fixed, var_names=['Intercept', 
-'mathkind', 'sex', 'minority', 'ses', 'mathprep',
+az.summary(idata_fixed, var_names=['Intercept', 'sex', 'minority', 'ses', 'mathprep',
 '1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma'])
 
 ```
@@ -592,7 +611,7 @@ az.summary(idata_fixed, var_names=['Intercept',
 
 Now we add a further class level control. 
 
-#### Adding Class Level Fixed Effects
+#### Adding More Class and Pupil Level Fixed Effects
 
 ```{python}
 #| output: false
@@ -634,7 +653,7 @@ bmb.interpret.plot_predictions(model, idata, "mathprep", ax=axs[0]);
 bmb.interpret.plot_predictions(model_fixed, idata_fixed, "mathprep", ax=axs[1]);
 bmb.interpret.plot_predictions(model_fixed_1, idata_fixed_1, "mathprep", ax=axs[2]);
 axs[0].set_title("Variation in Implied Outcome by Treatment \n mathgain ~ mathprep + (1 | schoolid / classid) ")
-axs[1].set_title("Variation in Implied Outcome by Treatment \n mathgain ~ mathkind + sex + minority + ses + mathprep + (1 | schoolid / classid) ")
+axs[1].set_title("Variation in Implied Outcome by Treatment \n mathgain ~ sex + minority + ses + mathprep + (1 | schoolid / classid) ")
 axs[2].set_title("Variation in Implied Outcome by Treatment \n mathgain ~ mathkind + sex + minority + ses + yearstea + \n mathknow + mathprep + (1 | schoolid / classid")
 axs[0].set_xlabel('')
 axs[1].set_xlabel('')
@@ -644,9 +663,9 @@ axs[0].legend();
 
 ```
 
-As we can see here across all the different model specifications we see quite modest effects of treatment with very wide uncertainty. So far, so what?! You might be sceptical that teacher training has any real discernible impact on child outcomes? Maybe you believe other interventions are more important to fund? These kinds of questions determine policy. So misguided policy interventions on child-hood education can have radical consequences. 
+As we can see here across all the different model specifications we see quite modest effects of treatment with very wide uncertainty. You might therefore be sceptical that teacher training has any real discernible impact on child outcomes? Maybe you believe other interventions are more important to fund? These kinds of questions determine policy. So misguided policy interventions on child-hood education can have radical consequences. It's, therefore, vital that we have robust and justifiable approaches and tooling for the analysis of these policy questions in the face of group level confounding. 
 
-It's, therefore, vital that we have robust and justifiable approaches to the analysis of these policy questions in the face of group level confounding. This last point is crucial - when model complexity balloons due extensive interaction effects, then we need efficient tools to interrogate the outcome level differences implied by the model choices. Your intuition and understanding of a process is keyed to the observable effects of that process. Your understanding of the internal mechanics of a model is likely less than your concrete expectations of observable behaviour. As such, credibility requires that we be able to assess models on the variation produce in the outcome variable rather merely on the parameters values. 
+This last point is crucial - when model complexity balloons due extensive interaction effects, then we need efficient tools to interrogate the outcome level differences implied by the model choices. Your intuition and understanding of a process is keyed to the observable effects of that process. Your understanding of the internal mechanics of a model is likely less than your concrete expectations of observable behaviour. As such, credibility requires that we be able to assess models on the variation produced in the outcome variable rather merely on the parameters values. 
 
 ## Two Way Fixed Effects and Temporal Confounding
 
@@ -654,7 +673,7 @@ Difference in Differences designs are the overworked donkeys of social science. 
 
 ### Event Studies and Change in Time
 
-We take this panel data set from the `pyfixest` package.
+Event studies or dynamic treatment effects are an approach to measuring the gradual treatment effect as it evolves in time. We take this panel data set from the `pyfixest` package to demonstrate. 
 
 ```{python}
 
@@ -663,7 +682,7 @@ df_het = pd.read_csv(url)
 df_het.head()
 ```
 
-Panel data of this kind of structure is difficult to intuit unless visualised. The key structures on which this DiD estimator works are the averages across state and time. We depict these here:
+Panel data of this kind of structure is difficult to intuit unless visualised. The key structures on which this DiD estimator works are the averages across state and time. We depict these here. Note how we define a causal contrast as the difference between the treated and control groups averages over time. In particular our estimator has to account for the fact that we have a "dynamic" control group. As each cohort is treated our treatment group expands and the causal contrast of interest is differently defined. To gain a view of the time-evolution of treatment we want to marginalise over the specifc cohorts and extract a view of the how the effects evolve after the introduction of the treatment in expectation. 
 
 ```{python}
 #| code-fold: true
@@ -684,11 +703,11 @@ axs[1].set_title("Difference in Differences \n Mean Change an Individual Traject
 
 ```
 
-Note how the blue line represents a cohort that never undergoes a treatment and is maintained as a coherent control group throughout the sequence even though we have two other cohorts. This ensures we have a constant contrast case allowing us to identify the causal estimand of interest. It's also worth calling out that we have heterogenous patterns in the treatment effects across the cohorts i.e. the the intensity of the treatment effect differs across the cohorts. 
+Note how the blue line represents a cohort that never undergoes a treatment and is maintained as a coherent control group throughout the sequence even though we have two other cohorts. This ensures we have a constant contrast case allowing us to identify the causal estimand of interest. It's also worth calling out that we have heterogenous patterns in the treatment effects across the cohorts i.e. the the intensity of the treatment effect differs across the cohorts. We'll apply the vanilla TWFE estimator. 
 
 ### TWFE in `pyfixest`
 
-A natural way to interrogate these kinds of question is to wonder how the treatment effect evolves over time? Is it initially impactful converging to a quick plateau or a slowly building pattern of consistent growth?
+A natural question is to wonder how the treatment effect evolves over time? How does policy shift behaviours? Is it initially impactful converging to a quick plateau or a slowly building pattern of consistent growth?
 
 ```{python}
 fit_twfe_event = pf.feols(
@@ -717,7 +736,7 @@ fit_twfe_event.iplot(
 
 ```
 
-We can also aim to marginalise over the details of the state trajectories by defining the similar estimation routine on the individuals and their treatment indicator.
+We can also aim to marginalise over the details of the temporal trajectories by defining the similar estimation routine on the individuals and their treatment indicator.
 
 ```{python}
 
@@ -1054,7 +1073,15 @@ fit_lpdid.iplot(
 ).show()
 ```
 
-The initial TWFE estimate is frankly bizarre and utterly skewed. Something dreadful has gone wrong under the hood. For contrast, we've included the Local Projections estimator from the `pyfixest` to show that we can recover the actual treatment effect under this event study with alternative strategies. However, there is more machinary involved in the local-projections estimator. Instead we want show how to use mundlak devices to recover more reasonable estimates. No fancy estimators, just more regressions. 
+The initial TWFE estimate is frankly bizarre and utterly skewed. Something dreadful has gone wrong under the hood. For contrast, we've included the Local Projections estimator from the `pyfixest` to show that we can recover the actual treatment effect under this event study with alternative strategies.
+However, there is more machinary involved in the local-projections estimator. 
+
+::: {.callout-warning}
+
+Note there has been a large volume of literature diagnosing precisely how and where TWFE estimator breakdown. Goodman-Bacon's "_Difference-in-differences with variation in treatment timing_" in particular provides a decomposition of the causal estimand that can be recovered under varying treatment regimes. We won't cover this rich area of research here. But note that it's a lively area of research.
+:::
+
+Instead we want show how to use mundlak devices to recover more reasonable estimates. No fancy estimators, just more regressions. 
 
 <img src="moreregression.png" width="500" height="300" />
 
@@ -1221,7 +1248,7 @@ az.plot_ppc(idata_twfe, ax=axs[1]);
 
 ```
 
-It's certainly possible that parameter recovery accuracy and predictive performance come apart. But in lieu of knowledge of the true data generating processes, the route to credible models is via their calibration against real data.
+It's certainly possible that parameter recovery accuracy and predictive performance come apart. But in lieu of knowledge of the true data generating processes, the route to credible models is via their calibration against real data. 
 
 ## Conclusion
 
