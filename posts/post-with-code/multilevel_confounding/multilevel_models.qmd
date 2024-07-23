@@ -324,11 +324,10 @@ with pm.Model(coords=coords) as model:
     beta_xy = pm.Normal('X', 0, 1)
     beta_zy = pm.Normal('Z', 0, 1)
 
-    alpha_groups = pm.Normal('Intercept_group', 0, 1)
     group_means = pm.Normal('group_means', sim_df.groupby('g')['X'].mean().values, .1, dims='ids')
     group_sigma = pm.HalfNormal('group_sigma', 0.1)
     
-    group_mu = pm.Normal('group_mu', (alpha_groups + group_means[id_indx]), group_sigma, observed=sim_df['X'].values)
+    group_mu = pm.Normal('group_mu', (group_means[id_indx]), group_sigma, observed=sim_df['X'].values)
 
     mu = pm.Deterministic('mu', (alpha0 + alpha_j[id_indx]) + beta_xy*x_data + beta_zy*z_data + group_means[id_indx])
     p = pm.Deterministic("p", pm.math.invlogit(mu))
@@ -339,6 +338,15 @@ with pm.Model(coords=coords) as model:
 
 ```
 
+Instead of merely adding a new feature to a regression we've added a second likelihood term for the predictor $X$ and seek to model this outcome as a function of the group means. Calibrating the `group_mean` parameter that is also included in our likelihood term for the $Y$ outcome. 
+
+```{python}
+pm.model_to_graphviz(model)
+
+```
+
+This model bakes more uncertainty into the process assuming a kind of measurement-error model which may be more or less apt depending on how much data you've acquired and your view of the underlying process. 
+
 
 ```{python}
 
@@ -346,11 +354,11 @@ az.summary(idata, var_names=['Intercept', 'X', 'Z'])
 
 ```
 
-This model bakes more uncertainty into the process assuming a kind of measurement-error model which may be more or less apt depending on how much data you've acquired and your view of the underlying process. 
+It also recovers the correct parameter specifcation well. 
 
 ### Recap
 
-We've just a number of different modelling specifications that attempt to deal with the threat of group level confounding. We'll now look at a case-study where group level confounding remains highly plausible and the choice of estimation routine is not trivial. This will highlight aspects of how what we seek learn determines our model choice. 
+We've just seen a number of different modelling specifications that attempt to deal with the threat of group level confounding. We'll now look at a case-study where group level confounding remains highly plausible and the choice of estimation routine is not trivial. This will highlight aspects of how what we seek learn determines our model choice. 
 
 ## Nested Groups, Hierarchies and Fixed Effects
 
@@ -1217,7 +1225,6 @@ It's certainly possible that parameter recovery accuracy and predictive performa
 
 > "A schema may be transported almost anywhere. The choice of territory for invasion is arbitrary; but the operation within that territory is almost never completely so." - Nelson Goodman in _Languages of Art_
 
-We've now seen various cases of group-level confounding and strategies to address these issues. We've seen how they give rise to non-trivial questions about the effects of policy, and what can be learned in the face of group-level confounds. The case of TWFE's estimation is especially instructive - here we have an estimation technique applied well in limited circumstances, which ran into trouble when applied in contexts with a diverging data generating process. 
+We've now seen various cases of group-level confounding and strategies to address these issues. We've seen how they give rise to non-trivial questions about the effects of policy, and what can be learned in the face of group-level confounds. The case of TWFE's estimation is especially instructive - here we have an estimation technique applied well in limited circumstances, which ran into trouble when applied in contexts with a diverging data generating process. We all lose our way some of the time, but this misstep was due to a broken map - we'd followed the trail well past the intended territory. 
 
-
-
+Statistical models do not mirror the world, they project patterns in the data. Each rupture between model and world is a gift that highlights deficits in our understanding - an impropriety of projections. It is therefore a delightful reversal to see in Woolridge's proof, that the issue is not with the tooling but the thoughtless application of the tool. The unreasonable effectiveness of regression modelling is surely driven by our projections of linearity on the world, but it remains compelling in approximation when used well. There are architectural constraints in causal inference - hard unyielding facts, that shape the contours of our design, and structure the steps we can make. The degree to which we can flexibly encode those structures in our models, the more compelling our models will be. It is this recognition of ths dual fit requirements between world and model, the focus on the conditions for identifiability that lends causal inference any kind of credibility.  
