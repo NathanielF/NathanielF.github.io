@@ -28,6 +28,7 @@ import pyfixest as pf
 import statsmodels.formula.api as smf
 from patsy import dmatrices, dmatrix
 import seaborn as sns
+import networkx as nx
 from pyfixest.did.estimation import did2s, lpdid
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
@@ -100,7 +101,18 @@ sim_df.head()
 
 ```
 
-This data generating process is characterised by the bernoulli outcome with group level confounds. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. 
+This data generating process is characterised by the bernoulli outcome with group level confounds. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. We can imagine this is a class room setting with group-confounding due to teacher effects. In a DAG we see a picture something like this: 
+
+```{python}
+graph = nx.DiGraph()
+graph.add_edges_from([("classroom \n G", "scores \n y"), ("classroom \n G", "student prep \n X"), ("student prep \n X", "scores \n y"), ("class temp \n Z", "scores \n y")])
+fig, ax = plt.subplots(figsize=(10,10))
+nx.draw_networkx(graph, arrows=True, ax=ax, 
+node_size = 7000, font_color="whitesmoke")
+ax.set_title("Group Confounding in a DAG", fontsize=12);
+```
+
+We can plot the data here.
 
 ```{python}
 
@@ -346,6 +358,7 @@ with pm.Model(coords=coords) as model:
 ```
 
 Instead of merely adding a new feature to a regression we've added a second likelihood term for the predictor $X$ and seek to model this outcome as a function of the group means. Calibrating the `group_mean` parameter that is also included in our likelihood term for the $Y$ outcome. 
+
 ```{python}
 pm.model_to_graphviz(model)
 
@@ -827,10 +840,10 @@ def plot_event_study(idata, ax, color='blue', model='demeaned'):
     x = range(len(summary_df))
     ax.scatter(x, summary_df['mean'], label=model, color=color)
     ax.plot([x, x], [summary_df['hdi_3%'],summary_df['hdi_97%']],   color=color)
-    ax.set_title("Event Study", fontsize=20)
+    ax.set_title("Event Study")
     return ax
 
-fig, ax = plt.subplots(figsize=(10, 7))
+fig, ax = plt.subplots(figsize=(10, 5))
 plot_event_study(idata_twfe_event, ax)
 ax.legend();
 
@@ -874,11 +887,11 @@ df_het['time_mean'] = df_het.groupby('year')['treat'].transform(np.mean)
 
 model_twfe_trt = bmb.Model(f"dep_var ~ treat", df_het)
 idata_twfe_trt = model_twfe_trt.fit( inference_method="nuts_numpyro",
-    idata_kwargs={"log_likelihood": True},)
+    idata_kwargs={"log_likelihood": True})
 
 model_twfe_trt_mundlak = bmb.Model(f"dep_var ~ treat + unit_mean + time_mean", df_het)
 idata_twfe_trt_mundlak = model_twfe_trt_mundlak.fit( inference_method="nuts_numpyro",
-    idata_kwargs={"log_likelihood": True},)
+    idata_kwargs={"log_likelihood": True})
 
 ```
 
@@ -887,7 +900,7 @@ az.plot_forest([idata_twfe_trt_demean, idata_twfe_trt_mundlak, idata_twfe_trt], 
 
 ```
 
-The de-meaned TWFE estimator and the Mundlak specification result in identical estimates and differ from the naive estimate that fails to control group level confounds. The Mundlak specification is far easier to implement. 
+The de-meaned TWFE estimator and the Mundlak specification result in identical estimates and differ from the naive estimate that fails to control group level confounds. The Mundlak specification is far easier to implement and offers altnerative ways to parameterise a model capable of adjusting for the group level confounding.
 
 ### Functional Form and Saturated Regression
 
@@ -1161,7 +1174,7 @@ label='True effect')
 axs[0].legend()
 axs[1].legend()
 axs[2].legend()
-axs[3].legend()
+axs[3].legend();
 ```
 
 Note how the naive mundlak approach also exhibits odd behaviour as we saw in the TWFE estimation routine above. Adding additional interactions and controlling for the staggered launch dates seems to help isolate the real pattern in the data. We've seen approximate success in a number of these richly parameterised versions of simple event study regressions. But the idiosyncracies of any one sample will contort and distort the estimates away from the true values. We might hope for more stability in expectation over repeated draws from this kind of data-generating process. Consier the following Bootstrapping estimation routine. 
