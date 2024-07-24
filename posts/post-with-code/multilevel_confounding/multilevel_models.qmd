@@ -100,14 +100,16 @@ sim_df.head()
 
 ```
 
-This data generating process is characterised by the bernoulli outcome with group level confounds. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. We will see different results as we explore different ways of parameterising the relationships, and the trade-offs for model specifications will become clearer.
+This data generating process is characterised by the bernoulli outcome with group level confounds. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. 
 
 ```{python}
 
 g = sns.pairplot(sim_df[['Y', 'X', 'Z']], diag_kind="kde", corner=True)
-g
+g;
 
 ```
+
+We will see different results as we explore different ways of parameterising the relationships, and the trade-offs for model specifications will become clearer.
 
 ::: {.callout-warning title="Terminology Warning"}
 There is a huge degree of confusion over the meaning of the terms "Fixed Effects" and "Random Effects". Within this blog post when we refer to __fixed effects__ we will mean the population level parameters. 
@@ -123,7 +125,7 @@ which are incorporated into our model equation modifying population level parame
 
 ### Naive Model
 
-The formula syntax for `Bambi` also enables us to specify generalised linear models with bernoulli outcomes. 
+We will use `Bambi` to specify the majority of these generalised linear models throughout this post. The formula syntax for `Bambi` enables us to specify generalised linear models with bernoulli outcomes. 
 
 ```{python}
 #| output: false
@@ -418,7 +420,7 @@ for s, ax in zip(schools_10, axs):
     ax.set_xlabel("MathPrep")
     ax.set_ylabel("MathGain")
 
-axs[0].legend(handles=legend_elements)
+axs[0].legend(handles=legend_elements);
 
 
 ```
