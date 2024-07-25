@@ -1,7 +1,7 @@
 ---
-title: "Freedom, Hierarchies and Saturated Regression (WIP)"
+title: "Freedom, Hierarchies and Confounded Estimates"
 date: "2024-07-01"
-categories: ["probability", "multilevel models", "hierarchical models", "differences in differences"]
+categories: ["TWFE", "mundlak", "hierarchical models", "DiD"]
 keep-ipynb: true
 self-contained: true
 draft: false
@@ -44,7 +44,7 @@ np.random.seed(100)
 
 ::: {.callout-note}
 ## Summary 
-_Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. In recent years econometricians have discovered a number of issues with the TWFE estimator and clever diagnostics and corrections have been suggested. Woolridge recently has shown that TWFE can be seen as a species of Mundlak regression offering further insight into the problem. We unpack what this means and what it suggests for model development in causal inference._
+_Two Way Fixed Effects (TWFE) regression models are often used in Differences-in-Differences designs to estimate treatment effects while accounting for variation due to group effects in two dimensions. In recent years econometricians have discovered a number of issues with the TWFE estimator and provided clever diagnostics and corrections. Woolridge recently has shown that TWFE can be seen as a species of Mundlak regression offering further insight into the problem. We unpack what this means and what it suggests for model development in causal inference._
 :::
 
 # Architectures and Free Parameters
@@ -55,7 +55,7 @@ Free choice is not whimsy or wanton action. Choice is free when taken within the
 
 <img src="free_choice.png" width="500" height="300" />
 
-Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements about policy effects, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time.  We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues by enriching our regression specification. 
+Difference in Differences estimation is core a topic in contemporary social science and causal inference. It is a compelling methodology for licensing inferential statements about policy effects, but it is not a panacea. The method makes substantive assumptions about the treatment regime and the trends in the process before the treatment is introduced, but it also requires that the data is rich enough to mandate the intended interpretation of a heavily parameterised estimation model. The two-way fixed effects models attempt to tightly estimate the treatment effect by controlling for all sources of variation in our treatment due to group level factors in the DiD designs. These controls help isolate the variation due to actual treatment by pinning down the effects of interactions between treatment-units and time. We will see how these models and their intended interpretation come apart quickly in the face of staggered treatment roll-outs. We will also show how to fix these issues by enriching our regression specification. 
 
 ### Structure of the Presentation
 In this post we will structure the discussion as follows: 
@@ -72,7 +72,7 @@ In this post we will structure the discussion as follows:
 
 ## Estimation Strategies and Group Effects
 
-First consider an estimation example due to Richard McElreath's [lecture series](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) where we examine the various parameter recovery options available in the case of group level confounding. We want to move through these parameterisations to highlight the usefulness of Mundlak regressions. The source of these models is a paper Mundlak's 1978 paper _"On the pooling of time series and cross section data"_ in which he shows a method for adjusting for group-levels which proves to be a viable alternative to richly specified fixed effects model as we'll see. 
+First consider an estimation example due to Richard McElreath's [lecture series](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) where we examine the various parameter recovery options available in the case of group level confounding. We want to move through these parameterisations to highlight the usefulness of Mundlak regressions. The source of these models is a paper Mundlak's 1978 paper _"On the pooling of time series and cross section data"_ in which he shows a method for adjusting for group-levels which proves to be a viable alternative to richly specified fixed effects model.
 
 First define a data generating process determined by group level effects:
 
@@ -101,7 +101,7 @@ sim_df.head()
 
 ```
 
-This data generating process is characterised by the bernoulli outcome with group level confounds. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. We can imagine this is a class room setting with group-confounding due to teacher effects. In a DAG we see a picture something like this: 
+This data generating process is characterised by the bernoulli outcome with group level confounds on the $X$ variable. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. We can imagine this is a class room setting with group-confounding due to teacher effects. In a DAG we see a picture something like this: 
 
 ```{python}
 graph = nx.DiGraph()
@@ -159,7 +159,7 @@ Here we see that all three parameter estimates are biased away from their true v
 
 ### Fixed Effects Model
 
-The additional syntax for creating the group level indicator variables is specified here. 
+The additional syntax for creating the group level indicator variables is specified here. This will create a host of indicator variables for membership in each level of the group variable. 
 
 ```{python}
 #| output: false
@@ -176,7 +176,7 @@ az.summary(fixed_effects_idata, var_names=['Intercept', 'X', 'Z'])
 
 ```
 
-Now we see that the coefficient on the $X$ variable seem correct, but the coefficient on $Z$ is wildly wrong. Indeed the uncertainty interval on the $Z$ coefficient is huge. The fixed effect model was unable to learn anything about the correct parameter. Whereas the naive model seems to learn the correct $Z$ parameter but over estimates the $X$ coefficient. These are the kinds of trade-offs we need to be wary of as we account for the complexities of extensive group interactions in our model's functional form. 
+Now we see that the coefficient on the $X$ variable seems correct, but the coefficient on $Z$ is wildly wrong. Indeed the uncertainty interval on the $Z$ coefficient is huge. The fixed effect model was unable to learn anything about the correct parameter. Whereas the naive model seems to learn the correct $Z$ parameter but over estimates the $X$ coefficient. These are the kinds of trade-offs we need to be wary of as we account for the complexities of extensive group interactions in our model's functional form. 
 
 ```{python}
 
@@ -203,11 +203,11 @@ axs[1].axvline(-0.5, color='k');
 
 ```
 
-We now want to try another approach to handle to the group confounding that involves a hierarchical approach to add group level effects to the intercept term. 
+We now want to try another approach to handle to the group confounding that involves a hierarchical approach - adding group level effects to the population intercept term. 
 
 ### Multilevel Model
 
-The syntax for the random effects model is similar. 
+The syntax for the random effects model is easily expressed in `bambi` too. These group level effects modify the intercept additively and are collectively drawn from a shared distribution implicit in the model. 
 
 ```{python}
 #| output: false
@@ -226,7 +226,7 @@ az.summary(multilevel_model_idata, var_names=['X', 'Z', 'Intercept'])
 
 ```
 
-Next we'll apply the Mundlak device method which adds the group mean back to each observation as a covariate. 
+Next we'll apply the Mundlak device method which adds the group mean back to each observation as a single additional covariate. 
 
 ### Mundlak Model
 
@@ -358,7 +358,7 @@ with pm.Model(coords=coords) as model:
 
 ```
 
-Instead of merely adding a new feature to a regression we've added a second likelihood term for the predictor $X$ and seek to model this outcome as a function of the group means. Calibrating the `group_mean` parameter that is also included in our likelihood term for the $Y$ outcome. 
+Instead of merely adding a new feature to a regression we've added a second likelihood term for the predictor $X$ and seek to model this outcome as a function of the group means. In other words, we incorporate the idea that $X$ is confounded by some aspect of the group membership, and seek to estimate the nature of that confounding as it influences both the realisations of $X$ and $y$. Calibrating the `group_mean` parameter that is also included in our likelihood term for the $Y$ outcome. 
 
 ```{python}
 pm.model_to_graphviz(model)
@@ -378,7 +378,7 @@ You can see it also recovers the correct parameter specifcation well.
 
 ### Recap
 
-We've just seen a number of different modelling specifications that attempt to deal with the threat of group level confounding. We'll now look at a case-study where group level confounding remains highly plausible and the choice of estimation routine is not trivial. This will highlight aspects of how what we seek learn determines our model choice. 
+We've just seen a number of different modelling specifications that attempt to deal with the threat of group level confounding. Some varieties of model result in entirely saturated regression models with more parameters than observations. These models can quickly become unwieldy. We'll now look at a case-study where group level confounding remains highly plausible and the choice of estimation routine is not trivial. This will highlight aspects of how what we seek learn determines our model choice. 
 
 ## Nested Groups, Hierarchies and Fixed Effects
 
@@ -656,7 +656,7 @@ We now make use of `bambi`s model interpretation module to plot the marginal eff
 
 ```{python}
 #| code-fold: true
-fig, axs = plt.subplots(3, 1, figsize=(10, 14), 
+fig, axs = plt.subplots(1, 3, figsize=(20, 6), 
 dpi=120, sharey=True, sharex=True)
 axs = axs.flatten()
 axs[0].axhline(50, color='red', label='Reference Line', 
@@ -719,7 +719,7 @@ axs[1].set_title("Difference in Differences \n Mean Change an Individual Traject
 
 ```
 
-Note how the blue line represents a cohort that never undergoes a treatment and is maintained as a coherent control group throughout the sequence even though we have two other cohorts. This ensures we have a constant contrast case allowing us to identify the causal estimand of interest. It's also worth calling out that we have heterogenous patterns in the treatment effects across the cohorts i.e. the the intensity of the treatment effect differs across the cohorts. We'll apply the vanilla TWFE estimator. 
+Note how the blue line represents a cohort that never undergoes a treatment and is maintained as a coherent control group throughout the sequence even though we have two other cohorts. This ensures we have a constant contrast case allowing us to identify the causal estimand of interest. It's also worth calling out that we have heterogenous patterns in the treatment effects across the cohorts i.e. the the intensity of the treatment effect differs across the cohorts. We'll apply the vanilla TWFE estimator and then dig into how it works.
 
 ### TWFE in `pyfixest`
 
@@ -903,9 +903,9 @@ az.plot_forest([idata_twfe_trt_demean, idata_twfe_trt_mundlak, idata_twfe_trt], 
 
 The de-meaned TWFE estimator and the Mundlak specification result in identical estimates and differ from the naive estimate that fails to control group level confounds. The Mundlak specification is far easier to implement and offers altnerative ways to parameterise a model capable of adjusting for the group level confounding.
 
-### Functional Form and Saturated Regression
+### Functional Form and Richly Parameterised Regressions
 
-The vanilla TWFE estimator _can_ successfully recover the treatment effects in DiD designs and facilitate event studies of the same. However, the details of the estimation matter because this functional form is not always robust. Here we'll see other options that can recover substantially the same inferences and may prove more robust as we'll see below. The key to each is to articulate enough structural features that allow the model to modify effects based on the suspected group level confounds. 
+The vanilla TWFE estimator _can_ successfully recover the treatment effects in DiD designs and facilitate event studies of the same. However, the details of the estimation matter because this functional form is not always robust. Here we'll see other options that can recover substantially the same inferences and may prove more robust as we'll see below. The key to each is to articulate enough structural features that allow the model to modify effects based on the suspected group level confounds. Most crucially, the model needs to express (or account for) variation due to _relevant_ data generating process.  
 
 ```{python}
 
@@ -974,7 +974,7 @@ This suggests that there are a variety of functional forms even just using regre
 
 ## Issues with TWFE and Richly Parameterised Linear Models
 
-We draw on the example from Pedro Sant'Anna [here](https://psantanna.com/posts/twfe) where it is demonstrated that the vanilla TWFE estimator breaks down under various conditions. These conditions are often related to staggered roll out of a treatment and thereby induces dynamic changes in the treatment group over time. Appropriate inference needs to carefully control for the interaction effects due to staggered treatment. 
+We draw on the example from Pedro Sant'Anna [here](https://psantanna.com/posts/twfe) where it is demonstrated that the vanilla TWFE estimator breaks down under various conditions. These conditions are often related to staggered roll out of a treatment. This staggered roll out induces dynamic changes in the composition of treatment group over time. Appropriate inference needs to carefully control for the interaction effects due to staggered treatment. In particular we need our model of the situation to reflect this aspect of the data generating process.  
 
 Let's generate some data. 
 ```{python}
@@ -1043,7 +1043,7 @@ ax.legend()
 
 ```
 
-This data will present problems for the vanilla TWFE estimator in part because we can see how each cohort receives a treatment and there are periods in the data when no group is in the "control". We can see how this plays out with de-meaning TWFE strategy. 
+This data will present problems for the vanilla TWFE estimator. The issues stems from how each cohort receives a treatment and there are periods in the data when no group is in the "control" group. We can see how this plays out with de-meaning TWFE strategy. 
 
 ```{python}
 fit_twfe = pf.feols(
@@ -1064,7 +1064,7 @@ fit_twfe.iplot(
 
 ```
 
-This is not the expected pattern. For contrast, consider an alternative estimator.
+This is not remotely close to the expected pattern. For contrast, consider an alternative estimator.
 
 ```{python}
 
@@ -1089,12 +1089,12 @@ fit_lpdid.iplot(
 ).show()
 ```
 
-The initial TWFE estimate is frankly bizarre and utterly skewed. Something dreadful has gone wrong under the hood. For contrast, we've included the Local Projections estimator from the `pyfixest` to show that we can recover the actual treatment effect under this event study with alternative strategies.
-However, there is more machinary involved in the local-projections estimator. 
+The initial TWFE estimate is utterly skewed and entirely incorrect. Something dreadful has gone wrong under the hood. For contrast, we've included the Local Projections estimator from the `pyfixest` to show that we _can_ recover the actual treatment effect under this event study with alternative strategies.
+However, there is more machinary involved in the local-projections estimator.
 
 ::: {.callout-warning}
 
-Note there has been a large volume of literature diagnosing precisely how and where TWFE estimator breakdown. Goodman-Bacon's "_Difference-in-differences with variation in treatment timing_" in particular provides a decomposition of the causal estimand that can be recovered under varying treatment regimes. We won't cover this rich area of research here. But note that it's a lively area of research.
+Note there has been a large volume of literature diagnosing precisely how and where TWFE estimator breakdown. Goodman-Bacon's "_Difference-in-differences with variation in treatment timing_" in particular provides a decomposition of the causal estimand that can be recovered under varying treatment regimes. We won't cover this rich area of research here. But we note that it's a lively area of research.
 :::
 
 Instead we want show how to use mundlak devices to recover more reasonable estimates. No fancy estimators, just more regressions. 
@@ -1107,9 +1107,11 @@ Woolridge argues for this approach when he states that
 - _Two-Way Fixed Effects, the Two-Way Mundlak Regression, and Difference-in-Differences Estimators_
 
 We want to explore different ways of isolating the treatment effects under a variety of model specifications that controls for
-time-constant treatment intensities, covariates, and interactions between them.
+time-constant treatment intensities, covariates, and interactions between them. That is we want to better express the data generating process in our model of the situation. 
 
 ### Fitting a Variety of Models
+
+Consider the following model specifications. 
 
 ```{python}
 
@@ -1148,7 +1150,7 @@ idata_twfe3 = model_twfe3.fit( inference_method="nuts_numpyro",
 ```
 
 
-These latter models will recover the appropriate treatment effects with slight variations due to the adapted functional form. 
+These latter models will recover the appropriate treatment effects with slight variations due to the adapted functional form. The initial models will fail to capture the pattern correctly. 
 
 ```{python}
 #| code-fold: true
@@ -1178,7 +1180,7 @@ axs[2].legend()
 axs[3].legend();
 ```
 
-Note how the naive mundlak approach also exhibits odd behaviour as we saw in the TWFE estimation routine above. Adding additional interactions and controlling for the staggered launch dates seems to help isolate the real pattern in the data. We've seen approximate success in a number of these richly parameterised versions of simple event study regressions. But the idiosyncracies of any one sample will contort and distort the estimates away from the true values. We might hope for more stability in expectation over repeated draws from this kind of data-generating process. Consier the following Bootstrapping estimation routine. 
+Note how the naive mundlak approach also exhibits odd behaviour as we saw in the TWFE estimation routine above. Adding additional interactions and controlling for the staggered launch dates seems to help isolate the real pattern in the data. We've seen approximate success in a number of these richly parameterised versions of simple event study regressions. But the idiosyncracies of any one sample will contort and distort the estimates away from the true values. We might hope for more stability in expectation over repeated draws from this kind of data-generating process. Consider the following Bootstrapping estimation routine. 
 
 ### Evaluating Robustness of Functional Form
 
