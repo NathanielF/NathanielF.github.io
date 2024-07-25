@@ -106,13 +106,14 @@ This data generating process is characterised by the bernoulli outcome with grou
 ```{python}
 graph = nx.DiGraph()
 graph.add_edges_from([("classroom \n G", "scores \n y"), ("classroom \n G", "student prep \n X"), ("student prep \n X", "scores \n y"), ("class temp \n Z", "scores \n y")])
-fig, ax = plt.subplots(figsize=(10,10))
+fig, ax = plt.subplots(figsize=(10,6))
 nx.draw_networkx(graph, arrows=True, ax=ax, 
-node_size = 7000, font_color="whitesmoke")
+node_size = 6000, font_color="whitesmoke",pos={'classroom \n G': [0, 0], 'scores \n y': [0.5, 1], 'student prep \n X': [0, 2], 
+'class temp \n Z': [1, 1]})
 ax.set_title("Group Confounding in a DAG", fontsize=12);
 ```
 
-We can plot the data here.
+We can plot the data here to visualise the shares of the binary outcomes. 
 
 ```{python}
 
@@ -121,7 +122,7 @@ g;
 
 ```
 
-We will see different results as we explore different ways of parameterising the relationships, and the trade-offs for model specifications will become clearer.
+We will see different estimation results as we explore different ways of parameterising the relationships, and the trade-offs for model specifications will become clearer.
 
 ::: {.callout-warning title="Terminology Warning"}
 There is a huge degree of confusion over the meaning of the terms "Fixed Effects" and "Random Effects". Within this blog post when we refer to __fixed effects__ we will mean the population level parameters. 
