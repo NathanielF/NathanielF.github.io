@@ -104,6 +104,8 @@ sim_df.head()
 This data generating process is characterised by the bernoulli outcome with group level confounds on the $X$ variable. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. We can imagine this is a class room setting with group-confounding due to teacher effects. In a DAG we see a picture something like this: 
 
 ```{python}
+#| code-fold: true
+
 graph = nx.DiGraph()
 graph.add_edges_from([("classroom \n G", "scores \n y"), ("classroom \n G", "student prep \n X"), ("student prep \n X", "scores \n y"), ("class temp \n Z", "scores \n y")])
 fig, ax = plt.subplots(figsize=(10,6))
@@ -1168,11 +1170,11 @@ axs[3].set_title(str(model_twfe3.formula))
 xs = np.linspace(0, 45, 45)
 xs_centered = xs - 22
 true_effect = np.where(xs_centered <= 0, 0, (xs_centered +1))
-axs[0].plot(xs, true_effect, color='k', alpha=0.3, label='True effect')
-axs[1].plot(xs, true_effect, color='k', alpha=0.3, label='True effect')
-axs[2].plot(xs, true_effect, color='k', alpha=0.3, 
+axs[0].plot(xs, true_effect, color='k', alpha=0.6, label='True effect')
+axs[1].plot(xs, true_effect, color='k', alpha=0.6, label='True effect')
+axs[2].plot(xs, true_effect, color='k', alpha=0.6, 
 label='True effect')
-axs[3].plot(xs, true_effect, color='k', alpha=0.3,
+axs[3].plot(xs, true_effect, color='k', alpha=0.6,
 label='True effect')
 axs[0].legend()
 axs[1].legend()
@@ -1272,6 +1274,6 @@ It's certainly possible that parameter recovery accuracy and predictive performa
 
 > "A schema may be transported almost anywhere. The choice of territory for invasion is arbitrary; but the operation within that territory is almost never completely so." - Nelson Goodman in _Languages of Art_
 
-We've now seen various cases of group-level confounding and strategies to address these issues. We've seen how they give rise to non-trivial questions about the effects of policy, and what can be learned in the face of group-level confounds. The case of TWFE's estimation is especially instructive - here we have an estimation technique applied well in limited circumstances, which ran into trouble when applied in contexts with a diverging data generating process. We all lose our way some of the time, but this misstep was due to a broken map - we'd followed the trail well past the intended territory. 
+We've now seen various cases of group-level confounding and strategies to address these issues. We've seen how they give rise to non-trivial questions about the effects of policy, and what can be learned in the face of group-level confounds. The case of TWFE's estimation is especially instructive - here we have an estimation technique applied well in limited circumstances, which ran into trouble when applied in contexts with a diverging data generating process. We all lose our way some of the time, but this misstep led us off the map - we'd followed the trail well past the intended territory. 
 
 Statistical models do not mirror the world, they project patterns in the data. Each rupture between model and world is a gift that highlights deficits in our understanding - an impropriety of projections. It is therefore a delightful reversal to see, in Woolridge's proof, that the issue is not with the tooling but the thoughtless application of the tool. The unreasonable effectiveness of regression modelling is surely driven by projections of linearity on the world, but it remains compelling in approximation when used well. There are architectural constraints in causal inference - hard unyielding facts, that shape the contours of our design, and structure the steps we can make. The degree to which we can flexibly encode those structures in our models, the more compelling our models will be. It is this recognition of dual fit requirements between world and model - the focus on the conditions for identifiability - that lends causal inference any kind of credibility. The expressive capacity of generalised linear modelling enables us to articulate too many candidate pictures of the world. It's the business of science to cull those pictures, to find only the plausible representations of reality. 
