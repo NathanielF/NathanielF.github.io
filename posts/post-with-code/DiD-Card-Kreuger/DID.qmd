@@ -8,7 +8,7 @@ image: "cholera_small_map.jpg"
 self-contained: true
 draft: true
 execute: 
-  enabled: true
+  enabled: false
 jupyter: python3
 ---
 
