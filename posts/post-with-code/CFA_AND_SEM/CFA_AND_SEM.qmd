@@ -40,7 +40,7 @@ options(repr.plot.width=15, repr.plot.height=8)
 
 knitr::knit_engines$set(python = reticulate::eng_python)
 options(scipen=999)
-set.seed(100)
+set.seed(130)
 ```
 
 ::: {.callout-warning}
@@ -55,13 +55,15 @@ Quarto enables you to weave together content and executable code into a finished
 ```{r}
 df = read.csv('sem_data.csv')
 inflate <- df$region == 'west'
-noise <- rnorm(sum(inflate),1, 0.3) # generate the noise to add
-df$ls_p1[inflate] <- df$ls_p1[inflate] + noise
+noise <- rnorm(sum(inflate), 0.5, 1) # generate the noise to add
+df$ls_p3[inflate] <- df$ls_p3[inflate] + noise
 df$ls_sum <- df$ls_p1 + df$ls_p2 + df$ls_p3
 df$ls_mean <- rowMeans(df[ c('ls_p1', 'ls_p2', 'ls_p3')])
 
 head(df) |> kable()
 ```
+
+![Candidate Structure](structural_model.png)
 
 ```{r}
 
@@ -91,6 +93,25 @@ datasummary_skim(df)|>
 
 
 ```
+
+
+```{r fig.width=10}
+
+drivers = c('se_acad_p1', 'se_acad_p2', 'se_acad_p3', 'se_social_p1', 'se_social_p2', 'se_social_p3', 'sup_friends_p1','sup_friends_p2', 'sup_friends_p3', 'sup_parents_p1' , 'sup_parents_p2' , 'sup_parents_p3', 'ls_p1', 'ls_p2', 'ls_p3')
+
+heat_df = cov(df[,  drivers]) |> as.matrix() |> melt()
+colnames(heat_df) <- c("x", "y", "value")
+heat_df |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
+  geom_tile() + geom_text(aes(label = value), color = "black", size = 4) +
+ scale_fill_gradient2(
+    high = 'dodgerblue4',
+    mid = 'white',
+    low = 'firebrick2'
+  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Sample Covariances", "Observed Measures")
+
+
+```
+
 
 ## Fit Initial Regression Models
 
@@ -322,7 +343,7 @@ plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
 
 ## Confirmatory Factor Analysis
 
-```{r}
+```{r fig.width=10, fig.height=10}
 
 model_measurement <- "
 # Measurement model
@@ -333,43 +354,104 @@ SE_Social =~ se_social_p1 + se_social_p2 + se_social_p3
 LS  =~ ls_p1 + ls_p2 + ls_p3
 "
 
+model_measurement1 <- "
+# Measurement model
+SUP_Parents =~ sup_parents_p1 + sup_parents_p2  + sup_parents_p3
+SUP_Friends =~ sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_social_p1
+SE_Academic =~ se_acad_p1 + se_acad_p2 
+SE_Social =~ se_social_p1 + se_social_p2 
+LS  =~ ls_p1 + ls_p2 
+"
+
 
 fit_mod <- cfa(model_measurement, data = df)
-modelplot(fit_mod, coef_omit='=~')
+fit_mod_1<- cfa(model_measurement1, data = df)
+
+
+cfa_models = list("full_measurement_model" = fit_mod, 
+     "measurement_model_reduced" = fit_mod_1)
+modelplot(cfa_models)
 
 ```
 
 
 
+
 ```{r}
 
-summary(fit_mod, fit.measures = TRUE, standardized = TRUE)
+summary(fit_mod, fit.measures = TRUE, standardized = TRUE) 
 
 
 ```
 
+#### Modification Indices
+
+```{r}
+modindices(fit_mod, sort = TRUE, maximum.number = 6, standardized = FALSE, minimum.value = 5)
+modindices(fit_mod_1, sort = TRUE, maximum.number = 6, standardized = FALSE, minimum.value = 5)
+
+```
+
+
 ```{r}
 
+cbind(fitMeasures(fit_mod, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")),
+      fitMeasures(fit_mod_1, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")))
+
+```
+
+```{r}
 
 semPlot::semPaths(fit_mod, whatLabels = 'std', intercepts = FALSE)
 
 ```
 
+
+```{r}
+
+semPlot::semPaths(fit_mod_1, whatLabels = 'std', intercepts = FALSE)
+
+```
+
+
+
 #### Comparing the empirical and implied variance-covariance matrix
 
-```{r fig.width=10, fig.height=8}
+```{r fig.width=10, fig.height=10}
 
 heat_df = data.frame(resid(fit_mod, type = "standardized")$cov) 
 heat_df = heat_df |> as.matrix() |> melt()
 colnames(heat_df) <- c("x", "y", "value")
 
-heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
+g1 = heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
   geom_tile() + geom_text(aes(label = value), color = "black", size = 4) +
  scale_fill_gradient2(
     high = 'dodgerblue4',
     mid = 'white',
     low = 'firebrick2'
-  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Model fit")
+  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Model fit: Full Model")
+
+heat_df = data.frame(resid(fit_mod_1, type = "standardized")$cov) 
+heat_df = heat_df |> as.matrix() |> melt()
+colnames(heat_df) <- c("x", "y", "value")
+
+g2 = heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
+  geom_tile() + geom_text(aes(label = value), color = "black", size = 4) +
+ scale_fill_gradient2(
+    high = 'dodgerblue4',
+    mid = 'white',
+    low = 'firebrick2'
+  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Model fit: Reduced Model")
+
+plot <- ggarrange(g1,g2, ncol=1, nrow=2);
+
+```
+
+```{r}
+
+anova(fit_mod, fit_mod_1)
+
+
 ```
 
 ## Structural Equation Models
@@ -393,7 +475,27 @@ SE_Academic ~~ SE_Social
 "
 
 fit_mod_sem <- cfa(model_measurement, data = df)
-modelplot(fit_mod, coef_omit='=~')
+modelplot(fit_mod_sem, coef_omit='=~')
+
+```
+
+```{r fig.width=10, fig.height=8}
+
+heat_df = data.frame(resid(fit_mod_sem, type = "standardized")$cov) 
+heat_df = heat_df |> as.matrix() |> melt()
+colnames(heat_df) <- c("x", "y", "value")
+
+heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
+  geom_tile() + geom_text(aes(label = value), color = "black", size = 4) +
+ scale_fill_gradient2(
+    high = 'dodgerblue4',
+    mid = 'white',
+    low = 'firebrick2'
+  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Model fit")
+
+
+
+
 
 ```
 
