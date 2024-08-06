@@ -50,7 +50,7 @@ This is a work in progress. We intend to elaborate the choices related to analys
 
 ## Measurment and Measurment Constructs
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
 
 ```{r}
 df = read.csv('sem_data.csv')
@@ -95,20 +95,31 @@ datasummary_skim(df)|>
 ```
 
 
-```{r fig.width=10}
+```{r fig.width=10, fig.height=10}
 
 drivers = c('se_acad_p1', 'se_acad_p2', 'se_acad_p3', 'se_social_p1', 'se_social_p2', 'se_social_p3', 'sup_friends_p1','sup_friends_p2', 'sup_friends_p3', 'sup_parents_p1' , 'sup_parents_p2' , 'sup_parents_p3', 'ls_p1', 'ls_p2', 'ls_p3')
 
-heat_df = cov(df[,  drivers]) |> as.matrix() |> melt()
-colnames(heat_df) <- c("x", "y", "value")
-heat_df |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
-  geom_tile() + geom_text(aes(label = value), color = "black", size = 4) +
- scale_fill_gradient2(
-    high = 'dodgerblue4',
-    mid = 'white',
-    low = 'firebrick2'
-  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Sample Covariances", "Observed Measures")
 
+
+plot_heatmap <- function(df, title="Sample Covariances", subtitle="Observed Measures") {
+  heat_df = df |> as.matrix() |> melt()
+  colnames(heat_df) <- c("x", "y", "value")
+  g <- heat_df |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
+    geom_tile() + geom_text(aes(label = value), color = "black", size = 4) +
+   scale_fill_gradient2(
+      high = 'dodgerblue4',
+      mid = 'white',
+      low = 'firebrick2'
+    ) + theme(axis.text.x = element_text(angle=45)) + ggtitle(title, subtitle)
+  
+  g
+}
+
+g1 = plot_heatmap(cov(df[,  drivers]))
+
+g2 = plot_heatmap(cor(df[,  drivers]), "Sample Correlations")
+
+plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 ```
 
@@ -163,7 +174,7 @@ models = list(
 
 ```
 
-```{r, class.source = 'fold-hide'}
+```{r, class.source = 'fold-hide', fig.width=10}
 
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -356,11 +367,14 @@ LS  =~ ls_p1 + ls_p2 + ls_p3
 
 model_measurement1 <- "
 # Measurement model
-SUP_Parents =~ sup_parents_p1 + sup_parents_p2  + sup_parents_p3
-SUP_Friends =~ sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_social_p1
-SE_Academic =~ se_acad_p1 + se_acad_p2 
-SE_Social =~ se_social_p1 + se_social_p2 
-LS  =~ ls_p1 + ls_p2 
+SUP_Parents =~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3
+SUP_Friends =~ a1*sup_friends_p1 + a2*sup_friends_p2 + a3*sup_friends_p3
+SE_Academic =~ se_acad_p1 + se_acad_p2 + se_acad_p3
+SE_Social =~ se_social_p1 + se_social_p2 + se_social_p3
+LS  =~ ls_p1 + ls_p2 + ls_p3
+
+a1 == a2 
+a1 == a3
 "
 
 
@@ -377,32 +391,39 @@ modelplot(cfa_models)
 
 
 
-```{r}
+```{r, fig.width=10, fig.height=10}
 
 summary(fit_mod, fit.measures = TRUE, standardized = TRUE) 
 
+g1 = plot_heatmap(cov(df[,  drivers]))
 
+g2 = plot_heatmap(data.frame(fitted(fit_mod)$cov), title="Model Implied Covariances", "Fitted Values")
+
+plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 ```
 
 #### Modification Indices
 
 ```{r}
 modindices(fit_mod, sort = TRUE, maximum.number = 6, standardized = FALSE, minimum.value = 5)
-modindices(fit_mod_1, sort = TRUE, maximum.number = 6, standardized = FALSE, minimum.value = 5)
 
 ```
 
+#### Summary Global Fit Measures
 
 ```{r}
 
-cbind(fitMeasures(fit_mod, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")),
+summary_df = cbind(fitMeasures(fit_mod, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")),
       fitMeasures(fit_mod_1, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")))
+colnames(summary_df) = c('Full Model', 'Reduced Model')
+
+summary_df
 
 ```
 
 ```{r}
 
-semPlot::semPaths(fit_mod, whatLabels = 'std', intercepts = FALSE)
+semPlot::semPaths(fit_mod, whatLabels = 'est', intercepts = FALSE)
 
 ```
 
@@ -449,6 +470,11 @@ plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 ```{r}
 
+anova(fit_mod)
+
+
+anova(fit_mod_1)
+
 anova(fit_mod, fit_mod_1)
 
 
@@ -474,8 +500,18 @@ LS ~ SE_Academic + SE_Social + SUP_Parents + SUP_Friends
 SE_Academic ~~ SE_Social
 "
 
-fit_mod_sem <- cfa(model_measurement, data = df)
-modelplot(fit_mod_sem, coef_omit='=~')
+fit_mod_sem <- sem(model, data = df)
+```
+
+
+```{r}
+modelplot(fit_mod_sem)
+
+```
+
+```{r}
+
+semPlot::semPaths(fit_mod_sem, whatLabels = 'std', intercepts = FALSE)
 
 ```
 
@@ -492,11 +528,6 @@ heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = 
     mid = 'white',
     low = 'firebrick2'
   ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Model fit")
-
-
-
-
-
 ```
 
 
