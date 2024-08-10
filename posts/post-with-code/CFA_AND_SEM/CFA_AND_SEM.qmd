@@ -684,6 +684,8 @@ correlation_df.columns = ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS']
 ```
 
 
+![Life Satisfaction Model](full_pymc_model.svg)
+
 ```{r}
 
 py$summary_df1 |> kable()
@@ -692,7 +694,8 @@ py$summary_df1 |> kable()
 
 ```{python}
 
-az.plot_forest(idata, var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'lambdas5'], combined=True);
+fig, ax = plt.subplots(figsize=(10, 8))
+az.plot_forest(idata, var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'lambdas5'], combined=True, ax=ax);
 
 ```
 
