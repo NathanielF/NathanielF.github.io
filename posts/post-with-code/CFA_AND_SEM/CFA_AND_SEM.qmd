@@ -33,6 +33,7 @@ library(semPlot)
 library(tinytable)
 library(kableExtra)
 library(reshape2)
+reticulate::py_run_string("import pymc as pm")
 
 options(rstudio.python.installationPath = "/Users/nathanielforde/mambaforge/envs")
 options("modelsummary_factory_default" = "tinytable")
@@ -531,8 +532,181 @@ heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = 
 ```
 
 
+## Confirmatory Factor Models with PyMC
+
+
+```{python}
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from pytensor import tensor as pt
+import arviz as az
+import networkx as nx
 
 
 
+df_p = pd.read_csv('IIS.dat', sep='\s+')
+df_p.head()
 
 ```
+
+```{python results='hide'}
+
+coords = {'obs': list(range(len(df_p))), 
+          'indicators': ['PI', 'AD',	'IGC', 'FI', 'FC'],
+          'indicators_1': ['PI', 'AD',	'IGC'],
+          'indicators_2': ['FI', 'FC'],
+          'latent': ['Student', 'Faculty']
+          }
+
+
+obs_idx = list(range(len(df_p)))
+with pm.Model(coords=coords) as model:
+  
+  Psi = pm.InverseGamma('Psi', 5, 10, dims='indicators')
+  lambdas_ = pm.Normal('lambdas_1', 1, 10, dims=('indicators_1'))
+  lambdas_1 = pm.Deterministic('lambdas1', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_1'))
+  lambdas_ = pm.Normal('lambdas_2', 1, 10, dims=('indicators_2'))
+  lambdas_2 = pm.Deterministic('lambdas2', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_2'))
+  tau = pm.Normal('tau', 3, 10, dims='indicators')
+  kappa = 0
+  sd_dist = pm.Exponential.dist(1.0, shape=2)
+  chol, _, _ = pm.LKJCholeskyCov('chol_cov', n=2, eta=2,
+    sd_dist=sd_dist, compute_corr=True)
+  ksi = pm.MvNormal('ksi', kappa, chol=chol, dims=('obs', 'latent'))
+
+  m1 = tau[0] + ksi[obs_idx, 0]*lambdas_1[0]
+  m2 = tau[1] + ksi[obs_idx, 0]*lambdas_1[1]
+  m3 = tau[2] + ksi[obs_idx, 0]*lambdas_1[2]
+  m4 = tau[3] + ksi[obs_idx, 1]*lambdas_2[0]
+  m5 = tau[4] + ksi[obs_idx, 1]*lambdas_2[1]
+  
+  mu = pm.Deterministic('mu', pm.math.stack([m1, m2, m3, m4, m5]).T)
+  _  = pm.Normal('likelihood', mu, Psi, observed=df_p.values)
+
+  idata = pm.sample(nuts_sampler='numpyro', target_accept=.95)
+  
+summary_df = az.summary(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi', 'chol_cov_corr'], coords= {'obs': [0, 7]})
+
+```
+
+
+![PyMC Confirmatory Factor Model](pymc_model.png)
+
+```{r}
+
+py$summary_df |> kable()
+
+```
+
+```{python}
+
+az.plot_trace(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi']);
+
+```
+
+
+```{python results='hide'}
+
+df = pd.read_csv('sem_data.csv')
+drivers = ['se_acad_p1', 'se_acad_p2',
+       'se_acad_p3', 'se_social_p1', 'se_social_p2', 'se_social_p3',
+       'sup_friends_p1', 'sup_friends_p2', 'sup_friends_p3', 'sup_parents_p1',
+       'sup_parents_p2', 'sup_parents_p3', 'ls_p1', 'ls_p2', 'ls_p3']
+       
+       
+coords = {'obs': list(range(len(df))), 
+          'indicators': drivers,
+          'indicators_1': ['se_acad_p1','se_acad_p2','se_acad_p3'],
+          'indicators_2': ['se_social_p1','se_social_p2','se_social_p3'],
+          'indicators_3': ['sup_friends_p1','sup_friends_p2','sup_friends_p3'],
+          'indicators_4': [ 'sup_parents_p1','sup_parents_p2','sup_parents_p3'],
+          'indicators_5': ['ls_p1','ls_p2', 'ls_p3'],
+          'latent': ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS'],
+          'latent1': ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS']
+          }
+
+obs_idx = list(range(len(df)))
+with pm.Model(coords=coords) as model:
+  
+  Psi = pm.InverseGamma('Psi', 5, 10, dims='indicators')
+  lambdas_ = pm.Normal('lambdas_1', 1, 10, dims=('indicators_1'))
+  lambdas_1 = pm.Deterministic('lambdas1', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_1'))
+  lambdas_ = pm.Normal('lambdas_2', 1, 10, dims=('indicators_2'))
+  lambdas_2 = pm.Deterministic('lambdas2', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_2'))
+  lambdas_ = pm.Normal('lambdas_3', 1, 10, dims=('indicators_3'))
+  lambdas_3 = pm.Deterministic('lambdas3', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_3'))
+  lambdas_ = pm.Normal('lambdas_4', 1, 10, dims=('indicators_4'))
+  lambdas_4 = pm.Deterministic('lambdas4', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_4'))
+  lambdas_ = pm.Normal('lambdas_5', 1, 10, dims=('indicators_5'))
+  lambdas_5 = pm.Deterministic('lambdas5', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_5'))
+  tau = pm.Normal('tau', 3, 10, dims='indicators')
+  kappa = 0
+  sd_dist = pm.Exponential.dist(1.0, shape=5)
+  chol, _, _ = pm.LKJCholeskyCov('chol_cov', n=5, eta=2,
+    sd_dist=sd_dist, compute_corr=True)
+  cov = pm.Deterministic("cov", chol.dot(chol.T), dims=('latent', 'latent1'))
+  ksi = pm.MvNormal('ksi', kappa, chol=chol, dims=('obs', 'latent'))
+
+  m0 = tau[0] + ksi[obs_idx, 0]*lambdas_1[0]
+  m1 = tau[1] + ksi[obs_idx, 0]*lambdas_1[1]
+  m2 = tau[2] + ksi[obs_idx, 0]*lambdas_1[2]
+  m3 = tau[3] + ksi[obs_idx, 1]*lambdas_2[0]
+  m4 = tau[4] + ksi[obs_idx, 1]*lambdas_2[1]
+  m5 = tau[5] + ksi[obs_idx, 1]*lambdas_2[2]
+  m6 = tau[6] + ksi[obs_idx, 2]*lambdas_3[0]
+  m7 = tau[7] + ksi[obs_idx, 2]*lambdas_3[1]
+  m8 = tau[8] + ksi[obs_idx, 2]*lambdas_3[2]
+  m9 = tau[9] + ksi[obs_idx, 3]*lambdas_4[0]
+  m10 = tau[10] + ksi[obs_idx, 3]*lambdas_4[1]
+  m11 = tau[11] + ksi[obs_idx, 3]*lambdas_4[2]
+  m12 = tau[12] + ksi[obs_idx, 4]*lambdas_5[0]
+  m13 = tau[13] + ksi[obs_idx, 4]*lambdas_5[1]
+  m14 = tau[14] + ksi[obs_idx, 4]*lambdas_5[2]
+  
+  mu = pm.Deterministic('mu', pm.math.stack([m0, m1, m2, m3, m4, m5, m6, m7,
+                                             m8, m9, m10, m11, m12, m13, m14]).T)
+  _  = pm.Normal('likelihood', mu, Psi, observed=df[drivers].values)
+
+  idata = pm.sample(nuts_sampler='numpyro', target_accept=.95)
+  
+summary_df1 = az.summary(idata, var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'lambdas5', 'tau', 'Psi'])
+
+cov_df = pd.DataFrame(az.extract(idata['posterior'])['cov'].mean(axis=2))
+cov_df.index = ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS']
+cov_df.columns = ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS']
+
+correlation_df = pd.DataFrame(az.extract(idata['posterior'])['chol_cov_corr'].mean(axis=2))
+correlation_df.index = ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS']
+correlation_df.columns = ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS']
+
+```
+
+
+```{r}
+
+py$summary_df1 |> kable()
+
+```
+
+```{python}
+
+az.plot_forest(idata, var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'lambdas5'], combined=True);
+
+```
+
+```{r}
+
+py$cov_df |> kable()
+
+```
+
+```{r}
+
+py$correlation_df |> kable()
+
+```
+
+
+
