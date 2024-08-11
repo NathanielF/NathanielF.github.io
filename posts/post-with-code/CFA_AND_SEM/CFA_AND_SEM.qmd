@@ -547,7 +547,7 @@ import networkx as nx
 
 
 df_p = pd.read_csv('IIS.dat', sep='\s+')
-df_p.head()
+df_p.head() 
 
 ```
 
@@ -585,7 +585,9 @@ with pm.Model(coords=coords) as model:
   mu = pm.Deterministic('mu', pm.math.stack([m1, m2, m3, m4, m5]).T)
   _  = pm.Normal('likelihood', mu, Psi, observed=df_p.values)
 
-  idata = pm.sample(nuts_sampler='numpyro', target_accept=.95)
+  idata = pm.sample(nuts_sampler='numpyro', target_accept=.95, 
+                    idata_kwargs={"log_likelihood": True})
+  idata.extend(pm.sample_posterior_predictive(idata))
   
 summary_df = az.summary(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi', 'chol_cov_corr'], coords= {'obs': [0, 7]})
 
@@ -596,7 +598,7 @@ summary_df = az.summary(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 
 
 ```{r}
 
-py$summary_df |> kable()
+py$summary_df |> kable() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
 
@@ -669,7 +671,9 @@ with pm.Model(coords=coords) as model:
                                              m8, m9, m10, m11, m12, m13, m14]).T)
   _  = pm.Normal('likelihood', mu, Psi, observed=df[drivers].values)
 
-  idata = pm.sample(nuts_sampler='numpyro', target_accept=.95)
+  idata = pm.sample(nuts_sampler='numpyro', target_accept=.95, 
+                    idata_kwargs={"log_likelihood": True})
+  idata.extend(pm.sample_posterior_predictive(idata))
   
 summary_df1 = az.summary(idata, var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'lambdas5', 'tau', 'Psi'])
 
@@ -688,26 +692,56 @@ correlation_df.columns = ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS']
 
 ```{r}
 
-py$summary_df1 |> kable()
+py$summary_df1 |> kable() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
 
 ```{python}
 
-fig, ax = plt.subplots(figsize=(10, 8))
+fig, ax = plt.subplots(figsize=(15, 8))
 az.plot_forest(idata, var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'lambdas5'], combined=True, ax=ax);
+ax.set_title("Factor Loadings for each of the Five Factors");
 
 ```
 
 ```{r}
 
-py$cov_df |> kable()
+py$cov_df |> kable(caption= "Covariances Amongst Latent Factors",digits=2) |> kable_styling() %>% kable_classic(full_width = F, html_font = "Cambria") |> row_spec(5, color = "red")
 
 ```
 
 ```{r}
 
-py$correlation_df |> kable()
+py$correlation_df |> kable( caption= "Correlations Amongst Latent Factors", digits=2) |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria") |> row_spec(5, color = "red")
+
+
+```
+
+```{python}
+
+fig, axs = plt.subplots(5, 3, figsize=(20, 20))
+axs = axs.flatten()
+for i in range(15):
+    temp = idata['posterior_predictive'].sel({'likelihood_dim_3': i}).mean(dim=('chain', 'draw'))
+    axs[i].hist(df[drivers[i]], alpha=0.3, ec='black', bins=20, label='Observed Scores')
+    axs[i].hist(temp['likelihood'], color='purple', alpha=0.6, bins=20, label='Predicted Scores')
+    axs[i].set_title(f"Posterior Predictive Checks {drivers[i]}")
+    axs[i].legend();
+
+```
+
+
+```{python}
+model_cov = pd.DataFrame(az.extract(idata['posterior_predictive'])['likelihood'][:, :, 0]).cov()
+obs_cov = df[drivers].cov()
+model_cov.index = obs_cov.index
+model_cov.columns = obs_cov.columns
+residuals = model_cov - obs_cov
+```
+
+```{r fig.width=10}
+
+plot_heatmap(py$residuals, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Model fit")
 
 ```
 
