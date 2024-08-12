@@ -1,6 +1,6 @@
 ---
-title: "Confirmatory Factor Analysis and Structural Equation Models"
-subtitle: "Work in Progress"
+title: "Measurement, Latent Factors and Theory Construction"
+subtitle: "Confirmatory Factor Analysis in PyMC"
 categories: ["cfa", "sem", "measurment"]
 keep-ipynb: true
 self-contained: true
@@ -45,11 +45,13 @@ set.seed(130)
 ```
 
 ::: {.callout-warning}
-This is a work in progress. We intend to elaborate the choices related to analysing and understanding the data elicted through intentional psychometrics surveys
+This is a work in progress. We intend to elaborate the choices related to analysing and understanding the data elicted through psychometrics surveys. Psychometric phenomena are inherently complex an imprecisely measured. Special attention needs to the assumptions built into the methodologies used to analyse this species of data. 
 :::
 
 
-## Measurment and Measurment Constructs
+## Measurment and Measurement Constructs
+
+Science is easier when there is a recipe - some formula to follow or a procedure to adopt. You can out-source the responsibility for theory construction and methodological justification. Masking implausible nonsense with well-received mathematical gloss of "statistical significance". Seen from 1000 feet, this is not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification and substantive argument. Evidence is marshalled in service to argument and it's an absurd pretense to claim that data speaks for itself.   
 
 
 
@@ -742,6 +744,89 @@ residuals = model_cov - obs_cov
 ```{r fig.width=10}
 
 plot_heatmap(py$residuals, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Model fit")
+
+```
+
+### Structural Equation Modelling in PyMC
+
+
+```{python, results='hide'}
+
+def make_sem(priors): 
+
+  coords = {'obs': list(range(len(df))), 
+            'indicators': drivers,
+            'indicators_1': ['se_acad_p1','se_acad_p2','se_acad_p3'],
+            'indicators_2': ['se_social_p1','se_social_p2','se_social_p3'],
+            'indicators_3': ['sup_friends_p1','sup_friends_p2','sup_friends_p3'],
+            'indicators_4': [ 'sup_parents_p1','sup_parents_p2','sup_parents_p3'],
+            'indicators_5': ['ls_p1','ls_p2', 'ls_p3'],
+            'latent': ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P'], 
+            'latent1': ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P']
+            }
+
+  obs_idx = list(range(len(df)))
+  with pm.Model(coords=coords) as model:
+    
+    Psi = pm.InverseGamma('Psi', 5, 10, dims='indicators')
+    lambdas_ = pm.Normal('lambdas_1',  priors['lambda'][0], priors['lambda'][1], dims=('indicators_1'))
+    lambdas_1 = pm.Deterministic('lambdas1', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_1'))
+    lambdas_ = pm.Normal('lambdas_2', priors['lambda'][0], priors['lambda'][1], dims=('indicators_2'))
+    lambdas_2 = pm.Deterministic('lambdas2', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_2'))
+    lambdas_ = pm.Normal('lambdas_3', priors['lambda'][0], priors['lambda'][1], dims=('indicators_3'))
+    lambdas_3 = pm.Deterministic('lambdas3', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_3'))
+    lambdas_ = pm.Normal('lambdas_4', priors['lambda'][0], priors['lambda'][1], dims=('indicators_4'))
+    lambdas_4 = pm.Deterministic('lambdas4', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_4'))
+    lambdas_ = pm.Normal('lambdas_5', priors['lambda'][0], priors['lambda'][1], dims=('indicators_5'))
+    lambdas_5 = pm.Deterministic('lambdas5', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_5'))
+    tau = pm.Normal('tau', 3, 10, dims='indicators')
+    kappa = 0
+    sd_dist = pm.Exponential.dist(1.0, shape=4)
+    chol, _, _ = pm.LKJCholeskyCov('chol_cov', n=4, eta=priors['eta'],
+      sd_dist=sd_dist, compute_corr=True)
+    cov = pm.Deterministic("cov", chol.dot(chol.T), dims=('latent', 'latent1'))
+    ksi = pm.MvNormal('ksi', kappa, chol=chol, dims=('obs', 'latent'))
+
+    beta_r = pm.Normal('beta_r', 0, .5, dims='latent')
+    regression = pm.Deterministic('regr', beta_r[0]*ksi[obs_idx, 0] + beta_r[1]*ksi[obs_idx, 1] +
+                                   beta_r[2]*ksi[obs_idx, 2] + beta_r[3]*ksi[obs_idx, 3])
+
+    m0 = tau[0] + ksi[obs_idx, 0]*lambdas_1[0]
+    m1 = tau[1] + ksi[obs_idx, 0]*lambdas_1[1]
+    m2 = tau[2] + ksi[obs_idx, 0]*lambdas_1[2]
+    m3 = tau[3] + ksi[obs_idx, 1]*lambdas_2[0]
+    m4 = tau[4] + ksi[obs_idx, 1]*lambdas_2[1]
+    m5 = tau[5] + ksi[obs_idx, 1]*lambdas_2[2]
+    m6 = tau[6] + ksi[obs_idx, 2]*lambdas_3[0]
+    m7 = tau[7] + ksi[obs_idx, 2]*lambdas_3[1]
+    m8 = tau[8] + ksi[obs_idx, 2]*lambdas_3[2]
+    m9 = tau[9] + ksi[obs_idx, 3]*lambdas_4[0]
+    m10 = tau[10] + ksi[obs_idx, 3]*lambdas_4[1]
+    m11 = tau[11] + ksi[obs_idx, 3]*lambdas_4[2]
+    m12 = tau[12] + regression*lambdas_5[0]
+    m13 = tau[13] + regression*lambdas_5[1]
+    m14 = tau[14] + regression*lambdas_5[2]
+    
+    mu = pm.Deterministic('mu', pm.math.stack([m0, m1, m2, m3, m4, m5, m6, m7,
+                                              m8, m9, m10, m11, m12, m13, m14]).T)
+    _  = pm.Normal('likelihood', mu, Psi, observed=df[drivers].values)
+
+    idata = pm.sample(chains=6, nuts_sampler='numpyro', target_accept=.95, tune=1000,
+                      idata_kwargs={"log_likelihood": True})
+    idata.extend(pm.sample_posterior_predictive(idata))
+
+    return model, idata
+
+
+model1, idata1 = make_sem(priors={'eta': 2, 'lambda': [1, 10]})
+
+
+```
+
+
+```{python}
+
+az.plot_posterior(idata1, var_names=['beta_r'])
 
 ```
 
