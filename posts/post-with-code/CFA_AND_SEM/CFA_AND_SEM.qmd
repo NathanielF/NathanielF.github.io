@@ -51,22 +51,27 @@ This is a work in progress. We intend to elaborate the choices related to analys
 
 ## Measurment and Measurement Constructs
 
-Science is easier when there is a recipe - some formula to follow or a procedure to adopt. You can out-source the responsibility for theory construction and methodological justification. Masking implausible nonsense with well-received mathematical gloss of "statistical significance". Seen from 1000 feet, this is not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification and substantive argument. Evidence is marshalled in service to argument and it's an absurd pretense to claim that data speaks for itself.   
+Science is easier when there is a recipe. When there is some formula to follow,  a procedure to adopt or routine to ape, you can out-source the responsibility for theory construction and methodological justification. One egregious pattern in this vein masks implausible nonsense with much vaunted mathematical gloss of "statistical significance". Seen from 1000 feet, this is not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification and substantive argument. Evidence is marshaled in service to argument. It's an absurd pretense to claim that data speaks for itself in this argument.
 
+Data is found, gathered or maybe even carefully curated. In all cases there is need for a defensive posture, an argument that the data is fit-for-purpose. No where is this more clear than in psychometrics where the data is often derived from a strategically constructed survey aimed at a particular target phenomena. Some intuited, but not yet measured, concept that arguably plays a role in human action, motivation or sentiment. The "fuzziness" of the subject matter in psychometrics has had a catalyzing effect on the methodological rigour sought in the science. Survey designs are agonised over for correct tone and rhythm of sentence structure. Analysis steps are justified and tested under a wealth of modelling routines. Model architectures are defined and refined to better express the hypothesised structures in the data-generating process.
 
+We will examine a smattering of choices available in the analysis of psychometric survey data. We will first step through these analysis routines using `lmer`, `lavaan` before switching to `PyMC` to demonstrate how to fit Confirmatory Factor Analysis models and Structural Equation Models in a Bayesian fashion using a probabilistic programming language.
+
+### The Data
+
+The data is borrowed from work [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem) demonstrating SEM modelling with `Lavaan`. We'll load it up and begind some exploratory work. 
 
 ```{r}
 df = read.csv('sem_data.csv')
-inflate <- df$region == 'west'
-noise <- rnorm(sum(inflate), 0.5, 1) # generate the noise to add
-df$ls_p3[inflate] <- df$ls_p3[inflate] + noise
 df$ls_sum <- df$ls_p1 + df$ls_p2 + df$ls_p3
 df$ls_mean <- rowMeans(df[ c('ls_p1', 'ls_p2', 'ls_p3')])
 
-head(df) |> kable()
+head(df) |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 ```
+The hypothetical dependency structure in this life-satisfaction data set posits a moderations relationship between scores related to life-satisfaction, parental and family support and self-efficacy. It is not a trivial task to be able to design a survey that can elicit answers plausibly mapped to each of these "factors" or themes, never mind finding a model of their relationship that can inform us as to the relative of impact of each on life-satisfaction outcomes.   
 
 ![Candidate Structure](structural_model.png)
+We can pull out the high level summary statistics to better observe the level of information in our metrics. These metrics are thematically clustered because the source survey deliberately targetted each of the underlying themes. 
 
 ```{r}
 
@@ -97,6 +102,7 @@ datasummary_skim(df)|>
 
 ```
 
+Note how we've distinguished among the metrics for the "outcome" metrics and the "driver" metrics. Such a distinction may seem trivial, but it is only possible because we bring substantive knowledge to bear on the problem in the design of our survey and the postulation of the theoretical construct. Yet our data is a multivariate outcome with a large range of possible interacting effects and the patterns of realisation for our life-satisfaction scores may be quite different than the hypothesised structure. It is this open question that we're aiming to uncover in the analysis of psychometrics surveys. 
 
 ```{r fig.width=10, fig.height=10}
 
@@ -125,7 +131,7 @@ g2 = plot_heatmap(cor(df[,  drivers]), "Sample Correlations")
 plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 ```
-
+Note the relative strong correlations between measures of parental support and the life-satisfaction outcome `ls_p3`. This does suggest 
 
 ## Fit Initial Regression Models
 
@@ -274,10 +280,10 @@ plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 ```{r, fig.width=10}
 
 formula_hierarchy_mean = "ls_mean ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 + sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_acad_p1 + se_acad_p2 + se_acad_p3 +
-se_social_p1 + se_social_p2 + se_social_p3  + (1 | region)"
+se_social_p1 + se_social_p2 + se_social_p3  + (1 | gender)"
 
 formula_hierarchy_sum = "ls_sum ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 + sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_acad_p1 + se_acad_p2 + se_acad_p3 +
-se_social_p1 + se_social_p2 + se_social_p3 + (1 | region)"
+se_social_p1 + se_social_p2 + se_social_p3 + (1 | gender)"
 
 hierarchical_mean_fit <- lmer(formula_hierarchy_mean, data = df, REML = TRUE)
 hierarchical_sum_fit <- lmer(formula_hierarchy_sum, data = df, REML = TRUE)
@@ -316,7 +322,7 @@ modelsummary(list("hierarchical_mean_fit"= hierarchical_mean_fit,
 pred <- predictions(hierarchical_mean_fit, newdata = datagrid(sup_parents_p3 = 1:10, region=c('east', 'west')), re.form=NA)
 pred1 <- predictions(mod_mean, newdata = datagrid(sup_parents_p2 = 1:10))
 
-pred1 |> head() |> kableExtra::kable()
+pred1 |> head() |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 
 ```
@@ -344,11 +350,11 @@ plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
 
 ```{r, fig.width=10, fig.height=10}
 
-g = plot_predictions(hierarchical_mean_fit, condition = c("sup_parents_p3", "region"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_parents_p3", "Holding all else Fixed")
+g = plot_predictions(hierarchical_mean_fit, condition = c("sup_parents_p3", "gender"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_parents_p3", "Holding all else Fixed")
 
-g1 = plot_predictions(hierarchical_mean_fit, condition = c("sup_friends_p1", "region"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_friends_p1", "Holding all else Fixed")
+g1 = plot_predictions(hierarchical_mean_fit, condition = c("sup_friends_p1", "gender"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_friends_p1", "Holding all else Fixed")
 
-g2 = plot_predictions(hierarchical_mean_fit, condition = c("se_acad_p1", "region"), 
+g2 = plot_predictions(hierarchical_mean_fit, condition = c("se_acad_p1", "gender"), 
                       type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: se_acad_p1", "Holding all else Fixed")
 
 plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
@@ -420,7 +426,7 @@ summary_df = cbind(fitMeasures(fit_mod, c("chisq", "baseline.chisq", "cfi", "aic
       fitMeasures(fit_mod_1, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")))
 colnames(summary_df) = c('Full Model', 'Reduced Model')
 
-summary_df
+summary_df |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
 
@@ -545,6 +551,7 @@ import matplotlib.pyplot as plt
 from pytensor import tensor as pt
 import arviz as az
 import networkx as nx
+np.random.seed(150)
 
 
 
@@ -619,7 +626,9 @@ drivers = ['se_acad_p1', 'se_acad_p2',
        'sup_friends_p1', 'sup_friends_p2', 'sup_friends_p3', 'sup_parents_p1',
        'sup_parents_p2', 'sup_parents_p3', 'ls_p1', 'ls_p2', 'ls_p3']
        
-       
+```
+
+```{python results='hide'}
 coords = {'obs': list(range(len(df))), 
           'indicators': drivers,
           'indicators_1': ['se_acad_p1','se_acad_p2','se_acad_p3'],
@@ -673,8 +682,8 @@ with pm.Model(coords=coords) as model:
                                              m8, m9, m10, m11, m12, m13, m14]).T)
   _  = pm.Normal('likelihood', mu, Psi, observed=df[drivers].values)
 
-  idata = pm.sample(nuts_sampler='numpyro', target_accept=.95, 
-                    idata_kwargs={"log_likelihood": True})
+  idata = pm.sample(nuts_sampler='numpyro', target_accept=.95, tune=1000,
+                    idata_kwargs={"log_likelihood": True}, random_seed=100)
   idata.extend(pm.sample_posterior_predictive(idata))
   
 summary_df1 = az.summary(idata, var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'lambdas5', 'tau', 'Psi'])
@@ -719,16 +728,20 @@ py$correlation_df |> kable( caption= "Correlations Amongst Latent Factors", digi
 
 ```
 
-```{python}
+```{python, fig.width=10, fig.height=15}
 
-fig, axs = plt.subplots(5, 3, figsize=(20, 20))
-axs = axs.flatten()
-for i in range(15):
-    temp = idata['posterior_predictive'].sel({'likelihood_dim_3': i}).mean(dim=('chain', 'draw'))
-    axs[i].hist(df[drivers[i]], alpha=0.3, ec='black', bins=20, label='Observed Scores')
-    axs[i].hist(temp['likelihood'], color='purple', alpha=0.6, bins=20, label='Predicted Scores')
-    axs[i].set_title(f"Posterior Predictive Checks {drivers[i]}")
-    axs[i].legend();
+def make_ppc(idata):
+  fig, axs = plt.subplots(5, 3, figsize=(20, 20))
+  axs = axs.flatten()
+  for i in range(15):
+      temp = idata['posterior_predictive'].sel({'likelihood_dim_3': i}).mean(dim=('chain', 'draw'))
+      axs[i].hist(df[drivers[i]], alpha=0.3, ec='black', bins=20, label='Observed Scores')
+      axs[i].hist(temp['likelihood'], color='purple', alpha=0.6, bins=20, label='Predicted Scores')
+      axs[i].set_title(f"Posterior Predictive Checks {drivers[i]}")
+      axs[i].legend();
+  plt.show()
+  
+make_ppc(idata)
 
 ```
 
@@ -747,7 +760,7 @@ plot_heatmap(py$residuals, "Residuals of the Sample Covariances and Model Implie
 
 ```
 
-### Structural Equation Modelling in PyMC
+## Structural Equation Modelling in PyMC
 
 
 ```{python, results='hide'}
@@ -787,7 +800,7 @@ def make_sem(priors):
     cov = pm.Deterministic("cov", chol.dot(chol.T), dims=('latent', 'latent1'))
     ksi = pm.MvNormal('ksi', kappa, chol=chol, dims=('obs', 'latent'))
 
-    beta_r = pm.Normal('beta_r', 0, .5, dims='latent')
+    beta_r = pm.Normal('beta_r', 0, 1, dims='latent')
     regression = pm.Deterministic('regr', beta_r[0]*ksi[obs_idx, 0] + beta_r[1]*ksi[obs_idx, 1] +
                                    beta_r[2]*ksi[obs_idx, 2] + beta_r[3]*ksi[obs_idx, 3])
 
@@ -812,21 +825,28 @@ def make_sem(priors):
     _  = pm.Normal('likelihood', mu, Psi, observed=df[drivers].values)
 
     idata = pm.sample(chains=6, nuts_sampler='numpyro', target_accept=.95, tune=1000,
-                      idata_kwargs={"log_likelihood": True})
+                      idata_kwargs={"log_likelihood": True}, random_seed=100)
     idata.extend(pm.sample_posterior_predictive(idata))
 
     return model, idata
 
 
-model1, idata1 = make_sem(priors={'eta': 2, 'lambda': [1, 10]})
+model1, idata1 = make_sem(priors={'eta': 2, 'lambda': [1, 2]})
 
 
 ```
 
 
-```{python}
+![Structural Equation Models](sem_model.svg)
 
-az.plot_posterior(idata1, var_names=['beta_r'])
+```{python, fig.width=10, fig.height=10}
+az.plot_posterior(idata1, var_names=['beta_r']);
+
+```
+
+```{python, fig.width=10, fig.width=15}
+
+make_ppc(idata1)
 
 ```
 
