@@ -27,6 +27,7 @@ library(reticulate)
 library(marginaleffects)
 library(modelsummary)
 library(ggplot2)
+library(tidyr)
 library(egg)
 library(lme4)
 library(semPlot)
@@ -102,7 +103,9 @@ datasummary_skim(df)|>
 
 ```
 
-Note how we've distinguished among the metrics for the "outcome" metrics and the "driver" metrics. Such a distinction may seem trivial, but it is only possible because we bring substantive knowledge to bear on the problem in the design of our survey and the postulation of the theoretical construct. Yet our data is a multivariate outcome with a large range of possible interacting effects and the patterns of realisation for our life-satisfaction scores may be quite different than the hypothesised structure. It is this open question that we're aiming to uncover in the analysis of psychometrics surveys. 
+Note how we've distinguished among the metrics for the "outcome" metrics and the "driver" metrics. Such a distinction may seem trivial, but it is only possible because we bring substantive knowledge to bear on the problem in the design of our survey and the postulation of the theoretical construct. Our data is a multivariate outcome with a large range of possible interacting effects and the patterns of realisation for our life-satisfaction scores may be quite different than the hypothesised structure. It is this open question that we're aiming to uncover in the analysis of psychometrics surveys. 
+
+### Sample Covariances and Correlations
 
 ```{r fig.width=10, fig.height=10}
 
@@ -131,9 +134,42 @@ g2 = plot_heatmap(cor(df[,  drivers]), "Sample Correlations")
 plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 ```
-Note the relative strong correlations between measures of parental support and the life-satisfaction outcome `ls_p3`. This does suggest 
+Note the relatively strong correlations between measures of parental support and the life-satisfaction outcome `ls_p3`. Similarly, how the social self-efficacy scores seem similarly correlated with the secondary life satisfaction indicator `ls_p2`. These observed correlations merit some further investigation. We can plot the pairs of scatter plots. 
+
+```{r fig.width=15, fig.height=15}
+
+df <- df |> 
+  mutate(id = row_number()) 
+
+# Prepare data to be plotted on the x axis
+x_vars <- pivot_longer(data = df,
+             cols = se_acad_p1:ls_p3,
+             names_to = "variable_x",
+             values_to = "x")
+
+# Prepare data to be plotted on the y axis  
+y_vars <- pivot_longer(data = df,
+                       cols = se_acad_p1:ls_p3,
+                       names_to = "variable_y",
+                       values_to = "y") 
+
+# Join data for x and y axes and make plot
+full_join(x_vars, y_vars, 
+          by = c("id"),
+          relationship = "many-to-many") |>
+  ggplot() + 
+  aes(x = x, y = y) +
+  geom_point() +
+  facet_grid(c("variable_x", "variable_y"))  + ggtitle("Pair Plot of Indicator Metrics", 
+                                                       "Comparing Against Life Satisfaction Scores")
+
+```
+
+The scatter plots among the highly correlated variables in the heatmap do seem to exhibit some kind of linear relationship with aspects of the life-satisfaction scores. We now turn to modelling these relationships to tease out some kind of inferential summary of that relationship. 
 
 ## Fit Initial Regression Models
+
+To model these relationships we make use of the aggregated sum and mean scores to model the relationships between these indicator metrics and life-satisfaction. We fit a variety of models each one escalating in the number of indicator metrics we incorporate into our model of the life-satisfaction outcome. This side-steps the multivariate nature of hypothesised constructs and crudely amalgamates the indicator metrics. This may be more or less justified depending on how similar in theme the three outcome questions `ls_p1, ls_p2, ls_p3` are in nature. 
 
 ```{r}
 
@@ -183,6 +219,8 @@ models = list(
 
 ```
 
+The classical presentation of regression models reports the coefficient weights accorded to each of the input variables. We present these models to highlight that the manner in which we represent our theoretical constructs has ramifications for the interpretation of the data generating process. In particular, note how different degrees of significance are accorded to the different variables depending on which variables are included.
+
 ```{r, class.source = 'fold-hide', fig.width=10}
 
 #| code-fold: true
@@ -197,6 +235,9 @@ modelsummary(models, stars=TRUE, shape ="cbind") |>
    italic = TRUE)
 
 ```
+
+We can similarly plot the coefficient values and their uncertainty highlighting how the representation or scaling of the variables impact the scale of the coefficient weights and therefore the surety of any subsequent claims. 
+
 
 ```{r, fig.width=10, fig.height=10}
 
@@ -216,16 +257,18 @@ modelplot(models, coef_omit = 'Intercept') + geom_vline(xintercept = 0, linetype
 
 ```
 
-### Significant Coefficients
+### Significant Coefficients?
+
+An alternative lens on these figures highlights the statistical significance of the coefficients. But again, these criteria are much abused. Significance at what level? Conditional on which representation? 
 
 ```{r, fig.width=10, fig.height=10}
 
 
-g1 = modelplot(mod_sum, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
-  scale_color_manual(values = c("grey", "black"),  guide = "none")
+g1 = modelplot(mod_sum, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.001, "Significant at 0.001", "Not significant at 0.001")) +
+  scale_color_manual(values = c("grey", "blue")) + ggtitle("Significance of Coefficient Values", "At Different Levels")
 
 
-g2 = modelplot(mod_mean, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
+g2 = modelplot(mod_mean, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant at 0.05")) +
   scale_color_manual(values = c("grey", "black"))
 
 plot <- ggarrange(g1,g2, ncol=2, nrow=1);
@@ -234,7 +277,9 @@ plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 ```
 
-## Aggregate Driver Scores
+### Aggregate Driver Scores
+
+Perhaps we play with the feature representation and increase the proportion of significant indicators. Can we now tell a more definitive story about how parental support and social self-efficact are determinants of self-reported life-satisfaction scores?
 
 ```{r}
 
@@ -259,14 +304,15 @@ modelsummary(models_parcel, stars=TRUE)
 
 ```
 
+What does definitive mean here? Is it so simple as more significant coefficents?
 
 ```{r, fig.width = 10}
 
-g1 = modelplot(mod_sum_parcel, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
-  scale_color_manual(values = c("grey", "black"), guide = "none")
+g1 = modelplot(mod_sum_parcel, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.001, "Significant at 0.001", "Not significant at 0.001")) +
+  scale_color_manual(values = c("grey", "blue")) + ggtitle("Significance of Coefficient Values", "At Different Levels")
 
 
-g2 = modelplot(mod_mean_parcel, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
+g2 = modelplot(mod_mean_parcel, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant at 0.05")) +
   scale_color_manual(values = c("grey", "black"))
 
 plot <- ggarrange(g1,g2, ncol=2, nrow=1);
@@ -274,24 +320,25 @@ plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 
 ```
+This kind of brinksmanship is brittle. Anyone of these kinds of choice __can__ be justified but more often than not results from an exploratory process. Steps down a garden of forking paths seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicable and repeated under identical conditions. By exploring the different representations, presentations and narrative criteria of adequacy we break those guarantees. 
 
 ## Hierarchical Models
 
 ```{r, fig.width=10}
 
 formula_hierarchy_mean = "ls_mean ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 + sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_acad_p1 + se_acad_p2 + se_acad_p3 +
-se_social_p1 + se_social_p2 + se_social_p3  + (1 | gender)"
+se_social_p1 + se_social_p2 + se_social_p3  + (1 | region)"
 
 formula_hierarchy_sum = "ls_sum ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 + sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_acad_p1 + se_acad_p2 + se_acad_p3 +
-se_social_p1 + se_social_p2 + se_social_p3 + (1 | gender)"
+se_social_p1 + se_social_p2 + se_social_p3 + (1 | region)"
 
 hierarchical_mean_fit <- lmer(formula_hierarchy_mean, data = df, REML = TRUE)
 hierarchical_sum_fit <- lmer(formula_hierarchy_sum, data = df, REML = TRUE)
 
-g1 = modelplot(hierarchical_mean_fit, re.form=NA) +  aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
-  scale_color_manual(values = c("grey", "black"),  guide = "none")
+g1 = modelplot(hierarchical_mean_fit, re.form=NA) +  aes(color = ifelse(p.value < 0.001, "Significant at 0.001", "Not significant at 0.001")) +
+  scale_color_manual(values = c("grey", "blue")) + ggtitle("Significance of Coefficient Values", "At Different Levels")
 
-g2 = modelplot(hierarchical_sum_fit, re.form=NA) +  aes(color = ifelse(p.value < 0.001, "Significant", "Not significant")) +
+g2 = modelplot(hierarchical_sum_fit, re.form=NA) +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant 0.05")) +
   scale_color_manual(values = c("grey", "black"))
 
 
@@ -350,11 +397,11 @@ plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
 
 ```{r, fig.width=10, fig.height=10}
 
-g = plot_predictions(hierarchical_mean_fit, condition = c("sup_parents_p3", "gender"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_parents_p3", "Holding all else Fixed")
+g = plot_predictions(hierarchical_mean_fit, condition = c("sup_parents_p3", "region"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_parents_p3", "Holding all else Fixed")
 
-g1 = plot_predictions(hierarchical_mean_fit, condition = c("sup_friends_p1", "gender"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_friends_p1", "Holding all else Fixed")
+g1 = plot_predictions(hierarchical_mean_fit, condition = c("sup_friends_p1", "region"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_friends_p1", "Holding all else Fixed")
 
-g2 = plot_predictions(hierarchical_mean_fit, condition = c("se_acad_p1", "gender"), 
+g2 = plot_predictions(hierarchical_mean_fit, condition = c("se_acad_p1", "region"), 
                       type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: se_acad_p1", "Holding all else Fixed")
 
 plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
