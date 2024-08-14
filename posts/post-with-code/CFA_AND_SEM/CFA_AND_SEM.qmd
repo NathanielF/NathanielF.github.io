@@ -279,7 +279,7 @@ plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 ### Aggregate Driver Scores
 
-Perhaps we play with the feature representation and increase the proportion of significant indicators. Can we now tell a more definitive story about how parental support and social self-efficact are determinants of self-reported life-satisfaction scores?
+Perhaps we play with the feature representation and increase the proportion of significant indicators. Can we now tell a more definitive story about how parental support and social self-efficact are determinants of self-reported life-satisfaction scores? Let's focus here on the sum score representation and add interaction effects.
 
 ```{r}
 
@@ -289,38 +289,77 @@ df$sup_friends_mean <- rowMeans(df[c('sup_friends_p1', 'sup_friends_p2', 'sup_fr
 df$sup_parents_mean <- rowMeans(df[c('sup_parents_p1', 'sup_parents_p2', 'sup_parents_p3')])
 
 
-formula_parcel_mean = "ls_mean ~ se_acad_mean + se_social_mean + sup_friends_mean + sup_parents_mean"
+formula_parcel_sum = "ls_sum ~ se_acad_mean + se_social_mean +
+sup_friends_mean + sup_parents_mean " #sup_parents_mean*se_social_mean"
 
-formula_parcel_sum = "ls_sum ~ se_acad_mean + se_social_mean + sup_friends_mean + sup_parents_mean"
+formula_parcel_sum_inter = "ls_sum ~ se_acad_mean + se_social_mean + 
+sup_friends_mean + sup_parents_mean + sup_parents_mean*se_social_mean"
 
 mod_sum_parcel = lm(formula_parcel_sum, df)
-mod_mean_parcel = lm(formula_parcel_mean, df)
+mod_sum_inter_parcel = lm(formula_parcel_sum_inter, df)
 
 models_parcel = list("model_sum_score" = mod_sum_parcel,
-     "model_mean_score"= mod_mean_parcel
+     "model_sum_inter_score"= mod_sum_inter_parcel
      )
 
 modelsummary(models_parcel, stars=TRUE)
 
 ```
 
-What does definitive mean here? Is it so simple as more significant coefficents?
+What does definitive mean here? Is it so simple as more significant coefficents? Marginally better performance measures?
 
-```{r, fig.width = 10}
+```{r, fig.width = 14}
 
-g1 = modelplot(mod_sum_parcel, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.001, "Significant at 0.001", "Not significant at 0.001")) +
-  scale_color_manual(values = c("grey", "blue")) + ggtitle("Significance of Coefficient Values", "At Different Levels")
+g1 = modelplot(mod_sum_parcel, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant at 0.05")) +
+  scale_color_manual(values = c("grey", "blue")) + ggtitle("Significance of Coefficient Values", "At Different Levels for Sum and Mean Scores Life Satisfaction ")
 
 
-g2 = modelplot(mod_mean_parcel, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant at 0.05")) +
-  scale_color_manual(values = c("grey", "black"))
+g2 = modelplot(mod_sum_inter_parcel, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant at 0.05")) +
+  scale_color_manual(values = c("grey", "blue"))
 
 plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 
 
 ```
-This kind of brinksmanship is brittle. Anyone of these kinds of choice __can__ be justified but more often than not results from an exploratory process. Steps down a garden of forking paths seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicable and repeated under identical conditions. By exploring the different representations, presentations and narrative criteria of adequacy we break those guarantees. 
+This kind of brinkmanship is brittle. Any one of these kinds of choice __can__ be justified but more often than not results from an suspect exploratory process. Steps down a garden of forking paths seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicable and repeated under identical conditions. By exploring the different representations and narrative criteria of adequacy we break those guarantees.
+
+## Exploratory and Confirmatory Modes
+
+One of the things that psychometrics has pioneered well is the distinction between an exploratory and confirmatory models. This  distinction, when made explicit, partially guards against the abuse of inferential integrity we see in more common work-flows. But additionally, models are often opaque - you may (as above) have improved some measure of model fit, changed the parameter weighting accorded to an observed feature, but that does that mean? Exploration of model architectures, design choices and feature creation is just how we come to understand the meaning of a model specification. Even in the simple case of regression we've seen how adding interaction terms changes the interpretability of a model. How then are we to stand behind uncertainty estimates accorded to parameter weights when we barely intuit the implications of a model design?
+
+### Marginal Effects
+
+Evaluating inferences
+
+
+```{r, fig.width=10}
+pred <- predictions(mod_sum_parcel, newdata = datagrid(sup_parents_mean = 1:10 ))
+pred1 <- predictions(mod_sum_inter_parcel, newdata = datagrid(sup_parents_mean = 1:10))
+
+pred1 |> head() |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
+
+```
+
+```{r}
+
+pred |> head() |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
+
+```
+
+#### Regression Marginal Effects
+
+```{r, fig.width=10, fig.height=10}
+
+g = plot_predictions(mod_sum_parcel, condition = c("se_social_mean"), type = "response") + ggtitle("Counterfactual Shift of Outcome: se_social_mean", "Holding all else Fixed")
+
+g1 = plot_predictions(mod_sum_inter_parcel, condition = c("se_social_mean"), type = "response") + ggtitle("Counterfactual Shift of Outcome: se_social_mean", "Holding all else Fixed Interaction Model")
+
+plot <- ggarrange(g,g1, ncol=1, nrow=2);
+
+
+```
+
 
 ## Hierarchical Models
 
@@ -361,36 +400,6 @@ modelsummary(list("hierarchical_mean_fit"= hierarchical_mean_fit,
 
 ```
 
-### Marginal Effects
-
-
-
-```{r, fig.width=10}
-pred <- predictions(hierarchical_mean_fit, newdata = datagrid(sup_parents_p3 = 1:10, region=c('east', 'west')), re.form=NA)
-pred1 <- predictions(mod_mean, newdata = datagrid(sup_parents_p2 = 1:10))
-
-pred1 |> head() |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
-
-
-```
-
-#### Regression Marginal Effects
-
-```{r, fig.width=10, fig.height=10}
-
-g = plot_predictions(mod_mean, condition = c("sup_parents_p3"), type = "response") + ggtitle("Counterfactual Shift of Outcome: sup_parents_p3", "Holding all else Fixed")
-
-g1 = plot_predictions(mod_mean, condition = c("sup_friends_p1"), type = "response") + ggtitle("Counterfactual Shift of Outcome: sup_friends_p1", "Holding all else Fixed")
-
-g2 = plot_predictions(mod_mean, condition = c("se_acad_p1"), 
-                      type = "response") + ggtitle("Counterfactual Shift of Outcome: se_acad_p1", "Holding all else Fixed")
-
-plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
-
-
-
-
-```
 
 
 #### Hierarchical Marginal Effects
