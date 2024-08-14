@@ -326,40 +326,44 @@ This kind of brinkmanship is brittle. Any one of these kinds of choice __can__ b
 
 ## Exploratory and Confirmatory Modes
 
-One of the things that psychometrics has pioneered well is the distinction between an exploratory and confirmatory models. This  distinction, when made explicit, partially guards against the abuse of inferential integrity we see in more common work-flows. But additionally, models are often opaque - you may (as above) have improved some measure of model fit, changed the parameter weighting accorded to an observed feature, but that does that mean? Exploration of model architectures, design choices and feature creation is just how we come to understand the meaning of a model specification. Even in the simple case of regression we've seen how adding interaction terms changes the interpretability of a model. How then are we to stand behind uncertainty estimates accorded to parameter weights when we barely intuit the implications of a model design?
+One of the things that psychometrics has pioneered well is the distinction between an exploratory and confirmatory models. This  distinction, when made explicit, partially guards against the abuse of inferential integrity we see in more common work-flows. But additionally, models are often opaque - you may (as above) have improved some measure of model fit, changed the parameter weighting accorded to an observed feature, but what does that mean? Exploration of model architectures, design choices and feature creation is just how we come to understand the meaning of a model specification. Even in the simple case of regression we've seen how adding an interaction term changes the interpretability of a model. How then are we to stand behind uncertainty estimates accorded to parameter weights when we barely intuit the implications of a model design?
 
 ### Marginal Effects
 
-Evaluating inferences
+The answer is to not to rely on intuition, but push forward and test the tangible implications of a fitted model. Subject the logical consequences of the design to appropriate scrutiny. We understand the implications and relative plausibility of model more easily in terms of the predicted outcomes than we do the subtle interaction effects in the parameter space. As such we should adopt this view in our evaluation of a model fit too. 
 
+Consider how we do this using Vincent Arel-Bundock's wonderful `marginaleffects` package passing a grid of new values through to our fitted model.
 
 ```{r, fig.width=10}
-pred <- predictions(mod_sum_parcel, newdata = datagrid(sup_parents_mean = 1:10 ))
-pred1 <- predictions(mod_sum_inter_parcel, newdata = datagrid(sup_parents_mean = 1:10))
+pred <- predictions(mod_sum_parcel, newdata = datagrid(sup_parents_mean = 1:10, se_social_mean = 1:10 ))
+pred1 <- predictions(mod_sum_inter_parcel, newdata = datagrid(sup_parents_mean = 1:10, se_social_mean = 1:10))
 
-pred1 |> head() |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
+pred1  |> tail(10) |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
+We will see here how the impact of changes in `se_social_mean` is much reduced when `sup_parent_mean` is held fixed at high values (9, 10) when our model allows for an interaction effect.
 
 ```{r}
 
-pred |> head() |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
+pred |> head(10) |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
+This modifying effect is not as evident in the simpler model. We can see this more clearly with a plot of the marginal effects. 
 
 #### Regression Marginal Effects
 
 ```{r, fig.width=10, fig.height=10}
 
-g = plot_predictions(mod_sum_parcel, condition = c("se_social_mean"), type = "response") + ggtitle("Counterfactual Shift of Outcome: se_social_mean", "Holding all else Fixed")
+g = plot_predictions(mod_sum_parcel, condition = c("se_social_mean", "sup_parents_mean"), type = "response") + ggtitle("Counterfactual Shift of Outcome: se_social_mean", "Holding all else Fixed: Simple Model")
 
-g1 = plot_predictions(mod_sum_inter_parcel, condition = c("se_social_mean"), type = "response") + ggtitle("Counterfactual Shift of Outcome: se_social_mean", "Holding all else Fixed Interaction Model")
+g1 = plot_predictions(mod_sum_inter_parcel, condition = c("se_social_mean", "sup_parents_mean"), type = "response") + ggtitle("Counterfactual Shift of Outcome: se_social_mean", "Holding all else Fixed Interaction Model")
 
 plot <- ggarrange(g,g1, ncol=1, nrow=2);
 
 
 ```
 
+Here we've pulled out some of the implications in terms of the outcome predictions we 
 
 ## Hierarchical Models
 
