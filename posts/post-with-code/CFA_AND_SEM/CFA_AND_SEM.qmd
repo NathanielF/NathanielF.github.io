@@ -159,7 +159,7 @@ full_join(x_vars, y_vars,
           relationship = "many-to-many") |>
   ggplot() + 
   aes(x = x, y = y) +
-  geom_point() +
+  geom_point() + geom_smooth(method='lm') +
   facet_grid(c("variable_x", "variable_y"))  + ggtitle("Pair Plot of Indicator Metrics", 
                                                        "Comparing Against Life Satisfaction Scores")
 
@@ -348,9 +348,11 @@ We will see here how the impact of changes in `se_social_mean` is much reduced w
 pred |> head(10) |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
-This modifying effect is not as evident in the simpler model. We can see this more clearly with a plot of the marginal effects. 
+This modifying effect is not as evident in the simpler model.
 
 #### Regression Marginal Effects
+
+We can see this more clearly with a plot of the marginal effects. 
 
 ```{r, fig.width=10, fig.height=10}
 
@@ -365,35 +367,42 @@ plot <- ggarrange(g,g1, ncol=1, nrow=2);
 
 Here we've pulled out some of the implications in terms of the outcome predictions we 
 
-## Hierarchical Models
+## Models with Controls
+
+The garden of forking paths presents itself within any set of covariates. How do we represent their effects? Which interactions are meaningful? How do we argue for one model design over another? The questionable paths are multiplied when we begin to consider additional covariates and group effects. But also additional covariates help structure our expectations too. Yes, you can cut and chop your way to through the garden to find some spurious correlation but more plausibly you can bring in structurally important variables which helpfully moderate the outcomes based on our understanding of the data generating process.  
+
+Let's assess the question but this time we allow the model to account for differences in `region`. 
 
 ```{r, fig.width=10}
 
-formula_hierarchy_mean = "ls_mean ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 + sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_acad_p1 + se_acad_p2 + se_acad_p3 +
-se_social_p1 + se_social_p2 + se_social_p3  + (1 | region)"
+formula_no_grp_sum = "ls_sum ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 + sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_acad_p1 + se_acad_p2 + se_acad_p3 +
+se_social_p1 + se_social_p2 + se_social_p3"
 
-formula_hierarchy_sum = "ls_sum ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 + sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_acad_p1 + se_acad_p2 + se_acad_p3 +
-se_social_p1 + se_social_p2 + se_social_p3 + (1 | region)"
+formula_grp_sum = "ls_sum ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 + sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_acad_p1 + se_acad_p2 + se_acad_p3 +
+se_social_p1 + se_social_p2 + se_social_p3 + factor(region) + sup_parents_p3:se_social_p3"
 
-hierarchical_mean_fit <- lmer(formula_hierarchy_mean, data = df, REML = TRUE)
-hierarchical_sum_fit <- lmer(formula_hierarchy_sum, data = df, REML = TRUE)
+no_grp_sum_fit <- lm(formula_no_grp_sum , data = df)
+grp_sum_fit <- lm(formula_grp_sum, data = df)
 
-g1 = modelplot(hierarchical_mean_fit, re.form=NA) +  aes(color = ifelse(p.value < 0.001, "Significant at 0.001", "Not significant at 0.001")) +
-  scale_color_manual(values = c("grey", "blue")) + ggtitle("Significance of Coefficient Values", "At Different Levels")
+g1 = modelplot(no_grp_sum_fit, re.form=NA) +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant at 0.001")) +
+  scale_color_manual(values = c("grey", "blue"), guide='none') + ggtitle("Significance of Coefficient Values", "No Group Effects Model")
 
-g2 = modelplot(hierarchical_sum_fit, re.form=NA) +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant 0.05")) +
-  scale_color_manual(values = c("grey", "black"))
+g2 = modelplot(grp_sum_fit, re.form=NA) +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant 0.05")) +
+  scale_color_manual(values = c("grey", "blue")) + ggtitle("Significance of Coefficient Values", "Group Effects Model")
+
 
 
 plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 
 ```
+We can see here how the additional factor variable is reported to be significant conditional on a model specification. However the intercept is no longer well identified. 
+
 
 ```{r}
 
-modelsummary(list("hierarchical_mean_fit"= hierarchical_mean_fit,
-                  "hierarchical_sum_fit"= hierarchical_sum_fit), 
+modelsummary(list("No Group Effects Fit"= no_grp_sum_fit,
+                  "Group Effects Fit"= grp_sum_fit), 
              stars = TRUE) |> 
  style_tt(
    i = 2:25,
@@ -404,22 +413,26 @@ modelsummary(list("hierarchical_mean_fit"= hierarchical_mean_fit,
 
 ```
 
+Again the cleanest way to interpret the implications of these specifications is derive the conditional marginal effects and assess these for plausibility.
 
 
-#### Hierarchical Marginal Effects
+#### Group Marginal Effects
+
+We see here the different levels expected for different regional responses for changes in each of these input variables. 
 
 ```{r, fig.width=10, fig.height=10}
 
-g = plot_predictions(hierarchical_mean_fit, condition = c("sup_parents_p3", "region"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_parents_p3", "Holding all else Fixed")
+g = plot_predictions(grp_sum_fit, condition = c("sup_parents_p3", "region"), type = "response") + ggtitle("Counterfactual Shift of Outcome: sup_parents_p3", "Holding all else Fixed")
 
-g1 = plot_predictions(hierarchical_mean_fit, condition = c("sup_friends_p1", "region"), type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: sup_friends_p1", "Holding all else Fixed")
+g1 = plot_predictions(grp_sum_fit, condition = c("sup_friends_p1", "region"), type = "response") + ggtitle("Counterfactual Shift of Outcome: sup_friends_p1", "Holding all else Fixed")
 
-g2 = plot_predictions(hierarchical_mean_fit, condition = c("se_acad_p1", "region"), 
-                      type = "response", re.form=NA) + ggtitle("Counterfactual Shift of Outcome: se_acad_p1", "Holding all else Fixed")
+g2 = plot_predictions(grp_sum_fit, condition = c("se_acad_p1", "region"), 
+                      type = "response") + ggtitle("Counterfactual Shift of Outcome: se_acad_p1", "Holding all else Fixed")
 
 plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
 
 ```
+## Model Design and Conditional Exchangeability
 
 ## Confirmatory Factor Analysis
 
@@ -911,4 +924,142 @@ make_ppc(idata1)
 ```
 
 
+## SEM and Indirect Effects
+
+```{python results='hide'}
+
+
+def make_indirect_sem(priors): 
+
+  coords = {'obs': list(range(len(df))), 
+            'indicators': drivers,
+            'indicators_1': ['se_acad_p1','se_acad_p2','se_acad_p3'],
+            'indicators_2': ['se_social_p1','se_social_p2','se_social_p3'],
+            'indicators_3': ['sup_friends_p1','sup_friends_p2','sup_friends_p3'],
+            'indicators_4': [ 'sup_parents_p1','sup_parents_p2','sup_parents_p3'],
+            'indicators_5': ['ls_p1','ls_p2', 'ls_p3'],
+            'latent': ['SUP_F', 'SUP_P'], 
+            'latent1': ['SUP_F', 'SUP_P'], 
+            'latent_regression': ['SUP_F->SE_ACAD', 'SUP_P->SE_ACAD', 'SUP_F->SE_SOC', 'SUP_P->SE_SOC'],
+            'regression': ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P']
+            }
+
+  obs_idx = list(range(len(df)))
+  with pm.Model(coords=coords) as model:
+    
+    Psi = pm.InverseGamma('Psi', 5, 10, dims='indicators')
+    lambdas_ = pm.Normal('lambdas_1',  priors['lambda'][0], priors['lambda'][1], dims=('indicators_1'))
+    lambdas_1 = pm.Deterministic('lambdas1', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_1'))
+    lambdas_ = pm.Normal('lambdas_2', priors['lambda'][0], priors['lambda'][1], dims=('indicators_2'))
+    lambdas_2 = pm.Deterministic('lambdas2', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_2'))
+    lambdas_ = pm.Normal('lambdas_3', priors['lambda'][0], priors['lambda'][1], dims=('indicators_3'))
+    lambdas_3 = pm.Deterministic('lambdas3', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_3'))
+    lambdas_ = pm.Normal('lambdas_4', priors['lambda'][0], priors['lambda'][1], dims=('indicators_4'))
+    lambdas_4 = pm.Deterministic('lambdas4', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_4'))
+    lambdas_ = pm.Normal('lambdas_5', priors['lambda'][0], priors['lambda'][1], dims=('indicators_5'))
+    lambdas_5 = pm.Deterministic('lambdas5', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_5'))
+    tau = pm.Normal('tau', 3, 10, dims='indicators')
+    kappa = 0
+    sd_dist = pm.Exponential.dist(1.0, shape=2)
+    chol, _, _ = pm.LKJCholeskyCov('chol_cov', n=2, eta=priors['eta'],
+      sd_dist=sd_dist, compute_corr=True)
+    cov = pm.Deterministic("cov", chol.dot(chol.T), dims=('latent', 'latent1'))
+    ksi = pm.MvNormal('ksi', kappa, chol=chol, dims=('obs', 'latent'))
+
+    beta_r = pm.Normal('beta_r', 0, 0.5, dims='latent_regression')
+    beta_r2 = pm.Normal('beta_r2', 0, 1, dims='regression')
+
+
+    # SE_ACAD ~ SUP_FRIENDS + SUP_PARENTS 
+    regression_se_acad = pm.Deterministic('regr_se_acad', beta_r[0]*ksi[obs_idx, 0] + beta_r[1]*ksi[obs_idx, 1])
+    # SE_SOCIAL ~ SUP_FRIENDS + SUP_PARENTS 
+    regression_se_social = pm.Deterministic('regr_se_social', beta_r[2]*ksi[obs_idx, 0] + beta_r[3]*ksi[obs_idx, 1])
+
+    # LS ~ SE_ACAD + SE_SOCIAL + SUP_FRIEND + SUP_PARENTS
+    regression = pm.Deterministic('regr', beta_r2[0]*regression_se_acad + beta_r2[1]*regression_se_social +
+                                   beta_r2[2]*ksi[obs_idx, 0] + beta_r2[3]*ksi[obs_idx, 1])
+
+    m0 = tau[0] + regression_se_acad*lambdas_1[0]
+    m1 = tau[1] + regression_se_acad*lambdas_1[1]
+    m2 = tau[2] + regression_se_acad*lambdas_1[2]
+    m3 = tau[3] + regression_se_social*lambdas_2[0]
+    m4 = tau[4] + regression_se_social*lambdas_2[1]
+    m5 = tau[5] + regression_se_social*lambdas_2[2]
+    m6 = tau[6] + ksi[obs_idx, 0]*lambdas_3[0]
+    m7 = tau[7] + ksi[obs_idx, 0]*lambdas_3[1]
+    m8 = tau[8] + ksi[obs_idx, 0]*lambdas_3[2]
+    m9 = tau[9] + ksi[obs_idx, 1]*lambdas_4[0]
+    m10 = tau[10] + ksi[obs_idx, 1]*lambdas_4[1]
+    m11 = tau[11] + ksi[obs_idx, 1]*lambdas_4[2]
+    m12 = tau[12] + regression*lambdas_5[0]
+    m13 = tau[13] + regression*lambdas_5[1]
+    m14 = tau[14] + regression*lambdas_5[2]
+    
+    mu = pm.Deterministic('mu', pm.math.stack([m0, m1, m2, m3, m4, m5, m6, m7,
+                                              m8, m9, m10, m11, m12, m13, m14]).T)
+    _  = pm.Normal('likelihood', mu, Psi, observed=df[drivers].values)
+
+    idata = pm.sample(10_000, chains=4, nuts_sampler='numpyro', target_accept=.99, tune=2000,
+                      idata_kwargs={"log_likelihood": True}, random_seed=110)
+    idata.extend(pm.sample_posterior_predictive(idata))
+
+    return model, idata
+
+
+model2, idata2 = make_indirect_sem(priors={'eta': 2, 'lambda': [1, 1]})
+
+
+
+```
+
+
+![Indirect Effects and Total Effects Model](indirect_sem.svg)
+
+```{python fig.width=10, fig.height=15}
+make_ppc(idata2)
+
+```
+
+
+
+```{python}
+
+summary_df = az.summary(idata2, var_names=['beta_r', 'beta_r2'])
+
+def calculate_effects(summary_df, var='SUP_P'):
+    #Indirect Paths
+    ## VAR -> SE_SOC ->LS
+    indirect_parent_soc = summary_df.loc[f'beta_r[{var}->SE_SOC]']['mean']*summary_df.loc['beta_r2[SE_SOCIAL]']['mean']
+
+    ## VAR -> SE_SOC ->LS
+    indirect_parent_acad = summary_df.loc[f'beta_r[{var}->SE_ACAD]']['mean']*summary_df.loc['beta_r2[SE_ACAD]']['mean']
+
+    ## Total Indirect Effects
+    total_indirect = indirect_parent_soc + indirect_parent_acad
+
+    ## Total Effects
+    total_effect = total_indirect + summary_df.loc[f'beta_r2[{var}]']['mean']
+
+    return pd.DataFrame([[indirect_parent_soc, indirect_parent_acad, total_indirect, total_effect]], 
+                columns=[f'{var} -> SE_SOC ->LS', f'{var} -> SE_ACAD ->LS', f'Total Indirect Effects {var}', f'Total Effects {var}']
+                )
+
+indirect_p = calculate_effects(summary_df, 'SUP_P')
+indirect_f = calculate_effects(summary_df, 'SUP_F')
+
+```
+
+```{r}
+
+py$summary_df |> kable( caption= "Regression Coefficients Amongst Latent Factors", digits=2) |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
+
+```
+
+```{r}
+
+py$indirect_p |> kable( caption= "Total and Indirect Effects: Parental Support", digits=2) |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
+
+py$indirect_f |> kable( caption= "Total and Indirect Effects: Friend Support", digits=4) |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
+
+```
 
