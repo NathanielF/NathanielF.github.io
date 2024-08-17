@@ -1,6 +1,6 @@
 ---
-title: "Measurement, Latent Factors and Theory Construction"
-subtitle: "Confirmatory Factor Analysis in PyMC"
+title: "Measurement, Latent Factors and the Garden of Forking Paths"
+subtitle: "Confirmatory Factor Analysis and Structural Equations in PyMC"
 categories: ["cfa", "sem", "measurment"]
 keep-ipynb: true
 self-contained: true
@@ -10,7 +10,7 @@ execute:
   freeze: auto 
   execute: true
 jupyter: pymc_causal
-image: 'param_compare.png'
+image: 'forking_paths.jpg'
 engine: knitr
 author:
     - url: https://nathanielf.github.io/
@@ -46,7 +46,7 @@ set.seed(130)
 ```
 
 ::: {.callout-warning}
-This is a work in progress. We intend to elaborate the choices related to analysing and understanding the data elicted through psychometrics surveys. Psychometric phenomena are inherently complex an imprecisely measured. Special attention needs to the assumptions built into the methodologies used to analyse this species of data. 
+Statistical models are designed. Choices are made as we step down the garden of forking paths in the course of any analysis. This risks our self-delusion and mistaken inference if cling too strongly to an arbitrary path. We intend to elaborate the choices related to analysing and understanding the data elicted through psychometrics surveys. Psychometric phenomena are inherently complex and imprecisely measured. Special attention needs to the assumptions built into the methodologies used to analyse this species of data, but these models also highlight another aspect of the design choices made in statistical inference. There is a creativity available in design strategies which help us deliberately and explicit structure the conditions of statistical inference within these models. We show how these modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC. 
 :::
 
 
@@ -60,7 +60,7 @@ We will examine a smattering of choices available in the analysis of psychometri
 
 ### The Data
 
-The data is borrowed from work [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem) demonstrating SEM modelling with `Lavaan`. We'll load it up and begind some exploratory work. 
+The data is borrowed from work [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem) demonstrating SEM modelling with `Lavaan`. We'll load it up and begin some exploratory work. 
 
 ```{r}
 df = read.csv('sem_data.csv')
@@ -379,7 +379,7 @@ formula_no_grp_sum = "ls_sum ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 
 se_social_p1 + se_social_p2 + se_social_p3"
 
 formula_grp_sum = "ls_sum ~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3 + sup_friends_p1 + sup_friends_p2 + sup_friends_p3 + se_acad_p1 + se_acad_p2 + se_acad_p3 +
-se_social_p1 + se_social_p2 + se_social_p3 + factor(region) + sup_parents_p3:se_social_p3"
+se_social_p1 + se_social_p2 + se_social_p3 + factor(region)"
 
 no_grp_sum_fit <- lm(formula_no_grp_sum , data = df)
 grp_sum_fit <- lm(formula_grp_sum, data = df)
@@ -434,7 +434,15 @@ plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
 ```
 ## Model Design and Conditional Exchangeability
 
+Modelling is nearly always about contrasts and questions of meaningful differences. What we seek to do when we build a model is to find a structure that enables "fair" or "justified" inferences about these contrasts. This is maybe most palpably brought home when we consider cases of causal inference. Here we want to define a meaningful causal estimand - some contrast between treatment group and control group where we can be confident that the two groups are suitably "representative" so that the observed differences represents the effect of the treatment. We are saying that conditional on our model design we consider __the potential outcomes to be exchangable__. Or another way of putting it is that we have controlled for all aspects of systematic differences between the control and treatment group and this warrants the causal interpretation of the contrast between treatment and control.
+
+But as we've seen above the cleanest way to interpret almost any regression model is to understand the model design in terms of the marginal effects on the outcome scale. These are just contrasts. All statistical models are in some sense focused on finding a structure that licenses an inference about some contrast of interest between the levels of some observe variable and the implied outcomes. In this way we want to include as much structure in our model that would induce the status of conditional exchangeability between the units of study across such group contrasts. This notion of conditional exchangeability is inherently an epistemic notion. We believe that our model is apt to induce the status of conditional exchangeability such that e.g. the people in our survey have no systematic difference which biases the measured differences. The implied differences in some marginal effect (while holding all else fixed) is a "fair" representations the same counterfactual adjustment in the population. The model implied difference is a proxy for the result possible future interventions and as such merits our attention in policy design.
+
+With this in mind we now turn to types of model architecture that open up new expressive possibilities and offer a way to think about the relationships between observed data and latent factors that drive the observed outcomes. This greater expressive power offers different routes to inducing patterns of conditional exchangeability. In particular the view here is that we ought to be deliberate in how we structure the models to license the plausibility of the exchangeability claim. 
+
 ## Confirmatory Factor Analysis
+
+
 
 ```{r fig.width=10, fig.height=10}
 
