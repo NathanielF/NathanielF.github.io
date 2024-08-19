@@ -48,7 +48,7 @@ set.seed(130)
 ::: {.callout-note}
 WORK IN PROGRESS:
 
-Choices are made as we step down the garden of forking paths in the course of any analysis of data. We risk self-delusion and foolish misstep if we cling too strongly to an arbitrary path and we risk impoverished and inadequate theory if we refuse to explore many paths. In this post we will elaborate the choices related to analysing psychometrics surveys. Psychometric phenomena are inherently complex and imprecisely measured. Precise attention is needed to test assumptions used to analyse this species of data, for these models highlight a key aspect of the design choices made in statistical inference. There is a creativity in model development __and__ a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow. 
+Choices are made as we step down the garden of forking paths in the course of any analysis. We risk self-delusion and foolish misstep if we cling too strongly to an arbitrary path. But we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate the choices related to analysing psychometric survey data. Psychometric phenomena are inherently complex and imprecisely measured. Attention is needed to test the assumptions used to analyse this species of data, for these models highlight a contentious aspect of the design choices made in statistical inference. There is a creativity in model development __and__ a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow. 
 :::
 
 
@@ -56,15 +56,15 @@ Choices are made as we step down the garden of forking paths in the course of an
 
 Science is easier when there is a recipe. When there is some procedure to adopt or routine to ape, you can out-source the responsibility for methodological justification. One egregious pattern in this vein attempts to masks implausible nonsense with the much vaunted mathematical gloss of "statistical significance". Seen from 1000 feet, this is disappointing but not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification and substantive argument. 
 
-Evidence should be marshaled in service to argument, and it's an absurd pretense to claim that data speaks for itself in this argument. Good and compelling argumentation is at the heart of any sound inference. It is a necessary obligation if you expect anyone to make any decision on the strength of your evidence. Procedure and routine tests offer only a facsimile of sound argument and p-values are a poor substitute for logical consequence. 
+Evidence should be marshaled in service to argument, and it's an absurd pretense to claim that data speaks for itself in this argument. Good and compelling argumentation is at the heart of any sound inference. It is a necessary obligation if you expect anyone to make any decision on the strength of evidence you provide. Procedures and routine tests offer only a facsimile of sound argument and p-values are a poor substitute for logical consequence and substantive derivation.
 
-Data is found, gathered or maybe even carefully curated. In all cases there is need for a defensive posture, an argument that the data is fit-for-purpose. No where is this more clear than in psychometrics where the data is often derived from a strategically constructed survey aimed at a particular target phenomena. Some intuited, but not yet measured, concept that arguably plays a role in human action, motivation or sentiment. The "fuzziness" of the subject matter in psychometrics has had a catalyzing effect on the methodological rigour sought in the science. Survey designs are agonised over for correct tone and rhythm of sentence structure. Analysis steps are justified and tested under a wealth of modelling routines. Model architectures are defined and refined to better express the hypothesized structures in the data-generating process.
+Data is found, gathered or maybe even carefully curated. In all cases there is need for a defensive posture, an argument that the data is fit-for-purpose. No where is this more clear than in psychometrics where the data is often derived from a strategically constructed survey aimed at a particular target phenomena. Some intuited, but not yet measured, concept that arguably plays a role in human action, motivation or sentiment. The relative "fuzziness" of the subject matter in psychometrics has had a catalyzing effect on the methodological rigour sought in the science. Survey designs are agonised over for correct tone and rhythm of sentence structure. Measurement scales are doubly checked for reliability and correctness. Analysis steps are justified and tested under a wealth of modelling routines. Model architectures are defined and refined to better express the hypothesized structures in the data-generating process.
 
-We will examine a smattering of choices available in the analysis of psychometric survey data. We will first step through these analysis routines using `lmer`, `lavaan` before switching to `PyMC` to demonstrate how to fit Confirmatory Factor Analysis models and Structural Equation Models in a Bayesian fashion using a probabilistic programming language.Throughout we'll draw on Levy and Mislevy's [_Bayesian Psychometric Modeling_](https://www.taylorfrancis.com/books/mono/10.1201/9781315374604/bayesian-psychometric-modeling-roy-levy-robert-mislevy)
+We will examine a smattering of choices available in the analysis of psychometric survey data. First stepping through these analysis routines using `lmer`, `lavaan` before switching to `PyMC` to demonstrate how to fit Confirmatory Factor Analysis models and Structural Equation Models in a Bayesian fashion using a probabilistic programming language.Throughout we'll draw on Levy and Mislevy's [_Bayesian Psychometric Modeling_](https://www.taylorfrancis.com/books/mono/10.1201/9781315374604/bayesian-psychometric-modeling-roy-levy-robert-mislevy).m
 
 ### The Data
 
-The data is borrowed from work [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem) demonstrating SEM modelling with `Lavaan`. We'll load it up and begin some exploratory work. 
+The data is borrowed from work [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem) demonstrating SEM modelling with `Lavaan`. We'll load it up and begin some exploratory work. First let's look at the data. 
 
 ```{r}
 df = read.csv('sem_data.csv')
@@ -73,10 +73,10 @@ df$ls_mean <- rowMeans(df[ c('ls_p1', 'ls_p2', 'ls_p3')])
 
 head(df) |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 ```
-The hypothetical dependency structure in this life-satisfaction data set posits a moderations relationship between scores related to life-satisfaction, parental and family support and self-efficacy. It is not a trivial task to be able to design a survey that can elicit answers plausibly mapped to each of these "factors" or themes, never mind finding a model of their relationship that can inform us as to the relative of impact of each on life-satisfaction outcomes.   
+We have survey responses from ~300 individuals who have answered questions regarding their upbringing, self-belief and reported life-satisfaction. The hypothetical dependency structure in this life-satisfaction data set posits a moderations relationship between scores related to life-satisfaction, parental and family support and self-efficacy. It is not a trivial task to be able to design a survey that can elicit answers plausibly mapped to each of these "factors" or themes, never mind finding a model of their relationship that can inform us as to the relative of impact of each on life-satisfaction outcomes.   
 
 ![Candidate Structure](structural_model.png)
-We can pull out the high level summary statistics to better observe the level of information in our metrics. These metrics are thematically clustered because the source survey deliberately targetted each of the underlying themes. 
+We will try to show some of the subtle aspects of these relationships as we go. The high level summary statistics show the variation across these measures. We can thematically cluster them because the source survey deliberately targeted each of the underlying themes in effort to pin down the relations between these hard to measure constructs. 
 
 ```{r}
 
@@ -107,9 +107,11 @@ datasummary_skim(df)|>
 
 ```
 
-Note how we've distinguished among the metrics for the "outcome" metrics and the "driver" metrics. Such a distinction may seem trivial, but it is only possible because we bring substantive knowledge to bear on the problem in the design of our survey and the postulation of the theoretical construct. Our data is a multivariate outcome with a large range of possible interacting effects and the patterns of realisation for our life-satisfaction scores may be quite different than the hypothesised structure. It is this open question that we're aiming to uncover in the analysis of psychometrics surveys. 
+Note how we've distinguished among the metrics for the "outcome" metrics and the "driver" metrics. Such a distinction may seem trivial, but it is only possible because we bring substantive knowledge to bear on the problem in the design of our survey and the postulation of the theoretical construct. Our data is a multivariate outcome vector. There are a large range of possible interacting effects and the patterns of realisation for our life-satisfaction scores. The true "drivers" of satisfaction may be quite different than the hypothesised structure. It is this open question that we're aiming to uncover in the analysis of our survey data. 
 
 ### Sample Covariances and Correlations
+
+Let's plot the relations amongst our various indicator scores. 
 
 ```{r fig.width=10, fig.height=10}
 
@@ -138,7 +140,7 @@ g2 = plot_heatmap(cor(df[,  drivers]), "Sample Correlations")
 plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 ```
-Note the relatively strong correlations between measures of parental support and the life-satisfaction outcome `ls_p3`. Similarly, how the social self-efficacy scores seem similarly correlated with the secondary life satisfaction indicator `ls_p2`. These observed correlations merit some further investigation. We can plot the pairs of scatter plots. 
+Note the relatively strong correlations between measures of parental support and the life-satisfaction outcome `ls_p3`. Similarly, how the social self-efficacy scores seem similarly correlated with the secondary life satisfaction indicator `ls_p2`. These observed correlations merit some further investigation. We can also plot the pairs of scatter plots to "dig deeper". What kind of correlation holds between these scores? Are any driven by extreme outliers? This is what we're looking for in a pair plot. Should we cull the outliers? Leave them in? We leave them in. 
 
 ```{r fig.width=15, fig.height=15}
 
@@ -169,11 +171,11 @@ full_join(x_vars, y_vars,
 
 ```
 
-The scatter plots among the highly correlated variables in the heatmap do seem to exhibit some kind of linear relationship with aspects of the life-satisfaction scores. We now turn to modelling these relationships to tease out some kind of inferential summary of that relationship. 
+The scatter plots among the highly correlated variables in the heatmap do seem to exhibit some kind of linear relationship with aspects of the life-satisfaction scores. We now turn to modelling these relationships to tease out some kind of inferential summary of those relationships. 
 
 ## Fit Initial Regression Models
 
-To model these relationships we make use of the aggregated sum and mean scores to model the relationships between these indicator metrics and life-satisfaction. We fit a variety of models each one escalating in the number of indicator metrics we incorporate into our model of the life-satisfaction outcome. This side-steps the multivariate nature of hypothesised constructs and crudely amalgamates the indicator metrics. This may be more or less justified depending on how similar in theme the three outcome questions `ls_p1, ls_p2, ls_p3` are in nature. 
+To model these effects we make use of the aggregated sum and mean scores to express the relationships between these indicator metrics and life-satisfaction. We fit a variety of models each one escalating in the number of indicator metrics we incorporate into our model of the life-satisfaction outcome. This side-steps the multivariate nature of hypothesised constructs and crudely amalgamates the indicator metrics. This may be more or less justified depending on how similar in theme the three outcome questions `ls_p1, ls_p2, ls_p3` are in nature. 
 
 ```{r}
 
