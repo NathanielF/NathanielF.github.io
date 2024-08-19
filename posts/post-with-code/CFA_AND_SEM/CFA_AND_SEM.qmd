@@ -45,7 +45,7 @@ options(scipen=999)
 set.seed(130)
 ```
 
-::: {.callout-info}
+::: {.callout-note}
 Choices are made as we step down the garden of forking paths in the course of any analysis of data. We risk self-delusion and foolish misstep if we cling too strongly to an arbitrary path and we risk impoverished and inadequate theory if we refuse to explore many paths. In this post we will elaborate the choices related to analysing psychometrics surveys. Psychometric phenomena are inherently complex and imprecisely measured. Special attention is needed for the assumptions built into the methodologies used to analyse this species of data. Additionally these models highlight another aspect of the design choices made in statistical inference. There is a creativity in model development __and__ a requirement for rigor when we deliberately and explicitly structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow. 
 :::
 
@@ -463,14 +463,19 @@ LS  =~ ls_p1 + ls_p2 + ls_p3
 
 model_measurement1 <- "
 # Measurement model
-SUP_Parents =~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3
+SUP_Parents =~ b1*sup_parents_p1 + b2*sup_parents_p2 + b3*sup_parents_p3
 SUP_Friends =~ a1*sup_friends_p1 + a2*sup_friends_p2 + a3*sup_friends_p3
-SE_Academic =~ se_acad_p1 + se_acad_p2 + se_acad_p3
+SE_Academic =~ c1*se_acad_p1 + c2*se_acad_p2 + c3*se_acad_p3
 SE_Social =~ se_social_p1 + se_social_p2 + se_social_p3
 LS  =~ ls_p1 + ls_p2 + ls_p3
 
 a1 == a2 
 a1 == a3
+b1 == b2
+b1 == b3
+c1 == c2
+c1 == c3
+
 "
 
 fit_mod <- cfa(model_measurement, data = df)
@@ -500,7 +505,7 @@ summary(fit_mod, fit.measures = TRUE, standardized = TRUE)
 Note how in addition to the individual parameter estimates the summaries highlight various measures of global model fit. These model fit statistics are important for evaluating alternative ways of parameterising our models. The number of parameters is a real concern in the maximum likelihood approaches to estimating these models. Too many parameters and we can easily over fit to the particular sample data. This stems in part from the limitations of the optimisation goal in the traditional CFA framework - we are intent to optimise model parameters to recover a compelling estimate based on the observed covariance matrix. Once we have more parameters than there are points in the covariance matrix the model is free to overfit considerably. This can then be checked as measure of local model fit and may highlight infelicities or suspicious convergence between the true data generating process and the learned model. 
 
 
-```{r, fig.width=10, fig.height=14}
+```{r, fig.width=10, fig.height=12}
 
 g1 = plot_heatmap(cov(df[,  drivers]))
 
@@ -516,7 +521,7 @@ plot <- ggarrange(g1,g2,g3, ncol=1, nrow=3);
 
 #### Summary Global Fit Measures
 
-We can also compare models based on their global measures of model fit giving some indication of whether parameter specifications improve or reduce fidelity with reality. 
+We can also compare models based on their global measures of model fit giving some indication of whether parameter specifications improve or reduce fidelity with the true data generating process.
 
 ```{r}
 
@@ -528,47 +533,44 @@ summary_df |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_
 
 ```
 
+There a wealth of metrics associated with CFA model fit and it can be hard to see the forest for the trees.
+
 ### Visualising the Relationships
+
+One of the better ways to visualise these models is to use the `semPlot` package. Here we can plot all the parameter estimates in one graph. Following convention the rectangular boxes represent observed measures. Oval or circular objects represent the latent constructs. The self-directed arrows on each node is the variance of that measure. The two-way arrows between nodes represents the covariance between those two nodes. The single headed arrows from the latent construct to the indicator variables denotes the factor loading of the variable on the construct. 
 
 ```{r}
 
 semPlot::semPaths(fit_mod, whatLabels = 'est', intercepts = FALSE, layout = "spring",)
 
 ```
+For instance, in this plot you can see that for each latent construct one of the indicator variables has their factor loading set to 1. This is a mathematical requirement we'll see below that is used to ensure identifiability of the parameters akin to setting a reference category in categorical regression. Additionally you can "read-off" the covariances between our constructs e.g. the covariance between `LS` and `SUP_P` is 0.36 the largest value amongst the set of covariances.  
 
-#### Comparing the empirical and implied variance-covariance matrix
+### Comparing Models
 
-```{r fig.width=10, fig.height=10}
+We can use a variety of chi-squared tests to evaluate the goodness of fit for our models. If we pass in each model individually we perform a test comparing our model to the saturated model. The Chi-Squared test compares the model-implied variance-covariance matrix (expected) to the variance-covariance matrix computed from the actual data (observed). The null hypothesis for the Chi-Squared Goodness-of-Fit test is that the model fits the data perfectly, meaning that there is no significant difference between the observed and model-implied variance-covariance matrices. The goal is to see if the differences between these matrices are large enough that we can reject the null.
 
-heat_df = data.frame(resid(fit_mod, type = "standardized")$cov) 
-heat_df = heat_df |> as.matrix() |> melt()
-colnames(heat_df) <- c("x", "y", "value")
-
-g1 = heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
-  geom_tile() + geom_text(aes(label = value), color = "black", size = 4) +
- scale_fill_gradient2(
-    high = 'dodgerblue4',
-    mid = 'white',
-    low = 'firebrick2'
-  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Model fit: Full Model")
-
-g1
-
-```
 
 ```{r}
 
-anova(fit_mod)
+lavTestLRT(fit_mod)
 
+```
 
-anova(fit_mod_1)
+Passing in the one model we can reject the null hypothesis that the saturated model's (perfect fit) and the candidate variance-covariance matrix are drawn from the same distribution. Comparing between our two model fits we also reject that these two models are drawn from the same distribution. 
 
-anova(fit_mod, fit_mod_1)
+```{r}
+
+lavTestLRT(fit_mod, fit_mod_1)
 
 
 ```
 
+The test also reports a number of other fit indices and the degrees of freedom available to each model. These are important because the Chi-Squared test is overly sensetive in large-sample data and the model adequacy is a multi-dimensional question.  
+
 ## Structural Equation Models
+
+So far so good. We have a confirmatory factor measurement model. We've structured it so that we can make inferences about the correlations and covariances between 5 latent constructs of independent interest. We've calibrated the model fit statistics by ensuring the model can reasonably recover the observed variance-covariance structure. But what about our dependency relations between constructs? We can evaluate these too! Adding regressions to our model allows to express these relationships and then recover summary statistics of the same. 
 
 ```{r}
 
@@ -582,6 +584,8 @@ LS  =~ ls_p1 + ls_p2 + ls_p3
 
 # Structural model 
 # Regressions
+SE_Academic ~ SUP_Parents + SUP_Friends
+SE_Social ~ SUP_Parents + SUP_Friends
 LS ~ SE_Academic + SE_Social + SUP_Parents + SUP_Friends
 
 # Residual covariances
@@ -603,21 +607,63 @@ semPlot::semPaths(fit_mod_sem, whatLabels = 'est', intercepts = FALSE)
 
 ```
 
+Compare this structure against the previously simpler measurement model and we observe a puzzling phenomena. The models report identical measures of fit. 
+
+```{r}
+
+summary_df = cbind(fitMeasures(fit_mod, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")),
+      fitMeasures(fit_mod_sem, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")),
+      fitMeasures(fit_mod_1, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")))
+colnames(summary_df) = c('Full Model', 'SEM Model', 'Reduced Model')
+
+summary_df |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
+
+
+```
+The models have the same degrees of freedom which suggests in some sense we have already saturated our model fit and are unable to evaluate further parameter estimates. 
+
+```{r}
+
+lavTestLRT(fit_mod_sem, fit_mod)
+
+lavTestLRT(fit_mod_sem, fit_mod_1)
+
+```
+We can see this similarly in the plotted residuals which are identical across the models despite meaningful structural differences. 
+
 ```{r fig.width=10, fig.height=8}
 
-heat_df = data.frame(resid(fit_mod_sem, type = "standardized")$cov) 
+heat_df = data.frame(resid(fit_mod, type = "standardized")$cov) 
 heat_df = heat_df |> as.matrix() |> melt()
 colnames(heat_df) <- c("x", "y", "value")
 
-heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
+g1 = heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
   geom_tile() + geom_text(aes(label = value), color = "black", size = 4) +
  scale_fill_gradient2(
     high = 'dodgerblue4',
     mid = 'white',
     low = 'firebrick2'
-  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Model fit")
+  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Standardised Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of SEM Model fit")
+
+
+heat_df = data.frame(resid(fit_mod_sem, type = "standardized")$cov) 
+heat_df = heat_df |> as.matrix() |> melt()
+colnames(heat_df) <- c("x", "y", "value")
+
+g2 = heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fill = value)) +
+  geom_tile() + geom_text(aes(label = value), color = "black", size = 4) +
+ scale_fill_gradient2(
+    high = 'dodgerblue4',
+    mid = 'white',
+    low = 'firebrick2'
+  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Standardised Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Measurement Model fit")
+
+
+plot <- ggarrange(g1,g2, ncol=1, nrow=2);
+
 ```
 
+This is a genuine limitation in the expressive power of SEM models when they are fit using maximum likelihood with finite degrees of freedom optimising for fidelity to the sample varaince-covariance matrix. 
 
 ## Confirmatory Factor Models with PyMC
 
