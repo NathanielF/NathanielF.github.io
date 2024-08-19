@@ -45,8 +45,8 @@ options(scipen=999)
 set.seed(130)
 ```
 
-::: {.callout-warning}
-Statistical models are designed. Choices are made as we step down the garden of forking paths in the course of any analysis. This risks our self-delusion and mistaken inference if cling too strongly to an arbitrary path. We intend to elaborate the choices related to analysing and understanding the data elicted through psychometrics surveys. Psychometric phenomena are inherently complex and imprecisely measured. Special attention needs to the assumptions built into the methodologies used to analyse this species of data, but these models also highlight another aspect of the design choices made in statistical inference. There is a creativity available in design strategies which help us deliberately and explicit structure the conditions of statistical inference within these models. We show how these modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC. 
+::: {.callout-info}
+Choices are made as we step down the garden of forking paths in the course of any analysis of data. We risk self-delusion and foolish misstep if we cling too strongly to an arbitrary path and we risk impoverished and inadequate theory if we refuse to explore many paths. In this post we will elaborate the choices related to analysing psychometrics surveys. Psychometric phenomena are inherently complex and imprecisely measured. Special attention is needed for the assumptions built into the methodologies used to analyse this species of data. Additionally these models highlight another aspect of the design choices made in statistical inference. There is a creativity in model development __and__ a requirement for rigor when we deliberately and explicitly structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow. 
 :::
 
 
@@ -499,17 +499,19 @@ summary(fit_mod, fit.measures = TRUE, standardized = TRUE)
 ```
 Note how in addition to the individual parameter estimates the summaries highlight various measures of global model fit. These model fit statistics are important for evaluating alternative ways of parameterising our models. The number of parameters is a real concern in the maximum likelihood approaches to estimating these models. Too many parameters and we can easily over fit to the particular sample data. This stems in part from the limitations of the optimisation goal in the traditional CFA framework - we are intent to optimise model parameters to recover a compelling estimate based on the observed covariance matrix. Once we have more parameters than there are points in the covariance matrix the model is free to overfit considerably. This can then be checked as measure of local model fit and may highlight infelicities or suspicious convergence between the true data generating process and the learned model. 
 
+
 ```{r, fig.width=10, fig.height=14}
 
 g1 = plot_heatmap(cov(df[,  drivers]))
 
-g2 = plot_heatmap(data.frame(fitted(fit_mod)$cov), title="Model Implied Covariances", "Fitted Values")
+g2 = plot_heatmap(data.frame(fitted(fit_mod)$cov)[drivers, drivers], title="Model Implied Covariances", "Fitted Values")
 
-resid = cov(df[,  drivers]) - data.frame(fitted(fit_mod)$cov)
+resids = cov(df[,  drivers]) - data.frame(fitted(fit_mod)$cov)[drivers, drivers]
 
-g3 = plot_heatmap(resid, title="Residuals of the Model Fit", "Fitted Values versus Observed Covariances")
+g3 = plot_heatmap(resids, title="Residuals", "Fitted Values versus Observe Sample Covariance")
 
-plot <- ggarrange(g1,g2, g3, ncol=1, nrow=3);
+
+plot <- ggarrange(g1,g2,g3, ncol=1, nrow=3);
 ```
 
 #### Summary Global Fit Measures
@@ -831,16 +833,38 @@ make_ppc(idata)
 
 
 ```{python}
-model_cov = pd.DataFrame(az.extract(idata['posterior_predictive'])['likelihood'][:, :, 0]).cov()
-obs_cov = df[drivers].cov()
-model_cov.index = obs_cov.index
-model_cov.columns = obs_cov.columns
-residuals = model_cov - obs_cov
+
+def get_posterior_resids(idata, samples=100, metric='cov'):
+  resids = []
+  for i in range(100):
+    if metric == 'cov':
+      model_cov = pd.DataFrame(az.extract(idata['posterior_predictive'])['likelihood'][:, :, i]).cov()
+      obs_cov = df[drivers].cov()
+    else: 
+      model_cov = pd.DataFrame(az.extract(idata['posterior_predictive'])['likelihood'][:, :, i]).corr()
+      obs_cov = df[drivers].corr()
+    model_cov.index = obs_cov.index
+    model_cov.columns = obs_cov.columns
+    residuals = model_cov - obs_cov
+    resids.append(residuals.values.flatten())
+  
+  residuals_posterior = pd.DataFrame(pd.DataFrame(resids).mean().values.reshape(15, 15))
+  residuals_posterior.index = obs_cov.index
+  residuals_posterior.columns = obs_cov.index
+  return residuals_posterior
+
+residuals_posterior_cov = get_posterior_resids(idata, 500)
+residuals_posterior_corr = get_posterior_resids(idata, 500, metric='corr')
+
+  
 ```
+
 
 ```{r fig.width=10}
 
-plot_heatmap(py$residuals, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Model fit")
+plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Model fit")
+
+plot_heatmap(py$residuals_posterior_corr, "Residuals of the Sample Correlations and Model Implied Correlations", "A Visual Check of Bayesian Model fit")
 
 ```
 
@@ -1059,6 +1083,8 @@ def calculate_effects(summary_df, var='SUP_P'):
 indirect_p = calculate_effects(summary_df, 'SUP_P')
 indirect_f = calculate_effects(summary_df, 'SUP_F')
 
+residuals_posterior_cov = get_posterior_resids(idata2, 500)
+
 ```
 
 ```{r}
@@ -1072,6 +1098,12 @@ py$summary_df |> kable( caption= "Regression Coefficients Amongst Latent Factors
 py$indirect_p |> kable( caption= "Total and Indirect Effects: Parental Support", digits=2) |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 py$indirect_f |> kable( caption= "Total and Indirect Effects: Friend Support", digits=4) |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
+
+```
+
+```{r fig.width=10, fig.height=10}
+
+plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Model fit")
 
 ```
 
