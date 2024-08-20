@@ -48,7 +48,7 @@ set.seed(130)
 ::: {.callout-note}
 WORK IN PROGRESS:
 
-Choices are made as we step down the garden of forking paths in the course of any analysis. We risk self-delusion and foolish misstep if we cling too strongly to an arbitrary path. But we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate the choices related to analysing psychometric survey data. Psychometric phenomena are inherently complex and imprecisely measured. Attention is needed to test the assumptions used to analyse this species of data, for these models highlight a contentious aspect of the design choices made in statistical inference. There is a creativity in model development __and__ a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow. 
+Choices are made as we step down the garden of forking paths in the course of any analysis. We risk self-delusion and foolish misstep if we cling too strongly to an arbitrary path. Maybe equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this tension when analysing psychometric survey data. Psychometric phenomena are inherently complex and imprecisely measured. Care is needed to test the assumptions used to analyse this species of data, for these models highlight a contentious aspect of the design choices made in statistical inference. There is a creativity in model development __and__ a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow. 
 :::
 
 
@@ -265,7 +265,7 @@ modelplot(models, coef_omit = 'Intercept') + geom_vline(xintercept = 0, linetype
 
 ### Significant Coefficients?
 
-An alternative lens on these figures highlights the statistical significance of the coefficients. But again, these criteria are much abused. Significance at what level? Conditional on which representation? 
+An alternative lens on these figures highlights the statistical significance of the coefficients. But again, these criteria are much abused. Significance at what level? Conditional on which representation? Which composite outcome score?
 
 ```{r, fig.width=10, fig.height=10}
 
@@ -438,13 +438,19 @@ g2 = plot_predictions(grp_sum_fit, condition = c("se_acad_p1", "region"),
 plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
 
 ```
+In this case the differences are slight, but the point here is just to consider how aspects of the data generating process can be modified by broadly demographic features systematically. In an ideal circumstance a probability-sample of survey respondents should mitigate the need for additionally controls variables in so far as a probability sample should ensure exchangeability
+
 ## Model Design and Conditional Exchangeability
 
 Modelling is nearly always about contrasts and questions of meaningful differences. What we seek to do when we build a model is to find a structure that enables "fair" or "justified" inferences about these contrasts. This is maybe most palpably brought home when we consider cases of causal inference. Here we want to define a meaningful causal estimand - some contrast between treatment group and control group where we can be confident that the two groups are suitably "representative" so that the observed differences represents the effect of the treatment. We are saying that conditional on our model design we consider __the potential outcomes to be exchangable__. Or another way of putting it is that we have controlled for all aspects of systematic differences between the control and treatment group and this warrants the causal interpretation of the contrast between treatment and control.
 
 But as we've seen above the cleanest way to interpret almost any regression model is to understand the model design in terms of the marginal effects on the outcome scale. These are just contrasts. All statistical models are, in some sense, focused on finding a structure that licenses an inference about some contrast of interest between the levels of some observed variable and the implied outcomes. In this way we want to include as much structure in our model that would induce the status of conditional exchangeability between the units of study across such group contrasts. This notion of conditional exchangeability is inherently an epistemic notion. We believe that our model is apt to induce the status of conditional exchangeability such that the people in our survey have no systematic difference which biases the measured differences. The implied differences in some marginal effect (while holding all else fixed) is a "fair" representations the same counterfactual adjustment in the population or sub-population defined by the covariate profile. The model implied difference is a proxy for the result of possible future interventions and as such merits our attention in policy design.
 
-In particular the view here is that we ought to be deliberate in how we structure our models to license the plausibility of the exchangeability claim. By De Finetti's theorem a distribution of exchangeable sequence of variables be expressed as mixture of conditional independent variables. So if we specify the conditional distribution correctly, we recover the conditions that warrant inference with a well designed model.The mixture distribution is just the vector of parameters __$\boldsymbol{\beta}$__ upon which we condition our model. Mislevy and Levy highlight this important observation has implications for model development by quoting Judea Pearl: 
+In particular the view here is that we ought to be deliberate in how we structure our models to license the plausibility of the exchangeability claim. By De Finetti's theorem a distribution of exchangeable sequence of variables be expressed as mixture of conditional independent variables. 
+
+$$ p(x_{1}....x_{m}) = \dfrac{p(X | \theta)p(\theta)}{p_{i}(X)} $$
+
+So if we specify the conditional distribution correctly, we recover the conditions that warrant inference with a well designed model.The mixture distribution is just the vector of parameters __$\boldsymbol{\theta}$__ upon which we condition our model. Mislevy and Levy highlight this important observation has implications for model development by quoting Judea Pearl: 
 
 > [C]onditional independence is not a grace of nature for which we must wait passively, but rather a psychological necessity which we satisfy by organising our knowledge in a specific way. An important tool in such an organisation is the identification of intermediate variables that induce conditional independence among observables; if such variables are not in our vocabulary, we create them. In medical diagnosis, for instance, when some symptoms directly influence one another, the medical profession invents a name for that interaction (e.g. "syndrome", "complication", "pathological state") and treats it as a new auxilary variable that induces conditional independence." - Pearl quoted in _Bayesian Psychometric Modeling_ p61
 
