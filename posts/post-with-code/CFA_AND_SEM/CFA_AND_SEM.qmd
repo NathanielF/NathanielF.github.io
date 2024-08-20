@@ -702,7 +702,7 @@ df_p = pd.read_csv('IIS.dat', sep='\s+')
 df_p.head()
 
 ```
-We have here a dataset drawn from Mislevy and Levy. which records measures of students collegiate experiences along multiple dimensions. The data here represents the averages of `PI` peer interaction, `AD` academic development `IGC` goal commitment, `FI` faculty interaction and `FC` faculty concern items for 500 hundred students. We will fit a 2 factor Bayesian CFA model to this data set. First consider the code and then we'll step through it in more detail.
+We have here a dataset drawn from Mislevy and Levy. which records measures of students collegiate experiences along multiple dimensions. The data here represents the averages of `PI` peer interaction, `AD` academic development `IGC` goal commitment, `FI` faculty interaction and `FC` faculty concern items for 500 hundred students. We will fit a 2 factor Bayesian CFA model to this data set - one factor for he faculty items and the other factor for self-reporting items. First consider the code and then we'll step through it in more detail.
 
 ```{python results='hide'}
 
@@ -719,16 +719,20 @@ with pm.Model(coords=coords) as model:
   
   Psi = pm.InverseGamma('Psi', 5, 10, dims='indicators')
   lambdas_ = pm.Normal('lambdas_1', 1, 10, dims=('indicators_1'))
+  # Force a fixed scale on the factor loadings for factor 1
   lambdas_1 = pm.Deterministic('lambdas1', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_1'))
   lambdas_ = pm.Normal('lambdas_2', 1, 10, dims=('indicators_2'))
+  # Force a fixed scale on the factor loadings for factor 2
   lambdas_2 = pm.Deterministic('lambdas2', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_2'))
   tau = pm.Normal('tau', 3, 10, dims='indicators')
+  # Specify covariance structure between latent factors
   kappa = 0
   sd_dist = pm.Exponential.dist(1.0, shape=2)
   chol, _, _ = pm.LKJCholeskyCov('chol_cov', n=2, eta=2,
     sd_dist=sd_dist, compute_corr=True)
   ksi = pm.MvNormal('ksi', kappa, chol=chol, dims=('obs', 'latent'))
 
+  # Construct Observation matrix
   m1 = tau[0] + ksi[obs_idx, 0]*lambdas_1[0]
   m2 = tau[1] + ksi[obs_idx, 0]*lambdas_1[1]
   m3 = tau[2] + ksi[obs_idx, 0]*lambdas_1[2]
@@ -745,7 +749,7 @@ with pm.Model(coords=coords) as model:
 summary_df = az.summary(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi', 'chol_cov_corr'], coords= {'obs': [0, 7]})
 
 ```
-The model specification here has a Normal likelihood term which takes as observed data the matrix of student responses. However we construct the input for the likelihood term in a way that we posit two latent factor variables `ksi[obs_idx, 0]` and `ksi[obs_idx, 1]` respectively. These factors are modified by the factor loading terms in e.g. `lambdas_1` specification to create a regression model `m1` which predicts the indicator variable `PI`. In this way we allow that the latent factors are related to the observed data matrix and the manner in which calibrating against observed data modifies our priors for the parameterisations of the lambdas, ksi terms reflects what the model learns about the interactions between the latent constructs. Crucially we force a covariance structure on `ksi` terms to reflect the correlations and covariance between these constructs of interest.
+The model specification here has a Normal likelihood term which takes as observed data the matrix of student responses. However we construct the input for the likelihood term in a way that we posit two latent factor variables `ksi[obs_idx, 0]` and `ksi[obs_idx, 1]` respectively. These factors are modified by the factor loading terms in e.g. `lambdas_1` specification to create a regression model `m1` which predicts the indicator variable `PI`. In this way we allow that the latent factors are related to the observed data matrix and the manner in which calibrating against observed data modifies our priors for the parameterisations of the lambdas, ksi terms reflects what the model learns about the interactions between the latent constructs. Crucially we force a covariance structure on `ksi` terms to reflect the correlations and covariance between these constructs of interest and the factor loading terms have a required scale fixed by forcing the first indicator loading to 1 for each factor. 
 
 In a Bayesian approach to the estimation of these models we are not limited by the degrees of freedom available in the optimisation routine. Instead we're aiming to estimate the posterior distribution using MCMC on draws from well specified priors on each the quantities listed above. In a picture the structure is like this:
 
@@ -771,9 +775,11 @@ az.plot_trace(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi']);
 
 ```
 
-These parameter estimates reflect well the same figures reported by Levy and Mislevy, so we won't dwell too much further on this model only to say that the basic structure here is expanded upon as we apply more factor structures and SEM like structures to our original Life-Satisfaction dataset. 
+These diagnostic plots and parameter estimates reflect well the same figures reported by Levy and Mislevy, so we won't dwell too much further on this model only to say that the basic structure here is expanded upon as we apply more factor structures and SEM like structures to our original Life-Satisfaction dataset. 
 
 ### Factoring for Life Satisfaction
+
+Now we want fit the life-satisfaction measurement model using `PyMC`. This has fundamentally a similar structure to the simple CFA model we've seen above. However we now have 5 factors with 3 factor loadings to be estimated for three indicators per factor. We will fit this model and then show how to pull out some of model fit statistics that are relevant for the assessment of the model. 
 
 ```{python results='hide'}
 
@@ -862,14 +868,18 @@ factor_loadings['sum_sq_loadings'] = factor_loadings.groupby('factor')['factor_l
 
 ```
 
+Here we've calculated a bunch of summary statistics which we will highlight below, but first observe the analogous model structure here to the simple CFA model above. 
 
 ![Life Satisfaction Model](full_pymc_model.svg)
+Next we'll plot the posterior summary statistics for each of the key parameters. 
 
 ```{r}
 
 py$summary_df1 |> kable() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
+
+Using a forest plots it's easier to see how the uncertainty attaches to some of these estimates. 
 
 ```{python}
 
@@ -879,11 +889,15 @@ ax.set_title("Factor Loadings for each of the Five Factors");
 
 ```
 
+We can also pull out the covariances between our latent constructs. Highlighting the key covariances relations between support and self-efficacy measures with the life-satisfaction outcome. 
+
 ```{r}
 
 py$cov_df |> kable(caption= "Covariances Amongst Latent Factors",digits=2) |> kable_styling() %>% kable_classic(full_width = F, html_font = "Cambria") |> row_spec(5, color = "red")
 
 ```
+
+One benefit of fitting a mutlivariate normal relationship between these factors is that we can pull and translate the covariance relation in terms of the correlation patterns implied. 
 
 ```{r}
 
@@ -892,6 +906,8 @@ py$correlation_df |> kable( caption= "Correlations Amongst Latent Factors", digi
 
 ```
 
+Another lens on the factors is the relative factor strength which highlights where the majority of substantive variation exists in our dataset. 
+
 ```{r}
 
 py$factor_loadings[ c('factor', 'factor_loading', 'factor_loading_weight', 'factor_loading_weight_sq', 'sum_sq_loadings')] |> kable( caption= "Factor Loadings and Sum of Squared loadings", digits=2) |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria") |> column_spec(5, bold=TRUE, color = ifelse(py$factor_loadings$sum_sq_loadings > 2.8, "red", "black"))
@@ -899,6 +915,7 @@ py$factor_loadings[ c('factor', 'factor_loading', 'factor_loading_weight', 'fact
 
 ```
 
+So we can evaluate some of the similar relationships at the level of summary statistics, but more powerfully we've built a generative model of the process yielding our observed data and as such we can evalute the fidelity of the predictive output of our model using posterior predictive checks. 
 
 ```{python, fig.width=10, fig.height=15}
 
@@ -923,6 +940,7 @@ make_ppc(idata)
 
 ```
 
+In this way we can see how plausibly our model can capture the patterns in the observed data at the level of individual predictions. But additionally we can assess the posterior predictive fit at the level of summary statistics by defining the residuals on the model-fit covariance matrix based on draws from the posterior distribution.
 
 ```{python}
 
@@ -951,12 +969,26 @@ residuals_posterior_corr = get_posterior_resids(idata, 500, metric='corr')
   
 ```
 
+Then we can plot the familiar heatmaps from above highlighting the comparable accuracy of the Bayesian model fit. 
 
 ```{r fig.width=10}
 
 plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Measurement Model fit")
 
 plot_heatmap(py$residuals_posterior_corr, "Residuals of the Sample Correlations and Model Implied Correlations", "A Visual Check of Bayesian Measurement Model fit")
+
+```
+
+This process highlights one major difference in how the Bayesian CFA model is free to fit to the observed data. The parameterisation of the model is calibrated through the likelihood mechanism but the posterior samples provide important information not recoverable by optimizing fits for measurement and structural parameters. In the Bayesian setting we have access to the latent factor scores for each of the individual responses, giving us a means of assessing outliers on the latent scales. For instance
+
+```{python, fig.width=10}
+fig, ax = plt.subplots(figsize=(10, 10))
+az.plot_forest(idata, var_names=['ksi'], combined=True, ax=ax, coords={'latent': ['SUP_P']});
+ax.set_yticklabels([]);
+ax.set_xlabel("SUP_P");
+ax.axvline(-2, color='red');
+ax.set_title("Individual Parental Support Metric \n On Latent Factor SUP_P");
+plt.show();
 
 ```
 
