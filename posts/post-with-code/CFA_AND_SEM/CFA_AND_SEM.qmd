@@ -444,7 +444,7 @@ In this case the differences are slight, but the point here is just to consider 
 
 Modelling is nearly always about contrasts and questions of meaningful differences. What we seek to do when we build a model is to find a structure that enables "fair" or "justified" inferences about these contrasts. This is maybe most palpably brought home when we consider cases of causal inference. Here we want to define a meaningful causal estimand - some contrast between treatment group and control group where we can be confident that the two groups are suitably "representative" so that the observed differences represents the effect of the treatment. We are saying that conditional on our model design we consider __the potential outcomes to be exchangable__. Or another way of putting it is that we have controlled for all aspects of systematic differences between the control and treatment group and this warrants the causal interpretation of the contrast between treatment and control.
 
-But as we've seen above the cleanest way to interpret almost any regression model is to understand the model design in terms of the marginal effects on the outcome scale. These are just contrasts. All statistical models are, in some sense, focused on finding a structure that licenses an inference about some contrast of interest between the levels of some observed variable and the implied outcomes. In this way we want to include as much structure in our model that would induce the status of conditional exchangeability between the units of study across such group contrasts. This notion of conditional exchangeability is inherently an epistemic notion. We believe that our model is apt to induce the status of conditional exchangeability such that the people in our survey have no systematic difference which biases the measured differences. The implied differences in some marginal effect (while holding all else fixed) is a "fair" representations the same counterfactual adjustment in the population or sub-population defined by the covariate profile. The model implied difference is a proxy for the result of possible future interventions and as such merits our attention in policy design.
+But as we've seen above the cleanest way to interpret almost any regression model is to understand the model design in terms of the marginal effects on the outcome scale. These are just contrasts. All statistical models are, in some sense, focused on finding a structure that licenses an inference about some contrast of interest between the levels of some observed variable and the implied outcomes. In this way we want to include as much structure in our model that would induce the status of conditional exchangeability between the units of study across such group contrasts. This notion of conditional exchangeability is inherently an epistemic notion. We believe that our model is apt to induce the status of conditional exchangeability such that the people in our survey have no systematic difference which biases the measured differences. The implied differences in some marginal effect (while holding all else fixed) is a "fair" representations the same counterfactual adjustment in the population or sub-population defined by the covariate profile $X$. The model implied difference is a proxy for the result of possible future interventions and as such merits our attention in policy design.
 
 In particular the view here is that we ought to be deliberate in how we structure our models to license the plausibility of the exchangeability claim. By De Finetti's theorem a distribution of exchangeable sequence of variables be expressed as mixture of conditional independent variables. 
 
@@ -458,7 +458,7 @@ The organisation of our data into meaningful categories or clusters is common in
 
 ## Confirmatory Factor Analysis
 
-We will illustrate the details of confirmatory factor modelling using the `lavaan` framework. We'll focus mostly on the mechanics of how these models are estimated using maximum likelihood techniques before illustrating the salient differences of Bayesian estimation.
+We will illustrate the details of confirmatory factor modelling using the `lavaan` framework. The focus is mostly on the mechanics of how these models are estimated using maximum likelihood techniques before illustrating the salient differences of Bayesian estimation.
 
 First recall that the idea of confirmatory factor analysis is that there are some latent constructs which determine our data generating process. In our survey we've already clustered our questions by themes so it makes sense to extend this idea to posit latent constructs mapped to each of these themes. In the jargon of structural equation models this is called the measurement model.
 
@@ -607,11 +607,7 @@ SE_Academic ~~ SE_Social
 fit_mod_sem <- sem(model, data = df)
 ```
 
-
-```{r}
-modelplot(fit_mod_sem)
-
-```
+This model structure adds a set of directional arrows between the latent constructs
 
 ```{r}
 
@@ -619,7 +615,14 @@ semPlot::semPaths(fit_mod_sem, whatLabels = 'est', intercepts = FALSE)
 
 ```
 
-Compare this structure against the previously simpler measurement model and we observe a puzzling phenomena. The models report identical measures of fit. 
+The relative uncertainty in each estimates 
+
+```{r}
+modelplot(fit_mod_sem)
+
+```
+
+Compare this structure against the previously simpler measurement model and we observe a puzzling phenomena. The models report identical measures of fit!
 
 ```{r}
 
@@ -632,7 +635,8 @@ summary_df |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_
 
 
 ```
-The models have the same degrees of freedom which suggests in some sense we have already saturated our model fit and are unable to evaluate further parameter estimates. 
+
+The issue here is that the models have the same degrees of freedom which suggests in some sense we have already saturated our model fit and are unable to evaluate further parameter estimates. 
 
 ```{r}
 
@@ -645,7 +649,7 @@ We can see this similarly in the plotted residuals which are identical across th
 
 ```{r fig.width=10, fig.height=8}
 
-heat_df = data.frame(resid(fit_mod, type = "standardized")$cov) 
+heat_df = data.frame(resid(fit_mod)$cov) 
 heat_df = heat_df |> as.matrix() |> melt()
 colnames(heat_df) <- c("x", "y", "value")
 
@@ -655,10 +659,10 @@ g1 = heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fi
     high = 'dodgerblue4',
     mid = 'white',
     low = 'firebrick2'
-  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Standardised Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of SEM Model fit")
+  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Structural-Model fit")
 
 
-heat_df = data.frame(resid(fit_mod_sem, type = "standardized")$cov) 
+heat_df = data.frame(resid(fit_mod_sem)$cov) 
 heat_df = heat_df |> as.matrix() |> melt()
 colnames(heat_df) <- c("x", "y", "value")
 
@@ -668,16 +672,18 @@ g2 = heat_df  |> mutate(value = round(value, 2)) |>  ggplot(aes(x = x, y = y, fi
     high = 'dodgerblue4',
     mid = 'white',
     low = 'firebrick2'
-  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Standardised Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Measurement Model fit")
+  ) + theme(axis.text.x = element_text(angle=45)) + ggtitle("Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Measurement-Model fit")
 
 
 plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 ```
 
-This is a genuine limitation in the expressive power of SEM models when they are fit using maximum likelihood with finite degrees of freedom optimising for fidelity to the sample varaince-covariance matrix. 
+This is a genuine limitation in the expressive power of SEM models when they are fit using maximum likelihood with finite degrees of freedom optimising for fidelity to the sample variance-covariance matrix. Model idenfification possibilities are constrained by the optimisation goal and the degrees of freedom available to the optimiser. Next we'll show how the Bayesian approach to estimating these models frees us from this limitation. 
 
 ## Confirmatory Factor Models with PyMC
+
+So far we've seen CFA and SEM models specified using a kind of formula syntax. This useful but here we switch to the distributional perspective which is more directly relevant to the Bayesian phrasing of the CFA model. We'll unpack these components of the distributional view with a simpler data set initially for illustrative purposes and then we'll switch back to the Life Satisfaction question. 
 
 
 ```{python}
@@ -693,9 +699,10 @@ np.random.seed(150)
 
 
 df_p = pd.read_csv('IIS.dat', sep='\s+')
-df_p.head() 
+df_p.head()
 
 ```
+We have here a dataset drawn from Mislevy and Levy. which records measures of students collegiate experiences along multiple dimensions. The data here represents the averages of `PI` peer interaction, `AD` academic development `IGC` goal commitment, `FI` faculty interaction and `FC` faculty concern items for 500 hundred students. We will fit a 2 factor Bayesian CFA model to this data set. First consider the code and then we'll step through it in more detail.
 
 ```{python results='hide'}
 
@@ -738,9 +745,17 @@ with pm.Model(coords=coords) as model:
 summary_df = az.summary(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi', 'chol_cov_corr'], coords= {'obs': [0, 7]})
 
 ```
+The model specification here has a Normal likelihood term which takes as observed data the matrix of student responses. However we construct the input for the likelihood term in a way that we posit two latent factor variables `ksi[obs_idx, 0]` and `ksi[obs_idx, 1]` respectively. These factors are modified by the factor loading terms in e.g. `lambdas_1` specification to create a regression model `m1` which predicts the indicator variable `PI`. In this way we allow that the latent factors are related to the observed data matrix and the manner in which calibrating against observed data modifies our priors for the parameterisations of the lambdas, ksi terms reflects what the model learns about the interactions between the latent constructs. Crucially we force a covariance structure on `ksi` terms to reflect the correlations and covariance between these constructs of interest.
 
+In a Bayesian approach to the estimation of these models we are not limited by the degrees of freedom available in the optimisation routine. Instead we're aiming to estimate the posterior distribution using MCMC on draws from well specified priors on each the quantities listed above. In a picture the structure is like this:
 
 ![PyMC Confirmatory Factor Model](pymc_model.png)
+
+
+We are conditioning on the observed data and seek to estimate sound parameterisations of the `ksi`, `lambda` and `tau` that go into building our mu structure. The marginal distribution of the observables is derived by integrating over the distribution of the latent variables in this fashion so that:
+
+$$ p(x_{i}.....x_{n} | ksi, \Psi, \tau, \Lambda) \sim Normal(\tau + \Lambda\cdot ksi, \Psi) $$
+For more details on the precise derivation of this likelihood term we recommend the discussion in the book. It is this same likelihood specification that is used in maximum likelihood fits of the same and the Normal assumption has proved viable and computationally tractable. The model yields summary statistics for each of these parameters.
 
 ```{r}
 
@@ -748,12 +763,17 @@ py$summary_df |> kable() |>  kable_classic(full_width = F, html_font = "Cambria"
 
 ```
 
+We can additionally check the diagnostic trace plots to ensure that the model has sampled well even across the relatively complex structure. 
+
 ```{python}
 
 az.plot_trace(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi']);
 
 ```
 
+These parameter estimates reflect well the same figures reported by Levy and Mislevy, so we won't dwell too much further on this model only to say that the basic structure here is expanded upon as we apply more factor structures and SEM like structures to our original Life-Satisfaction dataset. 
+
+### Factoring for Life Satisfaction
 
 ```{python results='hide'}
 
@@ -833,6 +853,13 @@ correlation_df = pd.DataFrame(az.extract(idata['posterior'])['chol_cov_corr'].me
 correlation_df.index = ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS']
 correlation_df.columns = ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P', 'LS']
 
+factor_loadings = pd.DataFrame(az.summary(idata, var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'lambdas5'])['mean']).reset_index()
+factor_loadings['factor'] = factor_loadings['index'].str.split('[', expand=True)[0]
+factor_loadings.columns =['factor_loading', 'factor_loading_weight', 'factor']
+factor_loadings['factor_loading_weight_sq'] = factor_loadings['factor_loading_weight']**2
+factor_loadings['sum_sq_loadings'] = factor_loadings.groupby('factor')['factor_loading_weight_sq'].transform(sum)
+
+
 ```
 
 
@@ -865,14 +892,21 @@ py$correlation_df |> kable( caption= "Correlations Amongst Latent Factors", digi
 
 ```
 
+```{r}
+
+py$factor_loadings[ c('factor', 'factor_loading', 'factor_loading_weight', 'factor_loading_weight_sq', 'sum_sq_loadings')] |> kable( caption= "Factor Loadings and Sum of Squared loadings", digits=2) |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria") |> column_spec(5, bold=TRUE, color = ifelse(py$factor_loadings$sum_sq_loadings > 2.8, "red", "black"))
+
+
+```
+
 
 ```{python, fig.width=10, fig.height=15}
 
-def make_ppc(idata):
+def make_ppc(idata, samples=100):
   fig, axs = plt.subplots(5, 3, figsize=(20, 20))
   axs = axs.flatten()
   for i in range(15):
-    for j in range(100):
+    for j in range(samples):
       temp = az.extract(idata['posterior_predictive'].sel({'likelihood_dim_3': i}))['likelihood'].values[:, j]
       temp = pd.DataFrame(temp, columns=['likelihood'])
       if j == 0:
@@ -920,105 +954,16 @@ residuals_posterior_corr = get_posterior_resids(idata, 500, metric='corr')
 
 ```{r fig.width=10}
 
-plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Model fit")
+plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Measurement Model fit")
 
-plot_heatmap(py$residuals_posterior_corr, "Residuals of the Sample Correlations and Model Implied Correlations", "A Visual Check of Bayesian Model fit")
+plot_heatmap(py$residuals_posterior_corr, "Residuals of the Sample Correlations and Model Implied Correlations", "A Visual Check of Bayesian Measurement Model fit")
 
 ```
 
 ## Structural Equation Modelling in PyMC
 
 
-```{python, results='hide'}
-
-def make_sem(priors): 
-
-  coords = {'obs': list(range(len(df))), 
-            'indicators': drivers,
-            'indicators_1': ['se_acad_p1','se_acad_p2','se_acad_p3'],
-            'indicators_2': ['se_social_p1','se_social_p2','se_social_p3'],
-            'indicators_3': ['sup_friends_p1','sup_friends_p2','sup_friends_p3'],
-            'indicators_4': [ 'sup_parents_p1','sup_parents_p2','sup_parents_p3'],
-            'indicators_5': ['ls_p1','ls_p2', 'ls_p3'],
-            'latent': ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P'], 
-            'latent1': ['SE_ACAD', 'SE_SOCIAL', 'SUP_F', 'SUP_P']
-            }
-
-  obs_idx = list(range(len(df)))
-  with pm.Model(coords=coords) as model:
-    
-    Psi = pm.InverseGamma('Psi', 5, 10, dims='indicators')
-    lambdas_ = pm.Normal('lambdas_1',  priors['lambda'][0], priors['lambda'][1], dims=('indicators_1'))
-    lambdas_1 = pm.Deterministic('lambdas1', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_1'))
-    lambdas_ = pm.Normal('lambdas_2', priors['lambda'][0], priors['lambda'][1], dims=('indicators_2'))
-    lambdas_2 = pm.Deterministic('lambdas2', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_2'))
-    lambdas_ = pm.Normal('lambdas_3', priors['lambda'][0], priors['lambda'][1], dims=('indicators_3'))
-    lambdas_3 = pm.Deterministic('lambdas3', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_3'))
-    lambdas_ = pm.Normal('lambdas_4', priors['lambda'][0], priors['lambda'][1], dims=('indicators_4'))
-    lambdas_4 = pm.Deterministic('lambdas4', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_4'))
-    lambdas_ = pm.Normal('lambdas_5', priors['lambda'][0], priors['lambda'][1], dims=('indicators_5'))
-    lambdas_5 = pm.Deterministic('lambdas5', pt.set_subtensor(lambdas_[0], 1), dims=('indicators_5'))
-    tau = pm.Normal('tau', 3, 10, dims='indicators')
-    kappa = 0
-    sd_dist = pm.Exponential.dist(1.0, shape=4)
-    chol, _, _ = pm.LKJCholeskyCov('chol_cov', n=4, eta=priors['eta'],
-      sd_dist=sd_dist, compute_corr=True)
-    cov = pm.Deterministic("cov", chol.dot(chol.T), dims=('latent', 'latent1'))
-    ksi = pm.MvNormal('ksi', kappa, chol=chol, dims=('obs', 'latent'))
-
-    ## Additional Regression Component
-    beta_r = pm.Normal('beta_r', 0, 1, dims='latent')
-    regression = pm.Deterministic('regr', beta_r[0]*ksi[obs_idx, 0] + beta_r[1]*ksi[obs_idx, 1] +
-                                   beta_r[2]*ksi[obs_idx, 2] + beta_r[3]*ksi[obs_idx, 3])
-
-    m0 = tau[0] + ksi[obs_idx, 0]*lambdas_1[0]
-    m1 = tau[1] + ksi[obs_idx, 0]*lambdas_1[1]
-    m2 = tau[2] + ksi[obs_idx, 0]*lambdas_1[2]
-    m3 = tau[3] + ksi[obs_idx, 1]*lambdas_2[0]
-    m4 = tau[4] + ksi[obs_idx, 1]*lambdas_2[1]
-    m5 = tau[5] + ksi[obs_idx, 1]*lambdas_2[2]
-    m6 = tau[6] + ksi[obs_idx, 2]*lambdas_3[0]
-    m7 = tau[7] + ksi[obs_idx, 2]*lambdas_3[1]
-    m8 = tau[8] + ksi[obs_idx, 2]*lambdas_3[2]
-    m9 = tau[9] + ksi[obs_idx, 3]*lambdas_4[0]
-    m10 = tau[10] + ksi[obs_idx, 3]*lambdas_4[1]
-    m11 = tau[11] + ksi[obs_idx, 3]*lambdas_4[2]
-    m12 = tau[12] + regression*lambdas_5[0]
-    m13 = tau[13] + regression*lambdas_5[1]
-    m14 = tau[14] + regression*lambdas_5[2]
-    
-    mu = pm.Deterministic('mu', pm.math.stack([m0, m1, m2, m3, m4, m5, m6, m7,
-                                              m8, m9, m10, m11, m12, m13, m14]).T)
-    _  = pm.Normal('likelihood', mu, Psi, observed=df[drivers].values)
-
-    idata = pm.sample(chains=6, nuts_sampler='numpyro', target_accept=.95, tune=1000,
-                      idata_kwargs={"log_likelihood": True}, random_seed=100)
-    idata.extend(pm.sample_posterior_predictive(idata))
-
-    return model, idata
-
-
-model1, idata1 = make_sem(priors={'eta': 2, 'lambda': [1, 2]})
-
-
-```
-
-
-![Structural Equation Models](sem_model.svg)
-
-```{python, fig.width=10, fig.height=10}
-az.plot_posterior(idata1, var_names=['beta_r']);
-
-```
-
-```{python, fig.width=10, fig.width=15}
-
-make_ppc(idata1)
-
-```
-
-
-## SEM and Indirect Effects
+### SEM and Indirect Effects
 
 ```{python results='hide'}
 
@@ -1060,18 +1005,20 @@ def make_indirect_sem(priors):
     cov = pm.Deterministic("cov", chol.dot(chol.T), dims=('latent', 'latent1'))
     ksi = pm.MvNormal('ksi', kappa, chol=chol, dims=('obs', 'latent'))
 
+    # Regression Components
     beta_r = pm.Normal('beta_r', 0, 0.5, dims='latent_regression')
     beta_r2 = pm.Normal('beta_r2', 0, 1, dims='regression')
 
 
     # SE_ACAD ~ SUP_FRIENDS + SUP_PARENTS 
-    regression_se_acad = pm.Deterministic('regr_se_acad', beta_r[0]*ksi[obs_idx, 0] + beta_r[1]*ksi[obs_idx, 1])
+    regression_se_acad = pm.Normal('regr_se_acad', beta_r[0]*ksi[obs_idx, 0] + beta_r[1]*ksi[obs_idx, 1], 1)
     # SE_SOCIAL ~ SUP_FRIENDS + SUP_PARENTS 
-    regression_se_social = pm.Deterministic('regr_se_social', beta_r[2]*ksi[obs_idx, 0] + beta_r[3]*ksi[obs_idx, 1])
+    
+    regression_se_social = pm.Normal('regr_se_social', beta_r[2]*ksi[obs_idx, 0] + beta_r[3]*ksi[obs_idx, 1], 1)
 
     # LS ~ SE_ACAD + SE_SOCIAL + SUP_FRIEND + SUP_PARENTS
-    regression = pm.Deterministic('regr', beta_r2[0]*regression_se_acad + beta_r2[1]*regression_se_social +
-                                   beta_r2[2]*ksi[obs_idx, 0] + beta_r2[3]*ksi[obs_idx, 1])
+    regression = pm.Normal('regr', beta_r2[0]*regression_se_acad + beta_r2[1]*regression_se_social +
+                                   beta_r2[2]*ksi[obs_idx, 0] + beta_r2[3]*ksi[obs_idx, 1], 1)
 
     m0 = tau[0] + regression_se_acad*lambdas_1[0]
     m1 = tau[1] + regression_se_acad*lambdas_1[1]
@@ -1107,7 +1054,8 @@ model2, idata2 = make_indirect_sem(priors={'eta': 2, 'lambda': [1, 1]})
 ```
 
 
-![Indirect Effects and Total Effects Model](indirect_sem.svg)
+![Structural Equation Models](sem_model.svg)
+
 
 ```{python fig.width=10, fig.height=15}
 make_ppc(idata2)
@@ -1142,6 +1090,7 @@ indirect_p = calculate_effects(summary_df, 'SUP_P')
 indirect_f = calculate_effects(summary_df, 'SUP_F')
 
 residuals_posterior_cov = get_posterior_resids(idata2, 500)
+residuals_posterior_corr = get_posterior_resids(idata2, 500, 'corr')
 
 ```
 
@@ -1159,9 +1108,9 @@ py$indirect_f |> kable( caption= "Total and Indirect Effects: Friend Support", d
 
 ```
 
-```{r fig.width=10, fig.height=10}
+```{r fig.width=10}
 
-plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Model fit")
+plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Structural Model fit")
 
 ```
 
