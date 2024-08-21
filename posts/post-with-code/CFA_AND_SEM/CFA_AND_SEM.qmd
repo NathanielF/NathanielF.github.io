@@ -982,20 +982,32 @@ plot_heatmap(py$residuals_posterior_corr, "Residuals of the Sample Correlations 
 This process highlights one major difference in how the Bayesian CFA model is free to fit to the observed data. The parameterisation of the model is calibrated through the likelihood mechanism but the posterior samples provide important information not recoverable by optimizing fits for measurement and structural parameters. In the Bayesian setting we have access to the latent factor scores for each of the individual responses, giving us a means of assessing outliers on the latent scales. For instance
 
 ```{python, fig.width=10}
-fig, ax = plt.subplots(figsize=(10, 10))
+fig, axs = plt.subplots(1, 2, figsize=(10, 10))
+axs = axs.flatten()
+ax = axs[0]
+ax1 = axs[1]
 az.plot_forest(idata, var_names=['ksi'], combined=True, ax=ax, coords={'latent': ['SUP_P']});
+az.plot_forest(idata, var_names=['ksi'], combined=True, ax=ax1, colors="slateblue", coords={'latent': ['LS']});
 ax.set_yticklabels([]);
 ax.set_xlabel("SUP_P");
+ax1.set_yticklabels([]);
+ax1.set_xlabel("LS");
 ax.axvline(-2, color='red');
+ax1.axvline(-2, color='red');
 ax.set_title("Individual Parental Support Metric \n On Latent Factor SUP_P");
+ax1.set_title("Individual Life Satisfaction Metric \n On Latent Factor LS");
 plt.show();
 
 ```
+So while we are fitting a __confirmatory factor model__ the edges between exploratory and confirmatory blur in this setting. Just because we have we a hypothesised factor structure we wish to evaluate does not mean the implications of such structures are crystal clear. Here we need to explore that the individually reported scores render plausible judgments about the relative position of each survey respondent on these latent scales. These are the implications of our model fit that would help us confirm the plausibility of the hypothesised factors, but additionally they offer new potential options for exploring out data and categorising our observations. This is a common experience in contemporary Bayesian model workflow which recommends iterative model refinement and evaluation. 
 
 ## Structural Equation Modelling in PyMC
 
+In the context of structural equation modeling our hypothetical factor structure and dependency relations are even more specific than the simple "measurement model" we've just seen. A structural equation model incorporates a measurement model and adds regression components between the latent and manifest variables as is required to evaluate candidate hypotheses regarding the structure of the data generating process. The range of possibilities we can encode here is vast, but candidate model architectures are constrained by our theory of the case. 
 
 ### SEM and Indirect Effects
+
+With the life-satisfaction dataset we've been been looking at we want to evaluate the indirect and direct effects of parental and peer support on life-satisfaction outcomes. To do so we need to add a dependency structure to our data generating process and fit the regressions which would inform us as to relative importance of these types of support as mediated through our self-efficacy scores.
 
 ```{python results='hide'}
 
