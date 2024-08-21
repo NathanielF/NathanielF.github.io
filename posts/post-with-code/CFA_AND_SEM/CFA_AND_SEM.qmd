@@ -549,14 +549,14 @@ There a wealth of metrics associated with CFA model fit and it can be hard to se
 
 ### Visualising the Relationships
 
-One of the better ways to visualise these models is to use the `semPlot` package. Here we can plot all the parameter estimates in one graph. Following convention the rectangular boxes represent observed measures. Oval or circular objects represent the latent constructs. The self-directed arrows on each node is the variance of that measure. The two-way arrows between nodes represents the covariance between those two nodes. The single headed arrows from the latent construct to the indicator variables denotes the factor loading of the variable on the construct. 
+One of the better ways to visualise these models is to use the `semPlot` package. Here we can plot all the parameter estimates in one graph. Following convention the rectangular boxes represent observed measures. Oval or circular objects represent the latent constructs. The self-directed arrows on each node is the variance of that measure. The two-way arrows between nodes represents the covariance between those two nodes. The single headed arrows from the latent construct to the indicator variables denotes the factor loading of the variable on the construct. For instance `SUP_F -> sp_f_3` is set at 0.89. 
 
 ```{r}
 
 semPlot::semPaths(fit_mod, whatLabels = 'est', intercepts = FALSE, layout = "spring",)
 
 ```
-For instance, in this plot you can see that for each latent construct one of the indicator variables has their factor loading set to 1. This is a mathematical requirement we'll see below that is used to ensure identifiability of the parameters akin to setting a reference category in categorical regression. Additionally you can "read-off" the covariances between our constructs e.g. the covariance between `LS` and `SUP_P` is 0.36 the largest value amongst the set of covariances.  
+For instance, in this plot you can see that for each latent construct one of the indicator variables has their factor loading set to 1. This is a mathematical requirement we'll see below that is used to ensure identifiability of the parameters akin to setting a reference category in categorical regression. In the plot you can "read-off" the covariances between our constructs e.g. the covariance between `LS` and `SUP_P` is 0.36 the largest value amongst the set of covariances. 
 
 ### Comparing Models
 
@@ -1052,13 +1052,18 @@ def make_indirect_sem(priors):
     # Regression Components
     beta_r = pm.Normal('beta_r', 0, 0.5, dims='latent_regression')
     beta_r2 = pm.Normal('beta_r2', 0, 1, dims='regression')
+    resid_chol, _, _ = pm.LKJCholeskyCov('resid_chol', n=2, eta=priors['eta'],
+      sd_dist=sd_dist, compute_corr=True)
+    _ = pm.Deterministic("resid_cov", chol.dot(chol.T))
+    sigmas_resid = pm.MvNormal('sigmas_resid', kappa, chol=resid_chol)
+
 
 
     # SE_ACAD ~ SUP_FRIENDS + SUP_PARENTS 
-    regression_se_acad = pm.Normal('regr_se_acad', beta_r[0]*ksi[obs_idx, 0] + beta_r[1]*ksi[obs_idx, 1], 1)
+    regression_se_acad = pm.Normal('regr_se_acad', beta_r[0]*ksi[obs_idx, 0] + beta_r[1]*ksi[obs_idx, 1], sigmas_resid[0])
     # SE_SOCIAL ~ SUP_FRIENDS + SUP_PARENTS 
     
-    regression_se_social = pm.Normal('regr_se_social', beta_r[2]*ksi[obs_idx, 0] + beta_r[3]*ksi[obs_idx, 1], 1)
+    regression_se_social = pm.Normal('regr_se_social', beta_r[2]*ksi[obs_idx, 0] + beta_r[3]*ksi[obs_idx, 1], sigmas_resid[1])
 
     # LS ~ SE_ACAD + SE_SOCIAL + SUP_FRIEND + SUP_PARENTS
     regression = pm.Normal('regr', beta_r2[0]*regression_se_acad + beta_r2[1]*regression_se_social +
@@ -1097,16 +1102,19 @@ model2, idata2 = make_indirect_sem(priors={'eta': 2, 'lambda': [1, 1]})
 
 ```
 
+There is quite a bit of extra structure now in our model. This structure articulates the path-dependence of the self-efficacy constructs on the support constructs. We've specified these as seperate regressions with coefficient values for each of the support constructs, but additionally we need to ensure there is a correlation between realized self-efficacy predictions so we've wrapped the regression equations in two normal distributions with correlated sigma or residual terms. In this manner we preserve the multivariate relationships and allow the model to place weight on this prior if there is a strong co-determination effect. It's perhaps easier to see in a picture than think through the code directly: 
 
 ![Structural Equation Models](sem_model.svg)
+The main point to emphasise here is the expressive nature of the modelling paradigm. Our ability to construct and estimate different chains of dependence allows us to test evaluate the direct and indirect effects due to the different "drivers" of life-satisfaction. 
 
+As before we can still recover posterior predictive check to evaluate granular level perfromance against the observed data points. 
 
 ```{python fig.width=10, fig.height=15}
 make_ppc(idata2)
 
 ```
 
-
+But additionally we can pull out the regression summary coefficients and report on the direct and indirect effects of our constructs 
 
 ```{python}
 
@@ -1137,12 +1145,15 @@ residuals_posterior_cov = get_posterior_resids(idata2, 500)
 residuals_posterior_corr = get_posterior_resids(idata2, 500, 'corr')
 
 ```
+The regrssion effects seem well sampled and show the strength of relationships between social self-efficacy scores and reported life-satisfaction
 
 ```{r}
 
 py$summary_df |> kable( caption= "Regression Coefficients Amongst Latent Factors", digits=2) |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
+
+Additionally we can pull out estimates of the indirect and total effects of parental and peer support on the outcome of life-satisfaction using the multiplicative path-tracing rules here. 
 
 ```{r}
 
@@ -1152,9 +1163,18 @@ py$indirect_f |> kable( caption= "Total and Indirect Effects: Friend Support", d
 
 ```
 
+Note that we've defined these effects as point estimates on the mean realisations of the regression coefficients. But we could have defined these quantities in the model context and sampled the posterior distribution too. However, the model was already complex enough that we kept it simpler for the clarity of exposition.
+
+Finally we can plot the residual variance-covariance for the Bayesian estimate of Structural equation model we hypothesised. 
+
 ```{r fig.width=10}
 
 plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances and Model Implied Covariances", "A Visual Check of Bayesian Structural Model fit")
 
 ```
 
+The overall model fit seems quite reasonable, but __notably__ distinct from the fit of the simpler measurment model. In this way the flexibility of the bayesian estimation strategy is not as constrained as the MLE variance-covariance estimation strategy and we can learn of meaningful interactions in a richer more theoretically compelling model while still calibrating against the observed data.
+
+## Conclusion
+
+TBD
