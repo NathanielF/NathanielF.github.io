@@ -45,26 +45,25 @@ options(scipen=999)
 set.seed(130)
 ```
 
-::: {.callout-note}
+::: callout-note
 WORK IN PROGRESS:
 
-Choices are made as we step down the garden of forking paths in the course of any analysis. We risk self-delusion and foolish misstep if we cling too strongly to an arbitrary path. Maybe equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this tension when analysing psychometric survey data. Psychometric phenomena are inherently complex and imprecisely measured. Care is needed to test the assumptions used to analyse this species of data, for these models highlight a contentious aspect of the design choices made in statistical inference. There is a creativity in model development __and__ a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow. 
+Choices are made as we step down the garden of forking paths in the course of any analysis. If in the process of frantic search we cling too strongly to the first feasible path, we risk self-delusion from directionless flailing. Equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this explore/exploit tension when analyzing psychometric survey data. Psychometric models in particular highlight this contentious aspect of statistical inference. In psychometric theory we must vary the hypothesised structure to our manifest and latent variables which cannot be done whimsically. There is a trial and error kind of creativity in model development **and** a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow.
 :::
-
 
 ## Measurment and Measurement Constructs
 
-Science is easier when there is a recipe. When there is some procedure to adopt or routine to ape, you can out-source the responsibility for methodological justification. One egregious pattern in this vein attempts to masks implausible nonsense with the much vaunted mathematical gloss of "statistical significance". Seen from 1000 feet, this is disappointing but not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification and substantive argument. 
+Science is easier when there is a recipe. When there is some procedure to adopt or routine to ape, you can out-source the responsibility for methodological justification. One egregious pattern in this vein tries to mask implausible nonsense with the mathematical gloss of "statistical significance". Seen from 1000 feet, this is misguided but not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification and substantive argument.
 
 Evidence should be marshaled in service to argument, and it's an absurd pretense to claim that data speaks for itself in this argument. Good and compelling argumentation is at the heart of any sound inference. It is a necessary obligation if you expect anyone to make any decision on the strength of evidence you provide. Procedures and routine tests offer only a facsimile of sound argument and p-values are a poor substitute for logical consequence and substantive derivation.
 
-Data is found, gathered or maybe even carefully curated. In all cases there is need for a defensive posture, an argument that the data is fit-for-purpose. No where is this more clear than in psychometrics where the data is often derived from a strategically constructed survey aimed at a particular target phenomena. Some intuited, but not yet measured, concept that arguably plays a role in human action, motivation or sentiment. The relative "fuzziness" of the subject matter in psychometrics has had a catalyzing effect on the methodological rigour sought in the science. Survey designs are agonised over for correct tone and rhythm of sentence structure. Measurement scales are doubly checked for reliability and correctness. Analysis steps are justified and tested under a wealth of modelling routines. Model architectures are defined and refined to better express the hypothesized structures in the data-generating process.
+Data is found, gathered or maybe even carefully curated. In all cases there is need for a defensive posture, an argument that the data is fit-for-purpose. Nowhere is this more clear than in psychometrics where the data is often derived from a strategically constructed survey aimed at a particular target phenomena. Some intuited, but not yet measured, concept that arguably plays a role in human action, motivation or sentiment. The relative "fuzziness" of the subject matter in psychometrics has had a catalyzing effect on the methodological rigour sought in the science. Survey designs are agonised over for correct tone and rhythm of sentence structure. Measurement scales are doubly checked for reliability and correctness. Analysis steps are justified and tested under a wealth of modelling routines. Model architectures are defined and refined to better express the hypothesized structures in the data-generating process.
 
-We will examine a smattering of choices available in the analysis of psychometric survey data. First stepping through these analysis routines using `lmer`, `lavaan` before switching to `PyMC` to demonstrate how to fit Confirmatory Factor Analysis models and Structural Equation Models in a Bayesian fashion using a probabilistic programming language.Throughout we'll draw on Levy and Mislevy's [_Bayesian Psychometric Modeling_](https://www.taylorfrancis.com/books/mono/10.1201/9781315374604/bayesian-psychometric-modeling-roy-levy-robert-mislevy).m
+We will examine a smattering of choices available in the analysis of psychometric survey data. First stepping through these analysis routines using `lmer`, `lavaan` before switching to `PyMC` to demonstrate how to fit Confirmatory Factor Analysis (CFA) models and Structural Equation Models (SEM) in a Bayesian fashion using a probabilistic programming language.Throughout we'll draw on Levy and Mislevy's [*Bayesian Psychometric Modeling*](https://www.taylorfrancis.com/books/mono/10.1201/9781315374604/bayesian-psychometric-modeling-roy-levy-robert-mislevy) to highlight how good model design seeks structures which justify claim(s) of conditional independence thereby supporting the _argument_ to compelling inference.
 
 ### The Data
 
-The data is borrowed from work [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem) demonstrating SEM modelling with `Lavaan`. We'll load it up and begin some exploratory work. First let's look at the data. 
+The data is borrowed from work by Boris Mayer and Andrew Ellis found [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem). They demonstrate CFA and SEM modelling with `Lavaan`. We'll load up their data and begin some exploratory work. 
 
 ```{r}
 df = read.csv('sem_data.csv')
@@ -73,10 +72,10 @@ df$ls_mean <- rowMeans(df[ c('ls_p1', 'ls_p2', 'ls_p3')])
 
 head(df) |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 ```
-We have survey responses from ~300 individuals who have answered questions regarding their upbringing, self-belief and reported life-satisfaction. The hypothetical dependency structure in this life-satisfaction data set posits a moderations relationship between scores related to life-satisfaction, parental and family support and self-efficacy. It is not a trivial task to be able to design a survey that can elicit answers plausibly mapped to each of these "factors" or themes, never mind finding a model of their relationship that can inform us as to the relative of impact of each on life-satisfaction outcomes.   
 
-![Candidate Structure](structural_model.png)
-We will try to show some of the subtle aspects of these relationships as we go. The high level summary statistics show the variation across these measures. We can thematically cluster them because the source survey deliberately targeted each of the underlying themes in effort to pin down the relations between these hard to measure constructs. 
+We have survey responses from ~300 individuals who have answered questions regarding their upbringing, self-efficacy and reported life-satisfaction. The hypothetical dependency structure in this life-satisfaction data set posits a moderated relationship between scores related to life-satisfaction, parental and family support and self-efficacy. It is not a trivial task to be able to design a survey that can elicit answers plausibly mapped to each of these "factors" or themes, never mind finding a model of their relationship that can inform us as to the relative of impact of each on life-satisfaction outcomes. 
+
+![Candidate Structure](structural_model.png) We will try to show some of the subtle aspects of these relationships as we go. The high level summary statistics show the variation across these measures. We can thematically cluster them because the source survey deliberately targeted each of the underlying themes in effort to pin down the relations between these hard to measure constructs. We are assuming that our measurement scales are well designed and that the mapping of themes is appropriate. 
 
 ```{r}
 
@@ -107,11 +106,11 @@ datasummary_skim(df)|>
 
 ```
 
-Note how we've distinguished among the metrics for the "outcome" metrics and the "driver" metrics. Such a distinction may seem trivial, but it is only possible because we bring substantive knowledge to bear on the problem in the design of our survey and the postulation of the theoretical construct. Our data is a multivariate outcome vector. There are a large range of possible interacting effects and the patterns of realisation for our life-satisfaction scores. The true "drivers" of satisfaction may be quite different than the hypothesised structure. It is this open question that we're aiming to uncover in the analysis of our survey data. 
+Note how we've distinguished among the metrics for the "outcome" metrics and the "driver" metrics. Such a distinction may seem trivial, but it is only possible because we bring substantive knowledge to bear on the problem in the design of our survey and the postulation of the theoretical construct. Our data is a multivariate outcome vector. There are a large range of possible interacting effects and the patterns of realization for our life-satisfaction scores. The true "drivers" of satisfaction may be quite different than the hypothesised structure. It is this open question that we're aiming to uncover in the analysis of our survey data. 
 
 ### Sample Covariances and Correlations
 
-Let's plot the relations amongst our various indicator scores. 
+Let's plot the relations amongst our various indicator scores.
 
 ```{r fig.width=10, fig.height=10}
 
@@ -140,7 +139,8 @@ g2 = plot_heatmap(cor(df[,  drivers]), "Sample Correlations")
 plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 ```
-Note the relatively strong correlations between measures of parental support and the life-satisfaction outcome `ls_p3`. Similarly, how the social self-efficacy scores seem similarly correlated with the secondary life satisfaction indicator `ls_p2`. These observed correlations merit some further investigation. We can also plot the pairs of scatter plots to "dig deeper". What kind of correlation holds between these scores? Are any driven by extreme outliers? This is what we're looking for in a pair plot. Should we cull the outliers? Leave them in? We leave them in. 
+
+Note the relatively strong correlations between measures of parental support and the life-satisfaction outcome `ls_p3`. Similarly, the social self-efficacy scores seem well correlated with the secondary life satisfaction indicator `ls_p2`. These observed correlations merit some further investigation. We can also plot the pairs of scatter plots to "dig deeper". What kind of correlation holds between these scores? Are any driven by extreme outliers? This is what we're looking for in a pair plot. Should we cull the outliers? Leave them in? We leave them in.
 
 ```{r fig.width=15, fig.height=15}
 
@@ -171,11 +171,11 @@ full_join(x_vars, y_vars,
 
 ```
 
-The scatter plots among the highly correlated variables in the heatmap do seem to exhibit some kind of linear relationship with aspects of the life-satisfaction scores. We now turn to modelling these relationships to tease out some kind of inferential summary of those relationships. 
+The scatter plots among the highly correlated variables in the heatmap do seem to exhibit some kind of linear relationship with aspects of the life-satisfaction scores. We now turn to modelling these relationships to tease out some kind of inferential summary of those relationships.
 
 ## Fit Initial Regression Models
 
-To model these effects we make use of the aggregated sum and mean scores to express the relationships between these indicator metrics and life-satisfaction. We fit a variety of models each one escalating in the number of indicator metrics we incorporate into our model of the life-satisfaction outcome. This side-steps the multivariate nature of hypothesised constructs and crudely amalgamates the indicator metrics. This may be more or less justified depending on how similar in theme the three outcome questions `ls_p1, ls_p2, ls_p3` are in nature. 
+To model these effects we make use of the aggregated sum and mean scores to express the relationships between these indicator metrics and life-satisfaction. We fit a variety of models each one escalating in the number of indicator metrics we incorporate into our model of the life-satisfaction outcome. This side-steps the multivariate nature of hypothesised constructs and crudely amalgamates the indicator metrics. This may be more or less justified depending on how similar in theme the three outcome questions `ls_p1, ls_p2, ls_p3` are in nature. We've dodged the question of thematic unity all our metrics "load equally" on the outcome variable here and we let our regression model sort out the weighting. 
 
 ```{r}
 
@@ -197,11 +197,11 @@ mod_mean = lm(formula_mean, df)
 mod_mean_1st = lm(formula_mean_1st, df)
 mod_mean_12 = lm(formula_mean_12, df)
 
-min_max_norm <- function(x) {
-    (x - min(x)) / (max(x) - min(x))
+norm <- function(x) {
+    (x - mean(x)) / sd(x)
 }
 
-df_norm <- as.data.frame(lapply(df[c(5:19)], min_max_norm))
+df_norm <- as.data.frame(lapply(df[c(5:19)], norm))
 
 df_norm$ls_sum <- df$ls_sum
 df_norm$ls_mean <- df$ls_mean
@@ -225,7 +225,7 @@ models = list(
 
 ```
 
-The classical presentation of regression models reports the coefficient weights accorded to each of the input variables. We present these models to highlight that the manner in which we represent our theoretical constructs has ramifications for the interpretation of the data generating process. In particular, note how different degrees of significance are accorded to the different variables depending on which variables are included.
+The classical presentation of regression models reports the coefficient weights accorded to each of the input variables. We present these models to highlight that the manner in which we represent our theoretical constructs has ramifications for the interpretation of the data generating process. In particular, note how different degrees of significance are accorded to the different variables depending on which alternate variables are included.
 
 ```{r, class.source = 'fold-hide', fig.width=10}
 
@@ -242,8 +242,7 @@ modelsummary(models, stars=TRUE, shape ="cbind") |>
 
 ```
 
-We can similarly plot the coefficient values and their uncertainty highlighting how the representation or scaling of the variables impact the scale of the coefficient weights and therefore the surety of any subsequent claims. 
-
+We can similarly plot the coefficient values and their uncertainty highlighting how the representation or scaling of the variables impact the scale of the coefficient weights and therefore the surety of any subsequent claims.
 
 ```{r, fig.width=10, fig.height=10}
 
@@ -328,17 +327,18 @@ plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 
 ```
-This kind of brinkmanship is brittle. Any one of these kinds of choice __can__ be justified but more often than not results from an suspect exploratory process. Steps down a ["garden of forking paths"](http://www.stat.columbia.edu/~gelman/research/unpublished/p_hacking.pdf) seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicable and repeated under identical conditions. By exploring the different representations and criteria of narrative adequacy we break those guarantees.
+
+This kind of brinkmanship is brittle. Any one of these kinds of choice **can** be justified but more often than not results from an suspect exploratory process. Steps down a ["garden of forking paths"](http://www.stat.columbia.edu/~gelman/research/unpublished/p_hacking.pdf) seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicable and repeated under identical conditions. By exploring the different representations and criteria of narrative adequacy we break those guarantees.
 
 ## Exploratory and Confirmatory Modes
 
-One of the things that psychometrics has pioneered well is the distinction between an exploratory and confirmatory models. This  distinction, when made explicit, partially guards against the abuse of inferential integrity we see in more common work-flows. But additionally, models are often opaque - you may (as above) have improved some measure of model fit, changed the parameter weighting accorded to an observed feature, but what does that mean? Exploration of model architectures, design choices and feature creation is just how we come to understand the meaning of a model specification. Even in the simple case of regression we've seen how adding an interaction term changes the interpretability of a model. How then are we to stand behind uncertainty estimates accorded to parameter weights when we barely intuit the implications of a model design?
+One of the things that psychometrics has pioneered well is the distinction between an exploratory and confirmatory models. This distinction, when made explicit, partially guards against the abuse of inferential integrity we see in more common work-flows. But additionally, models are often opaque - you may (as above) have improved some measure of model fit, changed the parameter weighting accorded to an observed feature, but what does that mean? Exploration of model architectures, design choices and feature creation is just how we come to understand the meaning of a model specification. Even in the simple case of regression we've seen how adding an interaction term changes the interpretability of a model. How then are we to stand behind uncertainty estimates accorded to parameter weights when we barely intuit the implications of a model design?
 
 ### Marginal Effects
 
-The answer is to not to rely on intuition, but push forward and test the tangible implications of a fitted model. A model is hypothesis which should be applied to stringent test. We should subject the logical consequences of the design to appropriate scrutiny. We understand the implications and relative plausibility of any model in terms of the predicted outcomes more easily than we understand the subtle interaction effects expressed parameter movements. As such we should adopt this view in our evaluation of a model fit too. 
+The answer is to not to rely on intuition, but push forward and test the tangible implications of a fitted model. A model is hypothesis which should be applied to stringent test. We should subject the logical consequences of the design to appropriate scrutiny. We understand the implications and relative plausibility of any model in terms of the predicted outcomes more easily than we understand the subtle interaction effects expressed parameter movements. As such we should adopt this view in our evaluation of a model fit too.
 
-Consider how we do this using Vincent Arel-Bundock's wonderful `marginaleffects` package passing a grid of new values through to our fitted model.These implications are a test of model plausibility too. 
+Consider how we do this using Vincent Arel-Bundock's wonderful `marginaleffects` package passing a grid of new values through to our fitted model.These implications are a test of model plausibility too.
 
 ```{r, fig.width=10}
 pred <- predictions(mod_sum_parcel, newdata = datagrid(sup_parents_mean = 1:10, se_social_mean = 1:10 ))
@@ -347,6 +347,7 @@ pred1 <- predictions(mod_sum_inter_parcel, newdata = datagrid(sup_parents_mean =
 pred1  |> tail(10) |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
+
 We will see here how the impact of changes in `se_social_mean` is much reduced when `sup_parent_mean` is held fixed at high values (9, 10) when our model allows for an interaction effect.
 
 ```{r}
@@ -354,11 +355,12 @@ We will see here how the impact of changes in `se_social_mean` is much reduced w
 pred |> head(10) |> kableExtra::kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
 ```
+
 This modifying effect is not as evident in the simpler model.
 
 #### Regression Marginal Effects
 
-We can see this more clearly with a plot of the marginal effects. 
+We can see this more clearly with a plot of the marginal effects.
 
 ```{r, fig.width=10, fig.height=10}
 
@@ -371,13 +373,13 @@ plot <- ggarrange(g,g1, ncol=1, nrow=2);
 
 ```
 
-Here we've pulled out some of the implications in terms of the outcome predictions we 
+Here we've pulled out some of the implications in terms of the outcome predictions we
 
 ## Models with Controls
 
-The garden of forking paths presents itself within any set of covariates. How do we represent their effects? Which interactions are meaningful? How do we argue for one model design over another? The questionable paths are multiplied when we begin to consider additional covariates and group effects. But also additional covariates help structure our expectations too. Yes, you can cut and chop your way to through the garden to find some spurious correlation but more plausibly you can bring in structurally important variables which helpfully moderate the outcomes based on our understanding of the data generating process.  
+The garden of forking paths presents itself within any set of covariates. How do we represent their effects? Which interactions are meaningful? How do we argue for one model design over another? The questionable paths are multiplied when we begin to consider additional covariates and group effects. But also additional covariates help structure our expectations too. Yes, you can cut and chop your way to through the garden to find some spurious correlation but more plausibly you can bring in structurally important variables which helpfully moderate the outcomes based on our understanding of the data generating process.
 
-Let's assess the question but this time we allow the model to account for differences in `region`. 
+Let's assess the question but this time we allow the model to account for differences in `region`.
 
 ```{r, fig.width=10}
 
@@ -402,8 +404,8 @@ plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 
 ```
-We can see here how the additional factor variable is reported to be significant conditional on a model specification. However the intercept is no longer well identified. 
 
+We can see here how the additional factor variable is reported to be significant conditional on a model specification. However the intercept is no longer well identified.
 
 ```{r}
 
@@ -421,10 +423,9 @@ modelsummary(list("No Group Effects Fit"= no_grp_sum_fit,
 
 Again the cleanest way to interpret the implications of these specifications is derive the conditional marginal effects and assess these for plausibility.
 
-
 #### Group Marginal Effects
 
-We see here the different levels expected for different regional responses for changes in each of these input variables. 
+We see here the different levels expected for different regional responses for changes in each of these input variables.
 
 ```{r, fig.width=10, fig.height=10}
 
@@ -438,23 +439,24 @@ g2 = plot_predictions(grp_sum_fit, condition = c("se_acad_p1", "region"),
 plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
 
 ```
+
 In this case the differences are slight, but the point here is just to consider how aspects of the data generating process can be modified by broadly demographic features systematically. In an ideal circumstance a probability-sample of survey respondents should mitigate the need for additionally controls variables in so far as a probability sample should ensure exchangeability
 
 ## Model Design and Conditional Exchangeability
 
-Modelling is nearly always about contrasts and questions of meaningful differences. What we seek to do when we build a model is to find a structure that enables "fair" or "justified" inferences about these contrasts. This is maybe most palpably brought home when we consider cases of causal inference. Here we want to define a meaningful causal estimand - some contrast between treatment group and control group where we can be confident that the two groups are suitably "representative" so that the observed differences represents the effect of the treatment. We are saying that conditional on our model design we consider __the potential outcomes to be exchangable__. Or another way of putting it is that we have controlled for all aspects of systematic differences between the control and treatment group and this warrants the causal interpretation of the contrast between treatment and control.
+Modelling is nearly always about contrasts and questions of meaningful differences. What we seek to do when we build a model is to find a structure that enables "fair" or "justified" inferences about these contrasts. This is maybe most palpably brought home when we consider cases of causal inference. Here we want to define a meaningful causal estimand - some contrast between treatment group and control group where we can be confident that the two groups are suitably "representative" so that the observed differences represents the effect of the treatment. We are saying that conditional on our model design we consider **the potential outcomes to be exchangable**. Or another way of putting it is that we have controlled for all aspects of systematic differences between the control and treatment group and this warrants the causal interpretation of the contrast between treatment and control.
 
 But as we've seen above the cleanest way to interpret almost any regression model is to understand the model design in terms of the marginal effects on the outcome scale. These are just contrasts. All statistical models are, in some sense, focused on finding a structure that licenses an inference about some contrast of interest between the levels of some observed variable and the implied outcomes. In this way we want to include as much structure in our model that would induce the status of conditional exchangeability between the units of study across such group contrasts. This notion of conditional exchangeability is inherently an epistemic notion. We believe that our model is apt to induce the status of conditional exchangeability such that the people in our survey have no systematic difference which biases the measured differences. The implied differences in some marginal effect (while holding all else fixed) is a "fair" representations the same counterfactual adjustment in the population or sub-population defined by the covariate profile $X$. The model implied difference is a proxy for the result of possible future interventions and as such merits our attention in policy design.
 
-In particular the view here is that we ought to be deliberate in how we structure our models to license the plausibility of the exchangeability claim. By De Finetti's theorem a distribution of exchangeable sequence of variables be expressed as mixture of conditional independent variables. 
+In particular the view here is that we ought to be deliberate in how we structure our models to license the plausibility of the exchangeability claim. By De Finetti's theorem a distribution of exchangeable sequence of variables be expressed as mixture of conditional independent variables.
 
 $$ p(x_{1}....x_{m}) = \dfrac{p(X | \theta)p(\theta)}{p_{i}(X)} $$
 
-So if we specify the conditional distribution correctly, we recover the conditions that warrant inference with a well designed model.The mixture distribution is just the vector of parameters __$\boldsymbol{\theta}$__ upon which we condition our model. Mislevy and Levy highlight this important observation has implications for model development by quoting Judea Pearl: 
+So if we specify the conditional distribution correctly, we recover the conditions that warrant inference with a well designed model.The mixture distribution is just the vector of parameters $\boldsymbol{\theta}$ upon which we condition our model. Mislevy and Levy highlight this important observation has implications for model development by quoting Judea Pearl:
 
-> [C]onditional independence is not a grace of nature for which we must wait passively, but rather a psychological necessity which we satisfy by organising our knowledge in a specific way. An important tool in such an organisation is the identification of intermediate variables that induce conditional independence among observables; if such variables are not in our vocabulary, we create them. In medical diagnosis, for instance, when some symptoms directly influence one another, the medical profession invents a name for that interaction (e.g. "syndrome", "complication", "pathological state") and treats it as a new auxilary variable that induces conditional independence." - Pearl quoted in _Bayesian Psychometric Modeling_ p61
+> \[C\]onditional independence is not a grace of nature for which we must wait passively, but rather a psychological necessity which we satisfy by organising our knowledge in a specific way. An important tool in such an organisation is the identification of intermediate variables that induce conditional independence among observables; if such variables are not in our vocabulary, we create them. In medical diagnosis, for instance, when some symptoms directly influence one another, the medical profession invents a name for that interaction (e.g. "syndrome", "complication", "pathological state") and treats it as a new auxilary variable that induces conditional independence." - Pearl quoted in *Bayesian Psychometric Modeling* p61
 
-The organisation of our data into meaningful categories or clusters is common in machine learning, but similarly in psychometrics we see the prevalence of factor models which are more explicitly causal models where we posit some unifying theme to the cluster of measures. In each tradition we are seeking conditional independence by allowing the model to account for these dependencies in how we structure the model. These choices represent a fruitful aspect of walking down through the garden of forking paths. There is then a tension between the exploratory seeking for some pre-determined story and an experimental seeking of clarity. With this in mind we now turn to types of modeling architecture that open up new expressive possibilities and offer a way to think about the relationships between observed data and latent factors that drive the observed outcomes. This greater expressive power offers different routes to inducing patterns of conditional exchangeability and different risks too. 
+The organisation of our data into meaningful categories or clusters is common in machine learning, but similarly in psychometrics we see the prevalence of factor models which are more explicitly causal models where we posit some unifying theme to the cluster of measures. In each tradition we are seeking conditional independence by allowing the model to account for these dependencies in how we structure the model. These choices represent a fruitful aspect of walking down through the garden of forking paths. There is then a tension between the exploratory seeking for some pre-determined story and an experimental seeking of clarity. With this in mind we now turn to types of modeling architecture that open up new expressive possibilities and offer a way to think about the relationships between observed data and latent factors that drive the observed outcomes. This greater expressive power offers different routes to inducing patterns of conditional exchangeability and different risks too.
 
 ## Confirmatory Factor Analysis
 
@@ -495,9 +497,9 @@ fit_mod_1<- cfa(model_measurement1, data = df)
 
 ```
 
-In the above syntax we have specified two slightly different measurement models. In each case we allow that the questions of our survey are mapped to an appropriate latent factor e.g `LS =~ ls_p1 + ls_p2 + ls_p3`. The "=~" syntax denotes a "measured by" relationship in which the goal is to estimate how each of observed measurements load on the latent factor. In the first model we have allowed each of the factor loadings to be estimated freely, but in the second we have forced equal weights on the `SUP_Friends` construct. A benefit of this framework is that we do not have to resort to crude aggregations like sum-scores or mean-scores over the outcome variables we can allow that they vary freely and let the model estimate the multivariate relationships between the observed variables and these latent constructs. 
+In the above syntax we have specified two slightly different measurement models. In each case we allow that the questions of our survey are mapped to an appropriate latent factor e.g `LS =~ ls_p1 + ls_p2 + ls_p3`. The "=\~" syntax denotes a "measured by" relationship in which the goal is to estimate how each of observed measurements load on the latent factor. In the first model we have allowed each of the factor loadings to be estimated freely, but in the second we have forced equal weights on the `SUP_Friends` construct. A benefit of this framework is that we do not have to resort to crude aggregations like sum-scores or mean-scores over the outcome variables we can allow that they vary freely and let the model estimate the multivariate relationships between the observed variables and these latent constructs.
 
-If we plot the estimated parameters as before we'll see some additional parameters reported. 
+If we plot the estimated parameters as before we'll see some additional parameters reported.
 
 ```{r}
 
@@ -507,15 +509,16 @@ cfa_models = list("full_measurement_model" = fit_mod,
 modelplot(cfa_models)
 
 ```
-Here there are two distinct types of parameters: (i) the factor loadings accorded (=~) to the individual observed metrics and (ii) the covariances (~~) between the latent constructs. We can further report the extent of the model fit summaries. 
+
+Here there are two distinct types of parameters: (i) the factor loadings accorded (=\~) to the individual observed metrics and (ii) the covariances (\~\~) between the latent constructs. We can further report the extent of the model fit summaries.
 
 ```{r, fig.width=10, fig.height=10}
 
 summary(fit_mod, fit.measures = TRUE, standardized = TRUE) 
 
 ```
-Note how in addition to the individual parameter estimates the summaries highlight various measures of global model fit. These model fit statistics are important for evaluating alternative ways of parameterising our models. The number of parameters is a real concern in the maximum likelihood approaches to estimating these models. Too many parameters and we can easily over fit to the particular sample data. This stems in part from the limitations of the optimisation goal in the traditional CFA framework - we are intent to optimise model parameters to recover a compelling estimate based on the observed covariance matrix. Once we have more parameters than there are points in the covariance matrix the model is free to overfit considerably. This can then be checked as measure of local model fit and may highlight infelicities or suspicious convergence between the true data generating process and the learned model. 
 
+Note how in addition to the individual parameter estimates the summaries highlight various measures of global model fit. These model fit statistics are important for evaluating alternative ways of parameterising our models. The number of parameters is a real concern in the maximum likelihood approaches to estimating these models. Too many parameters and we can easily over fit to the particular sample data. This stems in part from the limitations of the optimisation goal in the traditional CFA framework - we are intent to optimise model parameters to recover a compelling estimate based on the observed covariance matrix. Once we have more parameters than there are points in the covariance matrix the model is free to overfit considerably. This can then be checked as measure of local model fit and may highlight infelicities or suspicious convergence between the true data generating process and the learned model.
 
 ```{r, fig.width=10, fig.height=12}
 
@@ -549,19 +552,19 @@ There a wealth of metrics associated with CFA model fit and it can be hard to se
 
 ### Visualising the Relationships
 
-One of the better ways to visualise these models is to use the `semPlot` package. Here we can plot all the parameter estimates in one graph. Following convention the rectangular boxes represent observed measures. Oval or circular objects represent the latent constructs. The self-directed arrows on each node is the variance of that measure. The two-way arrows between nodes represents the covariance between those two nodes. The single headed arrows from the latent construct to the indicator variables denotes the factor loading of the variable on the construct. For instance `SUP_F -> sp_f_3` is set at 0.89. 
+One of the better ways to visualise these models is to use the `semPlot` package. Here we can plot all the parameter estimates in one graph. Following convention the rectangular boxes represent observed measures. Oval or circular objects represent the latent constructs. The self-directed arrows on each node is the variance of that measure. The two-way arrows between nodes represents the covariance between those two nodes. The single headed arrows from the latent construct to the indicator variables denotes the factor loading of the variable on the construct. For instance `SUP_F -> sp_f_3` is set at 0.89.
 
 ```{r}
 
 semPlot::semPaths(fit_mod, whatLabels = 'est', intercepts = FALSE, layout = "spring",)
 
 ```
-For instance, in this plot you can see that for each latent construct one of the indicator variables has their factor loading set to 1. This is a mathematical requirement we'll see below that is used to ensure identifiability of the parameters akin to setting a reference category in categorical regression. In the plot you can "read-off" the covariances between our constructs e.g. the covariance between `LS` and `SUP_P` is 0.36 the largest value amongst the set of covariances. 
+
+For instance, in this plot you can see that for each latent construct one of the indicator variables has their factor loading set to 1. This is a mathematical requirement we'll see below that is used to ensure identifiability of the parameters akin to setting a reference category in categorical regression. In the plot you can "read-off" the covariances between our constructs e.g. the covariance between `LS` and `SUP_P` is 0.36 the largest value amongst the set of covariances.
 
 ### Comparing Models
 
 We can use a variety of chi-squared tests to evaluate the goodness of fit for our models. If we pass in each model individually we perform a test comparing our model to the saturated model. The Chi-Squared test compares the model-implied variance-covariance matrix (expected) to the variance-covariance matrix computed from the actual data (observed). The null hypothesis for the Chi-Squared Goodness-of-Fit test is that the model fits the data perfectly, meaning that there is no significant difference between the observed and model-implied variance-covariance matrices. The goal is to see if the differences between these matrices are large enough that we can reject the null.
-
 
 ```{r}
 
@@ -569,7 +572,7 @@ lavTestLRT(fit_mod)
 
 ```
 
-Passing in the one model we can reject the null hypothesis that the saturated model's (perfect fit) and the candidate variance-covariance matrix are drawn from the same distribution. Comparing between our two model fits we also reject that these two models are drawn from the same distribution. 
+Passing in the one model we can reject the null hypothesis that the saturated model's (perfect fit) and the candidate variance-covariance matrix are drawn from the same distribution. Comparing between our two model fits we also reject that these two models are drawn from the same distribution.
 
 ```{r}
 
@@ -578,11 +581,11 @@ lavTestLRT(fit_mod, fit_mod_1)
 
 ```
 
-The test also reports a number of other fit indices and the degrees of freedom available to each model. These are important because the Chi-Squared test is overly sensetive in large-sample data and the model adequacy is a multi-dimensional question.  
+The test also reports a number of other fit indices and the degrees of freedom available to each model. These are important because the Chi-Squared test is overly sensetive in large-sample data and the model adequacy is a multi-dimensional question.
 
 ## Structural Equation Models
 
-So far so good. We have a confirmatory factor measurement model. We've structured it so that we can make inferences about the correlations and covariances between 5 latent constructs of independent interest. We've calibrated the model fit statistics by ensuring the model can reasonably recover the observed variance-covariance structure. But what about our dependency relations between constructs? We can evaluate these too! Adding regressions to our model allows to express these relationships and then recover summary statistics of the same. 
+So far so good. We have a confirmatory factor measurement model. We've structured it so that we can make inferences about the correlations and covariances between 5 latent constructs of independent interest. We've calibrated the model fit statistics by ensuring the model can reasonably recover the observed variance-covariance structure. But what about our dependency relations between constructs? We can evaluate these too! Adding regressions to our model allows to express these relationships and then recover summary statistics of the same.
 
 ```{r}
 
@@ -615,7 +618,7 @@ semPlot::semPaths(fit_mod_sem, whatLabels = 'est', intercepts = FALSE)
 
 ```
 
-The relative uncertainty in each estimates 
+The relative uncertainty in each estimates
 
 ```{r}
 modelplot(fit_mod_sem)
@@ -636,7 +639,7 @@ summary_df |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_
 
 ```
 
-The issue here is that the models have the same degrees of freedom which suggests in some sense we have already saturated our model fit and are unable to evaluate further parameter estimates. 
+The issue here is that the models have the same degrees of freedom which suggests in some sense we have already saturated our model fit and are unable to evaluate further parameter estimates.
 
 ```{r}
 
@@ -645,7 +648,8 @@ lavTestLRT(fit_mod_sem, fit_mod)
 lavTestLRT(fit_mod_sem, fit_mod_1)
 
 ```
-We can see this similarly in the plotted residuals which are identical across the models despite meaningful structural differences. 
+
+We can see this similarly in the plotted residuals which are identical across the models despite meaningful structural differences.
 
 ```{r fig.width=10, fig.height=8}
 
@@ -679,12 +683,11 @@ plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 ```
 
-This is a genuine limitation in the expressive power of SEM models when they are fit using maximum likelihood with finite degrees of freedom optimising for fidelity to the sample variance-covariance matrix. Model idenfification possibilities are constrained by the optimisation goal and the degrees of freedom available to the optimiser. Next we'll show how the Bayesian approach to estimating these models frees us from this limitation. 
+This is a genuine limitation in the expressive power of SEM models when they are fit using maximum likelihood with finite degrees of freedom optimising for fidelity to the sample variance-covariance matrix. Model idenfification possibilities are constrained by the optimisation goal and the degrees of freedom available to the optimiser. Next we'll show how the Bayesian approach to estimating these models frees us from this limitation.
 
 ## Confirmatory Factor Models with PyMC
 
-So far we've seen CFA and SEM models specified using a kind of formula syntax. This useful but here we switch to the distributional perspective which is more directly relevant to the Bayesian phrasing of the CFA model. We'll unpack these components of the distributional view with a simpler data set initially for illustrative purposes and then we'll switch back to the Life Satisfaction question. 
-
+So far we've seen CFA and SEM models specified using a kind of formula syntax. This useful but here we switch to the distributional perspective which is more directly relevant to the Bayesian phrasing of the CFA model. We'll unpack these components of the distributional view with a simpler data set initially for illustrative purposes and then we'll switch back to the Life Satisfaction question.
 
 ```{python}
 
@@ -702,6 +705,7 @@ df_p = pd.read_csv('IIS.dat', sep='\s+')
 df_p.head()
 
 ```
+
 We have here a dataset drawn from Mislevy and Levy. which records measures of students collegiate experiences along multiple dimensions. The data here represents the averages of `PI` peer interaction, `AD` academic development `IGC` goal commitment, `FI` faculty interaction and `FC` faculty concern items for 500 hundred students. We will fit a 2 factor Bayesian CFA model to this data set - one factor for he faculty items and the other factor for self-reporting items. First consider the code and then we'll step through it in more detail.
 
 ```{python results='hide'}
@@ -749,17 +753,16 @@ with pm.Model(coords=coords) as model:
 summary_df = az.summary(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi', 'chol_cov_corr'], coords= {'obs': [0, 7]})
 
 ```
-The model specification here has a Normal likelihood term which takes as observed data the matrix of student responses. However we construct the input for the likelihood term in a way that we posit two latent factor variables `ksi[obs_idx, 0]` and `ksi[obs_idx, 1]` respectively. These factors are modified by the factor loading terms in e.g. `lambdas_1` specification to create a regression model `m1` which predicts the indicator variable `PI`. In this way we allow that the latent factors are related to the observed data matrix and the manner in which calibrating against observed data modifies our priors for the parameterisations of the lambdas, ksi terms reflects what the model learns about the interactions between the latent constructs. Crucially we force a covariance structure on `ksi` terms to reflect the correlations and covariance between these constructs of interest and the factor loading terms have a required scale fixed by forcing the first indicator loading to 1 for each factor. 
+
+The model specification here has a Normal likelihood term which takes as observed data the matrix of student responses. However we construct the input for the likelihood term in a way that we posit two latent factor variables `ksi[obs_idx, 0]` and `ksi[obs_idx, 1]` respectively. These factors are modified by the factor loading terms in e.g. `lambdas_1` specification to create a regression model `m1` which predicts the indicator variable `PI`. In this way we allow that the latent factors are related to the observed data matrix and the manner in which calibrating against observed data modifies our priors for the parameterisations of the lambdas, ksi terms reflects what the model learns about the interactions between the latent constructs. Crucially we force a covariance structure on `ksi` terms to reflect the correlations and covariance between these constructs of interest and the factor loading terms have a required scale fixed by forcing the first indicator loading to 1 for each factor.
 
 In a Bayesian approach to the estimation of these models we are not limited by the degrees of freedom available in the optimisation routine. Instead we're aiming to estimate the posterior distribution using MCMC on draws from well specified priors on each the quantities listed above. In a picture the structure is like this:
 
 ![PyMC Confirmatory Factor Model](pymc_model.png)
 
-
 We are conditioning on the observed data and seek to estimate sound parameterisations of the `ksi`, `lambda` and `tau` that go into building our mu structure. The marginal distribution of the observables is derived by integrating over the distribution of the latent variables in this fashion so that:
 
-$$ p(x_{i}.....x_{n} | ksi, \Psi, \tau, \Lambda) \sim Normal(\tau + \Lambda\cdot ksi, \Psi) $$
-For more details on the precise derivation of this likelihood term we recommend the discussion in the book. It is this same likelihood specification that is used in maximum likelihood fits of the same and the Normal assumption has proved viable and computationally tractable. The model yields summary statistics for each of these parameters.
+$$ p(x_{i}.....x_{n} | ksi, \Psi, \tau, \Lambda) \sim Normal(\tau + \Lambda\cdot ksi, \Psi) $$ For more details on the precise derivation of this likelihood term we recommend the discussion in the book. It is this same likelihood specification that is used in maximum likelihood fits of the same and the Normal assumption has proved viable and computationally tractable. The model yields summary statistics for each of these parameters.
 
 ```{r}
 
@@ -767,7 +770,7 @@ py$summary_df |> kable() |>  kable_classic(full_width = F, html_font = "Cambria"
 
 ```
 
-We can additionally check the diagnostic trace plots to ensure that the model has sampled well even across the relatively complex structure. 
+We can additionally check the diagnostic trace plots to ensure that the model has sampled well even across the relatively complex structure.
 
 ```{python}
 
@@ -775,11 +778,11 @@ az.plot_trace(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi']);
 
 ```
 
-These diagnostic plots and parameter estimates reflect well the same figures reported by Levy and Mislevy, so we won't dwell too much further on this model only to say that the basic structure here is expanded upon as we apply more factor structures and SEM like structures to our original Life-Satisfaction dataset. 
+These diagnostic plots and parameter estimates reflect well the same figures reported by Levy and Mislevy, so we won't dwell too much further on this model only to say that the basic structure here is expanded upon as we apply more factor structures and SEM like structures to our original Life-Satisfaction dataset.
 
 ### Factoring for Life Satisfaction
 
-Now we want fit the life-satisfaction measurement model using `PyMC`. This has fundamentally a similar structure to the simple CFA model we've seen above. However we now have 5 factors with 3 factor loadings to be estimated for three indicators per factor. We will fit this model and then show how to pull out some of model fit statistics that are relevant for the assessment of the model. 
+Now we want fit the life-satisfaction measurement model using `PyMC`. This has fundamentally a similar structure to the simple CFA model we've seen above. However we now have 5 factors with 3 factor loadings to be estimated for three indicators per factor. We will fit this model and then show how to pull out some of model fit statistics that are relevant for the assessment of the model.
 
 ```{python results='hide'}
 
@@ -868,10 +871,9 @@ factor_loadings['sum_sq_loadings'] = factor_loadings.groupby('factor')['factor_l
 
 ```
 
-Here we've calculated a bunch of summary statistics which we will highlight below, but first observe the analogous model structure here to the simple CFA model above. 
+Here we've calculated a bunch of summary statistics which we will highlight below, but first observe the analogous model structure here to the simple CFA model above.
 
-![Life Satisfaction Model](full_pymc_model.svg)
-Next we'll plot the posterior summary statistics for each of the key parameters. 
+![Life Satisfaction Model](full_pymc_model.svg) Next we'll plot the posterior summary statistics for each of the key parameters.
 
 ```{r}
 
@@ -879,7 +881,7 @@ py$summary_df1 |> kable() |>  kable_classic(full_width = F, html_font = "Cambria
 
 ```
 
-Using a forest plots it's easier to see how the uncertainty attaches to some of these estimates. 
+Using a forest plots it's easier to see how the uncertainty attaches to some of these estimates.
 
 ```{python}
 
@@ -889,7 +891,7 @@ ax.set_title("Factor Loadings for each of the Five Factors");
 
 ```
 
-We can also pull out the covariances between our latent constructs. Highlighting the key covariances relations between support and self-efficacy measures with the life-satisfaction outcome. 
+We can also pull out the covariances between our latent constructs. Highlighting the key covariances relations between support and self-efficacy measures with the life-satisfaction outcome.
 
 ```{r}
 
@@ -897,7 +899,7 @@ py$cov_df |> kable(caption= "Covariances Amongst Latent Factors",digits=2) |> ka
 
 ```
 
-One benefit of fitting a mutlivariate normal relationship between these factors is that we can pull and translate the covariance relation in terms of the correlation patterns implied. 
+One benefit of fitting a mutlivariate normal relationship between these factors is that we can pull and translate the covariance relation in terms of the correlation patterns implied.
 
 ```{r}
 
@@ -906,7 +908,7 @@ py$correlation_df |> kable( caption= "Correlations Amongst Latent Factors", digi
 
 ```
 
-Another lens on the factors is the relative factor strength which highlights where the majority of substantive variation exists in our dataset. 
+Another lens on the factors is the relative factor strength which highlights where the majority of substantive variation exists in our dataset.
 
 ```{r}
 
@@ -915,7 +917,7 @@ py$factor_loadings[ c('factor', 'factor_loading', 'factor_loading_weight', 'fact
 
 ```
 
-So we can evaluate some of the similar relationships at the level of summary statistics, but more powerfully we've built a generative model of the process yielding our observed data and as such we can evalute the fidelity of the predictive output of our model using posterior predictive checks. 
+So we can evaluate some of the similar relationships at the level of summary statistics, but more powerfully we've built a generative model of the process yielding our observed data and as such we can evalute the fidelity of the predictive output of our model using posterior predictive checks.
 
 ```{python, fig.width=10, fig.height=15}
 
@@ -969,7 +971,7 @@ residuals_posterior_corr = get_posterior_resids(idata, 500, metric='corr')
   
 ```
 
-Then we can plot the familiar heatmaps from above highlighting the comparable accuracy of the Bayesian model fit. 
+Then we can plot the familiar heatmaps from above highlighting the comparable accuracy of the Bayesian model fit.
 
 ```{r fig.width=10}
 
@@ -999,11 +1001,12 @@ ax1.set_title("Individual Life Satisfaction Metric \n On Latent Factor LS");
 plt.show();
 
 ```
-So while we are fitting a __confirmatory factor model__ the edges between exploratory and confirmatory blur in this setting. Just because we have we a hypothesised factor structure we wish to evaluate does not mean the implications of such structures are crystal clear. Here we need to explore that the individually reported scores render plausible judgments about the relative position of each survey respondent on these latent scales. These are the implications of our model fit that would help us confirm the plausibility of the hypothesised factors, but additionally they offer new potential options for exploring out data and categorising our observations. This is a common experience in contemporary Bayesian model workflow which recommends iterative model refinement and evaluation. 
+
+So while we are fitting a **confirmatory factor model** the edges between exploratory and confirmatory blur in this setting. Just because we have we a hypothesised factor structure we wish to evaluate does not mean the implications of such structures are crystal clear. Here we need to explore that the individually reported scores render plausible judgments about the relative position of each survey respondent on these latent scales. These are the implications of our model fit that would help us confirm the plausibility of the hypothesised factors, but additionally they offer new potential options for exploring out data and categorising our observations. This is a common experience in contemporary Bayesian model workflow which recommends iterative model refinement and evaluation.
 
 ## Structural Equation Modelling in PyMC
 
-In the context of structural equation modeling our hypothetical factor structure and dependency relations are even more specific than the simple "measurement model" we've just seen. A structural equation model incorporates a measurement model and adds regression components between the latent and manifest variables as is required to evaluate candidate hypotheses regarding the structure of the data generating process. The range of possibilities we can encode here is vast, but candidate model architectures are constrained by our theory of the case. 
+In the context of structural equation modeling our hypothetical factor structure and dependency relations are even more specific than the simple "measurement model" we've just seen. A structural equation model incorporates a measurement model and adds regression components between the latent and manifest variables as is required to evaluate candidate hypotheses regarding the structure of the data generating process. The range of possibilities we can encode here is vast, but candidate model architectures are constrained by our theory of the case.
 
 ### SEM and Indirect Effects
 
@@ -1102,19 +1105,18 @@ model2, idata2 = make_indirect_sem(priors={'eta': 2, 'lambda': [1, 1]})
 
 ```
 
-There is quite a bit of extra structure now in our model. This structure articulates the path-dependence of the self-efficacy constructs on the support constructs. We've specified these as seperate regressions with coefficient values for each of the support constructs, but additionally we need to ensure there is a correlation between realized self-efficacy predictions so we've wrapped the regression equations in two normal distributions with correlated sigma or residual terms. In this manner we preserve the multivariate relationships and allow the model to place weight on this prior if there is a strong co-determination effect. It's perhaps easier to see in a picture than think through the code directly: 
+There is quite a bit of extra structure now in our model. This structure articulates the path-dependence of the self-efficacy constructs on the support constructs. We've specified these as seperate regressions with coefficient values for each of the support constructs, but additionally we need to ensure there is a correlation between realized self-efficacy predictions so we've wrapped the regression equations in two normal distributions with correlated sigma or residual terms. In this manner we preserve the multivariate relationships and allow the model to place weight on this prior if there is a strong co-determination effect. It's perhaps easier to see in a picture than think through the code directly:
 
-![Structural Equation Models](sem_model.svg)
-The main point to emphasise here is the expressive nature of the modelling paradigm. Our ability to construct and estimate different chains of dependence allows us to test evaluate the direct and indirect effects due to the different "drivers" of life-satisfaction. 
+![Structural Equation Models](sem_model.svg) The main point to emphasise here is the expressive nature of the modelling paradigm. Our ability to construct and estimate different chains of dependence allows us to test evaluate the direct and indirect effects due to the different "drivers" of life-satisfaction.
 
-As before we can still recover posterior predictive check to evaluate granular level perfromance against the observed data points. 
+As before we can still recover posterior predictive check to evaluate granular level perfromance against the observed data points.
 
 ```{python fig.width=10, fig.height=15}
 make_ppc(idata2)
 
 ```
 
-But additionally we can pull out the regression summary coefficients and report on the direct and indirect effects of our constructs 
+But additionally we can pull out the regression summary coefficients and report on the direct and indirect effects of our constructs
 
 ```{python}
 
@@ -1145,6 +1147,7 @@ residuals_posterior_cov = get_posterior_resids(idata2, 500)
 residuals_posterior_corr = get_posterior_resids(idata2, 500, 'corr')
 
 ```
+
 The regrssion effects seem well sampled and show the strength of relationships between social self-efficacy scores and reported life-satisfaction
 
 ```{r}
@@ -1153,7 +1156,7 @@ py$summary_df |> kable( caption= "Regression Coefficients Amongst Latent Factors
 
 ```
 
-Additionally we can pull out estimates of the indirect and total effects of parental and peer support on the outcome of life-satisfaction using the multiplicative path-tracing rules here. 
+Additionally we can pull out estimates of the indirect and total effects of parental and peer support on the outcome of life-satisfaction using the multiplicative path-tracing rules here.
 
 ```{r}
 
@@ -1165,7 +1168,7 @@ py$indirect_f |> kable( caption= "Total and Indirect Effects: Friend Support", d
 
 Note that we've defined these effects as point estimates on the mean realisations of the regression coefficients. But we could have defined these quantities in the model context and sampled the posterior distribution too. However, the model was already complex enough that we kept it simpler for the clarity of exposition.
 
-Finally we can plot the residual variance-covariance for the Bayesian estimate of Structural equation model we hypothesised. 
+Finally we can plot the residual variance-covariance for the Bayesian estimate of Structural equation model we hypothesised.
 
 ```{r fig.width=10}
 
@@ -1173,8 +1176,17 @@ plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances an
 
 ```
 
-The overall model fit seems quite reasonable, but __notably__ distinct from the fit of the simpler measurment model. In this way the flexibility of the bayesian estimation strategy is not as constrained as the MLE variance-covariance estimation strategy and we can learn of meaningful interactions in a richer more theoretically compelling model while still calibrating against the observed data.
+The overall model fit seems quite reasonable, but **notably** distinct from the fit of the simpler measurement model. In this way the flexibility of the Bayesian estimation strategy is not as constrained as the MLE variance-covariance estimation strategy and we can learn of meaningful interactions in a richer more theoretically compelling model while still calibrating against the observed data. This is borne out global model comparisons too. 
+
+```{python fig.width=10, results='hide'}
+
+compare_df = az.compare({'Measurement Model': idata, 'Structural Model': idata2});
+az.plot_compare(compare_df);
+plt.show()
+
+```
+The structural model is marginally worse by measures of overall fit to the data, but this summary skips over the variety of questions we can answer with this new structure. The broad fidelity to observed datas seen in the posterior predictive checks and the variance covariance residuals suggests that we ought to be willing to take this hit to overall performance if we can answer questions left unanswered by the measurement model.  
 
 ## Conclusion
 
-TBD
+At the outset of this analysis we stated the hypothetical structure of interest. This suggests a pure confirmatory project, but in practice much of the feasibility of this analysis path is dependent on viability of the various model architectures with respect to the data. It's easy to tell the story of increasingly sophisticated models, more powerful, more insightful inferential claims. Yet, this narrative is compelling only in so far as there is a justifiable sequence of steps through the ascension model complexity. The increase in complexity needs to be off-set by a rationale at each step.  
