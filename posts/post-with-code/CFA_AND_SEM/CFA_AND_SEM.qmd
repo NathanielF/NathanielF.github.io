@@ -48,22 +48,22 @@ set.seed(130)
 ::: callout-note
 WORK IN PROGRESS:
 
-Choices are made as we step down the garden of forking paths in the course of any analysis. If in the process of frantic search we cling too strongly to the first feasible path, we risk self-delusion from directionless flailing. Equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this explore/exploit tension when analyzing psychometric survey data. Psychometric models in particular highlight this contentious aspect of statistical inference. In psychometric theory we must vary the hypothesised structure to our manifest and latent variables which cannot be done whimsically. There is a trial and error kind of creativity in model development **and** a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow.
+Choices are made as we step down the garden of forking paths in the course of any analysis. If in the process of frantic search we cling too strongly to the first feasible path, we risk self-delusion from directionless flailing and [satisficing](https://en.wikipedia.org/wiki/Satisficing). Equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this explore/exploit tension when analyzing psychometric survey data. Psychometric models in particular highlight this contentious aspect of statistical inference. In psychometric theory we must vary the hypothesised structure to our manifest and latent variables - this cannot be done whimsically. There is a trial and error kind of creativity in model development **and** a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow.
 :::
 
-## Measurment and Measurement Constructs
+## Measurement and Measurement Constructs
 
 Science is easier when there is a recipe. When there is some procedure to adopt or routine to ape, you can out-source the responsibility for methodological justification. One egregious pattern in this vein tries to mask implausible nonsense with the mathematical gloss of "statistical significance". Seen from 1000 feet, this is misguided but not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification and substantive argument.
 
-Evidence should be marshaled in service to argument, and it's an absurd pretense to claim that data speaks for itself in this argument. Good and compelling argumentation is at the heart of any sound inference. It is a necessary obligation if you expect anyone to make any decision on the strength of evidence you provide. Procedures and routine tests offer only a facsimile of sound argument and p-values are a poor substitute for logical consequence and substantive derivation.
+Evidence **should** be marshaled in service to argument, and it's an absurd pretense to claim that data speaks for itself in this argument. Good and compelling argumentation is at the heart of any sound inference. It is a necessary obligation if you expect anyone to make any decision on the strength of evidence you provide. Procedures and routine tests offer only a facsimile of sound argument and p-values are a poor substitute for narrative cogency, logical consequence and substantive derivation.
 
-Data is found, gathered or maybe even carefully curated. In all cases there is need for a defensive posture, an argument that the data is fit-for-purpose. Nowhere is this more clear than in psychometrics where the data is often derived from a strategically constructed survey aimed at a particular target phenomena. Some intuited, but not yet measured, concept that arguably plays a role in human action, motivation or sentiment. The relative "fuzziness" of the subject matter in psychometrics has had a catalyzing effect on the methodological rigour sought in the science. Survey designs are agonised over for correct tone and rhythm of sentence structure. Measurement scales are doubly checked for reliability and correctness. Analysis steps are justified and tested under a wealth of modelling routines. Model architectures are defined and refined to better express the hypothesized structures in the data-generating process.
+Data is found, gathered or maybe even carefully curated. In all cases there is need for a defensive posture and an argument that the data is fit-for-purpose. Nowhere is this more clear than in psychometrics where the data is often derived from a strategically constructed survey aimed at a particular target phenomena. Some intuited, but not yet measured, concept that arguably plays a role in human action, motivation or sentiment. The relative "fuzziness" of the subject matter in psychometrics has had a catalyzing effect on the methodological rigour sought in the science. Survey designs are agonized over for correct tone and rhythm of sentence structure. Measurement scales are doubly checked for reliability and correctness. Analysis steps are justified and tested under a wealth of modelling routines. Model architectures are defined and refined to better express the hypothesized structures in the data-generating process.
 
-We will examine a smattering of choices available in the analysis of psychometric survey data. First stepping through these analysis routines using `lmer`, `lavaan` before switching to `PyMC` to demonstrate how to fit Confirmatory Factor Analysis (CFA) models and Structural Equation Models (SEM) in a Bayesian fashion using a probabilistic programming language.Throughout we'll draw on Levy and Mislevy's [*Bayesian Psychometric Modeling*](https://www.taylorfrancis.com/books/mono/10.1201/9781315374604/bayesian-psychometric-modeling-roy-levy-robert-mislevy) to highlight how good model design seeks structures which justify claim(s) of conditional independence thereby supporting the _argument_ to compelling inference.
+We will examine a smattering of choices available in the analysis of psychometric survey data. First stepping through these analysis routines using `lmer`, `lavaan` before switching to `PyMC` to demonstrate how to fit Confirmatory Factor Analysis (CFA) models and Structural Equation Models (SEM) in a Bayesian fashion using a probabilistic programming language.Throughout we'll draw on Levy and Mislevy's [*Bayesian Psychometric Modeling*](https://www.taylorfrancis.com/books/mono/10.1201/9781315374604/bayesian-psychometric-modeling-roy-levy-robert-mislevy) to highlight how good model design seeks structures which justify claim(s) of conditional independence; thereby supporting the *argument* to compelling inference.
 
 ### The Data
 
-The data is borrowed from work by Boris Mayer and Andrew Ellis found [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem). They demonstrate CFA and SEM modelling with `Lavaan`. We'll load up their data and begin some exploratory work. 
+The data is borrowed from work by Boris Mayer and Andrew Ellis found [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem). They demonstrate CFA and SEM modelling with `Lavaan`. We'll load up their data and begin some exploratory work.
 
 ```{r}
 df = read.csv('sem_data.csv')
@@ -73,9 +73,9 @@ df$ls_mean <- rowMeans(df[ c('ls_p1', 'ls_p2', 'ls_p3')])
 head(df) |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 ```
 
-We have survey responses from ~300 individuals who have answered questions regarding their upbringing, self-efficacy and reported life-satisfaction. The hypothetical dependency structure in this life-satisfaction data set posits a moderated relationship between scores related to life-satisfaction, parental and family support and self-efficacy. It is not a trivial task to be able to design a survey that can elicit answers plausibly mapped to each of these "factors" or themes, never mind finding a model of their relationship that can inform us as to the relative of impact of each on life-satisfaction outcomes. 
+We have survey responses from \~300 individuals who have answered questions regarding their upbringing, self-efficacy and reported life-satisfaction. The hypothetical dependency structure in this life-satisfaction data-set posits a moderated relationship between scores related to life-satisfaction, parental and family support and self-efficacy. It is not a trivial task to be able to design a survey that can elicit answers plausibly mapped to each of these "factors" or themes, never mind finding a model of their relationship that can inform us as to the relative of impact of each on life-satisfaction outcomes.
 
-![Candidate Structure](structural_model.png) We will try to show some of the subtle aspects of these relationships as we go. The high level summary statistics show the variation across these measures. We can thematically cluster them because the source survey deliberately targeted each of the underlying themes in effort to pin down the relations between these hard to measure constructs. We are assuming that our measurement scales are well designed and that the mapping of themes is appropriate. 
+![Candidate Structure](structural_model.png) We will try to show some of the subtle aspects of these relationships as we go. The high level summary statistics show the variation across these measures. We can thematically cluster them because the source survey deliberately targeted each of the underlying themes in effort to pin down the relations between these hard to measure constructs. We are assuming that our measurement scales are well designed and that the mapping of themes is appropriate.
 
 ```{r}
 
@@ -106,7 +106,7 @@ datasummary_skim(df)|>
 
 ```
 
-Note how we've distinguished among the metrics for the "outcome" metrics and the "driver" metrics. Such a distinction may seem trivial, but it is only possible because we bring substantive knowledge to bear on the problem in the design of our survey and the postulation of the theoretical construct. Our data is a multivariate outcome vector. There are a large range of possible interacting effects and the patterns of realization for our life-satisfaction scores. The true "drivers" of satisfaction may be quite different than the hypothesised structure. It is this open question that we're aiming to uncover in the analysis of our survey data. 
+Note how we've distinguished among the metrics for the "outcome" metrics and the "driver" metrics. Such a distinction may seem trivial, but it is only possible because we bring substantive knowledge to bear on the problem in the design of our survey and the postulation of the theoretical construct. Our data is a multivariate outcome vector. There are a large range of possible interacting effects and the patterns of realization for our life-satisfaction scores. The true "drivers" of satisfaction may be quite different than the hypothesised structure. It is this open question that we're aiming to uncover in the analysis of our survey data.
 
 ### Sample Covariances and Correlations
 
@@ -171,11 +171,11 @@ full_join(x_vars, y_vars,
 
 ```
 
-The scatter plots among the highly correlated variables in the heatmap do seem to exhibit some kind of linear relationship with aspects of the life-satisfaction scores. We now turn to modelling these relationships to tease out some kind of inferential summary of those relationships.
+The scatter plots among the highly correlated variables in the heat-map do seem to exhibit some kind of linear relationship with aspects of the life-satisfaction scores. We now turn to modelling these relationships to tease out some kind of inferential summary of those relationships.
 
 ## Fit Initial Regression Models
 
-To model these effects we make use of the aggregated sum and mean scores to express the relationships between these indicator metrics and life-satisfaction. We fit a variety of models each one escalating in the number of indicator metrics we incorporate into our model of the life-satisfaction outcome. This side-steps the multivariate nature of hypothesised constructs and crudely amalgamates the indicator metrics. This may be more or less justified depending on how similar in theme the three outcome questions `ls_p1, ls_p2, ls_p3` are in nature. We've dodged the question of thematic unity all our metrics "load equally" on the outcome variable here and we let our regression model sort out the weighting. 
+To model these effects we make use of the aggregated sum and mean scores to express the relationships between these indicator metrics and life-satisfaction. We fit a variety of models each one escalating in the number of indicator metrics we incorporate into our model of the life-satisfaction outcome. This side-steps the multivariate nature of hypothesised constructs and crudely amalgamates the indicator metrics. This may be more or less justified depending on how similar in theme the three outcome questions `ls_p1, ls_p2, ls_p3` are in nature. We've dodged the question of thematic unity as all our metrics "load equally" on the outcome variable here and we let our regression model sort out the weighting.
 
 ```{r}
 
@@ -269,8 +269,8 @@ An alternative lens on these figures highlights the statistical significance of 
 ```{r, fig.width=10, fig.height=10}
 
 
-g1 = modelplot(mod_sum, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.001, "Significant at 0.001", "Not significant at 0.001")) +
-  scale_color_manual(values = c("grey", "blue")) + ggtitle("Significance of Coefficient Values", "At Different Levels")
+g1 = modelplot(mod_mean, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.001, "Significant at 0.001", "Not significant at 0.001")) +
+  scale_color_manual(values = c("grey", "blue")) + ggtitle("Significance of Coefficient Values", "Mean Model at Different Levels")
 
 
 g2 = modelplot(mod_mean, coef_omit = 'Intercept') +  aes(color = ifelse(p.value < 0.05, "Significant at 0.05", "Not significant at 0.05")) +
@@ -311,7 +311,7 @@ modelsummary(models_parcel, stars=TRUE)
 
 ```
 
-What does definitive mean here? Is it so simple as more significant coefficents? Marginally better performance measures?
+What does definitive mean here? Is it so simple as more significant coefficients? Marginally better performance measures?
 
 ```{r, fig.width = 14}
 
@@ -328,7 +328,7 @@ plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 ```
 
-This kind of brinkmanship is brittle. Any one of these kinds of choice **can** be justified but more often than not results from an suspect exploratory process. Steps down a ["garden of forking paths"](http://www.stat.columbia.edu/~gelman/research/unpublished/p_hacking.pdf) seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicable and repeated under identical conditions. By exploring the different representations and criteria of narrative adequacy we break those guarantees.
+This kind of brinkmanship is brittle. Any one of these kinds of choice **can** be justified but more often than not results from an suspect exploratory process. Steps down a ["garden of forking paths"](http://www.stat.columbia.edu/~gelman/research/unpublished/p_hacking.pdf) seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicible and repeated under identical conditions. By exploring the different representations and criteria of narrative adequacy we break those guarantees.
 
 ## Exploratory and Confirmatory Modes
 
@@ -373,7 +373,7 @@ plot <- ggarrange(g,g1, ncol=1, nrow=2);
 
 ```
 
-Here we've pulled out some of the implications in terms of the outcome predictions we
+Here we've pulled out some of the implications in terms of the outcome predictions and see how the interaction effect modifies the additive effect downwards at the upper end of the `se_social_mean` scale.
 
 ## Models with Controls
 
@@ -971,7 +971,7 @@ residuals_posterior_corr = get_posterior_resids(idata, 500, metric='corr')
   
 ```
 
-Then we can plot the familiar heatmaps from above highlighting the comparable accuracy of the Bayesian model fit.
+Then we can plot the familiar heat-maps from above highlighting the comparable accuracy of the Bayesian model fit.
 
 ```{r fig.width=10}
 
@@ -1002,7 +1002,7 @@ plt.show();
 
 ```
 
-So while we are fitting a **confirmatory factor model** the edges between exploratory and confirmatory blur in this setting. Just because we have we a hypothesised factor structure we wish to evaluate does not mean the implications of such structures are crystal clear. Here we need to explore that the individually reported scores render plausible judgments about the relative position of each survey respondent on these latent scales. These are the implications of our model fit that would help us confirm the plausibility of the hypothesised factors, but additionally they offer new potential options for exploring out data and categorising our observations. This is a common experience in contemporary Bayesian model workflow which recommends iterative model refinement and evaluation.
+So while we are fitting a **confirmatory factor model** the edges between exploratory and confirmatory blur in this setting. Just because we have we a hypothesized factor structure we wish to evaluate does not mean the implications of such structures are crystal clear. Here we need to explore that the individually reported scores render plausible judgments about the relative position of each survey respondent on these latent scales. These are the implications of our model fit that would help us confirm the plausibility of the hypothesized factors, but additionally they offer new potential options for exploring out data and categorizing our observations. This is a common experience in contemporary Bayesian model workflow which recommends iterative model refinement and evaluation.
 
 ## Structural Equation Modelling in PyMC
 
@@ -1010,7 +1010,7 @@ In the context of structural equation modeling our hypothetical factor structure
 
 ### SEM and Indirect Effects
 
-With the life-satisfaction dataset we've been been looking at we want to evaluate the indirect and direct effects of parental and peer support on life-satisfaction outcomes. To do so we need to add a dependency structure to our data generating process and fit the regressions which would inform us as to relative importance of these types of support as mediated through our self-efficacy scores.
+With the life-satisfaction data-set we've been been looking at we want to evaluate the indirect and direct effects of parental and peer support on life-satisfaction outcomes. To do so we need to add a dependency structure to our data generating process and fit the regressions which would inform us as to relative importance of these types of support as mediated through our self-efficacy scores.
 
 ```{python results='hide'}
 
@@ -1105,9 +1105,9 @@ model2, idata2 = make_indirect_sem(priors={'eta': 2, 'lambda': [1, 1]})
 
 ```
 
-There is quite a bit of extra structure now in our model. This structure articulates the path-dependence of the self-efficacy constructs on the support constructs. We've specified these as seperate regressions with coefficient values for each of the support constructs, but additionally we need to ensure there is a correlation between realized self-efficacy predictions so we've wrapped the regression equations in two normal distributions with correlated sigma or residual terms. In this manner we preserve the multivariate relationships and allow the model to place weight on this prior if there is a strong co-determination effect. It's perhaps easier to see in a picture than think through the code directly:
+There is quite a bit of extra structure now in our model. This structure articulates the path-dependence of the self-efficacy constructs on the support constructs. We've specified these as separate regressions with coefficient values for each of the support constructs, but additionally we need to ensure there is a correlation between realized self-efficacy predictions so we've wrapped the regression equations in two normal distributions with correlated sigma or residual terms. In this manner we preserve the multivariate relationships and allow the model to place weight on this prior if there is a strong co-determination effect. It's perhaps easier to see in a picture than think through the code directly:
 
-![Structural Equation Models](sem_model.svg) The main point to emphasise here is the expressive nature of the modelling paradigm. Our ability to construct and estimate different chains of dependence allows us to test evaluate the direct and indirect effects due to the different "drivers" of life-satisfaction.
+![Structural Equation Models](sem_model.svg) The main point to emphasize here is the expressive nature of the modelling paradigm. Our ability to construct and estimate different chains of dependence allows us to test evaluate the direct and indirect effects due to the different "drivers" of life-satisfaction.
 
 As before we can still recover posterior predictive check to evaluate granular level perfromance against the observed data points.
 
@@ -1148,7 +1148,7 @@ residuals_posterior_corr = get_posterior_resids(idata2, 500, 'corr')
 
 ```
 
-The regrssion effects seem well sampled and show the strength of relationships between social self-efficacy scores and reported life-satisfaction
+The regression effects seem well sampled and show the strength of relationships between social self-efficacy scores and reported life-satisfaction
 
 ```{r}
 
@@ -1166,9 +1166,9 @@ py$indirect_f |> kable( caption= "Total and Indirect Effects: Friend Support", d
 
 ```
 
-Note that we've defined these effects as point estimates on the mean realisations of the regression coefficients. But we could have defined these quantities in the model context and sampled the posterior distribution too. However, the model was already complex enough that we kept it simpler for the clarity of exposition.
+Note that we've defined these effects as point estimates on the mean realizations of the regression coefficients. But we could have defined these quantities in the model context and sampled the posterior distribution too. However, the model was already complex enough that we kept it simpler for the clarity of exposition.
 
-Finally we can plot the residual variance-covariance for the Bayesian estimate of Structural equation model we hypothesised.
+Finally we can plot the residual variance-covariance for the Bayesian estimate of Structural equation model we hypothesized.
 
 ```{r fig.width=10}
 
@@ -1176,7 +1176,7 @@ plot_heatmap(py$residuals_posterior_cov, "Residuals of the Sample Covariances an
 
 ```
 
-The overall model fit seems quite reasonable, but **notably** distinct from the fit of the simpler measurement model. In this way the flexibility of the Bayesian estimation strategy is not as constrained as the MLE variance-covariance estimation strategy and we can learn of meaningful interactions in a richer more theoretically compelling model while still calibrating against the observed data. This is borne out global model comparisons too. 
+The overall impression seems quite reasonable, but **notably** distinct from the fit of the simpler measurement model. In this way the flexibility of the Bayesian estimation strategy is not as constrained as the MLE variance-covariance estimation strategy and we can learn of meaningful interactions in a richer more theoretically compelling model while still calibrating against the observed data. This is borne out global model comparisons too.
 
 ```{python fig.width=10, results='hide'}
 
@@ -1185,8 +1185,9 @@ az.plot_compare(compare_df);
 plt.show()
 
 ```
-The structural model is marginally worse by measures of overall fit to the data, but this summary skips over the variety of questions we can answer with this new structure. The broad fidelity to observed datas seen in the posterior predictive checks and the variance covariance residuals suggests that we ought to be willing to take this hit to overall performance if we can answer questions left unanswered by the measurement model.  
 
-## Conclusion
+The structural model is marginally worse by measures of global fit to the data, but this summary skips over the variety of questions we can answer with this new structure. The broad fidelity to observed data seen in the posterior predictive checks and the variance covariance residuals suggests that we ought to be willing to take this hit to global performance if we can answer questions left unanswered by the measurement model.
 
-At the outset of this analysis we stated the hypothetical structure of interest. This suggests a pure confirmatory project, but in practice much of the feasibility of this analysis path is dependent on viability of the various model architectures with respect to the data. It's easy to tell the story of increasingly sophisticated models, more powerful, more insightful inferential claims. Yet, this narrative is compelling only in so far as there is a justifiable sequence of steps through the ascension model complexity. The increase in complexity needs to be off-set by a rationale at each step.  
+## Conclusion: [Build the Model with Lasers!](https://quantitudepod.org/s4e06-model-building/)
+
+At the outset of this analysis we stated the hypothetical structure of interest. This suggests a pure confirmatory project, but in practice much of the feasibility of this analysis is path dependent and constrained by the viability of the various model architectures with respect to the data. It's easy to tell the story of increasingly sophisticated models, more powerful, more insightful inferential claims. Yet, this narrative is compelling only in so far as there is a justifiable sequence of steps through the ascension of model complexity. The increase in complexity needs to be off-set by a rationale at each step.
