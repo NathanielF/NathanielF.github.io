@@ -48,20 +48,36 @@ set.seed(130)
 ::: callout-note
 WORK IN PROGRESS:
 
-Choices are made as we step down the garden of forking paths in the course of any analysis. Often, in the process of frantic search we cling too strongly to the first feasible path. This risks a self-delusion from directionless flailing and the urge for [satisficing](https://en.wikipedia.org/wiki/Satisficing). Equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this explore/exploit tension when analyzing psychometric survey data. Psychometric models in particular highlight this contentious aspect of statistical inference. In psychometric theory we must vary the hypothesised structure to our manifest and latent variables - this cannot be done whimsically. There is a trial and error kind of creativity in model development **and** a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow.
+Choices are made as we step down the garden of forking paths in the course of any analysis. Often, in the process of frantic search we cling too strongly to the first feasible path. This risks delusion from directionless flailing and the urge for [satisficing](https://en.wikipedia.org/wiki/Satisficing). Equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this explore/exploit tension when analyzing psychometric survey data highlighting the dynamic process of discovery. In psychometric theory we must vary the hypothesised structure of our manifest and latent variables and their representation - this cannot be done whimsically as we seek better fit to data. There is a trial and error kind of creativity in model development **and** a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow.
 :::
 
 ## Measurement and Measurement Constructs
 
 Science is easier when there is a recipe. When there is some procedure to adopt or routine to ape, you can out-source the responsibility for methodological justification. One egregious pattern in this vein tries to mask implausible nonsense with the mathematical gloss of "statistical significance". Seen from 1000 feet, this is misguided but not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification and substantive argument.
 
-Evidence **should** be marshaled in service to argument, and it's an absurd pretense to claim that data speaks for itself in this argument. Good and compelling argumentation is at the heart of any sound inference. It is a necessary obligation if you expect anyone to make any decision on the strength of evidence you provide. Procedures and routine tests offer only a facsimile of sound argument and p-values are a poor substitute for narrative cogency, logical consequence and substantive derivation.
+Evidence should be marshaled in service to argument. But it's an absurd pretense to claim that data speaks for itself in this argument. Good and compelling argumentation is at the heart of any sound inference. It is a necessary obligation if you expect anyone to make any decision on the strength of evidence you provide. Procedures and routine tests offer only a facsimile of sound argument and p-values are a poor substitute for narrative cogency, logical consequence and substantive derivation.
 
-Data is found, gathered or maybe even carefully curated. In all cases there is need for a defensive posture and an argument that the data is fit-for-purpose. Nowhere is this more clear than in psychometrics where the data is often derived from a strategically constructed survey aimed at a particular target phenomena. Some intuited, but not yet measured, concept that arguably plays a role in human action, motivation or sentiment. The relative "fuzziness" of the subject matter in psychometrics has had a catalyzing effect on the methodological rigour sought in the science. Survey designs are agonized over for correct tone and rhythm of sentence structure. Measurement scales are doubly checked for reliability and correctness. Analysis steps are justified and tested under a wealth of modelling routines. Model architectures are defined and refined to better express the hypothesized structures in the data-generating process.
+Data is found, gathered or (maybe even) carefully curated. In all cases there is need for a defensive posture and an argument that the data is fit-for-purpose. Nowhere is this more clear than in psychometrics where the data is often derived from a strategically constructed survey aimed at a particular target phenomena. Some intuited, but not yet measured, concept that arguably plays a role in human action, motivation or sentiment. The relative "fuzziness" of the subject matter in psychometrics has had a catalyzing effect on the methodological rigour sought in the science. Survey designs are agonized over for correct tone and rhythm of sentence structure. Measurement scales are doubly checked for reliability and correctness. Analysis steps are justified and tested under a wealth of modelling routines. Model architectures are defined and refined to better express the hypothesized structures in the data-generating process. We will see how such attention to detail leads to powerful and expressive models that grant us tractability on thorny questions of human affect.
 
-We will examine a smattering of choices available in the analysis of psychometric survey data. First stepping through these analysis routines using `lmer`, `lavaan` before switching to `PyMC` to demonstrate how to fit Confirmatory Factor Analysis (CFA) models and Structural Equation Models (SEM) in a Bayesian fashion using a probabilistic programming language.Throughout we'll draw on Levy and Mislevy's [*Bayesian Psychometric Modeling*](https://www.taylorfrancis.com/books/mono/10.1201/9781315374604/bayesian-psychometric-modeling-roy-levy-robert-mislevy) to highlight how good model design seeks structures which justify claim(s) of conditional independence; thereby supporting the *argument* to compelling inference.
+### Structure of Presentation
 
-### The Data
+We aim to follow a an escalating series of model complexity highlighting the variety of choices that go into modeling this kind of data, ultimately concluding by demonstrating how to fit appropriately complex models in `PyMC`.
+
+-   Exploratory Data Visualization
+    -   Pulling out views to try and make the multivariate survey response seem a bit more concrete.
+-   Exploratory Regression Models
+    -   Highlighting the nature of the representation that is used when we fit this data into a simple regression context. We also discuss how a model is a tool for exploring the data as much as it is a definitive statement about the nature of the relations in our data-set.
+    -   Interlude on Model Design and Conditional Independence
+        -   A brief digression on what we're aiming to do when fit a model to this kind of data. In particular how we need richer structures to articulate the models that can actually answer questions of interest.
+    -   Expressive Structure: Building the Model we Need
+        -   Confirmatory Factor Models in `lavaan`
+        -   Structural Equation Models in `lavaan`
+        -   Bayesian Confirmatory Factor Models in `PyMC`
+        -   Bayesian Structural Equation Models in `PyMC`
+
+Throughout we'll draw on Levy and Mislevy's [*Bayesian Psychometric Modeling*](https://www.taylorfrancis.com/books/mono/10.1201/9781315374604/bayesian-psychometric-modeling-roy-levy-robert-mislevy) to highlight how good model design seeks structures which justify claim(s) of conditional independence; thereby supporting the *argument* to compelling inference.
+
+## The Data
 
 The data is borrowed from work by Boris Mayer and Andrew Ellis found [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem). They demonstrate CFA and SEM modelling with `Lavaan`. We'll load up their data and begin some exploratory work.
 
@@ -142,6 +158,8 @@ plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 Note the relatively strong correlations between measures of parental support and the life-satisfaction outcome `ls_p3`. Similarly, the social self-efficacy scores seem well correlated with the secondary life satisfaction indicator `ls_p2`. These observed correlations merit some further investigation. We can also plot the pairs of scatter plots to "dig deeper". What kind of correlation holds between these scores? Are any driven by extreme outliers? This is what we're looking for in a pair plot. Should we cull the outliers? Leave them in? We leave them in.
 
+### Pair Plots of Multivariate Outcome
+
 ```{r fig.width=15, fig.height=15}
 
 df <- df |> 
@@ -173,7 +191,7 @@ full_join(x_vars, y_vars,
 
 The scatter plots among the highly correlated variables in the heat-map do seem to exhibit some kind of linear relationship with aspects of the life-satisfaction scores. We now turn to modelling these relationships to tease out some kind of inferential summary of those relationships.
 
-## Fit Initial Regression Models
+## Exploratory Regression Models
 
 To model these effects we make use of the aggregated sum and mean scores to express the relationships between these indicator metrics and life-satisfaction. We fit a variety of models each one escalating in the number of indicator metrics we incorporate into our model of the life-satisfaction outcome. This side-steps the multivariate nature of hypothesised constructs and crudely amalgamates the indicator metrics. This may be more or less justified depending on how similar in theme the three outcome questions `ls_p1, ls_p2, ls_p3` are in nature. We've dodged the question of thematic unity as all our metrics "load equally" on the outcome variable here and we let our regression model sort out the weighting.
 
@@ -328,11 +346,11 @@ plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 ```
 
-This kind of brinkmanship is brittle. Any one of these kinds of choice **can** be justified but more often than not results from an suspect exploratory process. Steps down a ["garden of forking paths"](http://www.stat.columbia.edu/~gelman/research/unpublished/p_hacking.pdf) seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicible and repeated under identical conditions. By exploring the different representations and criteria of narrative adequacy we break those guarantees.
+This kind of brinkmanship is brittle. Any one of these kinds of choice **can** be justified but more often than not results from an suspect exploratory process. Steps down a ["garden of forking paths"](http://www.stat.columbia.edu/~gelman/research/unpublished/p_hacking.pdf) seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicible and repeated under identical conditions. By exploring the different representations and criteria of narrative adequacy we break those guarantees. The false precision of appeals to null hypothesis statistical hides this breadth of this discovery process while leveraging the rhetoric of theoretical guarantees that apply only in different possible world.
 
-## Exploratory and Confirmatory Modes
+### Exploratory and Confirmatory Modes
 
-One of the things that psychometrics has pioneered well is the distinction between an exploratory and confirmatory models. This distinction, when made explicit, partially guards against the abuse of inferential integrity we see in more common work-flows. But additionally, models are often opaque - you may (as above) have improved some measure of model fit, changed the parameter weighting accorded to an observed feature, but what does that mean? Exploration of model architectures, design choices and feature creation is just how we come to understand the meaning of a model specification. Even in the simple case of regression we've seen how adding an interaction term changes the interpretability of a model. How then are we to stand behind uncertainty estimates accorded to parameter weights when we barely intuit the implications of a model design?
+One of the things that psychometrics has pioneered well is the distinction between an exploratory and confirmatory models. This distinction, when made explicit, partially guards against the abuse of inferential integrity we see in more common work-flows. We may fit a model to our data, we may tweak or adjust it in any way we care to - this is exploratory work, the point is that the model design is validated on unseen data. But additionally, models are often opaque - you may (as above) have improved some measure of model fit, changed the parameter weighting accorded to an observed feature, but what does that mean? Exploration of model architectures, design choices and feature creation is just how we come to understand the meaning of a model specification. Even in the simple case of regression we've seen how adding an interaction term changes the interpretability of a model. How then are we to stand behind uncertainty estimates accorded to parameter weights when we barely intuit the implications of a model design?
 
 ### Marginal Effects
 
@@ -373,9 +391,9 @@ plot <- ggarrange(g,g1, ncol=1, nrow=2);
 
 ```
 
-Here we've pulled out some of the implications in terms of the outcome predictions and see how the interaction effect modifies the additive effect downwards at the upper end of the `se_social_mean` scale.
+Here we've pulled out some of the implications in terms of the outcome predictions and see how the interaction effect modifies the additive effect downwards at the upper end of the `se_social_mean` scale. That is to say the y-axis recounts the aggregate `ls_sum` outcome variable and the x-axis varies values for `se_social_mean` while holding values the other covariates fixed at the mean level. The differences we see in the two plots are due to the extra effect of the modification the interaction term has on our prediction scale. The significance and practical impact of this interaction term should make us think harder about the manner in which social self-efficacy and parental support are related.
 
-## Models with Controls
+### Models with Controls
 
 The garden of forking paths presents itself within any set of covariates. How do we represent their effects? Which interactions are meaningful? How do we argue for one model design over another? The questionable paths are multiplied when we begin to consider additional covariates and group effects. But also additional covariates help structure our expectations too. Yes, you can cut and chop your way to through the garden to find some spurious correlation but more plausibly you can bring in structurally important variables which helpfully moderate the outcomes based on our understanding of the data generating process.
 
@@ -442,7 +460,7 @@ plot <- ggarrange(g,g1,g2, ncol=1, nrow=3);
 
 In this case the differences are slight, but the point here is just to consider how aspects of the data generating process can be modified by broadly demographic features systematically. In an ideal circumstance a probability-sample of survey respondents should mitigate the need for additionally controls variables in so far as a probability sample should ensure exchangeability
 
-## Model Design and Conditional Exchangeability
+## Interlude: Model Design and Conditional Exchangeability
 
 Modelling is nearly always about contrasts and questions of meaningful differences. What we seek to do when we build a model is to find a structure that enables "fair" or "justified" inferences about these contrasts. This is maybe most palpably brought home when we consider cases of causal inference. Here we want to define a meaningful causal estimand - some contrast between treatment group and control group where we can be confident that the two groups are suitably "representative" so that the observed differences represents the effect of the treatment. We are saying that conditional on our model design we consider **the potential outcomes to be exchangable**. Or another way of putting it is that we have controlled for all aspects of systematic differences between the control and treatment group and this warrants the causal interpretation of the contrast between treatment and control.
 
@@ -458,7 +476,9 @@ So if we specify the conditional distribution correctly, we recover the conditio
 
 The organisation of our data into meaningful categories or clusters is common in machine learning, but similarly in psychometrics we see the prevalence of factor models which are more explicitly causal models where we posit some unifying theme to the cluster of measures. In each tradition we are seeking conditional independence by allowing the model to account for these dependencies in how we structure the model. These choices represent a fruitful aspect of walking down through the garden of forking paths. There is then a tension between the exploratory seeking for some pre-determined story and an experimental seeking of clarity. With this in mind we now turn to types of modeling architecture that open up new expressive possibilities and offer a way to think about the relationships between observed data and latent factors that drive the observed outcomes. This greater expressive power offers different routes to inducing patterns of conditional exchangeability and different risks too.
 
-## Confirmatory Factor Analysis
+## Expressive Structure: Building the Model we Need
+
+### Confirmatory Factor Analysis
 
 We will illustrate the details of confirmatory factor modelling using the `lavaan` framework. The focus is mostly on the mechanics of how these models are estimated using maximum likelihood techniques before illustrating the salient differences of Bayesian estimation.
 
@@ -550,7 +570,7 @@ summary_df |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_
 
 There a wealth of metrics associated with CFA model fit and it can be hard to see the forest for the trees.
 
-### Visualising the Relationships
+#### Visualizing the Relationships
 
 One of the better ways to visualise these models is to use the `semPlot` package. Here we can plot all the parameter estimates in one graph. Following convention the rectangular boxes represent observed measures. Oval or circular objects represent the latent constructs. The self-directed arrows on each node is the variance of that measure. The two-way arrows between nodes represents the covariance between those two nodes. The single headed arrows from the latent construct to the indicator variables denotes the factor loading of the variable on the construct. For instance `SUP_F -> sp_f_3` is set at 0.89.
 
@@ -562,7 +582,7 @@ semPlot::semPaths(fit_mod, whatLabels = 'est', intercepts = FALSE, layout = "spr
 
 For instance, in this plot you can see that for each latent construct one of the indicator variables has their factor loading set to 1. This is a mathematical requirement we'll see below that is used to ensure identifiability of the parameters akin to setting a reference category in categorical regression. In the plot you can "read-off" the covariances between our constructs e.g. the covariance between `LS` and `SUP_P` is 0.36 the largest value amongst the set of covariances.
 
-### Comparing Models
+#### Comparing Models
 
 We can use a variety of chi-squared tests to evaluate the goodness of fit for our models. If we pass in each model individually we perform a test comparing our model to the saturated model. The Chi-Squared test compares the model-implied variance-covariance matrix (expected) to the variance-covariance matrix computed from the actual data (observed). The null hypothesis for the Chi-Squared Goodness-of-Fit test is that the model fits the data perfectly, meaning that there is no significant difference between the observed and model-implied variance-covariance matrices. The goal is to see if the differences between these matrices are large enough that we can reject the null.
 
@@ -583,7 +603,7 @@ lavTestLRT(fit_mod, fit_mod_1)
 
 The test also reports a number of other fit indices and the degrees of freedom available to each model. These are important because the Chi-Squared test is overly sensetive in large-sample data and the model adequacy is a multi-dimensional question.
 
-## Structural Equation Models
+### Structural Equation Models
 
 So far so good. We have a confirmatory factor measurement model. We've structured it so that we can make inferences about the correlations and covariances between 5 latent constructs of independent interest. We've calibrated the model fit statistics by ensuring the model can reasonably recover the observed variance-covariance structure. But what about our dependency relations between constructs? We can evaluate these too! Adding regressions to our model allows to express these relationships and then recover summary statistics of the same.
 
@@ -685,7 +705,7 @@ plot <- ggarrange(g1,g2, ncol=1, nrow=2);
 
 This is a genuine limitation in the expressive power of SEM models when they are fit using maximum likelihood with finite degrees of freedom optimising for fidelity to the sample variance-covariance matrix. Model idenfification possibilities are constrained by the optimisation goal and the degrees of freedom available to the optimiser. Next we'll show how the Bayesian approach to estimating these models frees us from this limitation.
 
-## Confirmatory Factor Models with PyMC
+### Confirmatory Factor Models with PyMC
 
 So far we've seen CFA and SEM models specified using a kind of formula syntax. This useful but here we switch to the distributional perspective which is more directly relevant to the Bayesian phrasing of the CFA model. We'll unpack these components of the distributional view with a simpler data set initially for illustrative purposes and then we'll switch back to the Life Satisfaction question.
 
@@ -780,7 +800,7 @@ az.plot_trace(idata, var_names=['lambdas1', 'lambdas2', 'tau', 'Psi', 'ksi']);
 
 These diagnostic plots and parameter estimates reflect well the same figures reported by Levy and Mislevy, so we won't dwell too much further on this model only to say that the basic structure here is expanded upon as we apply more factor structures and SEM like structures to our original Life-Satisfaction dataset.
 
-### Factoring for Life Satisfaction
+#### Factoring for Life Satisfaction
 
 Now we want fit the life-satisfaction measurement model using `PyMC`. This has fundamentally a similar structure to the simple CFA model we've seen above. However we now have 5 factors with 3 factor loadings to be estimated for three indicators per factor. We will fit this model and then show how to pull out some of model fit statistics that are relevant for the assessment of the model.
 
@@ -981,7 +1001,7 @@ plot_heatmap(py$residuals_posterior_corr, "Residuals of the Sample Correlations 
 
 ```
 
-This process highlights one major difference in how the Bayesian CFA model is free to fit to the observed data. The parameterisation of the model is calibrated through the likelihood mechanism but the posterior samples provide important information not recoverable by optimizing fits for measurement and structural parameters. In the Bayesian setting we have access to the latent factor scores for each of the individual responses, giving us a means of assessing outliers on the latent scales. For instance
+This process highlights one major difference in how the Bayesian CFA model is free to fit to the observed data. The parameterisation of the model is calibrated through the likelihood mechanism but the posterior samples provide important information not recoverable by optimizing fits for measurement and structural parameters in the MLE setting. In the Bayesian setting we have access to the latent factor scores for each of the individual responses, giving us a means of assessing outliers on the latent scales. For instance
 
 ```{python, fig.width=10}
 fig, axs = plt.subplots(1, 2, figsize=(10, 10))
@@ -1002,13 +1022,17 @@ plt.show();
 
 ```
 
-So while we are fitting a **confirmatory factor model** the edges between exploratory and confirmatory blur in this setting. Just because we have we a hypothesized factor structure we wish to evaluate does not mean the implications of such structures are crystal clear. Here we need to explore that the individually reported scores render plausible judgments about the relative position of each survey respondent on these latent scales. These are the implications of our model fit that would help us confirm the plausibility of the hypothesized factors, but additionally they offer new potential options for exploring out data and categorizing our observations. This is a common experience in contemporary Bayesian model workflow which recommends iterative model refinement and evaluation.
+So while we are fitting a **confirmatory factor model** the edges between exploratory and confirmatory blur in this setting. Just because we have we a hypothesized factor structure we wish to evaluate does not mean the implications of such structures are crystal clear. Here we need to explore that the individually reported scores render plausible judgments about the relative position of each survey respondent on these latent scales. These are the implications of our model fit that would help us confirm the plausibility of the hypothesized factors, but additionally they offer new potential options for exploring our data and categorizing our observations. This is a common experience in contemporary Bayesian model workflow which recommends iterative model refinement and evaluation.
 
-## Structural Equation Modelling in PyMC
+> "A key part of Bayesian workflow is adapting the model to the data at hand and the questions of interest. The model does not exist in isolation and is not specified from the outside; it emerges from engagement with the application and the available data" - Gelman et al in [Bayesian Workflow](https://arxiv.org/pdf/2011.01808)
+
+This is the lens that matters
+
+### Structural Equation Modelling in PyMC
 
 In the context of structural equation modeling our hypothetical factor structure and dependency relations are even more specific than the simple "measurement model" we've just seen. A structural equation model incorporates a measurement model and adds regression components between the latent and manifest variables as is required to evaluate candidate hypotheses regarding the structure of the data generating process. The range of possibilities we can encode here is vast, but candidate model architectures are constrained by our theory of the case and the demands of explanatory coherence.
 
-### SEM and Indirect Effects
+#### SEM and Indirect Effects
 
 With the life-satisfaction data-set we've been been looking at we want to evaluate the indirect and direct effects of parental and peer support on life-satisfaction outcomes. To do so we need to add a dependency structure to our data generating process and fit the regressions which would inform us as to relative importance of these types of support as mediated through our self-efficacy scores.
 
@@ -1192,6 +1216,6 @@ The structural model is marginally worse by measures of global fit to the data, 
 
 At the outset of this analysis we stated the hypothetical structure of interest. This suggests a pure confirmatory project, but in practice much of the feasibility of this analysis is path dependent and constrained by the viability of the various model architectures with respect to the data. It's easy to tell the story of increasingly sophisticated models, more powerful, more insightful inferential claims. Yet, this narrative is compelling only in so far as there is a justifiable sequence of steps through the ascension of model complexity. The increase in complexity needs to be off-set by a rationale at each step.
 
-To recap we have worked through a series of simple regression models seeking to tease out the weighted importance of various factors on the outcomes of life-satisfaction. These models highlighted fairly consistently the relative importance of metrics related to parental support and social self-efficacy. We also saw how there was a significant modification effect for the interaction term. These are all suggestive that we've picked out a meaningful set of metrics and which ought to support inferences about the phenomena of interest. But how do we parcel those metrics in such a way to support clean and compelling statements about the influence of each of reported life-satisfaction? Here we sought to leverage CFA and SEM models to clarify the structure of the this influence and the particular pathways by which parental support drives these outcomes.
+To recap we have worked through a series of simple regression models seeking to tease out the weighted importance of various factors on the outcomes of life-satisfaction. These models highlighted fairly consistently the relative importance of metrics related to parental support and social self-efficacy. We also saw how there was a significant modification effect for the interaction term. These are all suggestive that we've picked out a meaningful set of metrics and which ought to support inferences about the phenomena of interest. But how do we parcel those metrics in such a way to support clean and compelling statements about the influence of each of reported life-satisfaction? Here we sought to leverage CFA and SEM models to clarify the structure of this influence and the particular pathways by which parental support drives these outcomes.
 
-These latter models were then re-articulated as a species of Bayesian hierarchical models which aim to induce conditional independence amongst the thematicly similar metrics by grouping each under a common factor. Which is to say, we assume that the joint distribution of outcomes is exchangeable and we can fit a conditional mixture to represent that joint distribution. We then showed how these conditional structures can be further adapted to answer questions about direct and indirect causation that bear precisely on the hypothetical structure we declared to be our target at the outset. Yet it's not enough to fit a model and claim to be done. You have to proffer a defense that the model estimated is both plausible and recovers the observed data well. The very process of iterative Bayesian model development encodes these checks and balances. Iterative model refinement is no guide to which questions should be asked of a model, yet questions occur as we explore the posterior distribution. Inspiration strikes when you have samples to hand and can test the implications of some idle thought. Perhaps some parameterisation yields poor model fit and the re-parameterisation (a shift in some focal parameter's prior) recovers better performance and prompts a new theoretical lens on your problem. While not a panacea to all forms of statistical misstep, this [workflow](https://arxiv.org/pdf/2011.01808) is a positive, rich and rewarding methodological practice. The iterative model workflow is a natural seeking of the "right" conditionalisation to inform our decisions. In the end we make an inference to the best explanation by argument that covers theoretical nuance, computational burden and points of practical compromise. But we are making an argument - Yes, we've walked down the garden of forking garden paths, but our choices were deliberate and we suffer no regret.
+These latter models were then re-articulated as a species of Bayesian hierarchical models which aim to induce conditional independence amongst the thematically similar metrics by grouping each under a common factor. Which is to say, we assume that the joint distribution of outcomes is exchangeable and we can fit a conditional mixture to represent that joint distribution. We then showed how these conditional structures can be further adapted to answer questions about direct and indirect causation that bear precisely on the hypothetical structure we declared to be our target at the outset. Yet it's not enough to fit a model and claim to be done. You have to proffer a defense that the model estimated is both plausible and recovers the observed data well. The very process of iterative Bayesian model development encodes these checks and balances. Iterative model refinement is no guide to which questions should be asked of a model, yet questions occur as we explore the posterior distribution. Inspiration strikes when you have samples to hand and can test the implications of some idle thought. Perhaps some parameterisation yields poor model fit and the re-parameterisation (a shift in some focal parameter's prior) recovers better performance and prompts a new theoretical lens on your problem. While not a panacea to all forms of statistical misstep, this [workflow](https://arxiv.org/pdf/2011.01808) is a positive, rich and rewarding methodological practice. The iterative model workflow is a natural seeking of the "right" conditionalisation to inform our decisions. In the end we make an inference to the best explanation by argument that covers theoretical nuance, computational burden and points of practical compromise. But we are making an argument - Yes, we've walked down the garden of forking garden paths, but our choices were deliberate and we suffer no regret.
