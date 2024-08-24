@@ -46,6 +46,7 @@ set.seed(130)
 ```
 
 ::: callout-note
+## Summary
 Choices are made as we step down the garden of forking paths in the course of any analysis. Often, in the process of frantic search we cling too strongly to the first feasible path. This risks delusion from directionless flailing and simple [satisficing](https://en.wikipedia.org/wiki/Satisficing). Equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this explore/exploit tension when analyzing psychometric survey data. In psychometric theory we must vary the hypothesised structure of our manifest and latent variables - this cannot be done whimsically as we seek better fit to data. There is a trial-and-error kind of creativity in model development **and** a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow.
 :::
 
@@ -270,21 +271,30 @@ modelsummary(models, stars=TRUE, shape ="cbind") |>
 
 We can similarly plot the coefficient values and their uncertainty highlighting how the representation or scaling of the variables impact the scale of the coefficient weights and therefore the surety of any subsequent claims.
 
-```{r, fig.width=10, fig.height=7}
+```{r, fig.width=14, fig.height=7}
 
-models = list(
+models_sum = list(
      "model_sum_1st_factors" = mod_sum_1st,
      "model_sum_1st_2nd_factors" = mod_sum_12,
      "model_sum_score" = mod_sum,
-     "model_sum_score_norm" = mod_sum_norm,
-     "model_mean_1st_factors" = mod_mean_1st,
-     "model_mean_1st_2nd_factors" = mod_mean_12,
-     "model_mean_score"= mod_mean,
-     "model_mean_score_norm" = mod_mean_norm
+     "model_sum_score_norm" = mod_sum_norm
     )
 
-modelplot(models, coef_omit = 'Intercept') + geom_vline(xintercept = 0, linetype="dotted", 
-                color = "black") + ggtitle("Comparing Model Parameter Estimates", "Across Covariates")
+models_mean = list(
+   "model_mean_1st_factors" = mod_mean_1st,
+   "model_mean_1st_2nd_factors" = mod_mean_12,
+   "model_mean_score"= mod_mean,
+   "model_mean_score_norm" = mod_mean_norm
+)
+
+g1 = modelplot(models_sum, coef_omit = 'Intercept') + geom_vline(xintercept = 0, linetype="dotted", 
+                color = "black") + ggtitle("Comparing Sum Model Parameter Estimates", "Across Covariates")
+
+
+g2 = modelplot(models_mean, coef_omit = 'Intercept') + geom_vline(xintercept = 0, linetype="dotted", 
+                color = "black") + ggtitle("Comparing Mean Model Parameter Estimates", "Across Covariates")
+
+plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 ```
 
@@ -354,7 +364,7 @@ plot <- ggarrange(g1,g2, ncol=2, nrow=1);
 
 ```
 
-This kind of brinkmanship is brittle. Any one of these kinds of choice **can** be justified but more often than not results from an suspect exploratory process. Steps down a ["garden of forking paths"](http://www.stat.columbia.edu/~gelman/research/unpublished/p_hacking.pdf) seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicible and repeated under identical conditions. By exploring the different representations and criteria of narrative adequacy we break those guarantees. The false precision of appeals to null hypothesis statistical hides this breadth of this discovery process while leveraging the rhetoric of theoretical guarantees that apply only in different possible world.
+This kind of brinkmanship is brittle. Any one of these kinds of choice **can** be justified but more often than not results from an suspect exploratory process. Steps down a ["garden of forking paths"](http://www.stat.columbia.edu/~gelman/research/unpublished/p_hacking.pdf) seeking some kind of story to justify an analysis or promote a conclusion. This post-hoc "seeking" is just bad science undermining the significance claims that accrue to reliable procedures. It warps the nature of testing procedure by corrupting the assumed consistency of repeatable trials. The guarantees of statistical significance attach to a conclusion just when the procedure is imagined replicible and repeated under identical conditions. By exploring the different representations and criteria of narrative adequacy we break those guarantees. The false precision of appeals to null hypothesis statistical hides this breadth of this discovery process while leveraging the rhetoric of theoretical guarantees that apply only in an alternative possible world.
 
 ### Exploratory and Confirmatory Modes
 
