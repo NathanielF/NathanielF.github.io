@@ -47,12 +47,15 @@ set.seed(130)
 
 ::: callout-note
 ## Summary
-Choices are made as we step down the garden of forking paths in the course of any analysis. Often, in the process of frantic search we cling too strongly to the first feasible path. This risks delusion from directionless flailing and simple [satisficing](https://en.wikipedia.org/wiki/Satisficing). Equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this explore/exploit tension when analyzing psychometric survey data. In psychometric theory we must vary the hypothesised structure of our manifest and latent variables - this cannot be done whimsically as we seek better fit to data. There is a trial-and-error kind of creativity in model development **and** a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow.
+
+Choices are made as we step down the garden of forking paths in the course of any analysis. Often, in the process of frantic search we cling too strongly to the first feasible path. This risks delusion from directionless flailing and simple [satisficing](https://en.wikipedia.org/wiki/Satisficing). Equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this explore/exploit tension when analyzing psychometric survey data. In psychometric theory we must vary the hypothesised structure of our manifest and latent variables - this cannot be done whimsically as we seek better fit to data. There is a trial-and-error kind of creativity in model development **and** a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow. In so doing we highlight their expressive capacity for modelling complex dependencies and answering subtle questions of influence in multivariate systems.
 :::
+
+> “In all fiction, when a man is faced with alternatives he chooses one at the expense of the others. In the almost unfathomable Ts’ui Pen, he chooses – simultaneously – all of them. He thus creates various futures, various times which start others that will in their turn branch out and bifurcate in other times” - Borges in The Garden of Forking Paths
 
 ## Measurement and Measurement Constructs
 
-Science is easier when there is a recipe. When there is some procedure to adopt or routine to ape, you can out-source the responsibility for methodological justification. One egregious pattern in this vein tries to mask implausible nonsense with the mathematical gloss of "statistical significance". Seen from 1000 feet, this is misguided but not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification, substantive argument with a facsimile of evidence.
+Science is easier when there is a recipe. When there is some procedure to adopt, routine to ape or track to follow, you can out-source the responsibility for methodological justification. One egregious pattern in this vein tries to mask implausible nonsense with the mathematical gloss of "statistical significance". Seen from 1000 feet, this is misguided but not surprising. Lip-service is paid to the idea of scientific method and we absolve ourselves of the requirement for principled justification, substantive argument with a facsimile of evidence.
 
 Evidence should be marshaled in service to argument. But it's an absurd pretense to claim that data speaks for itself in this argument. Good and compelling argumentation is at the heart of any sound inference. It is a necessary obligation if you expect anyone to make any decision on the strength of evidence you provide. Procedures and routine tests offer only a facsimile of sound argument and p-values are a poor substitute for narrative cogency, logical consequence and substantive derivation.
 
@@ -68,7 +71,7 @@ We aim to follow a an escalating series of model complexity highlighting the var
 
 -   Exploratory Regression Models
 
-    -   Highlighting the nature of the representation that is used when we fit this data into a simple regression context. We also discuss how a model is a tool for exploring the data as much as it is a definitive statement about the nature of the relations in our data-set.
+    -   Highlighting the nature of the representation that is used when we fit this data into a simple regression context. We also discuss how a model is a tool for exploring the data as much as it is a statement about the nature of the relations in our data-set.
 
 -   Interlude on Model Design and Conditional Independence
 
@@ -88,7 +91,7 @@ Throughout we'll draw on Levy and Mislevy's [*Bayesian Psychometric Modeling*](h
 
 ## The Data
 
-The data is borrowed from work by Boris Mayer and Andrew Ellis found [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem). They demonstrate CFA and SEM modelling with `Lavaan`. We'll load up their data.
+The data is borrowed from work by Boris Mayer and Andrew Ellis found [here](https://methodenlehre.github.io/SGSCLM-R-course/cfa-and-sem-with-lavaan.html#structural-equation-modelling-sem). They demonstrate CFA and SEM modelling with `lavaan`. We'll load up their data.
 
 ```{r}
 df = read.csv('sem_data.csv')
@@ -484,15 +487,15 @@ Modelling is nearly always about contrasts and questions of meaningful differenc
 
 But as we've seen above the cleanest way to interpret almost any regression model is to understand the model design in terms of the marginal effects on the outcome scale. These are just contrasts. All statistical models are, in some sense, focused on finding a structure that licenses an inference about some contrast of interest between the levels of some observed variable and the implied outcomes. In this way we want to include as much structure in our model that would induce the status of conditional exchangeability between the units of study across such group contrasts. This notion of conditional exchangeability is inherently an epistemic notion. We believe that our model is apt to induce the status of conditional exchangeability such that the people in our survey have no systematic difference which biases the measured differences. The implied differences in some marginal effect (while holding all else fixed) is a "fair" representations the same counterfactual adjustment in the population or sub-population defined by the covariate profile $X$. The model implied difference is a proxy for the result of possible future interventions and as such merits our attention in policy design.
 
-In particular the view here is that we ought to be deliberate in how we structure our models to license the plausibility of the exchangeability claim. By De Finetti's theorem a distribution of exchangeable sequence of variables be expressed as mixture of conditional independent variables.
+One point of caution here is that we ought not to be [too quick](https://pubmed.ncbi.nlm.nih.gov/23371353/) when interpreting model coefficients as causal effects. If we have not designed our model to isolate the causal or generalisable effect, while making appropriarate adjustments for risks of confounding, we will end up conflating biased estimates with true effects. In particular the view here is that we ought to be deliberate in how we structure our models to license the plausibility of the exchangeability claim with respect to a relationship of interest. By De Finetti's theorem a distribution of exchangeable sequence of variables be expressed as mixture of conditional independent variables.
 
 $$ p(x_{1}....x_{m}) = \dfrac{p(X | \theta)p(\theta)}{p_{i}(X)} $$
 
-So if we specify the conditional distribution correctly, we recover the conditions that warrant inference with a well designed model.The mixture distribution is just the vector of parameters $\boldsymbol{\theta}$ upon which we condition our model. Mislevy and Levy highlight this important observation has implications for model development by quoting Judea Pearl:
+So if we specify the conditional distribution *correctly*, we recover the conditions that warrant inference with a well designed model.The mixture distribution is just the vector of parameters $\boldsymbol{\theta}$ upon which we condition our model. Mislevy and Levy highlight this important observation has implications for model development by quoting Judea Pearl:
 
 > \[C\]onditional independence is not a grace of nature for which we must wait passively, but rather a psychological necessity which we satisfy by organising our knowledge in a specific way. An important tool in such an organisation is the identification of intermediate variables that induce conditional independence among observables; if such variables are not in our vocabulary, we create them. In medical diagnosis, for instance, when some symptoms directly influence one another, the medical profession invents a name for that interaction (e.g. "syndrome", "complication", "pathological state") and treats it as a new auxiliary variable that induces conditional independence." - Pearl quoted in *Bayesian Psychometric Modeling* p61
 
-The organisation of our data into meaningful categories or clusters is common in machine learning, but similarly in psychometrics we see the prevalence of factor models which are more explicitly causal models where we posit some unifying theme to the cluster of measures. In each tradition we are seeking conditional independence by allowing the model to account for these dependencies in how we structure the model. These choices represent a fruitful aspect of walking down through the garden of forking paths. There is then a tension between the exploratory seeking for some pre-determined story and an experimental seeking of clarity. With this in mind we now turn to types of modeling architecture that open up new expressive possibilities and offer a way to think about the relationships between observed data and latent factors that drive the observed outcomes. This greater expressive power offers different routes to inducing patterns of conditional exchangeability and different risks too.
+The organisation of our data into meaningful categories or clusters is common in machine learning, but similarly in psychometrics we see the prevalence of factor models which are more explicitly structural models where we posit some unifying theme to the cluster of measures. In each tradition we are seeking conditional independence by allowing the model to account for these dependencies in how we structure the model. These choices represent a fruitful aspect of walking down through the garden of forking paths. **There is then a difference between the exploratory seeking for some pre-determined story and an experimental seeking of clarity.** With this in mind we now turn to types of modeling architecture that open up new expressive possibilities and offer a way to think about the relationships between observed data and latent factors that drive the observed outcomes. This greater expressive power offers different routes to inducing patterns of conditional exchangeability and different risks too.
 
 ## Expressive Structure: Building the Model we Need
 
@@ -582,7 +585,7 @@ We can also compare models based on their global measures of model fit giving so
 
 summary_df = cbind(fitMeasures(fit_mod, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")),
       fitMeasures(fit_mod_1, c("chisq", "baseline.chisq", "cfi", "aic", "bic", "rmsea","srmr")))
-colnames(summary_df) = c('Full Model', 'Reduced Model')
+colnames(summary_df) = c('Full Measurement Model', 'Reduced Measurement Model')
 
 summary_df |> kable() |> kable_styling() |>  kable_classic(full_width = F, html_font = "Cambria")
 
@@ -1052,7 +1055,7 @@ So while we are fitting a **confirmatory factor model** the edges between explor
 
 > "A key part of Bayesian workflow is adapting the model to the data at hand and the questions of interest. The model does not exist in isolation and is not specified from the outside; it emerges from engagement with the application and the available data" - Gelman et al in [Bayesian Workflow](https://arxiv.org/pdf/2011.01808)
 
-This is the lens that matters. Yes, iterative refinement and model checking can lead to models which are over-fit to the sample data. This is always a risk, but explicit modeling workflow highlights prior designs and exposes this sequence of model choices to stringent tests. The choices that the determine trajectory of our refinements should represent a process of learning and discovery that uncovers more questions of interest as we expand the capacity of our models.
+This is the lens that matters. Yes, iterative refinement and model checking can lead to models which are over-fit to the sample data. This is always a risk, but explicit modeling workflow highlights prior designs and exposes this sequence of model choices to stringent tests and evaluative consideration. The choices that the determine trajectory of our refinements should represent a process of learning and discovery that uncovers more questions of interest as we expand the capacity of our models.
 
 ### Structural Equation Modelling in `PyMC`
 
