@@ -962,7 +962,7 @@ py$factor_loadings[ c('factor', 'factor_loading', 'factor_loading_weight', 'fact
 
 ```
 
-So we can evaluate some of the similar relationships at the level of summary statistics, but more powerfully we've built a generative model of the process yielding our observed data and as such we can evalute the fidelity of the predictive output of our model using posterior predictive checks.
+So we can evaluate some of the similar relationships at the level of summary statistics, but more powerfully we've built a generative model of the process yielding our observed data and as such we can evaluate the fidelity of the predictive output of our model using posterior predictive checks.
 
 ```{python, fig.width=10, fig.height=15}
 
@@ -983,7 +983,7 @@ def make_ppc(idata, samples=100):
       axs[i].legend();
   plt.show()
   
-make_ppc(idata)
+make_ppc(idata, samples=100)
 
 ```
 
@@ -1010,8 +1010,8 @@ def get_posterior_resids(idata, samples=100, metric='cov'):
   residuals_posterior.columns = obs_cov.index
   return residuals_posterior
 
-residuals_posterior_cov = get_posterior_resids(idata, 500)
-residuals_posterior_corr = get_posterior_resids(idata, 500, metric='corr')
+residuals_posterior_cov = get_posterior_resids(idata, 2500)
+residuals_posterior_corr = get_posterior_resids(idata, 2500, metric='corr')
 
   
 ```
@@ -1167,7 +1167,7 @@ There is quite a bit of extra structure now in our model. This structure articul
 As before we can still recover posterior predictive check to evaluate granular level performance against the observed data points.
 
 ```{python fig.width=10, fig.height=15}
-make_ppc(idata2)
+make_ppc(idata2, 100)
 
 ```
 
@@ -1198,8 +1198,8 @@ def calculate_effects(summary_df, var='SUP_P'):
 indirect_p = calculate_effects(summary_df, 'SUP_P')
 indirect_f = calculate_effects(summary_df, 'SUP_F')
 
-residuals_posterior_cov = get_posterior_resids(idata2, 500)
-residuals_posterior_corr = get_posterior_resids(idata2, 500, 'corr')
+residuals_posterior_cov = get_posterior_resids(idata2, 2500)
+residuals_posterior_corr = get_posterior_resids(idata2, 2500, 'corr')
 
 ```
 
@@ -1244,6 +1244,8 @@ plt.show()
 The structural model is marginally worse by measures of global fit to the data, but this summary skips over the variety of questions we can answer with this new structure. The broad fidelity to observed data seen in the posterior predictive checks and the variance covariance residuals suggests that we ought to be willing to take this hit to global performance if we can answer questions left unanswered by the measurement model.
 
 ## Conclusion: [Build the Model with Lasers!](https://quantitudepod.org/s4e06-model-building/)
+
+> "Model experiments offer less inferential power to learn about the world. But the possibility of model experiments to surprise, that is, to produce results that are unexpected against the background of existing knowledge and understanding, remains \[...\] important ... The surprising results of model experiments lead *not to the discovery of new phenomena in the real world, but the recognition of new things in the world of the model* and thence to the development of new categories of things and new concepts and ideas ... " - Mary Morgan in *The World in the Model*
 
 At the outset of this analysis we stated the hypothetical structure of interest. This suggests a pure confirmatory project, but in practice much of the feasibility of this analysis is path dependent and constrained by the viability of the various model architectures with respect to the data. It's easy to tell the story of increasingly sophisticated models, more powerful, more insightful inferential claims. Yet, this narrative is compelling only in so far as there is a justifiable sequence of steps through the ascension of model complexity. The increase in complexity is off-set by a rationale at each step. Our final model encompasses aspects of our initial modeling in a expansionary escalation that preserves the insight in the earliest editions but improves them with our burgeoning understanding of the computational and theoretical dimensions of our problem.
 
