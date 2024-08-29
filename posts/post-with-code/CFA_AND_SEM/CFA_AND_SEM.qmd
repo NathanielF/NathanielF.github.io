@@ -46,7 +46,7 @@ set.seed(130)
 ```
 
 ::: callout-note
-## Summary
+## Explore and Exploit Dynamics in Model Development
 
 Choices are made as we step down the garden of forking paths in the course of any analysis. Often, in the process of frantic search we cling too strongly to the first feasible path. This risks delusion from directionless flailing and simple [satisficing](https://en.wikipedia.org/wiki/Satisficing). Equally problematic, we risk impoverished and inadequate theory if we refuse to explore more paths. In this post we will elaborate this explore/exploit tension when analyzing psychometric survey data. In psychometric theory we must vary the hypothesised structure of our *manifest* and *latent* variables - this cannot be done whimsically as we seek better fit to data. There is a trial-and-error kind of creativity in model development **and** a requirement for rigor when we structure the inferences derivable from our model. We show how these confirmatory and exploratory modes of inference play-out in the Confirmatory Factor Analysis with Structural equations in PyMC under the modern Bayesian workflow. In so doing we highlight their expressive capacity for modelling complex dependencies and answering subtle questions of influence in multivariate systems.
 :::
