@@ -1,0 +1,19 @@
+---
+title: "Discrete Choice and Random Utility Models"
+subtitle: "PyCon 2023 Ireland Recording"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+categories: [bayesian, discrete choice]
+image: "snapshot.png"
+date: last-modified
+---
+
+In November 2023 I gave a talk at PyCon Ireland on the usage of discrete choice models for the estimation of market share. The Slides can be found [here](https://nathanielf.github.io/talks/pycon_ireland/pycon_ireland_discrete.html#/title-slide)
+
+But the recording of the talk has been published on youtube here too.
+
+
+[![PyCon Presentation](snapshot.png)](https://www.youtube.com/watch?v=erOKYG1zEU4 "PyCon Ireland 2023 Discrete Choice")

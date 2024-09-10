@@ -2,6 +2,7 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/pycon_ireland_recording/pycon_ireland_recording.html",
       "/talks/missing_data/missing_data_causal.html",
       "/talks/bayesian_mixer/bayesian_mixer_london.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
