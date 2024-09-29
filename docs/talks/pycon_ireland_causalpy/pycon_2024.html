@@ -479,6 +479,14 @@ Nathaniel Forde
 </section>
 <section id="canonical-dags-and-methods" class="slide level2">
 <h2>Canonical DAGs and Methods</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/rct_dag.webp" alt="Random Control Trial"> <img data-src="images/iv_dag.webp" alt="Instrumental Variable Design"></p>
+</div><div class="column" style="width:50%;">
+<p>The treatment effect can be estimated cleanly <span class="math display">\[ y \sim 1 + Z \]</span></p>
+<p>The treatment effect has to be estimated so as to avoid the bias due to X <span class="math display">\[ y \sim 1 + \overbrace{Z} \]</span> <span class="math display">\[ \overbrace{Z} \sim 1 + IV \]</span></p>
+</div>
+</div>
 
 <div class="footer footer-default">
 <p>Causal Inference in Python</p>

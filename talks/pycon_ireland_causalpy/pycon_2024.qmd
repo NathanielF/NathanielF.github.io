@@ -159,6 +159,25 @@ Causal question(s) of import can be interrogated just when we can pair a researc
 
 ## Canonical DAGs and Methods
 
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![Random Control Trial](images/rct_dag.webp)
+![Instrumental Variable Design](images/iv_dag.webp)
+
+:::
+
+::: {.column width="50%"}
+
+The treatment effect can be estimated cleanly
+$$ y \sim 1 + Z $$
 
 
+The treatment effect has to be estimated so as to avoid the bias due to X
+$$ y \sim 1 + \overbrace{Z} $$
+$$ \overbrace{Z} \sim 1 + IV $$ 
+
+:::
+::::
 
