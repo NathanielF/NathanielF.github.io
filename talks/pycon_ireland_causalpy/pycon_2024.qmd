@@ -11,9 +11,9 @@ format:
          theme: [default, clean.scss]
          footer: "Causal Inference in Python"
 categories: [bayesian, missing data, causal inference]
-image: "images/final_plot.png"
+image: "images/causalpy.webp"
 date: last-modified
-draft: True
+draft: False
 ---
 
 # The Pitch (WIP)

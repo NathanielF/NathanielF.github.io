@@ -9,7 +9,7 @@
 <meta name="author" content="Nathaniel Forde">
 <meta name="dcterms.date" content="2024-09-29">
 
-<title>Examined Algorithms - Missing Data and Bayesian Imputation</title>
+<title>Examined Algorithms - SEM and CFA in PyMC</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -121,7 +121,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Missing Data and Bayesian Imputation</h1>
+      <h1 class="quarto-secondary-nav-title">SEM and CFA in PyMC</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -199,42 +199,39 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#structural-equation-and-confirmatory-factor-analysis-models" id="toc-structural-equation-and-confirmatory-factor-analysis-models" class="nav-link active" data-scroll-target="#structural-equation-and-confirmatory-factor-analysis-models">Structural Equation and Confirmatory Factor Analysis Models</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Missing Data and Bayesian Imputation</h1>
-<p class="subtitle lead">PyCon 2023 Ireland Recording</p>
+<h1 class="title d-none d-lg-block">SEM and CFA in PyMC</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">bayesian</div>
-    <div class="quarto-category">missing data</div>
+    <div class="quarto-category">probability</div>
+    <div class="quarto-category">pymc</div>
+    <div class="quarto-category">sem</div>
+    <div class="quarto-category">cfa</div>
   </div>
   </div>
 
 
-<div class="quarto-title-meta-author">
-  <div class="quarto-title-meta-heading">Author</div>
-  <div class="quarto-title-meta-heading">Affiliations</div>
-  
-    <div class="quarto-title-meta-contents">
-    Nathaniel Forde 
-  </div>
-    <div class="quarto-title-meta-contents">
-        <p class="affiliation">
-            Data Science @ Personio
-          </p>
-        <p class="affiliation">
-            and Open Source Contributor @ PyMC
-          </p>
-      </div>
-    </div>
 
 <div class="quarto-title-meta">
 
-      
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nathaniel Forde </p>
+          </div>
+  </div>
+    
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
@@ -248,16 +245,13 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>In April 2024 I gave a talk at PyData Berlin on the usage of bayesian imputation techniques in people analytics. The Slides can be found <a href="https://nathanielf.github.io/talks/missing_data/missing_data_causal.html#/title-slide">here</a></p>
-<p>But the recording of the talk has been published on youtube here too.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="https://www.youtube.com/watch?v=XUo_Z6a4d7c" title="PyData Berlin 2024 Missing Data"><img src="snapshot.png" class="img-fluid figure-img"></a></p>
-<p></p><figcaption class="figure-caption">PyData Presentation</figcaption><p></p>
-</figure>
-</div>
+<section id="structural-equation-and-confirmatory-factor-analysis-models" class="level1">
+<h1>Structural Equation and Confirmatory Factor Analysis Models</h1>
+<p>This project started as an exploration into the nature of contemportary bayesian model development workflow as applied to psychometric models. The details were spelled out <a href="https://nathanielf.github.io/posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html">here</a>. The project culminated in a publication to the official PyMC documentation that can be found online <a href="https://www.pymc.io/projects/examples/en/latest/case_studies/CFA_SEM.html">here</a></p>
+<p><img src="structural_model.png" class="img-fluid"></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
