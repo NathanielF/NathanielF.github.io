@@ -11,8 +11,12 @@
             "id": "ec043bac226ad593",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "Wedding/Speech.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -81,6 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Wedding/Speech.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,6 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Wedding/Speech.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -118,7 +124,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Wedding/Speech.md"
+              }
             }
           }
         ]
@@ -140,6 +148,7 @@
   },
   "active": "ec043bac226ad593",
   "lastOpenFiles": [
+    "Wedding/Ceremony.md",
     "Wedding/Speech.html",
     "Wedding/Speech_files/mediabag",
     "Wedding/Speech_files",
@@ -151,9 +160,7 @@
     "Public/Philosophy/Sorites Paradox and Survival Analysis_files/mediabag",
     "Public/Philosophy/Sorites Paradox and Survival Analysis_files",
     "Public/Philosophy/Introduction - Philosophy Topics.html",
-    "Public/Philosophy/Introduction - Philosophy Topics_files/mediabag",
     "Wedding/Three things.md",
-    "Wedding/Ceremony.md",
     "Public/Philosophy/Thinking about Statistics.md",
     "Philosophy/Book - Thinking about Statistics.md",
     "Public/Statistics/Analogies between Missing Data and Causal Inference.md",

@@ -1,0 +1,19 @@
+---
+title: "Missing Data and Bayesian Imputation"
+subtitle: "PyCon 2023 Ireland Recording"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+categories: [bayesian, missing data]
+image: "snapshot.png"
+date: last-modified
+---
+
+In April 2024 I gave a talk at PyData Berlin on the usage of bayesian imputation techniques in people analytics. The Slides can be found [here](https://nathanielf.github.io/talks/missing_data/missing_data_causal.html#/title-slide)
+
+But the recording of the talk has been published on youtube here too.
+
+
+[![PyData Presentation](snapshot.png)](https://www.youtube.com/watch?v=erOKYG1zEU4 "PyData Berlin 2024 Missing Data")

@@ -1,0 +1,164 @@
+---
+title: "Uncertainty and Causal Inference in Python"
+subtitle: "CausalPy and Quasi-Experimental Designs"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+format: 
+    revealjs:
+         theme: [default, clean.scss]
+         footer: "Causal Inference in Python"
+categories: [bayesian, missing data, causal inference]
+image: "images/final_plot.png"
+date: last-modified
+draft: True
+---
+
+# The Pitch (WIP)
+
+Causal inference in practice needs to be credible. 
+
+Human beings (stakeholders too) are good intuitive causal reasoners and will be suspicious of grand causal claims. Your inferential strategies need to be transparent and defensible. 
+
+This is where you should leverage `CausalPy` and Bayesian causal modelling. 
+
+## Agenda
+
+- Being a Data Scientist in Industry
+    - The "Good enough" rule and other varieties of Satisficing
+- Causal Inference, Defensive coding and Credibility
+- Bayesian Causal Models and Design Patterns
+- IV designs and Instruments
+- PS designs and Weighting Schemes
+- Conclusion
+
+
+## Data Science in Industry
+### and other varieties of Satisficing
+
+
+![Where do we get to if everyone does the minimum? \n
+ An eye for an eye will leave everyone blind.](images/satisficing.png)
+
+## Directionally Correct ... {.smaller}
+### Maybe in a ZIRP world
+
+:::: {.columns}
+
+::: {.column width="60%"}
+![Directionally Correct, Magnitude Poor](images/magnitude-of-a-vector.png)
+:::
+
+
+::: {.column width="40%"}
+- Important investment decisions require a view of magnitude and direction. 
+- Most business decisions reflect some kind of investment
+    - But time and effort are harder to place on a balance sheet
+- Only sound causal inference supports generalisable decision rules
+- __"Directionally Correct" is a Zero-interest-rate-phenomena.__
+:::
+
+::::
+
+## Experiment Recipes, Rules and Responsibility{.smaller}
+
+:::: {.columns}
+
+::: {.column width="30%"}
+![One Rule to rule them all?](images/p-value.jpg)
+![Valid](images/valid.jpg)
+:::
+
+
+::: {.column width="70%"}
+::: {.fragment .fade-in}
+- P-value based decision criteria on policy change questions are based on the null model of an asymptotic univariate distribution. 
+:::
+::: {.fragment .fade-in}
+- Most aggregate data (e.g. Total Revenue) we see in industry result from a complex array of mixture distributions and any long-run aggregates take time to converge. 
+:::
+::: {.fragment .fade-in}
+- Management often doesn't want to spend the time to validate the long-run characteristics of a phenomena that we would observe in a well powered A/B test.
+:::
+::: {.fragment .fade-in}
+- Risks underpowered experiments through a __[HIPPO-like decision rules]{.red}__ and costly mistakes, ungeneralisable effects. 
+:::
+::: {.fragment .fade-in}
+- __Challenge__: How to improve decision quality in a resource constrained/time-bound environment?
+:::
+:::
+::::
+
+## Causal Inference, Crediblility {.smaller}
+### ... and Quasi-Experimental Design
+
+
+:::: {.columns}
+
+::: {.column width="60%"}
+![](images/dataspeak.png)
+
+:::
+
+
+::: {.column width="40%"}
+
+::: {.fragment .fade-in}
+- If the data can speak for itself, the answer is ussually __[blindingly obvious]{.red}__ or has taken an inordinate amount of time to accumulate
+:::
+
+::: {.fragment .fade-in}
+- __Conversely__, if we've modeled the data generating process we can answer an array of subtle questions about __[cause]{.blue}__ and __[effect]{.blue}__ that support effective decision-making.
+:::
+::: {.fragment .fade-in}
+- Build credibility through linking theoretical estimand and empirical data while partnering across the business with subject matter experts.
+:::
+:::
+
+::::
+
+## CausalPy and Bayesian Inference {.smaller}
+
+:::: {.columns}
+
+::: {.column width="60%"}
+![](images/causalpy.webp)
+:::
+
+::: {.column width="40%"}
+
+- A __[python package](https://causalpy.readthedocs.io/en/latest/index.html)__ for Bayesian Models and Causal Inference methods
+- Developed and maintained by @PyMC Labs 
+- Broad Coverage of quasi-experimental designs.
+
+![](images/star_hist.png)
+:::
+
+::::
+
+
+## Causal Methods and Models
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+![](images/causalpy_toc.png)
+
+:::
+
+::: {.column width="60%"}
+
+![](images/framework.png)
+Causal question(s) of import can be interrogated just when we can pair a research design with an __appropriate__ statistical model. 
+
+:::
+::::
+
+## Canonical DAGs and Methods
+
+
+
+
