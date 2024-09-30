@@ -28,6 +28,70 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto.css" id="theme">
   <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -341,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">9/29/24</p>
+  <p class="date">9/30/24</p>
 </section>
 <section>
 <section id="the-pitch-wip" class="title-slide slide level1 center">
@@ -487,8 +551,95 @@ Nathaniel Forde
 <p>The treatment effect has to be estimated so as to avoid the bias due to X <span class="math display">\[ y \sim 1 + \overbrace{Z} \]</span> <span class="math display">\[ \overbrace{Z} \sim 1 + IV \]</span></p>
 </div>
 </div>
+</section>
+<section id="iv-regression-in-causalpy" class="slide level2">
+<h2>IV Regression in CausalPy</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource {{python}} number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href="#cb1-1"></a>N = 100</span>
+<span id="cb1-2"><a href="#cb1-2"></a>e1 = np.random.normal(0, 3, N)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>e2 = np.random.normal(0, 1, N)</span>
+<span id="cb1-4"><a href="#cb1-4"></a>Z = np.random.uniform(0, 1, N)</span>
+<span id="cb1-5"><a href="#cb1-5"></a>## Ensure the endogeneity of the the treatment variable</span>
+<span id="cb1-6"><a href="#cb1-6"></a>X = -1 + 4 * Z + e2 + 2 * e1</span>
+<span id="cb1-7"><a href="#cb1-7"></a>y = 2 + 3 * X + 3 * e1</span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a>test_data = pd.DataFrame({"y": y, "X": X, "Z": Z})</span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a>sample_kwargs = {</span>
+<span id="cb1-12"><a href="#cb1-12"></a>    "tune": 1000,</span>
+<span id="cb1-13"><a href="#cb1-13"></a>    "draws": 2000,</span>
+<span id="cb1-14"><a href="#cb1-14"></a>    "chains": 4,</span>
+<span id="cb1-15"><a href="#cb1-15"></a>    "cores": 4,</span>
+<span id="cb1-16"><a href="#cb1-16"></a>    "target_accept": 0.99,</span>
+<span id="cb1-17"><a href="#cb1-17"></a>}</span>
+<span id="cb1-18"><a href="#cb1-18"></a>instruments_formula = "X  ~ 1 + Z"</span>
+<span id="cb1-19"><a href="#cb1-19"></a>formula = "y ~  1 + X"</span>
+<span id="cb1-20"><a href="#cb1-20"></a>instruments_data = test_data[["X", "Z"]]</span>
+<span id="cb1-21"><a href="#cb1-21"></a>data = test_data[["y", "X"]]</span>
+<span id="cb1-22"><a href="#cb1-22"></a>iv = InstrumentalVariable(</span>
+<span id="cb1-23"><a href="#cb1-23"></a>    instruments_data=instruments_data,</span>
+<span id="cb1-24"><a href="#cb1-24"></a>    data=data,</span>
+<span id="cb1-25"><a href="#cb1-25"></a>    instruments_formula=instruments_formula,</span>
+<span id="cb1-26"><a href="#cb1-26"></a>    formula=formula,</span>
+<span id="cb1-27"><a href="#cb1-27"></a>    model=InstrumentalVariableRegression(sample_kwargs=sample_kwargs),</span>
+<span id="cb1-28"><a href="#cb1-28"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="bayesian-structural-model" class="slide level2 smaller">
+<h2>Bayesian Structural Model</h2>
+<h3 id="and-instrument-strength">And Instrument Strength</h3>
+<p><span class="math display">\[\begin{align*}
+\left(
+\begin{array}{cc}
+Y \\
+Z
+\end{array}
+\right)
+&amp; \sim
+\text{MultiNormal}(\color{green} \mu, \color{purple} \Sigma) \\
+\color{green} \mu &amp; = \left(
+\begin{array}{cc}
+\mu_{y} \\
+\mu_{z}
+\end{array}
+\right)
+=
+\left(
+\begin{array}{cc}
+\beta_{00} + \color{blue} \beta_{01}Z ... \\
+\beta_{10} + \beta_{11}IV ...
+\end{array}
+\right)
+\end{align*}
+\]</span></p>
+<p>The treatment effect <span class="math inline">\(\color{blue}\beta_{01}\)</span> of is the primary quantity of interest</p>
+<div class="fragment fade-in">
+<p><span class="math display">\[ \color{purple} \Sigma  = \begin{bmatrix}
+1 &amp; \color{blue} \sigma \\
+\color{blue} \sigma &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>The Bayesian estimation strategy incorporates two structural equations and the success of the IV model relies of the correlation between terms.</p>
+</div>
+</section>
+<section id="returns-to-schooling-concrete-example" class="slide level2">
+<h2>Returns to Schooling: Concrete Example</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/ability_edu.png"></p>
+</div><div class="column" style="width:50%;">
+<p><strong>Recipe of Assumptions</strong>:</p>
+<ul>
+<li>Exclusion Restriction</li>
+<li>Independence</li>
+<li>Relevance</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="returns-to-schooling-instrument-relevance" class="slide level2">
+<h2>Returns to Schooling: Instrument Relevance</h2>
 
-<div class="footer footer-default">
+
+<img data-src="images/nearness.webp" class="r-stretch"><div class="footer footer-default">
 <p>Causal Inference in Python</p>
 </div>
 </section></section>
