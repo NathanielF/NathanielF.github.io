@@ -302,16 +302,16 @@ We want to argue for:
 
 :::: 
 
-## Returns to Schooling: Quantifying Confounding
+## Returns to Schooling: Quantifying Confounding {.smaller}
 
 :::: {.columns}
 
-::: {.column width="60%"}
+::: {.column width="40%"}
 ![Comparison between IV and OLS model parameter estimates](images/compare_ols.webp)
 :::
 
 
-::: {.column width="40%"}
+::: {.column width="0%"}
 The natural comparison with OLS shows:
 
 - evidence of genuine confounding in the estimates of treatment effect
@@ -322,16 +322,16 @@ The natural comparison with OLS shows:
 :::: 
 
 
-## Returns to Schooling: Justifying Instruments
+## Returns to Schooling: Justifying Instruments {.smaller}
 
 :::: {.columns}
 
-::: {.column width="60%"}
+::: {.column width="40%"}
 ![Samples from LKJ prior on Covariance structure with different prior settings](images/priors_on_corr.webp)
 :::
 
 
-::: {.column width="40%"}
+::: {.column width="60%"}
 The strength of an instrument is determined by the correlation structure between instrument and outcome via the treatment solely:
 
 - F-tests can be used to assess how the instrument relates to the outcome.
@@ -342,7 +342,7 @@ The strength of an instrument is determined by the correlation structure between
 :::: 
 
 
-## Returns to Schooling: Sensitivity Analysis and Model Evaluation
+## Returns to Schooling: Sensitivity Analysis and Model Evaluation 
 
 :::: {.columns}
 
