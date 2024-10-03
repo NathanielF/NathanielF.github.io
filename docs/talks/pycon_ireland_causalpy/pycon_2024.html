@@ -405,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">10/1/24</p>
+  <p class="date">10/3/24</p>
 </section>
 <section>
 <section id="the-pitch-wip" class="title-slide slide level1 center">
@@ -637,9 +637,83 @@ Z
 </section>
 <section id="returns-to-schooling-instrument-relevance" class="slide level2">
 <h2>Returns to Schooling: Instrument Relevance</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nearness.webp"></p>
+<p></p><figcaption>Visual check of relevance for different instrument variables on the outcome</figcaption><p></p>
+</figure>
+</div>
+</div><div class="column" style="width:40%;">
+<p>We want to argue for:</p>
+<ul>
+<li><p>the relevance of our instrument i.e.&nbsp;that it has a non-trivial impact on the outcome of interest</p></li>
+<li><p>that it influences the result only via the treatment condition.</p></li>
+<li><p>evaluating multiple instrument candidates</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="returns-to-schooling-quantifying-confounding" class="slide level2">
+<h2>Returns to Schooling: Quantifying Confounding</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/compare_ols.webp"></p>
+<p></p><figcaption>Comparison between IV and OLS model parameter estimates</figcaption><p></p>
+</figure>
+</div>
+</div><div class="column" style="width:40%;">
+<p>The natural comparison with OLS shows:</p>
+<ul>
+<li><p>evidence of genuine confounding in the estimates of treatment effect</p></li>
+<li><p>Crucially it highlights the false precision in the OLS estimate.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="returns-to-schooling-justifying-instruments" class="slide level2">
+<h2>Returns to Schooling: Justifying Instruments</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/priors_on_corr.webp"></p>
+<p></p><figcaption>Samples from LKJ prior on Covariance structure with different prior settings</figcaption><p></p>
+</figure>
+</div>
+</div><div class="column" style="width:40%;">
+<p>The strength of an instrument is determined by the correlation structure between instrument and outcome via the treatment solely:</p>
+<ul>
+<li><p>F-tests can be used to assess how the instrument relates to the outcome.</p></li>
+<li><p>In the Bayesian setting we can directly estimate the correlation structure and apply sensitivity tests.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="returns-to-schooling-sensitivity-analysis-and-model-evaluation" class="slide level2">
+<h2>Returns to Schooling: Sensitivity Analysis and Model Evaluation</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/model_comparison.webp"></p>
+<p></p><figcaption>Parameter estimates across different model formulations</figcaption><p></p>
+</figure>
+</div>
+</div><div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/final_iv_model.webp"></p>
+<p></p><figcaption>Posterior Predictive checks and Marginal Effects on our best IV model</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
 
-
-<img data-src="images/nearness.webp" class="r-stretch"><div class="footer footer-default">
+<div class="footer footer-default">
 <p>Causal Inference in Python</p>
 </div>
 </section></section>

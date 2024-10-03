@@ -281,4 +281,80 @@ __Recipe of Assumptions__:
 
 ## Returns to Schooling: Instrument Relevance
 
-![](images/nearness.webp)
+:::: {.columns}
+
+::: {.column width="60%"}
+![Visual check of relevance for different instrument variables on the outcome](images/nearness.webp)
+:::
+
+
+::: {.column width="40%"}
+We want to argue for: 
+
+- the relevance of our instrument i.e. that it has a non-trivial impact on the outcome of interest
+
+- that it influences the result only via the treatment condition. 
+
+- evaluating multiple instrument candidates
+
+
+:::
+
+:::: 
+
+## Returns to Schooling: Quantifying Confounding
+
+:::: {.columns}
+
+::: {.column width="60%"}
+![Comparison between IV and OLS model parameter estimates](images/compare_ols.webp)
+:::
+
+
+::: {.column width="40%"}
+The natural comparison with OLS shows:
+
+- evidence of genuine confounding in the estimates of treatment effect
+
+- Crucially it highlights the false precision in the OLS estimate.
+
+:::
+:::: 
+
+
+## Returns to Schooling: Justifying Instruments
+
+:::: {.columns}
+
+::: {.column width="60%"}
+![Samples from LKJ prior on Covariance structure with different prior settings](images/priors_on_corr.webp)
+:::
+
+
+::: {.column width="40%"}
+The strength of an instrument is determined by the correlation structure between instrument and outcome via the treatment solely:
+
+- F-tests can be used to assess how the instrument relates to the outcome.
+
+- In the Bayesian setting we can directly estimate the correlation structure and apply sensitivity tests.
+
+:::
+:::: 
+
+
+## Returns to Schooling: Sensitivity Analysis and Model Evaluation
+
+:::: {.columns}
+
+::: {.column width="40%"}
+![Parameter estimates across different model formulations](images/model_comparison.webp)
+:::
+
+
+::: {.column width="60%"}
+![Posterior Predictive checks and Marginal Effects on our best IV model](images/final_iv_model.webp)
+
+
+:::
+:::: 
+
