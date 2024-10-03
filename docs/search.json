@@ -2685,14 +2685,14 @@
     "href": "talks/pycon_ireland_causalpy/pycon_2024.html#returns-to-schooling-quantifying-confounding",
     "title": "Uncertainty and Causal Inference in Python",
     "section": "Returns to Schooling: Quantifying Confounding",
-    "text": "Returns to Schooling: Quantifying Confounding\n\n\n\n\n\nComparison between IV and OLS model parameter estimates\n\n\n\nThe natural comparison with OLS shows:\n\nevidence of genuine confounding in the estimates of treatment effect\nCrucially it highlights the false precision in the OLS estimate."
+    "text": "Returns to Schooling: Quantifying Confounding\n\n\n\n\n\nComparison between IV and OLS model parameter estimates\n\n\n\nThe natural comparison with OLS shows:\n\nevidence of genuine confounding in the estimates of treatment effect\nCrucially it highlights the false precision in the OLS estimate.\nModel comparison is at the heart of understanding confounding in causal infernece.\nIV models may be compared by structure but also by instruments used."
   },
   {
     "objectID": "talks/pycon_ireland_causalpy/pycon_2024.html#returns-to-schooling-justifying-instruments",
     "href": "talks/pycon_ireland_causalpy/pycon_2024.html#returns-to-schooling-justifying-instruments",
     "title": "Uncertainty and Causal Inference in Python",
     "section": "Returns to Schooling: Justifying Instruments",
-    "text": "Returns to Schooling: Justifying Instruments\n\n\n\n\n\nSamples from LKJ prior on Covariance structure with different prior settings\n\n\n\nThe strength of an instrument is determined by the correlation structure between instrument and outcome via the treatment solely:\n\nF-tests can be used to assess how the instrument relates to the outcome.\nIn the Bayesian setting we can directly estimate the correlation structure and apply sensitivity tests."
+    "text": "Returns to Schooling: Justifying Instruments\n\n\n\n\n\nSamples from LKJ prior on Covariance structure with different prior settings\n\n\n\nThe strength of an instrument is determined by the correlation structure between instrument and outcome via the treatment solely:\n\nF-tests can be used to assess how the instrument relates to the outcome.\nIn the Bayesian setting we can directly estimate the correlation structure and apply sensitivity tests.\nStronger priors on correlation strength influence the outcomes and can be evaluated against the data through posterior predictive checks"
   },
   {
     "objectID": "talks/pycon_ireland_causalpy/pycon_2024.html#returns-to-schooling-sensitivity-analysis-and-model-comparison",
