@@ -405,7 +405,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">10/3/24</p>
+  <p class="date">10/5/24</p>
 </section>
 <section>
 <section id="the-pitch-wip" class="title-slide slide level1 center">
@@ -510,7 +510,7 @@ Nathaniel Forde
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>Build credibility through linking theoretical estimand and empirical data while partnering across the business with subject matter experts.</li>
+<li>Build <strong><span class="green">credibility</span></strong> through linking theoretical estimand and empirical data while <strong><span class="green">partnering</span></strong> across the business with subject matter experts.</li>
 </ul>
 </div>
 </div>
@@ -548,39 +548,39 @@ Nathaniel Forde
 <p><img data-src="images/rct_dag.webp" alt="Random Control Trial"> <img data-src="images/iv_dag.webp" alt="Instrumental Variable Design"></p>
 </div><div class="column" style="width:50%;">
 <p>The treatment effect can be estimated cleanly <span class="math display">\[ y \sim 1 + Z \]</span></p>
-<p>The treatment effect has to be estimated so as to avoid the bias due to X <span class="math display">\[ y \sim 1 + \overbrace{Z} \]</span> <span class="math display">\[ \overbrace{Z} \sim 1 + IV \]</span></p>
+<p>The treatment effect has to be estimated so as to avoid the bias due to X <span class="math display">\[ y \sim 1 + \widehat{Z} \]</span> <span class="math display">\[ \hat{Z} \sim 1 + IV \]</span></p>
 </div>
 </div>
 </section>
 <section id="iv-regression-in-causalpy" class="slide level2">
 <h2>IV Regression in CausalPy</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource {{python}} number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href="#cb1-1"></a>N = 100</span>
-<span id="cb1-2"><a href="#cb1-2"></a>e1 = np.random.normal(0, 3, N)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>e2 = np.random.normal(0, 1, N)</span>
-<span id="cb1-4"><a href="#cb1-4"></a>Z = np.random.uniform(0, 1, N)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>## Ensure the endogeneity of the the treatment variable</span>
-<span id="cb1-6"><a href="#cb1-6"></a>X = -1 + 4 * Z + e2 + 2 * e1</span>
-<span id="cb1-7"><a href="#cb1-7"></a>y = 2 + 3 * X + 3 * e1</span>
+<div class="sourceCode" id="cb1" data-code-line-numbers="|1-7|18-27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>e1 <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">3</span>, N)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>e2 <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, N)</span>
+<span id="cb1-4"><a href="#cb1-4"></a>Z <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">1</span>, N)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co">## Ensure the endogeneity of the the treatment variable</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>X <span class="op">=</span> <span class="op">-</span><span class="dv">1</span> <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> Z <span class="op">+</span> e2 <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> e1</span>
+<span id="cb1-7"><a href="#cb1-7"></a>y <span class="op">=</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">3</span> <span class="op">*</span> X <span class="op">+</span> <span class="dv">3</span> <span class="op">*</span> e1</span>
 <span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a>test_data = pd.DataFrame({"y": y, "X": X, "Z": Z})</span>
+<span id="cb1-9"><a href="#cb1-9"></a>test_data <span class="op">=</span> pd.DataFrame({<span class="st">"y"</span>: y, <span class="st">"X"</span>: X, <span class="st">"Z"</span>: Z})</span>
 <span id="cb1-10"><a href="#cb1-10"></a></span>
-<span id="cb1-11"><a href="#cb1-11"></a>sample_kwargs = {</span>
-<span id="cb1-12"><a href="#cb1-12"></a>    "tune": 1000,</span>
-<span id="cb1-13"><a href="#cb1-13"></a>    "draws": 2000,</span>
-<span id="cb1-14"><a href="#cb1-14"></a>    "chains": 4,</span>
-<span id="cb1-15"><a href="#cb1-15"></a>    "cores": 4,</span>
-<span id="cb1-16"><a href="#cb1-16"></a>    "target_accept": 0.99,</span>
+<span id="cb1-11"><a href="#cb1-11"></a>sample_kwargs <span class="op">=</span> {</span>
+<span id="cb1-12"><a href="#cb1-12"></a>    <span class="st">"tune"</span>: <span class="dv">1000</span>,</span>
+<span id="cb1-13"><a href="#cb1-13"></a>    <span class="st">"draws"</span>: <span class="dv">2000</span>,</span>
+<span id="cb1-14"><a href="#cb1-14"></a>    <span class="st">"chains"</span>: <span class="dv">4</span>,</span>
+<span id="cb1-15"><a href="#cb1-15"></a>    <span class="st">"cores"</span>: <span class="dv">4</span>,</span>
+<span id="cb1-16"><a href="#cb1-16"></a>    <span class="st">"target_accept"</span>: <span class="fl">0.99</span>,</span>
 <span id="cb1-17"><a href="#cb1-17"></a>}</span>
-<span id="cb1-18"><a href="#cb1-18"></a>instruments_formula = "X  ~ 1 + Z"</span>
-<span id="cb1-19"><a href="#cb1-19"></a>formula = "y ~  1 + X"</span>
-<span id="cb1-20"><a href="#cb1-20"></a>instruments_data = test_data[["X", "Z"]]</span>
-<span id="cb1-21"><a href="#cb1-21"></a>data = test_data[["y", "X"]]</span>
-<span id="cb1-22"><a href="#cb1-22"></a>iv = InstrumentalVariable(</span>
-<span id="cb1-23"><a href="#cb1-23"></a>    instruments_data=instruments_data,</span>
-<span id="cb1-24"><a href="#cb1-24"></a>    data=data,</span>
-<span id="cb1-25"><a href="#cb1-25"></a>    instruments_formula=instruments_formula,</span>
-<span id="cb1-26"><a href="#cb1-26"></a>    formula=formula,</span>
-<span id="cb1-27"><a href="#cb1-27"></a>    model=InstrumentalVariableRegression(sample_kwargs=sample_kwargs),</span>
+<span id="cb1-18"><a href="#cb1-18"></a>instruments_formula <span class="op">=</span> <span class="st">"X  ~ 1 + Z"</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>formula <span class="op">=</span> <span class="st">"y ~  1 + X"</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a>instruments_data <span class="op">=</span> test_data[[<span class="st">"X"</span>, <span class="st">"Z"</span>]]</span>
+<span id="cb1-21"><a href="#cb1-21"></a>data <span class="op">=</span> test_data[[<span class="st">"y"</span>, <span class="st">"X"</span>]]</span>
+<span id="cb1-22"><a href="#cb1-22"></a>iv <span class="op">=</span> InstrumentalVariable(</span>
+<span id="cb1-23"><a href="#cb1-23"></a>    instruments_data<span class="op">=</span>instruments_data,</span>
+<span id="cb1-24"><a href="#cb1-24"></a>    data<span class="op">=</span>data,</span>
+<span id="cb1-25"><a href="#cb1-25"></a>    instruments_formula<span class="op">=</span>instruments_formula,</span>
+<span id="cb1-26"><a href="#cb1-26"></a>    formula<span class="op">=</span>formula,</span>
+<span id="cb1-27"><a href="#cb1-27"></a>    model<span class="op">=</span>InstrumentalVariableRegression(sample_kwargs<span class="op">=</span>sample_kwargs),</span>
 <span id="cb1-28"><a href="#cb1-28"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="bayesian-structural-model" class="slide level2 smaller">
@@ -715,8 +715,70 @@ Z
 </div>
 </div>
 </div>
+</section>
+<section id="canonical-dags-and-methods-1" class="slide level2">
+<h2>Canonical DAGs and Methods</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/rct_dag.webp"></p>
+<p></p><figcaption>Random Control Trial</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/prop_score.png"></p>
+<p></p><figcaption>Propensity Score Adjustment</figcaption><p></p>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<p>The treatment effect can be estimated cleanly <span class="math display">\[ y \sim 1 + Z + X_1 ... X_N \]</span> <span class="math display">\[ p(Z) \sim X_1 ... X_N \]</span></p>
+<p>Propensity score adjustments reweight our outcome by the probability of treatment <span class="math display">\[ y \sim  f(p(Z), Z)\]</span></p>
+</div>
+</div>
+</section>
+<section id="propensity-scores-in-causalpy" class="slide level2">
+<h2>Propensity Scores in CausalPy</h2>
+<div class="sourceCode" id="cb2" data-code-line-numbers="|1-16|18-33"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>df1 <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    np.random.multivariate_normal([<span class="fl">0.5</span>, <span class="dv">1</span>], [[<span class="dv">2</span>, <span class="dv">1</span>], [<span class="dv">1</span>, <span class="dv">1</span>]], size<span class="op">=</span><span class="dv">10000</span>),</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    columns<span class="op">=</span>[<span class="st">"x1"</span>, <span class="st">"x2"</span>],</span>
+<span id="cb2-4"><a href="#cb2-4"></a>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a>df1[<span class="st">"trt"</span>] <span class="op">=</span> np.where(</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    <span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span> <span class="fl">0.25</span> <span class="op">*</span> df1[<span class="st">"x1"</span>] <span class="op">+</span> <span class="fl">0.75</span> <span class="op">*</span> df1[<span class="st">"x2"</span>] <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span><span class="dv">10000</span>) <span class="op">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    <span class="dv">1</span>,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>    <span class="dv">0</span>,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>)</span>
+<span id="cb2-10"><a href="#cb2-10"></a>TREATMENT_EFFECT <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>df1[<span class="st">"outcome"</span>] <span class="op">=</span> (</span>
+<span id="cb2-12"><a href="#cb2-12"></a>    TREATMENT_EFFECT <span class="op">*</span> df1[<span class="st">"trt"</span>]</span>
+<span id="cb2-13"><a href="#cb2-13"></a>    <span class="op">+</span> df1[<span class="st">"x1"</span>]</span>
+<span id="cb2-14"><a href="#cb2-14"></a>    <span class="op">+</span> df1[<span class="st">"x2"</span>]</span>
+<span id="cb2-15"><a href="#cb2-15"></a>    <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span><span class="dv">10000</span>)</span>
+<span id="cb2-16"><a href="#cb2-16"></a>)</span>
+<span id="cb2-17"><a href="#cb2-17"></a></span>
+<span id="cb2-18"><a href="#cb2-18"></a>result1 <span class="op">=</span> cp.InversePropensityWeighting(</span>
+<span id="cb2-19"><a href="#cb2-19"></a>    df1,</span>
+<span id="cb2-20"><a href="#cb2-20"></a>    formula<span class="op">=</span><span class="st">"trt ~ 1 + x1 + x2"</span>,</span>
+<span id="cb2-21"><a href="#cb2-21"></a>    outcome_variable<span class="op">=</span><span class="st">"outcome"</span>,</span>
+<span id="cb2-22"><a href="#cb2-22"></a>    weighting_scheme<span class="op">=</span><span class="st">"robust"</span>,</span>
+<span id="cb2-23"><a href="#cb2-23"></a>    model<span class="op">=</span>cp.pymc_models.PropensityScore(</span>
+<span id="cb2-24"><a href="#cb2-24"></a>        sample_kwargs<span class="op">=</span>{</span>
+<span id="cb2-25"><a href="#cb2-25"></a>            <span class="st">"draws"</span>: <span class="dv">1000</span>,</span>
+<span id="cb2-26"><a href="#cb2-26"></a>            <span class="st">"target_accept"</span>: <span class="fl">0.95</span>,</span>
+<span id="cb2-27"><a href="#cb2-27"></a>            <span class="st">"random_seed"</span>: seed,</span>
+<span id="cb2-28"><a href="#cb2-28"></a>            <span class="st">"progressbar"</span>: <span class="va">False</span>,</span>
+<span id="cb2-29"><a href="#cb2-29"></a>        },</span>
+<span id="cb2-30"><a href="#cb2-30"></a>    ),</span>
+<span id="cb2-31"><a href="#cb2-31"></a>)</span>
+<span id="cb2-32"><a href="#cb2-32"></a></span>
+<span id="cb2-33"><a href="#cb2-33"></a>result1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="weighting-methods" class="slide level2">
+<h2>Weighting Methods</h2>
 
-<div class="footer footer-default">
+
+<img data-src="images/PS_WEIGHT.png" class="r-stretch"><div class="footer footer-default">
 <p>Causal Inference in Python</p>
 </div>
 </section></section>

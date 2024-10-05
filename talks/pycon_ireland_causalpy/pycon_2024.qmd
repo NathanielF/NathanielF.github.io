@@ -113,7 +113,7 @@ This is where you should leverage `CausalPy` and Bayesian causal modelling.
 - __Conversely__, if we've modeled the data generating process we can answer an array of subtle questions about __[cause]{.blue}__ and __[effect]{.blue}__ that support effective decision-making.
 :::
 ::: {.fragment .fade-in}
-- Build credibility through linking theoretical estimand and empirical data while partnering across the business with subject matter experts.
+- Build __[credibility]{.green}__ through linking theoretical estimand and empirical data while __[partnering]{.green}__ across the business with subject matter experts.
 :::
 :::
 
@@ -175,16 +175,15 @@ $$ y \sim 1 + Z $$
 
 
 The treatment effect has to be estimated so as to avoid the bias due to X
-$$ y \sim 1 + \overbrace{Z} $$
-$$ \overbrace{Z} \sim 1 + IV $$ 
+$$ y \sim 1 + \widehat{Z} $$
+$$ \hat{Z} \sim 1 + IV $$ 
 
 :::
 ::::
 
 
 ## IV Regression in CausalPy
-
-```{{python}}
+```{.python code-line-numbers="|1-7|18-27"}
 N = 100
 e1 = np.random.normal(0, 3, N)
 e2 = np.random.normal(0, 1, N)
@@ -364,3 +363,71 @@ The strength of an instrument is determined by the correlation structure between
 :::
 :::: 
 
+
+## Canonical DAGs and Methods
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![Random Control Trial](images/rct_dag.webp)
+
+![Propensity Score Adjustment](images/prop_score.png)
+
+:::
+
+::: {.column width="50%"}
+
+The treatment effect can be estimated cleanly
+$$ y \sim 1 + Z + X_1 ... X_N $$
+$$ p(Z) \sim X_1 ... X_N $$
+
+
+Propensity score adjustments reweight our outcome by the probability of treatment
+$$ y \sim  f(p(Z), Z)$$
+
+:::
+::::
+
+## Propensity Scores in CausalPy
+
+```{.python code-line-numbers="|1-16|18-33"}
+df1 = pd.DataFrame(
+    np.random.multivariate_normal([0.5, 1], [[2, 1], [1, 1]], size=10000),
+    columns=["x1", "x2"],
+)
+df1["trt"] = np.where(
+    -0.5 + 0.25 * df1["x1"] + 0.75 * df1["x2"] + np.random.normal(0, 1, size=10000) > 0,
+    1,
+    0,
+)
+TREATMENT_EFFECT = 2
+df1["outcome"] = (
+    TREATMENT_EFFECT * df1["trt"]
+    + df1["x1"]
+    + df1["x2"]
+    + np.random.normal(0, 1, size=10000)
+)
+
+result1 = cp.InversePropensityWeighting(
+    df1,
+    formula="trt ~ 1 + x1 + x2",
+    outcome_variable="outcome",
+    weighting_scheme="robust",
+    model=cp.pymc_models.PropensityScore(
+        sample_kwargs={
+            "draws": 1000,
+            "target_accept": 0.95,
+            "random_seed": seed,
+            "progressbar": False,
+        },
+    ),
+)
+
+result1
+
+```
+
+## Weighting Methods
+
+![](images/PS_WEIGHT.png)
