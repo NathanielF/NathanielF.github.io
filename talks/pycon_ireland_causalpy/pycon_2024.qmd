@@ -16,13 +16,11 @@ date: last-modified
 draft: False
 ---
 
-# The Pitch (WIP)
+# The Pitch
 
-Causal inference in practice needs to be credible. 
+Causal inference in practice needs to be credible. Decision makers will demand it! Your inferential strategies need to be transparent and defensible. 
 
-Human beings (stakeholders too) are good intuitive causal reasoners and will be suspicious of grand causal claims. Your inferential strategies need to be transparent and defensible. 
-
-This is where you should leverage `CausalPy` and Bayesian causal modelling. 
+This is where you should leverage `CausalPy` and Bayesian causal modelling for the quantification of uncertainty
 
 ## Agenda
 
@@ -32,7 +30,9 @@ This is where you should leverage `CausalPy` and Bayesian causal modelling.
 - Bayesian Causal Models and Design Patterns
 - IV designs and Instruments
 - PS designs and Weighting Schemes
-- Conclusion
+- Conclusion: 
+    - Uncertainty in the Model
+    - Uncertainty about the Model
 
 
 ## Data Science in Industry
@@ -428,6 +428,33 @@ result1
 
 ```
 
-## Weighting Methods
+## Propensity Score Models
+
+![Overfitting Propensity Score models to the sample data confounds causal inference](images/prop_models.png)
+
+## Validating Balancing Effects
+
+![Balancing Covariate Distributions across Treatment Groups](images/balancing.png)
+
+Balanced covariate distributions is testable implication the propensity score design.
+
+
+## Models and Weighting Methods
+
+:::: {.columns}
+
+::: {.column width="50%"}
 
 ![](images/PS_WEIGHT.png)
+
+:::
+
+::: {.column width="50%"}
+
+![](images/overlap_weight.png)
+
+:::
+::::
+Propensity Weighting Adjusts Outcome Distribution to improve estimation of treatment effects
+
+## Conclusion

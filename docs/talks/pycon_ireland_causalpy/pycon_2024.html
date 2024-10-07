@@ -405,14 +405,13 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">10/5/24</p>
+  <p class="date">10/7/24</p>
 </section>
 <section>
-<section id="the-pitch-wip" class="title-slide slide level1 center">
-<h1>The Pitch (WIP)</h1>
-<p>Causal inference in practice needs to be credible.</p>
-<p>Human beings (stakeholders too) are good intuitive causal reasoners and will be suspicious of grand causal claims. Your inferential strategies need to be transparent and defensible.</p>
-<p>This is where you should leverage <code>CausalPy</code> and Bayesian causal modelling.</p>
+<section id="the-pitch" class="title-slide slide level1 center">
+<h1>The Pitch</h1>
+<p>Causal inference in practice needs to be credible. Decision makers will demand it. Your inferential strategies need to be transparent and defensible.</p>
+<p>This is where you should leverage <code>CausalPy</code> and Bayesian causal modelling for the quantification of uncertainty</p>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
@@ -425,7 +424,11 @@ Nathaniel Forde
 <li>Bayesian Causal Models and Design Patterns</li>
 <li>IV designs and Instruments</li>
 <li>PS designs and Weighting Schemes</li>
-<li>Conclusion</li>
+<li>Conclusion:
+<ul>
+<li>Uncertainty in the Model</li>
+<li>Uncertainty about the Model</li>
+</ul></li>
 </ul>
 </section>
 <section id="data-science-in-industry" class="slide level2">
@@ -774,11 +777,30 @@ Z
 <span id="cb2-32"><a href="#cb2-32"></a></span>
 <span id="cb2-33"><a href="#cb2-33"></a>result1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="weighting-methods" class="slide level2">
-<h2>Weighting Methods</h2>
+<section id="propensity-score-models" class="slide level2">
+<h2>Propensity Score Models</h2>
 
+<img data-src="images/prop_models.png" class="r-stretch quarto-figure-center"><p class="caption">Overfitting Propensity Score models to the sample data confounds causal inference</p></section>
+<section id="validating-balancing-effects" class="slide level2">
+<h2>Validating Balancing Effects</h2>
 
-<img data-src="images/PS_WEIGHT.png" class="r-stretch"><div class="footer footer-default">
+<img data-src="images/balancing.png" class="r-stretch quarto-figure-center"><p class="caption">Balancing Covariate Distributions across Treatment Groups</p><p>Balanced covariate distributions is testable implication the propensity score design.</p>
+</section>
+<section id="models-and-weighting-methods" class="slide level2">
+<h2>Models and Weighting Methods</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/PS_WEIGHT.png"></p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/overlap_weight.png"></p>
+</div>
+</div>
+<p>Propensity Weighting Adjusts Outcome Distribution to improve estimation of treatment effects</p>
+</section>
+<section id="conclusion" class="slide level2">
+<h2>Conclusion</h2>
+
+<div class="footer footer-default">
 <p>Causal Inference in Python</p>
 </div>
 </section></section>
