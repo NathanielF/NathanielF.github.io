@@ -457,4 +457,28 @@ Balanced covariate distributions is testable implication the propensity score de
 ::::
 Propensity Weighting Adjusts Outcome Distribution to improve estimation of treatment effects
 
-## Conclusion
+## Conclusion {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Levels of Uncertainty
+    - Uncertainty in the Model
+        - Bayesian Causal Inference takes uncertainty quantification seriously
+        - Prior sensitivity Analysis further establishes the robustness of our estimates
+    - Uncertainty about the Model
+        - The shear combinatorial complexity of the possible models required necessitates informed opinion to zero-in on plausible models
+
+
+:::
+
+::: {.column width="50%"}
+
+![](images/probable_graphs.png)
+
+[CausalPy](https://causalpy.readthedocs.io/en/latest/) streamlines and the deployment and analysis of these models with proper tools to asses their uncertainty
+
+
+:::
+::::
