@@ -463,12 +463,12 @@ Propensity Weighting Adjusts Outcome Distribution to improve estimation of treat
 
 ::: {.column width="50%"}
 
-- Levels of Uncertainty
-    - Uncertainty in the Model
-        - Bayesian Causal Inference takes uncertainty quantification seriously
-        - Prior sensitivity Analysis further establishes the robustness of our estimates
-    - Uncertainty about the Model
-        - The shear combinatorial complexity of the possible models required necessitates informed opinion to zero-in on plausible models
+- Uncertainty in the Model
+    - Causal inference wrestles with the uncertain consequence(s) of assumed data generating processes.
+    - Bayesian Causal Inference takes uncertainty quantification seriously
+    - Prior sensitivity Analysis further establishes the robustness of our estimates under uncertainty
+- Uncertainty about the Model
+    - The combinatorial complexity of the possible models necessitates informed opinion to zero-in on plausible models
 
 
 :::
@@ -477,7 +477,12 @@ Propensity Weighting Adjusts Outcome Distribution to improve estimation of treat
 
 ![](images/probable_graphs.png)
 
-[CausalPy](https://causalpy.readthedocs.io/en/latest/) streamlines and the deployment and analysis of these models with proper tools to asses their uncertainty
+::: {.fragment .fade-in}
+__[CausalPy](https://causalpy.readthedocs.io/en/latest/)__ streamlines the deployment and analysis of these causal inference models with proper tools to asses their uncertainty, and communicate impact of policy changes.
+
+Faciliates model evaluation, comparison and combination - to build credible patterns of inference and justified approaches to critical decisions. 
+
+:::
 
 
 :::

@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.2.335">
 
   <meta name="author" content="Nathaniel Forde">
-  <meta name="dcterms.date" content="2024-10-12">
+  <meta name="dcterms.date" content="2024-10-13">
   <title>Examined Algorithms - Uncertainty and Causal Inference in Python</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -406,7 +406,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">10/12/24</p>
+  <p class="date">10/13/24</p>
 </section>
 <section>
 <section id="the-pitch" class="title-slide slide level1 center">
@@ -803,22 +803,23 @@ Z
 <div class="columns">
 <div class="column" style="width:50%;">
 <ul>
-<li>Levels of Uncertainty
-<ul>
 <li>Uncertainty in the Model
 <ul>
+<li>Causal inference wrestles with the uncertain consequence(s) of assumed data generating processes.</li>
 <li>Bayesian Causal Inference takes uncertainty quantification seriously</li>
-<li>Prior sensitivity Analysis further establishes the robustness of our estimates</li>
+<li>Prior sensitivity Analysis further establishes the robustness of our estimates under uncertainty</li>
 </ul></li>
 <li>Uncertainty about the Model
 <ul>
-<li>The shear combinatorial complexity of the possible models required necessitates informed opinion to zero-in on plausible models</li>
-</ul></li>
+<li>The combinatorial complexity of the possible models necessitates informed opinion to zero-in on plausible models</li>
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
 <p><img data-src="images/probable_graphs.png"></p>
-<p><a href="https://causalpy.readthedocs.io/en/latest/">CausalPy</a> streamlines and the deployment and analysis of these models with proper tools to asses their uncertainty</p>
+<div class="fragment fade-in">
+<p><strong><a href="https://causalpy.readthedocs.io/en/latest/">CausalPy</a></strong> streamlines the deployment and analysis of these causal inference models with proper tools to asses their uncertainty, and communicate impact of policy changes.</p>
+<p>Faciliates model evaluation, comparison and combination - to build credible patterns of inference and justified approaches to critical decisions.</p>
+</div>
 </div>
 </div>
 
