@@ -1,0 +1,99 @@
+---
+title: "Working as a Data Scientist"
+subtitle: "From guessing to learning"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Wyatt's Dad
+format: 
+    revealjs:
+         theme: [default, clean.scss]
+         footer: "Counting"
+categories: [counting, fun, histogram]
+abstract: " Fun talk for Wyatt's Junior infants class on working in STEM"
+image: "images/heightdist.png"
+date: last-modified
+date-format: "D-MM-YYYY"
+draft: False
+---
+
+
+
+## Introduction: Who Am I? 
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+<img src="images/datadetective.png" alt="drawing" width="500" height="300"/>
+
+Data Scientist and Statistician
+:::
+
+::: {.column width="40%"}
+<img src="images/WyattsDad.jpeg" alt="drawing" height="300"/>
+
+Wyatt's Dad
+:::
+
+
+::::
+
+
+
+## What a Data Scientist Does?
+
+:::: {.columns}
+
+::: {.column width="40%"}
+Measurement
+
+<img src="images/boy_giraffe.png" alt="drawing" height="300"/>
+
+:::
+
+::: {.column width="60%"}
+
+Counting
+
+<img src="images/heightdist.png" alt="drawing" height="350"/>
+
+:::
+::::
+ 
+
+## What a Data Scientist Does?
+### Guessing 
+
+
+|                | **Girl** | **Boy**          | **Giraffe**      |
+| -------------- | -------- | ---------------- | ---------------- |
+| **1**          | 95       | 119              | 564              |
+| **2**          | 106      | 104              | 571              |
+| **3**          | 103      | 103              | 561              |
+| **4**          | 95       | 113              | 558              |
+| **5**          | 104      | 101              | 509              |
+| **6**          | 97       | 103              | 563              |
+| [**New Class Member**]{.blue}          | [?]{.blue}        | [?]{.blue}                | [?]{.blue}                |
+
+
+## What a Data Scientist Does
+### Prediction
+
+
+|                | **Girl** | **Boy**          | **Giraffe**      |
+| -------------- | -------- | ---------------- | ---------------- |
+| **1**          | 95       | 119              | 564              |
+| **2**          | 106      | 104              | 571              |
+| **3**          | 103      | 103              | 561              |
+| **4**          | 95       | 113              | 558              |
+| **5**          | 104      | 101              | 509              |
+| **6**          | 97       | 103              | 563              |
+| [**Prediction**]{.blue} | [__100__]{.blue}      | [__107__]{.blue} | [__554__]{.blue} |
+
+
+## Experiment
+
+Let's do an Experiment and Measure the Class Heights
+
+![](images/calc.png)
