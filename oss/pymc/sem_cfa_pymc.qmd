@@ -4,6 +4,7 @@ author: "Nathaniel Forde"
 date: "2024-09-29"
 categories: ["probability", "pymc", "sem", "cfa" ]
 image: "covariance_structure.png"
+abstract: "Bayesian Measurement Models and Structural Regressions"
 ---
 
 # Structural Equation and Confirmatory Factor Analysis Models

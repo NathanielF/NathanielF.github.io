@@ -4,6 +4,7 @@ author: "Nathaniel Forde"
 date: "2023-11-28"
 categories: ["probability", "pymc", "survival models", "frailty models"]
 image: "frailty_terms.png"
+abstract: "Accelerated Failure and Hierarchical Survival Models for Attrition Models "
 ---
 
 ## Survial Modelling and Individual Frailties

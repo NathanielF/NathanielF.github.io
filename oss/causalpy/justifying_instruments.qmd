@@ -4,6 +4,7 @@ author: "Nathaniel Forde"
 date: "2024-06-15"
 categories: ["regression", "instrumental variables", "causal inference" ]
 image: "instrument.png"
+abstract: "Credibility in Bayesian IV designs"
 ---
 
 # The Strength of Instruments

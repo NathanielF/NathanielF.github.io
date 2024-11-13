@@ -4,6 +4,7 @@ author: "Nathaniel Forde"
 date: "2023-08-15"
 categories: ["regression", "instrumental variables", "causal inference" ]
 image: "iv_reg.png"
+abstract: "Bayesian IV designs as Structural Multivariate Models"
 ---
 
 # Instrumental Variable Regression

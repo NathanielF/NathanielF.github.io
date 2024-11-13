@@ -3,6 +3,7 @@ title: "Longitudinal Models in PyMC"
 author: "Nathaniel Forde"
 date: "2023-04-10"
 categories: ["probability", "pymc", "longitudinal models"]
+abstract: "Hierarchical Regression based Growth Models"
 image: "longitudinal_models_pic.png"
 ---
 

@@ -4,6 +4,7 @@ author: "Nathaniel Forde"
 date: "2024-02-27"
 categories: ["probability", "pymc", "non parametric", "causal inference" ]
 image: "bnp_cate.png"
+abstract: "Non Parametric Causal Models and Mediation Analysis"
 ---
 
 # Bayesian Non Parametric Causal Inference

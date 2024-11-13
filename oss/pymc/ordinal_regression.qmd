@@ -3,6 +3,7 @@ title: "Ordinal Regression Models in PyMC"
 author: "Nathaniel Forde"
 date: "2023-06-01"
 categories: ["probability", "pymc", "ordinal regression", "likert scales"]
+abstract: "Ordinal Regression for analysing Survey Response data"
 image: "Latent_ordinal_scales.png"
 ---
 

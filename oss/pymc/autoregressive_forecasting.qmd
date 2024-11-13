@@ -2,6 +2,7 @@
 title: "Autoregressive Forecasting in PyMC"
 author: "Nathaniel Forde"
 date: "2022-08-15"
+abstract: "Implementing Autoregressive Structural forecasting models in PyMC"
 categories: ["probability", "pymc", "autoregressive"]
 image: "autoregressive_forecast.png"
 ---

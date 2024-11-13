@@ -4,6 +4,7 @@ author: "Nathaniel Forde"
 date: "2024-05-11"
 categories: ["regression", "propensity", "causal inference", "weighting"]
 image: "dag.png"
+abstract: "Propensity Weighting Adjustment for Causal Inference"
 ---
 
 # Inverse Propensity Score Weighting

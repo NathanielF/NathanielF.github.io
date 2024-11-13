@@ -4,6 +4,7 @@ author: "Nathaniel Forde"
 date: "2023-09-21"
 categories: ["regression", "post-stratification", "survey data" ]
 image: "mr_p.png"
+abstract: "Weighting Adjustments as Correctives for Survey Bias"
 ---
 
 # Regression as Stratification

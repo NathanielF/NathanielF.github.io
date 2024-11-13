@@ -3,6 +3,7 @@ title: "Bayesian Vector Autoregressive Models in PyMC"
 author: "Nathaniel Forde"
 date: "2022-12-15"
 categories: ["probability", "pymc", "autoregressive", "hierarchical_models" ]
+abstract: "VAR and Hierarchical VARs for GDP models in PyMC"
 image: "hierarchical_var.png"
 ---
 
