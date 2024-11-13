@@ -2,9 +2,9 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/pycon_ireland_causalpy/pycon_2024.html",
       "/talks/stem_talk_junior_infants/working_in_stem.html",
       "/talks/pydata_berlin_recording/pydata_berlin_2024.html",
-      "/talks/pycon_ireland_causalpy/pycon_2024.html",
       "/talks/pycon_ireland_recording/pycon_ireland_recording.html",
       "/talks/missing_data/missing_data_causal.html",
       "/talks/bayesian_mixer/bayesian_mixer_london.html",

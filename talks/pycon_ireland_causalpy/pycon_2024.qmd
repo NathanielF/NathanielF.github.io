@@ -35,6 +35,24 @@ This is where you should leverage `CausalPy` and Bayesian causal modelling for t
     - Uncertainty about the Model
 
 
+## Preliminaries {.smaller}
+
+:::{.callout-warning}
+## Who am I?
+- I'm a __data scientist__ at __[Personio]{.blue}__ 
+    - Bayesian statistician, 
+    - Reformed philosopher and logician. 
+- Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
+:::
+ 
+::: {.callout-tip}
+## Code or it didn't Happen
+The worked examples used here can be found [here](https://causalpy.readthedocs.io/en/latest/)
+:::
+
+![My Website](images/QR_CODE.png)
+
+
 ## Data Science in Industry
 ### and other varieties of Satisficing
 
