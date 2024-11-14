@@ -10,7 +10,7 @@ format:
     revealjs:
          theme: [default, clean.scss]
          footer: "Causal Inference in Python"
-categories: [bayesian, missing data, causal inference]
+categories: [bayesian, sensitivity analysis, causal inference]
 image: "images/causalpy.webp"
 date: last-modified
 draft: False
@@ -20,17 +20,18 @@ draft: False
 
 Causal inference in practice needs to be credible. Decision makers will demand it! Your inferential strategies need to be transparent and defensible. 
 
-This is where you should leverage `CausalPy` and Bayesian causal modelling for the quantification of uncertainty
+This is where you should leverage `CausalPy` and Bayesian causal modelling for the quantification of uncertainty.
 
 ## Agenda
 
 - Being a Data Scientist in Industry
-    - The "Good enough" rule and other varieties of Satisficing
-- Causal Inference, Defensive coding and Credibility
+- Causal Inference and Credibility
 - Bayesian Causal Models and Design Patterns
-- IV designs and Instruments
-- PS designs and Weighting Schemes
-- Conclusion: 
+- IV designs 
+    - Instrument Choice
+- PS designs
+    - Weighting Schemes
+- Conclusion: Sensitivity Analysis: 
     - Uncertainty in the Model
     - Uncertainty about the Model
 
