@@ -18,7 +18,7 @@ draft: False
 
 # The Pitch
 
-Causal inference in practice needs to be credible. Not all questions can be answered with A/B testing. Causal impact needs to be measured anyway!
+Causal inference guides decision making. Not all questions can be answered with A/B testing. Causal impact needs to be credible anyway!
 
 This is where you should leverage `CausalPy` and Bayesian causal modelling for the quantification of uncertainty and sensitivity analysis in the evaluation of policy impact. 
 
@@ -117,7 +117,7 @@ The worked examples used here can be found [here](https://causalpy.readthedocs.i
 :::: {.columns}
 
 ::: {.column width="50%"}
-![](images/dataspeak.png)
+![An Abdication of Responsibility](images/dataspeak.png)
 
 :::
 
@@ -132,7 +132,7 @@ The worked examples used here can be found [here](https://causalpy.readthedocs.i
 - __More generally__, if we've modeled the data generating process we can answer an array of subtle questions about __[cause]{.blue}__ and __[effect]{.blue}__ that support effective decision-making.
 :::
 ::: {.fragment .fade-in}
-- __[Approach]{.green}__: Be attentive to opportunities for natural experiments. Build __[credibility]{.green}__ through linking theoretical estimand and empirical data while __[partnering]{.green}__ across the business with subject matter experts.
+- __[Approach]{.green}__: Communicate and pursue opportunities for natural experiments. Build __[credibility]{.green}__ through linking theoretical estimand and empirical data while __[partnering]{.green}__ across the business with subject matter experts.
 :::
 :::
 

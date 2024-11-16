@@ -2601,7 +2601,7 @@
     "href": "talks/pycon_ireland_causalpy/pycon_2024.html#causal-inference-crediblility",
     "title": "Uncertainty and Causal Inference in Python",
     "section": "Causal Inference, Crediblility",
-    "text": "Causal Inference, Crediblility\n… and Quasi-Experimental Design\n\n\n\n\n\n\nIf the data can speak for itself, the answer is usually blindingly obvious or has taken an inordinate amount of time to accumulate\n\n\n\n\nMore generally, if we’ve modeled the data generating process we can answer an array of subtle questions about cause and effect that support effective decision-making.\n\n\n\n\nApproach: Be attentive to opportunities for natural experiments. Build credibility through linking theoretical estimand and empirical data while partnering across the business with subject matter experts."
+    "text": "Causal Inference, Crediblility\n… and Quasi-Experimental Design\n\n\n\n\n\nAn Abdication of Responsibility\n\n\n\n\n\nIf the data can speak for itself, the answer is usually blindingly obvious or has taken an inordinate amount of time to accumulate\n\n\n\n\nMore generally, if we’ve modeled the data generating process we can answer an array of subtle questions about cause and effect that support effective decision-making.\n\n\n\n\nApproach: Communicate and pursue opportunities for natural experiments. Build credibility through linking theoretical estimand and empirical data while partnering across the business with subject matter experts."
   },
   {
     "objectID": "talks/pycon_ireland_causalpy/pycon_2024.html#causalpy-and-bayesian-inference",
