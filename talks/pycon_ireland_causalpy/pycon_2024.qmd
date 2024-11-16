@@ -18,15 +18,16 @@ draft: False
 
 # The Pitch
 
-Causal inference in practice needs to be credible. Decision makers will demand it! Your inferential strategies need to be transparent and defensible. 
+Causal inference in practice needs to be credible. Not all questions can be answered with A/B testing. Your inferential strategies need to be transparent and defensible. 
 
-This is where you should leverage `CausalPy` and Bayesian causal modelling for the quantification of uncertainty.
+This is where you should leverage `CausalPy` and Bayesian causal modelling for the quantification of uncertainty and sensitivity analysis.
 
-## Agenda
+## Agenda {.smaller}
 
 - Being a Data Scientist in Industry
 - Causal Inference and Credibility
 - Bayesian Causal Models and Design Patterns
+    - Complementary Practices
 - IV designs 
     - Instrument Choice
 - PS designs
@@ -115,20 +116,20 @@ The worked examples used here can be found [here](https://causalpy.readthedocs.i
 
 :::: {.columns}
 
-::: {.column width="60%"}
+::: {.column width="50%"}
 ![](images/dataspeak.png)
 
 :::
 
 
-::: {.column width="40%"}
+::: {.column width="50%"}
 
 ::: {.fragment .fade-in}
-- If the data can speak for itself, the answer is ussually __[blindingly obvious]{.red}__ or has taken an inordinate amount of time to accumulate
+- If the data can speak for itself, the answer is usually __[blindingly obvious]{.red}__ or has taken an inordinate amount of time to accumulate
 :::
 
 ::: {.fragment .fade-in}
-- __Conversely__, if we've modeled the data generating process we can answer an array of subtle questions about __[cause]{.blue}__ and __[effect]{.blue}__ that support effective decision-making.
+- __More generally__, if we've modeled the data generating process we can answer an array of subtle questions about __[cause]{.blue}__ and __[effect]{.blue}__ that support effective decision-making.
 :::
 ::: {.fragment .fade-in}
 - __[Approach]{.green}__: Be attentive to opportunities for natural experiments. Build __[credibility]{.green}__ through linking theoretical estimand and empirical data while __[partnering]{.green}__ across the business with subject matter experts.

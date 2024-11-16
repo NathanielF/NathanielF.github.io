@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.2.335">
 
   <meta name="author" content="Nathaniel Forde">
-  <meta name="dcterms.date" content="2024-11-15">
+  <meta name="dcterms.date" content="2024-11-16">
   <title>Examined Algorithms - Uncertainty and Causal Inference in Python</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -406,20 +406,23 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">11/15/24</p>
+  <p class="date">11/16/24</p>
 </section>
 <section>
 <section id="the-pitch" class="title-slide slide level1 center">
 <h1>The Pitch</h1>
-<p>Causal inference in practice needs to be credible. Decision makers will demand it! Your inferential strategies need to be transparent and defensible.</p>
-<p>This is where you should leverage <code>CausalPy</code> and Bayesian causal modelling for the quantification of uncertainty.</p>
+<p>Causal inference in practice needs to be credible. Not all questions can be answered with A/B testing. Your inferential strategies need to be transparent and defensible.</p>
+<p>This is where you should leverage <code>CausalPy</code> and Bayesian causal modelling for the quantification of uncertainty and sensitivity analysis.</p>
 </section>
-<section id="agenda" class="slide level2">
+<section id="agenda" class="slide level2 smaller">
 <h2>Agenda</h2>
 <ul>
 <li>Being a Data Scientist in Industry</li>
 <li>Causal Inference and Credibility</li>
-<li>Bayesian Causal Models and Design Patterns</li>
+<li>Bayesian Causal Models and Design Patterns
+<ul>
+<li>Complementary Practices</li>
+</ul></li>
 <li>IV designs
 <ul>
 <li>Instrument Choice</li>
@@ -539,17 +542,17 @@ Nathaniel Forde
 <h2>Causal Inference, Crediblility</h2>
 <h3 id="and-quasi-experimental-design">… and Quasi-Experimental Design</h3>
 <div class="columns">
-<div class="column" style="width:60%;">
+<div class="column" style="width:50%;">
 <p><img data-src="images/dataspeak.png"></p>
-</div><div class="column" style="width:40%;">
+</div><div class="column" style="width:50%;">
 <div class="fragment fade-in">
 <ul>
-<li>If the data can speak for itself, the answer is ussually <strong><span class="red">blindingly obvious</span></strong> or has taken an inordinate amount of time to accumulate</li>
+<li>If the data can speak for itself, the answer is usually <strong><span class="red">blindingly obvious</span></strong> or has taken an inordinate amount of time to accumulate</li>
 </ul>
 </div>
 <div class="fragment fade-in">
 <ul>
-<li><strong>Conversely</strong>, if we’ve modeled the data generating process we can answer an array of subtle questions about <strong><span class="blue">cause</span></strong> and <strong><span class="blue">effect</span></strong> that support effective decision-making.</li>
+<li><strong>More generally</strong>, if we’ve modeled the data generating process we can answer an array of subtle questions about <strong><span class="blue">cause</span></strong> and <strong><span class="blue">effect</span></strong> that support effective decision-making.</li>
 </ul>
 </div>
 <div class="fragment fade-in">
