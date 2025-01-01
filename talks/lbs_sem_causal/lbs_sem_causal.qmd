@@ -1,0 +1,12 @@
+---
+title: "Learning Bayesian Statistics: SEM and CFA"
+author: "Nathaniel Forde"
+date: last-modified
+abstract: "Interview on Learning Bayesian Statistics Podcast on SEM models in PyMC"
+categories: ["probability", "pymc", "sem", "cfa"]
+image: "podcast_image.png"
+---
+
+In November 2024 I recorded a podcast interview about how to develop structural equation models in PyMC and the relationship between SEM and causal inference more generally. You can listen to the podcast here: 
+
+[![Youtube Webinair](podcast_image.png)](https://youtu.be/WEb9SnVLTmE?si=WlRYujQj_xAYjzTf&t=3 "Learning Bayesian Statistics")

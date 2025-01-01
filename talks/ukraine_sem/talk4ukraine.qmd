@@ -1,0 +1,510 @@
+---
+title: "Structural Causal Models in PyMC"
+subtitle: "Conditionalisation Strategies and Valid Causal Inference"
+abstract: "Talk for [Workshops for Ukraine](https://sites.google.com/view/dariia-mykhailyshyna/main/r-workshops-for-ukraine#h.d5fce3wbt3kr)"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+format: 
+    revealjs:
+         theme: [default, clean.scss]
+         logo: images/pymc_logo.png
+         footer: "SCMS in PyMC"
+categories: [bayesian, causal, SCM, SEM]
+date: last-modified
+image: "images/factor_structure.png"
+---
+
+# The Pitch
+
+Lorem Ipsum
+
+## Agenda {.smaller}
+:::: {.columns}
+::: {.column}
+- Valid Causal Structure
+    - Form and Content of Causal Inference
+    - Abstract Conception
+    - Concrete Conception
+    - The Bayesian Phrasing
+    - Implementation in Code
+- Measurement Models
+    - Measurement Models Abstract Conception
+    - Bayesian Phrasing: Concrete Example
+    - Bayesian Phrasing: Code in PyMC
+    - Model Fit and Diagnostics
+:::
+::: {.column}
+- Structural Equation Models
+    - Adding Structural Components
+    - The Generative Model in PyMC
+    - Model Comparison: CFA and SEM
+- Sensitivity Analysis and the Do-Operator
+:::
+::::
+
+## Preliminaries {.smaller}
+
+:::{.callout-warning}
+## Who am I?
+- I'm a __data scientist__ at __[Personio]{.blue}__ 
+    - Bayesian statistician, 
+    - Reformed philosopher and logician. 
+- Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
+:::
+ 
+::: {.callout-tip}
+## Code or it didn't Happen
+The worked examples used here can be found [here]()
+:::
+
+![My Website](images/QR_CODE.png)
+
+# Valid Causal Structure
+
+## Form and Content of Causal Inference {.smller}
+### Directed Acyclic Graphs and their Meaning
+
+:::: {.columns}
+::: {.column .r-fit-text}
+> "Every proposition has a content and a form. We get the picture of the pure form if we abstract from the meaning of the single words, or symbols (so far as they have independent meanings)... __By syntax in this general sense of the word I mean the rules which tell us in which connections only a word [makes] sense, thus excluding nonsensical structures.__ " - Wittgenstein _Some Remarks on Logical Form_
+:::
+::: {.column}
+![Sets of Admissable Graphs](images/probable_graphs.png)
+$$ \psi | \neg \psi | \psi \rightarrow \phi $$
+:::
+Sets of Admissable Graphs and Well formed valid Fomulae
+::::
+
+
+## Abstract Conception
+### Non-Parametric Structural Diagrams
+
+::::{.columns}
+::: {.column}
+![](images/rct_dag.webp)
+:::
+::: {.column}
+![](images/iv_dag.webp)
+:::
+::: {.column .r-fit-text}
+Non-parametric Structural Causal Models highlight the aspects of the Data Generating processes that threaten the [__valid__]{.blue} construction of a causal claim. 
+:::
+::: {.column .r-fit-text}
+$$ Y \sim f_{Y}(Z, X, U_{Y})  $$
+$$ Z \sim f_{Z}(X, IV, U_{Z})$$
+$$ X \sim f_{X}(U_{X})$$
+$$ IV \sim f_{IV}(U_{IV})$$
+:::
+::::
+
+## Concrete Conception
+### Parametric Approximation via Regression
+
+::::{.columns}
+::: {.column}
+![](images/rct_dag.webp)
+:::
+::: {.column}
+![](images/iv_dag.webp)
+:::
+::: {.column .r-fit-text}
+$$ y \sim 1 + Z + u $$
+Regression Approximation to estimating [__valid__]{.blue} coefficients in systems of simultaneous equation.
+:::
+::: {.column .r-fit-text}
+$$ y \sim 1 + \widehat{Z} + u $$
+$$ \widehat{Z} \sim 1 + IV + u $$ 
+:::
+::::
+
+## The Bayesian Phrasing 
+
+::::{.columns}
+::: {.column .r-fit-text}
+$$\begin{align*}
+\left(
+\begin{array}{cc}
+Y \\
+Z
+\end{array}
+\right)
+& \sim
+\text{MultiNormal}(\color{green} \mu, \color{purple} \Sigma) \\
+\color{green} \mu & = \left(
+\begin{array}{cc}
+\mu_{y} \\
+\mu_{z}
+\end{array}
+\right)
+=
+\left(
+\begin{array}{cc}
+\beta_{00} + \color{blue} \beta_{01}Z ... \\
+\beta_{10} + \beta_{11}IV ...
+\end{array}
+\right)
+\end{align*} 
+$$
+
+The treatment effect $\color{blue}\beta_{01}$ of is the primary quantity of interest
+
+::: {.fragment .fade-in}
+$$ \color{purple} \Sigma  = \begin{bmatrix}
+1 & \color{purple} \sigma \\
+\color{purple} \sigma & 1
+\end{bmatrix} 
+$$
+But the estimation depends on the multivariate realisation of the data
+:::
+
+:::
+
+::: {.column .r-fit-text}
+::: {.fragment .fade-in}
+- Even the "simple" IV design is a structural causal model.
+
+:::
+
+::: {.fragment .fade-in}
+- The crucial component is the covariance structure of the joint-distribution and the instrument's theoretical __validity__
+:::
+
+::: {.fragment .fade-in}
+- The Bayesian Estimation strategy estimates the IV model by seeking a parameterisation where the potential outcomes are conditionally exchangeable.
+
+$$ p((y_{1}, z_{1})^{T} ....(y_{q}, z_{q})^{T}) = \dfrac{p(YZ | \theta)p(\theta)}{\sum p_{i}(YZ)}  $$
+
+$$ = \dfrac{p( (y_{1}, z_{1})^{T} ....(y_{q}, z_{q})^{T}) | \Sigma , \beta)p(\Sigma , \beta) }{\sum p_{i}(YZ)} $$
+:::
+:::
+
+::::
+
+## Implementation in Code
+### PyMC model context
+```{.python code-line-numbers="|4-15|18-23|30-34|42-47"}
+## PyMC model context
+with pm.Model() as iv_model:
+    # Initialising Regression Priors
+    beta_t = pm.Normal(
+        name="beta_t",
+        mu=priors["mus_t"],
+        sigma=priors["sigma_t"],
+        dims="instruments")
+
+    beta_z = pm.Normal(
+        name="beta_z",
+        mu=priors["mus_z"],
+        sigma=priors["sigma_z"],
+        dims="covariates")
+    
+    # Covariance Prior Parameters
+    sd_dist = pm.Exponential.dist(priors["lkj_sd"], shape=2)
+    chol, corr, sigmas = pm.LKJCholeskyCov(
+        name="chol_cov",
+        eta=priors["eta"],
+        n=2,
+        sd_dist=sd_dist,
+    )
+    # compute and store the covariance matrix
+    pm.Deterministic(name="cov", 
+    var=pt.dot(l=chol, r=chol.T))
+
+    # --- Parameterization ---
+    # focal regression
+    mu_y = pm.Deterministic(name="mu_y", 
+    var=pm.math.dot(X, beta_z))
+    # instrumental regression
+    mu_t = pm.Deterministic(name="mu_t", 
+    var=pm.math.dot(Z, beta_t))
+    
+    # Stack regressions for MvNormal
+    mu = pm.Deterministic(name="mu", 
+    var=pt.stack(tensors=(mu_y, mu_t), 
+    axis=1))
+
+    # --- Likelihood ---
+    pm.MvNormal(
+        name="likelihood",
+        mu=mu,
+        chol=chol,
+        observed=np.stack(arrays=(y, t), axis=1),
+        shape=(X.shape[0], 2),
+    )
+
+```
+
+## Functional Form and the State of the World
+::::{.columns}
+::: {.column .r-fit-text}
+Causal Structural Models generate valid causal claims just when: 
+    
+- the mathematical model is apt to account for risks of confounding in the assumed data generating process
+- the model parameters or theoretical estimands can be properly identified and estimated with the data available.
+- the assumed data generating process is a close enough approximation of the actual process
+:::
+
+::: {.column .r-fit-text}
+
+![Theory and Credibility](images/framework.png)
+:::
+
+::: {.fragment .fade-in}
+The set of admissable causal claims is constrained by the __[substantive extra-statistical requirement]{.blue}__ to map model to the world
+:::
+
+::::
+# Measurement Models
+
+## Measurement Models in SCMs
+
+::::{.columns}
+::: {.column .r-fit-text}
+$$ ADJUST \sim f_{ADJUST}(motiv, harm, stabi, U)  $$
+$$ RISK \sim f_{RISK}(ppsych, ses, verbal, U)$$
+$$ ACHIEVE \sim f_{ACHIEVE}(read, arith, spell, U)$$
+
+Non-parametric phrasing of SCMs under-specifies the relations of interest. 
+
+CFA models estimates the multivariate correlation structure with a __[focus]{.blue}__ on relations between the factors.
+:::
+::: {.column .r-fit-text}
+![](images/factor_structure.png)
+:::
+::::
+
+## Measurement Models {.smaller}
+### and Factor Structures
+
+The Confirmatory Factor Model can also be phrased in the Bayesian way.
+
+
+$$p(\mathbf{x_{i}}^{T}.....\mathbf{x_{q}}^{T} | \text{Ksi}, \Psi, \tau, \Lambda) \sim Normal(\tau + \Lambda\cdot \text{Ksi}, \Psi)$$
+
+$$ \lambda_{11} ..... \lambda_{21} ..... \lambda_{31} \in \Lambda $$
+```{python}
+import pandas as pd
+
+def header_style():
+    return [
+        "color: red; font-weight: bold;",
+        "color: blue; font-weight: bold;",
+        "color: green; font-weight: bold;"
+    ]
+
+df = pd.read_csv('../../scratchwork/sem_data.csv')
+df.head().style.set_properties(**{'background-color': 'lightcoral'}, subset=['harm', 'motiv', 'stabi']).set_properties(**{'background-color': 'moccasin'}, subset=['ppsych', 'ses', 'verbal'])
+
+```
+
+## Measurement Model Graph
+
+![](images/mm.png)
+
+
+
+## Measurement Models in PyMC
+
+```{.python code-line-numbers="|2-9|11-19|24-27|29-33|35-46|49-57"}
+
+coords = {
+    "obs": list(range(len(df))),
+    "indicators": ["motiv", "harm", "stabi", "verbal", "ses", "ppsych", "read", "arith", "spell"],
+    "indicators_1": ["motiv", "harm", "stabi"],
+    "indicators_2": ["verbal", "ses", "ppsych"],
+    "indicators_3": ["read", "arith", "spell"],
+    "latent": ["adjust", "risk", "achieve"],
+}
+
+def make_lambda(indicators, name='lambdas1', priors=[1, 10]):
+    """ Takes an argument indicators which is a string in the coords dict"""
+    temp_name = name + '_'
+    lambdas_ = pm.Normal(temp_name, priors[0], priors[1], dims=(indicators))
+    # Force a fixed scale on the factor loadings for factor 1
+    lambdas_1 = pm.Deterministic(
+        name, pt.set_subtensor(lambdas_[0], 1), dims=(indicators)
+    )
+    return lambdas_1
+
+obs_idx = list(range(len(df)))
+with pm.Model(coords=coords) as model:
+
+    # Set up Factor Loadings
+    lambdas_1 = make_lambda('indicators_1', 'lambdas1')
+    lambdas_2 = make_lambda('indicators_2', 'lambdas2', priors=[1, 2])
+    lambdas_3 = make_lambda('indicators_3', 'lambdas3')
+    
+    # Specify covariance structure between latent factors
+    sd_dist = pm.Exponential.dist(1.0, shape=3)
+    chol, _, _ = pm.LKJCholeskyCov("chol_cov", n=3, eta=2, sd_dist=sd_dist, compute_corr=True)
+    ksi = pm.MvNormal("ksi", 0, chol=chol, dims=("obs", "latent"))
+
+    # Construct Pseudo Observation matrix based on Factor Loadings
+    m1 = ksi[obs_idx, 0] * lambdas_1[0]
+    m2 = ksi[obs_idx, 0] * lambdas_1[1]
+    m3 = ksi[obs_idx, 0] * lambdas_1[2]
+    m4 = ksi[obs_idx, 1] * lambdas_2[0]
+    m5 = ksi[obs_idx, 1] * lambdas_2[1]
+    m6 = ksi[obs_idx, 1] * lambdas_2[2]
+    m7 = ksi[obs_idx, 2] * lambdas_3[0]
+    m8 = ksi[obs_idx, 2] * lambdas_3[1]
+    m9 = ksi[obs_idx, 2] * lambdas_3[2]
+
+    mu = pm.Deterministic("mu", pm.math.stack([m1, m2, m3, m4, m5, m6, m7, m8, m9]).T)
+
+    ## Error Terms
+    Psi = pm.InverseGamma("Psi", 2, 13, dims="indicators")
+
+    # Likelihood
+    _ = pm.Normal(
+        "likelihood",
+        mu,
+        Psi,
+        observed=df[coords['indicators']].values,
+    )
+
+
+```
+## Model Estimates: Factor Loadings
+
+::: {.columns}
+::: {.column}
+![](images/factorweights.png)
+The weights accorded to each of the indicator metrics on each of the specified factors.
+:::
+::: {.column}
+![](images/mm_traceplot.png)
+Healthy traceplots indicating reasonable exploration of the sample space
+:::
+::: 
+
+## Model Fit: Covariance Structures
+
+![](images/measuremodel_resids.png)
+
+## Model Fit: Posterior Predictive Checks
+
+![](images/measuremodel_ppc.png)
+
+## Model Implications: Latent Scores
+
+![](images/latent_measures.png)
+
+What are the relations between these Latent components?
+
+# Structural Equation Models
+
+## Adding Structural Components
+
+```{.python}
+# measurement model
+adjust =~ motiv + harm + stabi
+risk =~ verbal + ses + ppsych
+achieve =~ read + arith + spell
+
+# focal regressions
+adjust ~ risk 
+achieve ~ adjust + risk
+```
+
+$$SEM : \underbrace{\text{Ksi}^{*}}_{latent} = \underbrace{\mathbf{B}\text{Ksi}}_{structural \\ component} + \underbrace{\Lambda\cdot \text{Ksi}}_{measurement \\ component}$$
+
+
+$$CFA : \underbrace{\text{Ksi}^{*}}_{latent} = \underbrace{\mathbf{0}\text{Ksi}}_{structural \\ component} + \underbrace{\Lambda\cdot \text{Ksi}}_{measurement \\ component}$$
+
+## The Structural Matrix
+
+$$ \overbrace{\text{Ksi}}^{latent} = \begin{bmatrix} \overbrace{2.5}^{adjust} & \overbrace{3.2}^{risk} & \overbrace{7.3}^{achieve} \\ ... & ... & ...
+\\ ... & ... & ...  \\ ... & ... \\ 3.9 & ...\end{bmatrix} \begin{bmatrix} 0 & \beta_{12} & \beta_{13} 
+\\ \beta_{21} & 0 & \beta_{23} 
+\\ \beta_{31} & \beta_{32} & 0 \end{bmatrix} = \underbrace{\mathbf{B}}_{Regression \\ Coefficients} $$
+
+::: {.fragment .fade-in}
+![](images/B_matrix_target.png)
+:::
+
+## The Generative Model in PyMC
+
+```{.python code-line-numbers="|25-35|36-47"}
+
+coords = {
+    "obs": list(range(len(df))),
+    "indicators": ["motiv", "harm", "stabi", "verbal", "ses", "ppsych", "read", "arith", "spell"],
+    "indicators_1": ["motiv", "harm", "stabi"],
+    "indicators_2": ["verbal", "ses", "ppsych"],
+    "indicators_3": ["read", "arith", "spell"],
+    "latent": ["adjust", "risk", "achieve"],
+    "paths": ["risk->adjust", "risk-->achieve", "adjust-->achieve"]
+    }
+
+    obs_idx = list(range(len(df)))
+    with pm.Model(coords=coords) as model:
+
+        # Set up Factor Loadings
+        lambdas_1 = make_lambda('indicators_1', 'lambdas1', priors=[1, .5]) #adjust
+        lambdas_2 = make_lambda('indicators_2', 'lambdas2', priors=[1, .5]) # risk
+        lambdas_3 = make_lambda('indicators_3', 'lambdas3', priors=[1, .5]) # achieve
+        
+        # Specify covariance structure between latent factors
+        sd_dist = pm.Exponential.dist(1.0, shape=3)
+        chol, _, _ = pm.LKJCholeskyCov("chol_cov", n=3, eta=2, sd_dist=sd_dist, compute_corr=True)
+        ksi = pm.MvNormal("ksi", 0, chol=chol, dims=("obs", "latent"))
+
+        ## Build Regression Components
+        coefs = pm.Normal('betas', 0, .5, dims='paths')
+        zeros = pt.zeros((3, 3))
+        ## adjust ~ risk
+        zeros1 = pt.set_subtensor(zeros[1, 0], coefs[0])
+        ## achieve ~ risk + adjust
+        zeros2 = pt.set_subtensor(zeros1[1, 2], coefs[1])
+        coefs_ = pt.set_subtensor(zeros2[0, 2], coefs[2])
+        
+        structural_relations = pm.Deterministic('endogenous_structural_paths', 
+        pm.math.dot(ksi, coefs_))
+
+        # Construct Pseudo Observation matrix based on Factor Loadings
+        m1 = ksi[obs_idx, 0] * lambdas_1[0] +  structural_relations[obs_idx, 0] #adjust
+        m2 = ksi[obs_idx, 0] * lambdas_1[1] +  structural_relations[obs_idx, 0] #adjust
+        m3 = ksi[obs_idx, 0] * lambdas_1[2] +  structural_relations[obs_idx, 0] #adjust
+        m4 = ksi[obs_idx, 1] * lambdas_2[0] +  structural_relations[obs_idx, 1]  #risk
+        m5 = ksi[obs_idx, 1] * lambdas_2[1] +  structural_relations[obs_idx, 1]  #risk
+        m6 = ksi[obs_idx, 1] * lambdas_2[2] +  structural_relations[obs_idx, 1]  #risk
+        m7 = ksi[obs_idx, 2] * lambdas_3[0] +  structural_relations[obs_idx, 2]  #achieve
+        m8 = ksi[obs_idx, 2] * lambdas_3[1] +  structural_relations[obs_idx, 2]  #achieve
+        m9 = ksi[obs_idx, 2] * lambdas_3[2] +  structural_relations[obs_idx, 2]  #achieve
+
+        mu = pm.Deterministic("mu", pm.math.stack([m1, m2, m3, m4, m5, m6, m7, m8, m9]).T)
+
+
+        ## Error Terms
+        Psi = pm.InverseGamma("Psi", 2, 13, dims="indicators")
+
+        # Likelihood
+        _ = pm.Normal(
+            "likelihood",
+            mu,
+            Psi,
+            observed=df[coords['indicators']].values,
+        )
+
+
+```
+
+## Model Comparison
+
+:::: {.columns}
+::: {.column}
+![Local Model checks](images/resids_sem.png)
+:::
+::: {.column}
+![Model ranked on Leave one out cross validation](images/model_compare.png)
+:::
+SEM model achieves better performance on the local and global model checks than the CFA model
+::::
+
+# Sensitivity Analysis and the Do-Operator
+
+

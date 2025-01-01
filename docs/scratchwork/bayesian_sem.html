@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Examined Algorithms – bayesian_sem</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Examined Algorithms</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../blog.html">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../opensource.html">
+ <span class="menu-text">Open Source Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../talks.html">
+ <span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../resume/Nathaniel_Forde_Resume.pdf">
+ <span class="menu-text">CV</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/NathanielF"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/forde_nathaniel"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-reader-toggle nav-link" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Logic</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/certain_things/Public/Logic/Introduction - Logic Topics.html" class="sidebar-item-text sidebar-link">Introduction - Logic Topics</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Philosophy</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/certain_things/Public/Philosophy/Introduction - Philosophy Topics.html" class="sidebar-item-text sidebar-link">Introduction - Philosophy Topics</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/certain_things/Public/Philosophy/Thinking about Statistics.html" class="sidebar-item-text sidebar-link">Statistical Models and the Problem of Induction</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/certain_things/Public/Philosophy/Sorites Paradox and Survival Analysis.html" class="sidebar-item-text sidebar-link">The Sorites Paradox</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Statistics</a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/certain_things/Public/Statistics/Introduction - Statistics Topics.html" class="sidebar-item-text sidebar-link">Introduction - Statistics Topics</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../notes/certain_things/Public/Statistics/Analogies between Missing Data and Causal Inference.html" class="sidebar-item-text sidebar-link">Taxonomies of Missing-ness</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#measurment-model" id="toc-measurment-model" class="nav-link active" data-scroll-target="#measurment-model">Measurment Model</a></li>
+  <li><a href="#sem-model" id="toc-sem-model" class="nav-link" data-scroll-target="#sem-model">SEM Model</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pymc <span class="im">as</span> pm</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytensor <span class="im">import</span> tensor <span class="im">as</span> pt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> arviz <span class="im">as</span> az</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'sem_data.csv'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>motiv</th>
+      <th>harm</th>
+      <th>stabi</th>
+      <th>ppsych</th>
+      <th>ses</th>
+      <th>verbal</th>
+      <th>read</th>
+      <th>arith</th>
+      <th>spell</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-7.907122</td>
+      <td>-5.075312</td>
+      <td>-3.138836</td>
+      <td>-17.800210</td>
+      <td>4.766450</td>
+      <td>-3.633360</td>
+      <td>-3.488981</td>
+      <td>-9.989121</td>
+      <td>-6.567873</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.751478</td>
+      <td>-4.155847</td>
+      <td>3.520752</td>
+      <td>7.009367</td>
+      <td>-6.048681</td>
+      <td>-7.693461</td>
+      <td>-4.520552</td>
+      <td>8.196238</td>
+      <td>8.778973</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>14.472570</td>
+      <td>-4.540677</td>
+      <td>4.070600</td>
+      <td>23.734260</td>
+      <td>-16.970670</td>
+      <td>-3.909941</td>
+      <td>-4.818170</td>
+      <td>7.529984</td>
+      <td>-5.688716</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>-1.165421</td>
+      <td>-5.668406</td>
+      <td>2.600437</td>
+      <td>1.493158</td>
+      <td>1.396363</td>
+      <td>21.409450</td>
+      <td>-3.138441</td>
+      <td>5.730547</td>
+      <td>-2.915676</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-4.222899</td>
+      <td>-10.072150</td>
+      <td>-6.030737</td>
+      <td>-5.985864</td>
+      <td>-18.376400</td>
+      <td>-1.438816</td>
+      <td>-2.009742</td>
+      <td>-0.623953</td>
+      <td>-1.024624</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<section id="measurment-model" class="level2">
+<h2 class="anchored" data-anchor-id="measurment-model">Measurment Model</h2>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"obs"</span>: <span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(df))),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"indicators"</span>: [<span class="st">"motiv"</span>, <span class="st">"harm"</span>, <span class="st">"stabi"</span>, <span class="st">"verbal"</span>, <span class="st">"ses"</span>, <span class="st">"ppsych"</span>, <span class="st">"read"</span>, <span class="st">"arith"</span>, <span class="st">"spell"</span>],</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"indicators_1"</span>: [<span class="st">"motiv"</span>, <span class="st">"harm"</span>, <span class="st">"stabi"</span>],</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"indicators_2"</span>: [<span class="st">"verbal"</span>, <span class="st">"ses"</span>, <span class="st">"ppsych"</span>],</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"indicators_3"</span>: [<span class="st">"read"</span>, <span class="st">"arith"</span>, <span class="st">"spell"</span>],</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"latent"</span>: [<span class="st">"adjust"</span>, <span class="st">"risk"</span>, <span class="st">"achieve"</span>],</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_lambda(indicators, name<span class="op">=</span><span class="st">'lambdas1'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">10</span>]):</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" Takes an argument indicators which is a string in the coords dict"""</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    temp_name <span class="op">=</span> name <span class="op">+</span> <span class="st">'_'</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    lambdas_ <span class="op">=</span> pm.Normal(temp_name, priors[<span class="dv">0</span>], priors[<span class="dv">1</span>], dims<span class="op">=</span>(indicators))</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Force a fixed scale on the factor loadings for factor 1</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    lambdas_1 <span class="op">=</span> pm.Deterministic(</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        name, pt.set_subtensor(lambdas_[<span class="dv">0</span>], <span class="dv">1</span>), dims<span class="op">=</span>(indicators)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> lambdas_1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>obs_idx <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(df)))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model:</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set up Factor Loadings</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    lambdas_1 <span class="op">=</span> make_lambda(<span class="st">'indicators_1'</span>, <span class="st">'lambdas1'</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    lambdas_2 <span class="op">=</span> make_lambda(<span class="st">'indicators_2'</span>, <span class="st">'lambdas2'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>])</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    lambdas_3 <span class="op">=</span> make_lambda(<span class="st">'indicators_3'</span>, <span class="st">'lambdas3'</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Specify covariance structure between latent factors</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    kappa <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    sd_dist <span class="op">=</span> pm.Exponential.dist(<span class="fl">1.0</span>, shape<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    chol, _, _ <span class="op">=</span> pm.LKJCholeskyCov(<span class="st">"chol_cov"</span>, n<span class="op">=</span><span class="dv">3</span>, eta<span class="op">=</span><span class="dv">2</span>, sd_dist<span class="op">=</span>sd_dist, compute_corr<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    ksi <span class="op">=</span> pm.MvNormal(<span class="st">"ksi"</span>, kappa, chol<span class="op">=</span>chol, dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"latent"</span>))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Construct Pseudo Observation matrix based on Factor Loadings</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    m1 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">0</span>]</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    m2 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">1</span>]</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    m3 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">2</span>]</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    m4 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">0</span>]</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    m5 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">1</span>]</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    m6 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">2</span>]</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    m7 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">0</span>]</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    m8 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">1</span>]</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    m9 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">2</span>]</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    mu <span class="op">=</span> pm.Deterministic(<span class="st">"mu"</span>, pm.math.stack([m1, m2, m3, m4, m5, m6, m7, m8, m9]).T)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">## Error Terms</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    Psi <span class="op">=</span> pm.InverseGamma(<span class="st">"Psi"</span>, <span class="dv">2</span>, <span class="dv">13</span>, dims<span class="op">=</span><span class="st">"indicators"</span>)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Likelihood</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    _ <span class="op">=</span> pm.Normal(</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">"likelihood"</span>,</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        mu,</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        Psi,</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        observed<span class="op">=</span>df[coords[<span class="st">'indicators'</span>]].values,</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    idata <span class="op">=</span> pm.sample(</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>        draws<span class="op">=</span><span class="dv">1000</span>,</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>        chains<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>        nuts_sampler<span class="op">=</span><span class="st">"numpyro"</span>, target_accept<span class="op">=</span><span class="fl">0.95</span>, idata_kwargs<span class="op">=</span>{<span class="st">"log_likelihood"</span>: <span class="va">True</span>}, </span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>        tune<span class="op">=</span><span class="dv">2000</span>,</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>        random_seed<span class="op">=</span><span class="dv">150</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>    idata.extend(pm.sample_posterior_predictive(idata))</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>pm.model_to_graphviz(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"365bb91f9d6040179bedd5b59f249ba8","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"65b1279934e64a28836a0fb302291c2e","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d3a8139b9cce4a73bebb0ef8976ca72d","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d6dd9c08ed4741db828e876c9f1e0472","version_major":2,"version_minor":0}
+</script>
+</div>
+</div>
+<div class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>az.summary(idata, var_names<span class="op">=</span>[<span class="st">"lambdas1"</span>, <span class="st">"lambdas2"</span>, <span class="st">"lambdas3"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="31">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>mean</th>
+      <th>sd</th>
+      <th>hdi_3%</th>
+      <th>hdi_97%</th>
+      <th>mcse_mean</th>
+      <th>mcse_sd</th>
+      <th>ess_bulk</th>
+      <th>ess_tail</th>
+      <th>r_hat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>lambdas1[motiv]</th>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>1.000</td>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>4000.0</td>
+      <td>4000.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>lambdas1[harm]</th>
+      <td>0.895</td>
+      <td>0.043</td>
+      <td>0.814</td>
+      <td>0.973</td>
+      <td>0.002</td>
+      <td>0.001</td>
+      <td>521.0</td>
+      <td>1401.0</td>
+      <td>1.01</td>
+    </tr>
+    <tr>
+      <th>lambdas1[stabi]</th>
+      <td>0.703</td>
+      <td>0.047</td>
+      <td>0.617</td>
+      <td>0.791</td>
+      <td>0.002</td>
+      <td>0.001</td>
+      <td>801.0</td>
+      <td>1571.0</td>
+      <td>1.01</td>
+    </tr>
+    <tr>
+      <th>lambdas2[verbal]</th>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>1.000</td>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>4000.0</td>
+      <td>4000.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>lambdas2[ses]</th>
+      <td>0.842</td>
+      <td>0.087</td>
+      <td>0.679</td>
+      <td>1.000</td>
+      <td>0.004</td>
+      <td>0.003</td>
+      <td>453.0</td>
+      <td>1294.0</td>
+      <td>1.01</td>
+    </tr>
+    <tr>
+      <th>lambdas2[ppsych]</th>
+      <td>-0.801</td>
+      <td>0.084</td>
+      <td>-0.969</td>
+      <td>-0.653</td>
+      <td>0.004</td>
+      <td>0.003</td>
+      <td>521.0</td>
+      <td>1276.0</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <th>lambdas3[read]</th>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>1.000</td>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>4000.0</td>
+      <td>4000.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>lambdas3[arith]</th>
+      <td>0.841</td>
+      <td>0.035</td>
+      <td>0.773</td>
+      <td>0.906</td>
+      <td>0.001</td>
+      <td>0.001</td>
+      <td>1955.0</td>
+      <td>2586.0</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <th>lambdas3[spell]</th>
+      <td>0.981</td>
+      <td>0.029</td>
+      <td>0.927</td>
+      <td>1.037</td>
+      <td>0.001</td>
+      <td>0.001</td>
+      <td>1123.0</td>
+      <td>1700.0</td>
+      <td>1.00</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>az.plot_trace(idata, var_names<span class="op">=</span>[<span class="st">'lambdas1'</span>, <span class="st">'lambdas2'</span>, <span class="st">'lambdas3'</span>])</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/density_utils.py:488: UserWarning: Your data appears to have a single value or no finite values
+  warnings.warn("Your data appears to have a single value or no finite values")
+/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/density_utils.py:488: UserWarning: Your data appears to have a single value or no finite values
+  warnings.warn("Your data appears to have a single value or no finite values")
+/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/density_utils.py:488: UserWarning: Your data appears to have a single value or no finite values
+  warnings.warn("Your data appears to have a single value or no finite values")</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="bayesian_sem_files/figure-html/cell-7-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_factor_loadings_df(idata):</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    factor_loadings <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        az.summary(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>            idata, var_names<span class="op">=</span>[<span class="st">"lambdas1"</span>, <span class="st">"lambdas2"</span>, <span class="st">"lambdas3"</span>]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        )[<span class="st">"mean"</span>]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    ).reset_index()</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    factor_loadings[<span class="st">"factor"</span>] <span class="op">=</span> factor_loadings[<span class="st">"index"</span>].<span class="bu">str</span>.split(<span class="st">"["</span>, expand<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    factor_loadings.columns <span class="op">=</span> [<span class="st">"factor_loading"</span>, <span class="st">"factor_loading_weight"</span>, <span class="st">"factor"</span>]</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    factor_loadings[<span class="st">"factor_loading_weight_sq"</span>] <span class="op">=</span> factor_loadings[<span class="st">"factor_loading_weight"</span>] <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    factor_loadings[<span class="st">"sum_sq_loadings"</span>] <span class="op">=</span> factor_loadings.groupby(<span class="st">"factor"</span>)[</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"factor_loading_weight_sq"</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    ].transform(<span class="bu">sum</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    factor_loadings[<span class="st">"error_variances"</span>] <span class="op">=</span> az.summary(idata, var_names<span class="op">=</span>[<span class="st">"Psi"</span>])[<span class="st">"mean"</span>].values</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    factor_loadings[<span class="st">"total_indicator_variance"</span>] <span class="op">=</span> (</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        factor_loadings[<span class="st">"factor_loading_weight_sq"</span>] <span class="op">+</span> factor_loadings[<span class="st">"error_variances"</span>]</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    factor_loadings[<span class="st">"total_variance"</span>] <span class="op">=</span> factor_loadings[<span class="st">"total_indicator_variance"</span>].<span class="bu">sum</span>()</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    factor_loadings[<span class="st">"indicator_explained_variance"</span>] <span class="op">=</span> (</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        factor_loadings[<span class="st">"factor_loading_weight_sq"</span>] <span class="op">/</span> factor_loadings[<span class="st">"total_variance"</span>]</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    factor_loadings[<span class="st">"factor_explained_variance"</span>] <span class="op">=</span> (</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        factor_loadings[<span class="st">"sum_sq_loadings"</span>] <span class="op">/</span> factor_loadings[<span class="st">"total_variance"</span>]</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    num_cols <span class="op">=</span> [c <span class="cf">for</span> c <span class="kw">in</span> factor_loadings.columns <span class="cf">if</span> <span class="kw">not</span> c <span class="kw">in</span> [<span class="st">"factor_loading"</span>, <span class="st">"factor"</span>]]</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> factor_loadings</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_colwidth"</span>, <span class="dv">15</span>)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>factor_loadings <span class="op">=</span> make_factor_loadings_df(idata)</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>num_cols <span class="op">=</span> [c <span class="cf">for</span> c <span class="kw">in</span> factor_loadings.columns <span class="cf">if</span> <span class="kw">not</span> c <span class="kw">in</span> [<span class="st">"factor_loading"</span>, <span class="st">"factor"</span>]]</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>factor_loadings.style.<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>, subset<span class="op">=</span>num_cols).background_gradient(</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    axis<span class="op">=</span><span class="dv">0</span>, subset<span class="op">=</span>[<span class="st">"indicator_explained_variance"</span>, <span class="st">"factor_explained_variance"</span>]</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/var/folders/__/ng_3_9pn1f11ftyml_qr69vh0000gn/T/ipykernel_19714/2929805399.py:12: FutureWarning: The provided callable &lt;built-in function sum&gt; is currently using SeriesGroupBy.sum. In a future version of pandas, the provided callable will be used directly. To keep current behavior pass the string "sum" instead.
+  ].transform(sum)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+
+<style type="text/css">
+#T_abfcb_row0_col8, #T_abfcb_row3_col8, #T_abfcb_row6_col8, #T_abfcb_row6_col9, #T_abfcb_row7_col9, #T_abfcb_row8_col9 {
+  background-color: #023858;
+  color: #f1f1f1;
+}
+#T_abfcb_row0_col9, #T_abfcb_row1_col9, #T_abfcb_row2_col8, #T_abfcb_row2_col9 {
+  background-color: #fff7fb;
+  color: #000000;
+}
+#T_abfcb_row1_col8 {
+  background-color: #3f93c2;
+  color: #f1f1f1;
+}
+#T_abfcb_row3_col9, #T_abfcb_row4_col9, #T_abfcb_row5_col9 {
+  background-color: #e7e3f0;
+  color: #000000;
+}
+#T_abfcb_row4_col8 {
+  background-color: #93b5d6;
+  color: #000000;
+}
+#T_abfcb_row5_col8 {
+  background-color: #c2cbe2;
+  color: #000000;
+}
+#T_abfcb_row7_col8 {
+  background-color: #94b6d7;
+  color: #000000;
+}
+#T_abfcb_row8_col8 {
+  background-color: #034c78;
+  color: #f1f1f1;
+}
+</style>
+<table id="T_abfcb">
+  <thead>
+    <tr>
+      <th class="blank level0">&nbsp;</th>
+      <th id="T_abfcb_level0_col0" class="col_heading level0 col0">factor_loading</th>
+      <th id="T_abfcb_level0_col1" class="col_heading level0 col1">factor_loading_weight</th>
+      <th id="T_abfcb_level0_col2" class="col_heading level0 col2">factor</th>
+      <th id="T_abfcb_level0_col3" class="col_heading level0 col3">factor_loading_weight_sq</th>
+      <th id="T_abfcb_level0_col4" class="col_heading level0 col4">sum_sq_loadings</th>
+      <th id="T_abfcb_level0_col5" class="col_heading level0 col5">error_variances</th>
+      <th id="T_abfcb_level0_col6" class="col_heading level0 col6">total_indicator_variance</th>
+      <th id="T_abfcb_level0_col7" class="col_heading level0 col7">total_variance</th>
+      <th id="T_abfcb_level0_col8" class="col_heading level0 col8">indicator_explained_variance</th>
+      <th id="T_abfcb_level0_col9" class="col_heading level0 col9">factor_explained_variance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_abfcb_level0_row0" class="row_heading level0 row0">0</th>
+      <td id="T_abfcb_row0_col0" class="data row0 col0">lambdas1[motiv]</td>
+      <td id="T_abfcb_row0_col1" class="data row0 col1">1.000</td>
+      <td id="T_abfcb_row0_col2" class="data row0 col2">lambdas1</td>
+      <td id="T_abfcb_row0_col3" class="data row0 col3">1.000</td>
+      <td id="T_abfcb_row0_col4" class="data row0 col4">2.295</td>
+      <td id="T_abfcb_row0_col5" class="data row0 col5">3.676</td>
+      <td id="T_abfcb_row0_col6" class="data row0 col6">4.676</td>
+      <td id="T_abfcb_row0_col7" class="data row0 col7">60.931</td>
+      <td id="T_abfcb_row0_col8" class="data row0 col8">0.016</td>
+      <td id="T_abfcb_row0_col9" class="data row0 col9">0.038</td>
+    </tr>
+    <tr>
+      <th id="T_abfcb_level0_row1" class="row_heading level0 row1">1</th>
+      <td id="T_abfcb_row1_col0" class="data row1 col0">lambdas1[harm]</td>
+      <td id="T_abfcb_row1_col1" class="data row1 col1">0.895</td>
+      <td id="T_abfcb_row1_col2" class="data row1 col2">lambdas1</td>
+      <td id="T_abfcb_row1_col3" class="data row1 col3">0.801</td>
+      <td id="T_abfcb_row1_col4" class="data row1 col4">2.295</td>
+      <td id="T_abfcb_row1_col5" class="data row1 col5">5.623</td>
+      <td id="T_abfcb_row1_col6" class="data row1 col6">6.424</td>
+      <td id="T_abfcb_row1_col7" class="data row1 col7">60.931</td>
+      <td id="T_abfcb_row1_col8" class="data row1 col8">0.013</td>
+      <td id="T_abfcb_row1_col9" class="data row1 col9">0.038</td>
+    </tr>
+    <tr>
+      <th id="T_abfcb_level0_row2" class="row_heading level0 row2">2</th>
+      <td id="T_abfcb_row2_col0" class="data row2 col0">lambdas1[stabi]</td>
+      <td id="T_abfcb_row2_col1" class="data row2 col1">0.703</td>
+      <td id="T_abfcb_row2_col2" class="data row2 col2">lambdas1</td>
+      <td id="T_abfcb_row2_col3" class="data row2 col3">0.494</td>
+      <td id="T_abfcb_row2_col4" class="data row2 col4">2.295</td>
+      <td id="T_abfcb_row2_col5" class="data row2 col5">7.605</td>
+      <td id="T_abfcb_row2_col6" class="data row2 col6">8.099</td>
+      <td id="T_abfcb_row2_col7" class="data row2 col7">60.931</td>
+      <td id="T_abfcb_row2_col8" class="data row2 col8">0.008</td>
+      <td id="T_abfcb_row2_col9" class="data row2 col9">0.038</td>
+    </tr>
+    <tr>
+      <th id="T_abfcb_level0_row3" class="row_heading level0 row3">3</th>
+      <td id="T_abfcb_row3_col0" class="data row3 col0">lambdas2[verbal]</td>
+      <td id="T_abfcb_row3_col1" class="data row3 col1">1.000</td>
+      <td id="T_abfcb_row3_col2" class="data row3 col2">lambdas2</td>
+      <td id="T_abfcb_row3_col3" class="data row3 col3">1.000</td>
+      <td id="T_abfcb_row3_col4" class="data row3 col4">2.351</td>
+      <td id="T_abfcb_row3_col5" class="data row3 col5">6.915</td>
+      <td id="T_abfcb_row3_col6" class="data row3 col6">7.915</td>
+      <td id="T_abfcb_row3_col7" class="data row3 col7">60.931</td>
+      <td id="T_abfcb_row3_col8" class="data row3 col8">0.016</td>
+      <td id="T_abfcb_row3_col9" class="data row3 col9">0.039</td>
+    </tr>
+    <tr>
+      <th id="T_abfcb_level0_row4" class="row_heading level0 row4">4</th>
+      <td id="T_abfcb_row4_col0" class="data row4 col0">lambdas2[ses]</td>
+      <td id="T_abfcb_row4_col1" class="data row4 col1">0.842</td>
+      <td id="T_abfcb_row4_col2" class="data row4 col2">lambdas2</td>
+      <td id="T_abfcb_row4_col3" class="data row4 col3">0.709</td>
+      <td id="T_abfcb_row4_col4" class="data row4 col4">2.351</td>
+      <td id="T_abfcb_row4_col5" class="data row4 col5">8.027</td>
+      <td id="T_abfcb_row4_col6" class="data row4 col6">8.736</td>
+      <td id="T_abfcb_row4_col7" class="data row4 col7">60.931</td>
+      <td id="T_abfcb_row4_col8" class="data row4 col8">0.012</td>
+      <td id="T_abfcb_row4_col9" class="data row4 col9">0.039</td>
+    </tr>
+    <tr>
+      <th id="T_abfcb_level0_row5" class="row_heading level0 row5">5</th>
+      <td id="T_abfcb_row5_col0" class="data row5 col0">lambdas2[ppsych]</td>
+      <td id="T_abfcb_row5_col1" class="data row5 col1">-0.801</td>
+      <td id="T_abfcb_row5_col2" class="data row5 col2">lambdas2</td>
+      <td id="T_abfcb_row5_col3" class="data row5 col3">0.642</td>
+      <td id="T_abfcb_row5_col4" class="data row5 col4">2.351</td>
+      <td id="T_abfcb_row5_col5" class="data row5 col5">8.242</td>
+      <td id="T_abfcb_row5_col6" class="data row5 col6">8.884</td>
+      <td id="T_abfcb_row5_col7" class="data row5 col7">60.931</td>
+      <td id="T_abfcb_row5_col8" class="data row5 col8">0.011</td>
+      <td id="T_abfcb_row5_col9" class="data row5 col9">0.039</td>
+    </tr>
+    <tr>
+      <th id="T_abfcb_level0_row6" class="row_heading level0 row6">6</th>
+      <td id="T_abfcb_row6_col0" class="data row6 col0">lambdas3[read]</td>
+      <td id="T_abfcb_row6_col1" class="data row6 col1">1.000</td>
+      <td id="T_abfcb_row6_col2" class="data row6 col2">lambdas3</td>
+      <td id="T_abfcb_row6_col3" class="data row6 col3">1.000</td>
+      <td id="T_abfcb_row6_col4" class="data row6 col4">2.670</td>
+      <td id="T_abfcb_row6_col5" class="data row6 col5">3.409</td>
+      <td id="T_abfcb_row6_col6" class="data row6 col6">4.409</td>
+      <td id="T_abfcb_row6_col7" class="data row6 col7">60.931</td>
+      <td id="T_abfcb_row6_col8" class="data row6 col8">0.016</td>
+      <td id="T_abfcb_row6_col9" class="data row6 col9">0.044</td>
+    </tr>
+    <tr>
+      <th id="T_abfcb_level0_row7" class="row_heading level0 row7">7</th>
+      <td id="T_abfcb_row7_col0" class="data row7 col0">lambdas3[arith]</td>
+      <td id="T_abfcb_row7_col1" class="data row7 col1">0.841</td>
+      <td id="T_abfcb_row7_col2" class="data row7 col2">lambdas3</td>
+      <td id="T_abfcb_row7_col3" class="data row7 col3">0.707</td>
+      <td id="T_abfcb_row7_col4" class="data row7 col4">2.670</td>
+      <td id="T_abfcb_row7_col5" class="data row7 col5">6.168</td>
+      <td id="T_abfcb_row7_col6" class="data row7 col6">6.875</td>
+      <td id="T_abfcb_row7_col7" class="data row7 col7">60.931</td>
+      <td id="T_abfcb_row7_col8" class="data row7 col8">0.012</td>
+      <td id="T_abfcb_row7_col9" class="data row7 col9">0.044</td>
+    </tr>
+    <tr>
+      <th id="T_abfcb_level0_row8" class="row_heading level0 row8">8</th>
+      <td id="T_abfcb_row8_col0" class="data row8 col0">lambdas3[spell]</td>
+      <td id="T_abfcb_row8_col1" class="data row8 col1">0.981</td>
+      <td id="T_abfcb_row8_col2" class="data row8 col2">lambdas3</td>
+      <td id="T_abfcb_row8_col3" class="data row8 col3">0.962</td>
+      <td id="T_abfcb_row8_col4" class="data row8 col4">2.670</td>
+      <td id="T_abfcb_row8_col5" class="data row8 col5">3.951</td>
+      <td id="T_abfcb_row8_col6" class="data row8 col6">4.913</td>
+      <td id="T_abfcb_row8_col7" class="data row8 col7">60.931</td>
+      <td id="T_abfcb_row8_col8" class="data row8 col8">0.016</td>
+      <td id="T_abfcb_row8_col9" class="data row8 col9">0.044</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">9</span>))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>axs <span class="op">=</span> axs.flatten()</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>az.plot_energy(idata, ax<span class="op">=</span>axs[<span class="dv">0</span>])</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>az.plot_forest(idata, var_names<span class="op">=</span>[<span class="st">"lambdas1"</span>, <span class="st">"lambdas2"</span>, <span class="st">"lambdas3"</span>], combined<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>axs[<span class="dv">1</span>])<span class="op">;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="bayesian_sem_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>drivers <span class="op">=</span> coords[<span class="st">'indicators'</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_posterior_resids(idata, samples<span class="op">=</span><span class="dv">100</span>, metric<span class="op">=</span><span class="st">"cov"</span>):</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    resids <span class="op">=</span> []</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>):</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> metric <span class="op">==</span> <span class="st">"cov"</span>:</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            model_cov <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                az.extract(idata[<span class="st">"posterior_predictive"</span>])[<span class="st">"likelihood"</span>][:, :, i]</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            ).cov()</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            obs_cov <span class="op">=</span> df[drivers].cov()</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>            model_cov <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                az.extract(idata[<span class="st">"posterior_predictive"</span>])[<span class="st">"likelihood"</span>][:, :, i]</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>            ).corr()</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>            obs_cov <span class="op">=</span> df[drivers].corr()</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        model_cov.index <span class="op">=</span> obs_cov.index</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        model_cov.columns <span class="op">=</span> obs_cov.columns</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        residuals <span class="op">=</span> model_cov <span class="op">-</span> obs_cov</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        resids.append(residuals.values.flatten())</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    residuals_posterior <span class="op">=</span> pd.DataFrame(pd.DataFrame(resids).mean().values.reshape(<span class="dv">9</span>, <span class="dv">9</span>))</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    residuals_posterior.index <span class="op">=</span> obs_cov.index</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    residuals_posterior.columns <span class="op">=</span> obs_cov.index</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> residuals_posterior</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>residuals_posterior_cov <span class="op">=</span> get_posterior_resids(idata, <span class="dv">1000</span>)</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>residuals_posterior_corr <span class="op">=</span> get_posterior_resids(idata, <span class="dv">1000</span>, metric<span class="op">=</span><span class="st">"corr"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">10</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.triu(np.ones_like(residuals_posterior_corr, dtype<span class="op">=</span><span class="bu">bool</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> sns.heatmap(residuals_posterior_corr, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">"bwr"</span>, mask<span class="op">=</span>mask)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Residuals between Model Implied and Sample Correlations"</span>, fontsize<span class="op">=</span><span class="dv">25</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="bayesian_sem_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_ppc(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    idata,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    samples<span class="op">=</span><span class="dv">100</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    drivers<span class="op">=</span>drivers,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    dims<span class="op">=</span>(<span class="dv">3</span>, <span class="dv">3</span>),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    fig, axs <span class="op">=</span> plt.subplots(dims[<span class="dv">0</span>], dims[<span class="dv">1</span>], figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">10</span>))</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    axs <span class="op">=</span> axs.flatten()</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(drivers)):</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(samples):</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>            temp <span class="op">=</span> az.extract(idata[<span class="st">"posterior_predictive"</span>].sel({<span class="st">"likelihood_dim_3"</span>: i}))[</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">"likelihood"</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>            ].values[:, j]</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>            temp <span class="op">=</span> pd.DataFrame(temp, columns<span class="op">=</span>[<span class="st">"likelihood"</span>])</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> j <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>                axs[i].hist(df[drivers[i]], alpha<span class="op">=</span><span class="fl">0.3</span>, ec<span class="op">=</span><span class="st">"black"</span>, bins<span class="op">=</span><span class="dv">20</span>, label<span class="op">=</span><span class="st">"Observed Scores"</span>)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>                axs[i].hist(</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>                    temp[<span class="st">"likelihood"</span>], color<span class="op">=</span><span class="st">"purple"</span>, alpha<span class="op">=</span><span class="fl">0.1</span>, bins<span class="op">=</span><span class="dv">20</span>, label<span class="op">=</span><span class="st">"Predicted Scores"</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>                axs[i].hist(df[drivers[i]], alpha<span class="op">=</span><span class="fl">0.3</span>, ec<span class="op">=</span><span class="st">"black"</span>, bins<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>                axs[i].hist(temp[<span class="st">"likelihood"</span>], color<span class="op">=</span><span class="st">"purple"</span>, alpha<span class="op">=</span><span class="fl">0.1</span>, bins<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>            axs[i].set_title(<span class="ss">f"Posterior Predictive Checks </span><span class="sc">{</span>drivers[i]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>            axs[i].legend()</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="co">#make_ppc(idata)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="sem-model" class="level2">
+<h2 class="anchored" data-anchor-id="sem-model">SEM Model</h2>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> np.random.multivariate_normal([<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>], [[<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>], [<span class="dv">0</span>,<span class="dv">1</span>, <span class="dv">0</span>], [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>]], size<span class="op">=</span>(<span class="dv">500</span>))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> np.ones((<span class="dv">500</span>, <span class="dv">3</span>))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>betas <span class="op">=</span> np.zeros((<span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>betas[<span class="dv">1</span>, <span class="dv">0</span>] <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>betas[<span class="dv">1</span>, <span class="dv">2</span>] <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>betas[<span class="dv">0</span>, <span class="dv">2</span>] <span class="op">=</span> <span class="fl">0.7</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>B_matrix <span class="op">=</span> pd.DataFrame(betas, index<span class="op">=</span>[<span class="st">'adjust_coef'</span>, <span class="st">'risk_coef'</span>, <span class="st">'achieve_coef'</span>], columns<span class="op">=</span>[<span class="st">'adjust_target'</span>, <span class="st">'risk_target'</span>, <span class="st">'achieve_target'</span>])</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame(data, columns<span class="op">=</span>[<span class="st">'adjust'</span>, <span class="st">'risk'</span>, <span class="st">'achieve'</span>])</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>B_matrix</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>adjust_target</th>
+      <th>risk_target</th>
+      <th>achieve_target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>adjust_coef</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.7</td>
+    </tr>
+    <tr>
+      <th>risk_coef</th>
+      <td>0.5</td>
+      <td>0.0</td>
+      <td>0.5</td>
+    </tr>
+    <tr>
+      <th>achieve_coef</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>data.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>adjust</th>
+      <th>risk</th>
+      <th>achieve</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(np.dot(data, B_matrix)).head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.5</td>
+      <td>0.0</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.5</td>
+      <td>0.0</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.5</td>
+      <td>0.0</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.5</td>
+      <td>0.0</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.5</td>
+      <td>0.0</td>
+      <td>1.2</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>obs_idx <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(df)))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model:</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set up Factor Loadings</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    lambdas_1 <span class="op">=</span> make_lambda(<span class="st">'indicators_1'</span>, <span class="st">'lambdas1'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>]) <span class="co">#adjust</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    lambdas_2 <span class="op">=</span> make_lambda(<span class="st">'indicators_2'</span>, <span class="st">'lambdas2'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>]) <span class="co"># risk</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    lambdas_3 <span class="op">=</span> make_lambda(<span class="st">'indicators_3'</span>, <span class="st">'lambdas3'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>]) <span class="co"># achieve</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Specify covariance structure between latent factors</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    kappa <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    sd_dist <span class="op">=</span> pm.Exponential.dist(<span class="fl">1.0</span>, shape<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    chol, _, _ <span class="op">=</span> pm.LKJCholeskyCov(<span class="st">"chol_cov"</span>, n<span class="op">=</span><span class="dv">3</span>, eta<span class="op">=</span><span class="dv">2</span>, sd_dist<span class="op">=</span>sd_dist, compute_corr<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    ksi <span class="op">=</span> pm.MvNormal(<span class="st">"ksi"</span>, kappa, chol<span class="op">=</span>chol, dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"latent"</span>))</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    coefs <span class="op">=</span> pm.Normal(<span class="st">'betas'</span>, <span class="dv">0</span>, <span class="fl">.5</span>, size<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    zeros <span class="op">=</span> pt.zeros((<span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">## adjust ~ risk</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    zeros1 <span class="op">=</span> pt.set_subtensor(zeros[<span class="dv">1</span>, <span class="dv">0</span>], coefs[<span class="dv">0</span>])</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">## achieve ~ risk + adjust</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    zeros2 <span class="op">=</span> pt.set_subtensor(zeros1[<span class="dv">1</span>, <span class="dv">2</span>], coefs[<span class="dv">1</span>])</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    coefs_ <span class="op">=</span> pt.set_subtensor(zeros2[<span class="dv">0</span>, <span class="dv">2</span>], coefs[<span class="dv">2</span>])</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    structural_relations <span class="op">=</span> pm.Deterministic(<span class="st">'endogenous_structural_paths'</span>, pm.math.dot(ksi, coefs_))</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Construct Pseudo Observation matrix based on Factor Loadings</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    m1 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">0</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">0</span>] <span class="co">#adjust</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>    m2 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">1</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">0</span>] <span class="co">#adjust</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    m3 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">2</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">0</span>] <span class="co">#adjust</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    m4 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">0</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">1</span>]  <span class="co">#risk</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    m5 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">1</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">1</span>]  <span class="co">#risk</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>    m6 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">2</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">1</span>]  <span class="co">#risk</span></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>    m7 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">0</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">2</span>]  <span class="co">#achieve</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>    m8 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">1</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">2</span>]  <span class="co">#achieve</span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>    m9 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">2</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">2</span>]  <span class="co">#achieve</span></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>    mu <span class="op">=</span> pm.Deterministic(<span class="st">"mu"</span>, pm.math.stack([m1, m2, m3, m4, m5, m6, m7, m8, m9]).T)</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>    <span class="co">## Error Terms</span></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>    Psi <span class="op">=</span> pm.InverseGamma(<span class="st">"Psi"</span>, <span class="dv">2</span>, <span class="dv">13</span>, dims<span class="op">=</span><span class="st">"indicators"</span>)</span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Likelihood</span></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>    _ <span class="op">=</span> pm.Normal(</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>        <span class="st">"likelihood"</span>,</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>        mu,</span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>        Psi,</span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>        observed<span class="op">=</span>df[coords[<span class="st">'indicators'</span>]].values,</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>    idata <span class="op">=</span> pm.sample(</span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>        draws<span class="op">=</span><span class="dv">2500</span>,</span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>        chains<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>        <span class="co">#nuts_sampler="numpyro", </span></span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a>        target_accept<span class="op">=</span><span class="fl">0.90</span>, idata_kwargs<span class="op">=</span>{<span class="st">"log_likelihood"</span>: <span class="va">True</span>}, </span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>        random_seed<span class="op">=</span><span class="dv">150</span>,</span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a>        tune<span class="op">=</span><span class="dv">1000</span>,</span>
+<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a>    idata.extend(pm.sample_posterior_predictive(idata))</span>
+<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-59"><a href="#cb18-59" aria-hidden="true" tabindex="-1"></a>pm.model_to_graphviz(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Auto-assigning NUTS sampler...
+Initializing NUTS using jitter+adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [lambdas1_, lambdas2_, lambdas3_, chol_cov, ksi, betas, Psi]</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f836b1491a25402087fed77cb34028aa","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Sampling 4 chains for 1_000 tune and 2_500 draw iterations (4_000 + 10_000 draws total) took 161 seconds.
+There were 1 divergences after tuning. Increase `target_accept` or reparameterize.
+The rhat statistic is larger than 1.01 for some parameters. This indicates problems during sampling. See https://arxiv.org/abs/1903.08008 for details
+The effective sample size per chain is smaller than 100 for some parameters.  A higher number is needed for reliable rhat and ess computation. See https://arxiv.org/abs/1903.08008 for details
+Sampling: [likelihood]</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d7bc9923cda8406a96cbda89cdf71795","version_major":2,"version_minor":0}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<p><img src="bayesian_sem_files/figure-html/cell-16-output-7.svg" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>az.summary(idata, var_names<span class="op">=</span>[<span class="st">"lambdas1"</span>, <span class="st">"lambdas2"</span>, <span class="st">"lambdas3"</span>, <span class="st">"betas"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)
+/Users/nathanielforde/mambaforge/envs/bayesian_causal_book/lib/python3.10/site-packages/arviz/stats/diagnostics.py:596: RuntimeWarning: invalid value encountered in scalar divide
+  (between_chain_variance / within_chain_variance + num_samples - 1) / (num_samples)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>mean</th>
+      <th>sd</th>
+      <th>hdi_3%</th>
+      <th>hdi_97%</th>
+      <th>mcse_mean</th>
+      <th>mcse_sd</th>
+      <th>ess_bulk</th>
+      <th>ess_tail</th>
+      <th>r_hat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>lambdas1[motiv]</th>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>1.000</td>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>10000.0</td>
+      <td>10000.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>lambdas1[harm]</th>
+      <td>0.850</td>
+      <td>0.045</td>
+      <td>0.766</td>
+      <td>0.933</td>
+      <td>0.001</td>
+      <td>0.001</td>
+      <td>997.0</td>
+      <td>2361.0</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <th>lambdas1[stabi]</th>
+      <td>0.651</td>
+      <td>0.052</td>
+      <td>0.556</td>
+      <td>0.748</td>
+      <td>0.002</td>
+      <td>0.001</td>
+      <td>988.0</td>
+      <td>3122.0</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <th>lambdas2[verbal]</th>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>1.000</td>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>10000.0</td>
+      <td>10000.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>lambdas2[ses]</th>
+      <td>0.833</td>
+      <td>0.081</td>
+      <td>0.681</td>
+      <td>0.986</td>
+      <td>0.002</td>
+      <td>0.001</td>
+      <td>2282.0</td>
+      <td>4694.0</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <th>lambdas2[ppsych]</th>
+      <td>-0.764</td>
+      <td>0.079</td>
+      <td>-0.920</td>
+      <td>-0.623</td>
+      <td>0.002</td>
+      <td>0.001</td>
+      <td>2399.0</td>
+      <td>4215.0</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <th>lambdas3[read]</th>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>1.000</td>
+      <td>1.000</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>10000.0</td>
+      <td>10000.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>lambdas3[arith]</th>
+      <td>0.610</td>
+      <td>0.057</td>
+      <td>0.498</td>
+      <td>0.712</td>
+      <td>0.003</td>
+      <td>0.002</td>
+      <td>381.0</td>
+      <td>1068.0</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <th>lambdas3[spell]</th>
+      <td>0.825</td>
+      <td>0.037</td>
+      <td>0.755</td>
+      <td>0.894</td>
+      <td>0.001</td>
+      <td>0.001</td>
+      <td>757.0</td>
+      <td>1717.0</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <th>betas[0]</th>
+      <td>0.202</td>
+      <td>0.139</td>
+      <td>-0.065</td>
+      <td>0.457</td>
+      <td>0.010</td>
+      <td>0.007</td>
+      <td>186.0</td>
+      <td>202.0</td>
+      <td>1.02</td>
+    </tr>
+    <tr>
+      <th>betas[1]</th>
+      <td>0.207</td>
+      <td>0.178</td>
+      <td>-0.129</td>
+      <td>0.534</td>
+      <td>0.012</td>
+      <td>0.009</td>
+      <td>208.0</td>
+      <td>487.0</td>
+      <td>1.01</td>
+    </tr>
+    <tr>
+      <th>betas[2]</th>
+      <td>0.747</td>
+      <td>0.104</td>
+      <td>0.556</td>
+      <td>0.942</td>
+      <td>0.006</td>
+      <td>0.004</td>
+      <td>311.0</td>
+      <td>810.0</td>
+      <td>1.01</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>make_ppc(idata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="bayesian_sem_files/figure-html/cell-18-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>residuals_posterior_cov <span class="op">=</span> get_posterior_resids(idata, <span class="dv">1000</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>residuals_posterior_corr <span class="op">=</span> get_posterior_resids(idata, <span class="dv">1000</span>, metric<span class="op">=</span><span class="st">"corr"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">20</span>, <span class="dv">10</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.triu(np.ones_like(residuals_posterior_corr, dtype<span class="op">=</span><span class="bu">bool</span>))</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> sns.heatmap(residuals_posterior_corr, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">"bwr"</span>, mask<span class="op">=</span>mask)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Residuals between Model Implied and Sample Correlations"</span>, fontsize<span class="op">=</span><span class="dv">25</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="bayesian_sem_files/figure-html/cell-20-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
