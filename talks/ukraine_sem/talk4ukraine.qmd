@@ -19,7 +19,9 @@ image: "images/factor_structure.png"
 
 # The Pitch
 
-Lorem Ipsum
+Valid causal claims are of paramount importance in science. Structural causal models impose extra-statistical constraints on the derivation of causal claims from data.
+
+These constraints can be understood concretely with reference to the SEM literature. We outline the development of structural causal models in the Bayesian setting highlighting the use of the do-operator on generative model graph structures. 
 
 ## Agenda {.smaller}
 :::: {.columns}
@@ -42,6 +44,9 @@ Lorem Ipsum
     - The Generative Model in PyMC
     - Model Comparison: CFA and SEM
 - Sensitivity Analysis and the Do-Operator
+    - The Do-Calculus and Sensitivity Analysis
+    - What-if Structures and the Do-Operator
+    - The Do-Operator in PyMC
 :::
 ::::
 
@@ -57,7 +62,8 @@ Lorem Ipsum
  
 ::: {.callout-tip}
 ## Code or it didn't Happen
-The worked examples used here can be found [here]()
+- The worked examples used here can be found [here](https://www.pymc.io/projects/examples/en/latest/case_studies/CFA_SEM.html)
+- <a href="notebook/bayesian_sem.ipynb" download>Download SEM Notebook</a>
 :::
 
 ![My Website](images/QR_CODE.png)
@@ -384,10 +390,12 @@ Healthy traceplots indicating reasonable exploration of the sample space
 ## Model Fit: Covariance Structures
 
 ![](images/measuremodel_resids.png)
+The residuals between the sample covariance and model predicted covariances are largely small
 
 ## Model Fit: Posterior Predictive Checks
 
 ![](images/measuremodel_ppc.png)
+The model can successfully retrodict the observed data
 
 ## Model Implications: Latent Scores
 
@@ -425,6 +433,19 @@ $$ \overbrace{\text{Ksi}}^{latent} = \begin{bmatrix} \overbrace{2.5}^{adjust} & 
 ::: {.fragment .fade-in}
 ![](images/B_matrix_target.png)
 :::
+
+## The Structural Matrix
+
+$$ \overbrace{\text{Ksi}}^{latent} = \begin{bmatrix} \overbrace{2.5}^{adjust} & \overbrace{3.2}^{risk} & \overbrace{7.3}^{achieve} \\ ... & ... & ...
+\\ ... & ... & ...  \\ ... & ... \\ 3.9 & ...\end{bmatrix} \begin{bmatrix} 0 & 0 & \color{blue}{\beta_{13}} 
+\\ \color{blue}{\beta_{21}} & 0 & \color{blue}{\beta_{23}} 
+\\ 0 & 0 & 0 \end{bmatrix} = \underbrace{\mathbf{B}}_{Regression \\ Coefficients} $$
+
+The specification of the structural matrix encodes the candidate regression relations which are to be evaluated in the SEM fit.
+```{.python} 
+adjust ~ risk 
+achieve ~ adjust + risk
+```
 
 ## The Generative Model in PyMC
 
@@ -505,6 +526,38 @@ coords = {
 SEM model achieves better performance on the local and global model checks than the CFA model
 ::::
 
-# Sensitivity Analysis and the Do-Operator
+## The Do-Calculus and Sensitivity Analysis {.smaller}
 
+:::: {.columns}
+::: {.column}
+![Causal Hierarchy](images/three_levels.jpg)
+:::
+::: {.column}
+The graph algebra of the __[do-calculus]{.blue}__ sets rules on admissable structures required to warrant valid causal claims when accounting for different species of confounding. 
+
+They complement the development and analysis of SEM models, providing minimalist __[admissablility conditions for a causal interpretation]{.blue}__ of these structural relations.
+
+The substantive justification of the causal claims implicit in a SEM model need to be made more explicitly by the researcher with reference to evaluation of model fit to data by comparing to competing models.
+
+:::
+::::
+
+## What-if Structures and the Do-Operator {.smaller}
+
+:::: {.columns}
+::: {.column}
+> "[T]ypically the causal assumptions are less established, though they should be defensible and consistent with the current state of knowledge. __[The analysis is done under the speculation of “what if these causal assumptions were true."]{.blue}__ These latter
+analyses are useful because there are often ways of testing the model, or parts of it. These tests can be helpful in rejecting one or more of the causal assumptions, thereby revealing flaws in specification. Of course, passing these tests does not prove the
+validity of the causal assumptions, but it lends credibility to them." 
+
+- Bollen and Pearl in _Eight myths about causality and structural equation models_
+:::
+::: {.column}
+::: {.fragment .fade-in}
+![](images/intervention_dist.png)
+
+The Do-Operator uses graph mutilation techniques to interrogate the impact of different data generating conditions including the analysis of causal claims.
+:::
+:::
+::::
 
