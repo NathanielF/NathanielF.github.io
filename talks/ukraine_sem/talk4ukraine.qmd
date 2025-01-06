@@ -561,3 +561,73 @@ The Do-Operator uses graph mutilation techniques to interrogate the impact of di
 :::
 ::::
 
+## Graphs Mutilation in PyMC
+
+:::: {.columns}
+::: {.column}
+```{.python}
+## Model Estimated on Data
+idata_sem, model_sem = make_sem()
+pm.model_to_graphviz(model_sem)
+```
+![](images/sem_model_graph.png)
+:::
+::: {.column}
+```{.python}
+## The Do-Operator in Action
+model_beta0 = do(model_sem, 
+{"betas": [0, 0 , 0]}, 
+prune_vars=True)
+pm.model_to_graphviz(model_beta0)
+```
+![](images/mutilated_sem_graph.png)
+:::
+::::
+
+## Causal Estimands under Intervention
+```{.python}
+model_beta0 = do(model_sem, {"betas": [0, 0 , 0]}, prune_vars=True)
+model_beta1 = do(model_sem, {"betas": [.6, .3, .7]}, prune_vars=True)
+
+# Sample new data assuming path parameters 0: P(Y | c, do(beta=0))
+idata_z0 = pm.sample_posterior_predictive(
+    idata_sem,
+    model=model_beta0,
+    predictions=False,
+    var_names=["likelihood", "betas",],
+)
+# Sample new data assuming substantive specification: P(Y | c, do(z=[.6, .3, .7]))
+idata_z1 = pm.sample_posterior_predictive(
+    idata_sem,
+    model=model_beta1,
+    predictions=False,
+    var_names=["likelihood", "betas"],
+)
+```
+
+## Causal Estimands under Intervention
+$$ E\Big[(Y| do(\beta=0)) - (Y | do(\beta \neq 0) \Big] $$
+![](images/causal_estimands.png)
+
+## Model Fit Sensitivity under Intervention
+
+:::: {.columns}
+::: {.column}
+![](images/counterfactual_residuals.png)
+:::
+::: {.column}
+![](images/0d_residuals.png)
+:::
+The plots are scaled identically here between -1 and 1. Highlighting significantly worse model fit under implausibly zero'd out beta coefficients.
+:::: 
+
+## Conclusion {.smaller}
+> "SEM is an inference engine that takes in two inputs, qualitative causal assumptions and empirical data, and derives two logical
+consequences of these inputs: quantitative causal conclusions and statistical measures
+of fit for the testable implications of the assumptions. Failure to fit the data casts doubt on the strong causal assumptions of zero coefficients or zero covariances and guides
+the researcher to diagnose, or repair the structural misspecifications. Fitting the data
+does not “prove” the causal assumptions, but it makes them tentatively more plausible.
+Any such positive results need to be replicated and to withstand the criticisms of
+researchers who suggest other models for the same data. "
+
+- Bollen and Pearl in _Eight myths about causality and structural equation models_
