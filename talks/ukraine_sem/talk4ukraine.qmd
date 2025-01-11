@@ -47,6 +47,7 @@ These constraints can be understood concretely with reference to the SEM literat
     - The Do-Calculus and Sensitivity Analysis
     - What-if Structures and the Do-Operator
     - The Do-Operator in PyMC
+    - Causal Estimands under Intervention
 :::
 ::::
 
@@ -244,6 +245,7 @@ with pm.Model() as iv_model:
 ```
 
 ## Functional Form and the State of the World
+### Credible Maps
 ::::{.columns}
 ::: {.column .r-fit-text}
 Causal Structural Models generate valid causal claims just when: 
@@ -251,15 +253,24 @@ Causal Structural Models generate valid causal claims just when:
 - the mathematical model is apt to account for risks of confounding in the assumed data generating process
 - the model parameters or theoretical estimands can be properly identified and estimated with the data available.
 - the assumed data generating process is a close enough approximation of the actual process
+- The set of admissable causal claims is constrained by the __[substantive extra-statistical requirement]{.blue}__ to credibly map model to the world
 :::
 
 ::: {.column .r-fit-text}
 
 ![Theory and Credibility](images/framework.png)
-:::
 
 ::: {.fragment .fade-in}
-The set of admissable causal claims is constrained by the __[substantive extra-statistical requirement]{.blue}__ to map model to the world
+$$ \Bigg( \begin{array}{cc}
+Y \sim f_{Y}(Z, X, U_{Y}) \\
+Z \sim f_{Z}(X, IV, U_{Z})
+\end{array} \Bigg) \approxeq \Bigg[ \begin{array}{cc}
+Y \sim 1 + \widehat{Z} + u \\
+\widehat{Z} \sim 1 + IV + u
+\end{array} \Bigg] \\
+ \approxeq \dfrac{p( (y_{1}, z_{1})^{T} ....(y_{q}, z_{q})^{T}) | \color{purple}\Sigma ,\color{blue}\beta \color{black} )p(\color{purple}\Sigma ,\color{blue}\beta \color{black}) }{\sum p_{i}(YZ)}
+$$
+:::
 :::
 
 ::::
