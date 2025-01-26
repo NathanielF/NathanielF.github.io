@@ -276,6 +276,19 @@ $$
 ::::
 # Measurement Models
 
+## Measurement Models {.smaller}
+###  and Conditional Independence
+
+Assumptions of exchangeability in survey measurement and De-Finetti's theorem
+$$p(X_{1}​,X_2​,…,X_n​)  =  \int p(X_1, X_2, ... X_n ​∣\theta)p(\theta)dp(\theta)$$
+
+ensures the observed data can be represented as conditionally independent mixture distribution where:
+
+$$X_{i} \perp\!\!\!\!\perp X_{j} | \theta \text {        } \forall i \neq j$$
+
+and latent factors are hypothetical __[common causes]{.blue}__ used to induce conditional exchangeability among the observed data.
+
+
 ## Measurement Models in SCMs
 
 ::::{.columns}
@@ -286,12 +299,13 @@ $$ ACHIEVE \sim f_{ACHIEVE}(read, arith, spell, U)$$
 
 Non-parametric phrasing of SCMs under-specifies the relations of interest. 
 
-CFA models estimates the multivariate correlation structure with a __[focus]{.blue}__ on relations between the factors.
+CFA models estimates the multivariate correlation structure while imposing causal structure and depednencies
 :::
 ::: {.column .r-fit-text}
 ![](images/factor_structure.png)
 :::
 ::::
+
 
 ## Measurement Models {.smaller}
 ### and Factor Structures
@@ -636,8 +650,8 @@ The plots are scaled identically here between -1 and 1. Highlighting significant
 > "SEM is an inference engine that takes in two inputs, qualitative causal assumptions and empirical data, and derives two logical
 consequences of these inputs: quantitative causal conclusions and statistical measures
 of fit for the testable implications of the assumptions. Failure to fit the data casts doubt on the strong causal assumptions of zero coefficients or zero covariances and guides
-the researcher to diagnose, or repair the structural misspecifications. Fitting the data
-does not “prove” the causal assumptions, but it makes them tentatively more plausible.
+the researcher to diagnose, or repair the structural misspecifications. __[Fitting the data
+does not “prove” the causal assumptions, but it makes them tentatively more plausible.]{.blue}__
 Any such positive results need to be replicated and to withstand the criticisms of
 researchers who suggest other models for the same data. "
 
