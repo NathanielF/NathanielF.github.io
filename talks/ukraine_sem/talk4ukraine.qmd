@@ -277,16 +277,18 @@ $$
 # Measurement Models
 
 ## Measurement Models {.smaller}
-###  and Conditional Independence
+###  and Conditional Exchangeability
 
 Assumptions of exchangeability in survey measurement and De-Finetti's theorem
-$$p(X_{1}​,X_2​,…,X_n​)  =  \int p(X_1, X_2, ... X_n ​∣\theta)p(\theta)dp(\theta)$$
+$$p(Y​,T, X_{1}…,X_n​)  =  \int p(Y, T, X_{1} ... X_n ​∣\theta)p(\theta)dp(\theta)$$
 
-ensures the observed data can be represented as conditionally independent mixture distribution where:
+ensures the observed data can be represented as conditionally independent mixture distribution where in general:
 
 $$X_{i} \perp\!\!\!\!\perp X_{j} | \theta \text {        } \forall i \neq j$$
 
-and latent factors are hypothetical __[common causes]{.blue}__ used to induce conditional exchangeability among the observed data.
+and in paticular latent factors $\Lambda$ are hypothetical __[common causes]{.blue}__ argued to induce conditional exchangeability among the observed data.
+
+$$ Y(0), Y(1) \perp\!\!\!\!\perp T | \Lambda$$
 
 
 ## Measurement Models in SCMs
@@ -299,7 +301,7 @@ $$ ACHIEVE \sim f_{ACHIEVE}(read, arith, spell, U)$$
 
 Non-parametric phrasing of SCMs under-specifies the relations of interest. 
 
-CFA models estimates the multivariate correlation structure while imposing causal structure and depednencies
+CFA models estimates the multivariate correlation structure while imposing causal structure and dependencies
 :::
 ::: {.column .r-fit-text}
 ![](images/factor_structure.png)
