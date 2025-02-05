@@ -63,7 +63,7 @@ These constraints can be understood concretely with reference to the SEM literat
 ::: {.column}
 - [__Structural Equation Models__]{.blue}
     - Adding Structural Components
-    - The Generative Model in PyMC
+    - The SEM Model in PyMC
     - Model Comparison: CFA and SEM
 - [__Causal Estimands and the Do-Operator__]{.blue}
     - The Do-Calculus and Minimum Valid Structure
@@ -411,75 +411,112 @@ with pm.Model(coords=coords) as model:
 ::: {.columns}
 ::: {.column}
 ![](images/factorweights.png)
-The weights accorded to each of the indicator metrics on each of the specified factors.
+![](images/mm_traceplot.png)
 :::
 ::: {.column}
-![](images/mm_traceplot.png)
-Healthy traceplots indicating reasonable exploration of the sample space
+
+::: {.fragment .fade-in}
+- The weights accorded to each of the indicator metrics on each of the specified factors are scaled.
+:::
+
+::: {.fragment .fade-in}
+- Consistency in the factor loadings is a gauge of factor coherence.
+:::
+
+::: {.fragment .fade-in}
+- Invariance of the loading scale across groups supports the argument to robust constructs.
+:::
 :::
 ::: 
 
 ## Model Fit: Covariance Structures
 
 ![](images/measuremodel_resids.png)
-The residuals between the sample covariance and model predicted covariances are largely small
+The differences between the sample covariance and model predicted covariances are small.
 
 ## Model Fit: Posterior Predictive Checks
 
 ![](images/measuremodel_ppc.png)
-The model can successfully retrodict the observed data
+The model can successfully retrodict the observed data, indicating good model fit.
 
-## Model Implications: Latent Scores
+## Model Implications: Latent Scores {.smaller}
 
+:::: {.columns}
+::: {.column width="70%"}
 ![](images/latent_measures.png)
+:::
 
-What are the relations between these Latent components?
+::: {.column width="30%"}
+- Bayesian Models __sample__ the Latent constructs
+- Assess the measurement profile of individual outliers under intervention.
+- Allows us to interrogate what are the relations between these Latent components?
+- How do thet vary under pressure?
+:::
+::::
 
 # Structural Equation Models
 
 ## Adding Structural Components
+### Regression Structures are Overlaid
+::::{.columns}
+::: {.column .r-fit-text}
+`adjust =~ motiv + harm + stabi`
 
-```{.python}
-# measurement model
-adjust =~ motiv + harm + stabi
-risk =~ verbal + ses + ppsych
-achieve =~ read + arith + spell
+`risk =~ verbal + ses + ppsych`
 
-# focal regressions
-adjust ~ risk 
-achieve ~ adjust + risk
-```
+`achieve =~ read + arith + spell`
 
+`adjust ~ risk` 
+
+`achieve ~ adjust + risk`
+:::
+
+
+::: {.column .r-fit-text}
 $$SEM : \underbrace{\text{Ksi}^{*}}_{latent} = \underbrace{\mathbf{B}\text{Ksi}}_{structural \\ component} + \underbrace{\Lambda\cdot \text{Ksi}}_{measurement \\ component}$$
 
 
 $$CFA : \underbrace{\text{Ksi}^{*}}_{latent} = \underbrace{\mathbf{0}\text{Ksi}}_{structural \\ component} + \underbrace{\Lambda\cdot \text{Ksi}}_{measurement \\ component}$$
 
-## The Structural Matrix
+:::
+::::
+
+## The Structural Matrix {.smaller}
 
 $$ \overbrace{\text{Ksi}}^{latent} = \begin{bmatrix} \overbrace{2.5}^{adjust} & \overbrace{3.2}^{risk} & \overbrace{7.3}^{achieve} \\ ... & ... & ...
 \\ ... & ... & ...  \\ ... & ... \\ 3.9 & ...\end{bmatrix} \begin{bmatrix} 0 & \beta_{12} & \beta_{13} 
 \\ \beta_{21} & 0 & \beta_{23} 
 \\ \beta_{31} & \beta_{32} & 0 \end{bmatrix} = \underbrace{\mathbf{B}}_{Regression \\ Coefficients} $$
 
+:::{.r-stack}
 ::: {.fragment .fade-in}
 ![](images/B_matrix_target.png)
 :::
+:::
 
-## The Structural Matrix
+## The Structural Matrix {.smaller}
+
+The specification of the structural matrix encodes the candidate regression relations which are to be evaluated in the SEM fit.
 
 $$ \overbrace{\text{Ksi}}^{latent} = \begin{bmatrix} \overbrace{2.5}^{adjust} & \overbrace{3.2}^{risk} & \overbrace{7.3}^{achieve} \\ ... & ... & ...
 \\ ... & ... & ...  \\ ... & ... \\ 3.9 & ...\end{bmatrix} \begin{bmatrix} 0 & 0 & \color{blue}{\beta_{13}} 
 \\ \color{blue}{\beta_{21}} & 0 & \color{blue}{\beta_{23}} 
 \\ 0 & 0 & 0 \end{bmatrix} = \underbrace{\mathbf{B}}_{Regression \\ Coefficients} $$
 
-The specification of the structural matrix encodes the candidate regression relations which are to be evaluated in the SEM fit.
-```{.python} 
-adjust ~ risk 
-achieve ~ adjust + risk
-```
 
-## The Generative Model in PyMC
+
+:::{.r-stack}
+`adjust ~ risk`
+:::
+
+:::{.r-stack}
+
+`achieve ~ adjust + risk`
+:::
+
+
+## The SEM Model in PyMC {.smaller}
+### Defining the DAG
 
 ```{.python code-line-numbers="|25-35|36-47"}
 
@@ -547,6 +584,7 @@ coords = {
 ```
 
 ## Model Comparison
+### Local and Global Fit
 
 :::: {.columns}
 ::: {.column}
@@ -593,7 +631,7 @@ The Do-Operator uses graph mutilation techniques to interrogate the impact of di
 :::
 ::::
 
-## Graphs Mutilation in PyMC
+## Graph Mutilation in PyMC
 
 :::: {.columns}
 ::: {.column}
@@ -641,7 +679,7 @@ idata_z1 = pm.sample_posterior_predictive(
 $$ E\Big[(Y| do(\beta=0)) - (Y | do(\beta \neq 0) \Big] $$
 ![](images/causal_estimands.png)
 
-## Model Fit Sensitivity under Intervention
+## Model Fit: Sensitivity under Intervention
 
 :::: {.columns}
 ::: {.column}
@@ -654,6 +692,7 @@ The plots are scaled identically here between -1 and 1. Highlighting significant
 :::: 
 
 ## Conclusion {.smaller}
+### Credibility versus Certification {.smaller}
 :::: {.columns}
 ::: {.column .r-fit-text}
 > "SEM is an inference engine that takes in two inputs, qualitative causal assumptions and empirical data, and derives two logical
@@ -667,6 +706,6 @@ does not “prove” the causal assumptions, but it makes them tentatively more 
 
 ::: {.column}
 
-![An Inference Engine](images/starON.jpg)
+![An Inference Engine adding ***'s to our conclusion](images/starON.jpg)
 :::
 ::::

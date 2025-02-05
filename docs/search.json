@@ -2832,7 +2832,7 @@
     "href": "talks/ukraine_sem/talk4ukraine.html#agenda",
     "title": "Structural Causal Models in PyMC",
     "section": "Agenda",
-    "text": "Agenda\nAbstract -> Concrete -> Code\n\n\n\nValid Causal Structure\n\nForm and Content of Causal Inference\nAbstract Conception\nConcrete Conception\nThe Bayesian Phrasing\nImplementation in Code\n\nFactor Structures\n\nMeasurement Models: Abstract Conception\nBayesian Phrasing: Concrete Example\nBayesian Phrasing: Code in PyMC\nModel Fit and Diagnostics\n\n\n\n\nStructural Equation Models\n\nAdding Structural Components\nThe Generative Model in PyMC\nModel Comparison: CFA and SEM\n\nCausal Estimands and the Do-Operator\n\nThe Do-Calculus and Minimum Valid Structure\nWhat-if Structures and the Do-Operator\nThe Do-Operator in PyMC\nCausal Estimands under Intervention"
+    "text": "Agenda\nAbstract -> Concrete -> Code\n\n\n\nValid Causal Structure\n\nForm and Content of Causal Inference\nAbstract Conception\nConcrete Conception\nThe Bayesian Phrasing\nImplementation in Code\n\nFactor Structures\n\nMeasurement Models: Abstract Conception\nBayesian Phrasing: Concrete Example\nBayesian Phrasing: Code in PyMC\nModel Fit and Diagnostics\n\n\n\n\nStructural Equation Models\n\nAdding Structural Components\nThe SEM Model in PyMC\nModel Comparison: CFA and SEM\n\nCausal Estimands and the Do-Operator\n\nThe Do-Calculus and Minimum Valid Structure\nWhat-if Structures and the Do-Operator\nThe Do-Operator in PyMC\nCausal Estimands under Intervention"
   },
   {
     "objectID": "talks/ukraine_sem/talk4ukraine.html#preliminaries",
@@ -2944,21 +2944,21 @@
     "href": "talks/ukraine_sem/talk4ukraine.html#model-fit-covariance-structures",
     "title": "Structural Causal Models in PyMC",
     "section": "Model Fit: Covariance Structures",
-    "text": "Model Fit: Covariance Structures\n The residuals between the sample covariance and model predicted covariances are largely small"
+    "text": "Model Fit: Covariance Structures\n The differences between the sample covariance and model predicted covariances are small."
   },
   {
     "objectID": "talks/ukraine_sem/talk4ukraine.html#model-fit-posterior-predictive-checks",
     "href": "talks/ukraine_sem/talk4ukraine.html#model-fit-posterior-predictive-checks",
     "title": "Structural Causal Models in PyMC",
     "section": "Model Fit: Posterior Predictive Checks",
-    "text": "Model Fit: Posterior Predictive Checks\n The model can successfully retrodict the observed data"
+    "text": "Model Fit: Posterior Predictive Checks\n The model can successfully retrodict the observed data, indicating good model fit."
   },
   {
     "objectID": "talks/ukraine_sem/talk4ukraine.html#model-implications-latent-scores",
     "href": "talks/ukraine_sem/talk4ukraine.html#model-implications-latent-scores",
     "title": "Structural Causal Models in PyMC",
     "section": "Model Implications: Latent Scores",
-    "text": "Model Implications: Latent Scores\n\nWhat are the relations between these Latent components?"
+    "text": "Model Implications: Latent Scores\n\n\n\n\n\nBayesian Models sample the Latent constructs\nAssess the measurement profile of individual outliers under intervention.\nAllows us to interrogate what are the relations between these Latent components?\nHow do thet vary under pressure?"
   },
   {
     "objectID": "talks/ukraine_sem/talk4ukraine.html#the-model",
@@ -2972,14 +2972,14 @@
     "href": "talks/ukraine_sem/talk4ukraine.html#adding-structural-components",
     "title": "Structural Causal Models in PyMC",
     "section": "Adding Structural Components",
-    "text": "Adding Structural Components\n# measurement model\nadjust =~ motiv + harm + stabi\nrisk =~ verbal + ses + ppsych\nachieve =~ read + arith + spell\n\n# focal regressions\nadjust ~ risk \nachieve ~ adjust + risk\n\\[SEM : \\underbrace{\\text{Ksi}^{*}}_{latent} = \\underbrace{\\mathbf{B}\\text{Ksi}}_{structural \\\\ component} + \\underbrace{\\Lambda\\cdot \\text{Ksi}}_{measurement \\\\ component}\\]\n\\[CFA : \\underbrace{\\text{Ksi}^{*}}_{latent} = \\underbrace{\\mathbf{0}\\text{Ksi}}_{structural \\\\ component} + \\underbrace{\\Lambda\\cdot \\text{Ksi}}_{measurement \\\\ component}\\]"
+    "text": "Adding Structural Components\nRegression Structures are Overlaid\n\n\nadjust =~ motiv + harm + stabi\nrisk =~ verbal + ses + ppsych\nachieve =~ read + arith + spell\nadjust ~ risk\nachieve ~ adjust + risk\n\n\\[SEM : \\underbrace{\\text{Ksi}^{*}}_{latent} = \\underbrace{\\mathbf{B}\\text{Ksi}}_{structural \\\\ component} + \\underbrace{\\Lambda\\cdot \\text{Ksi}}_{measurement \\\\ component}\\]\n\\[CFA : \\underbrace{\\text{Ksi}^{*}}_{latent} = \\underbrace{\\mathbf{0}\\text{Ksi}}_{structural \\\\ component} + \\underbrace{\\Lambda\\cdot \\text{Ksi}}_{measurement \\\\ component}\\]"
   },
   {
     "objectID": "talks/ukraine_sem/talk4ukraine.html#model-estimates-factor-loadings",
     "href": "talks/ukraine_sem/talk4ukraine.html#model-estimates-factor-loadings",
     "title": "Structural Causal Models in PyMC",
     "section": "Model Estimates: Factor Loadings",
-    "text": "Model Estimates: Factor Loadings\n\n\n The weights accorded to each of the indicator metrics on each of the specified factors.\n\n Healthy traceplots indicating reasonable exploration of the sample space"
+    "text": "Model Estimates: Factor Loadings\n\n\n \n\n\n\nThe weights accorded to each of the indicator metrics on each of the specified factors are scaled.\n\n\n\n\nConsistency in the factor loadings is a gauge of factor coherence.\n\n\n\n\nInvariance of the loading scale across groups supports the argument to robust constructs."
   },
   {
     "objectID": "talks/ukraine_sem/talk4ukraine.html#the-structural-matrix",
@@ -3021,7 +3021,7 @@
     "href": "talks/ukraine_sem/talk4ukraine.html#model-comparison",
     "title": "Structural Causal Models in PyMC",
     "section": "Model Comparison",
-    "text": "Model Comparison\n\n\n\n\n\nLocal Model checks\n\n\n\n\n\n\nModel ranked on Leave one out cross validation\n\n\nSEM model achieves better performance on the local and global model checks than the CFA model"
+    "text": "Model Comparison\nLocal and Global Fit\n\n\n\n\n\nLocal Model checks\n\n\n\n\n\n\nModel ranked on Leave one out cross validation\n\n\nSEM model achieves better performance on the local and global model checks than the CFA model"
   },
   {
     "objectID": "talks/lbs_sem_causal/lbs_sem_causal.html",
@@ -3070,7 +3070,7 @@
     "href": "talks/ukraine_sem/talk4ukraine.html#the-structural-matrix-1",
     "title": "Structural Causal Models in PyMC",
     "section": "The Structural Matrix",
-    "text": "The Structural Matrix\n\\[ \\overbrace{\\text{Ksi}}^{latent} = \\begin{bmatrix} \\overbrace{2.5}^{adjust} & \\overbrace{3.2}^{risk} & \\overbrace{7.3}^{achieve} \\\\ ... & ... & ...\n\\\\ ... & ... & ...  \\\\ ... & ... \\\\ 3.9 & ...\\end{bmatrix} \\begin{bmatrix} 0 & 0 & \\color{blue}{\\beta_{13}}\n\\\\ \\color{blue}{\\beta_{21}} & 0 & \\color{blue}{\\beta_{23}}\n\\\\ 0 & 0 & 0 \\end{bmatrix} = \\underbrace{\\mathbf{B}}_{Regression \\\\ Coefficients} \\]\nThe specification of the structural matrix encodes the candidate regression relations which are to be evaluated in the SEM fit.\nadjust ~ risk \nachieve ~ adjust + risk"
+    "text": "The Structural Matrix\nThe specification of the structural matrix encodes the candidate regression relations which are to be evaluated in the SEM fit.\n\\[ \\overbrace{\\text{Ksi}}^{latent} = \\begin{bmatrix} \\overbrace{2.5}^{adjust} & \\overbrace{3.2}^{risk} & \\overbrace{7.3}^{achieve} \\\\ ... & ... & ...\n\\\\ ... & ... & ...  \\\\ ... & ... \\\\ 3.9 & ...\\end{bmatrix} \\begin{bmatrix} 0 & 0 & \\color{blue}{\\beta_{13}}\n\\\\ \\color{blue}{\\beta_{21}} & 0 & \\color{blue}{\\beta_{23}}\n\\\\ 0 & 0 & 0 \\end{bmatrix} = \\underbrace{\\mathbf{B}}_{Regression \\\\ Coefficients} \\]\n\nadjust ~ risk\n\n\nachieve ~ adjust + risk"
   },
   {
     "objectID": "talks/ukraine_sem/talk4ukraine.html#what-if-structures-and-the-do-calculus",
@@ -3125,15 +3125,15 @@
     "objectID": "talks/ukraine_sem/talk4ukraine.html#model-fit-sensitivity-under-intervention",
     "href": "talks/ukraine_sem/talk4ukraine.html#model-fit-sensitivity-under-intervention",
     "title": "Structural Causal Models in PyMC",
-    "section": "Model Fit Sensitivity under Intervention",
-    "text": "Model Fit Sensitivity under Intervention\n\n\n\n\n\nThe plots are scaled identically here between -1 and 1. Highlighting significantly worse model fit under implausibly zero’d out beta coefficients."
+    "section": "Model Fit: Sensitivity under Intervention",
+    "text": "Model Fit: Sensitivity under Intervention\n\n\n\n\n\nThe plots are scaled identically here between -1 and 1. Highlighting significantly worse model fit under implausibly zero’d out beta coefficients."
   },
   {
     "objectID": "talks/ukraine_sem/talk4ukraine.html#conclusion",
     "href": "talks/ukraine_sem/talk4ukraine.html#conclusion",
     "title": "Structural Causal Models in PyMC",
     "section": "Conclusion",
-    "text": "Conclusion\n\n\n\n“SEM is an inference engine that takes in two inputs, qualitative causal assumptions and empirical data, and derives two logical consequences of these inputs: quantitative causal conclusions and statistical measures of fit for the testable implications of the assumptions. Failure to fit the data casts doubt on the strong causal assumptions of zero coefficients or zero covariances and guides the researcher to diagnose, or repair the structural misspecifications. Fitting the data does not “prove” the causal assumptions, but it makes them tentatively more plausible.”\n\n\nBollen and Pearl in Eight myths about causality and structural equation models\n\n\n\n\n\nAn Inference Engine\n\n\n\n\n\n\n\nSCMS in PyMC"
+    "text": "Conclusion\nCredibility versus Certification\n\n\n\n“SEM is an inference engine that takes in two inputs, qualitative causal assumptions and empirical data, and derives two logical consequences of these inputs: quantitative causal conclusions and statistical measures of fit for the testable implications of the assumptions. Failure to fit the data casts doubt on the strong causal assumptions of zero coefficients or zero covariances and guides the researcher to diagnose, or repair the structural misspecifications. Fitting the data does not “prove” the causal assumptions, but it makes them tentatively more plausible.”\n\n\nBollen and Pearl in Eight myths about causality and structural equation models\n\n\n\n\n\nAn Inference Engine adding ***’s to our conclusion\n\n\n\n\n\n\n\nSCMS in PyMC"
   },
   {
     "objectID": "talks/ukraine_sem/talk4ukraine.html#measurement-models-2",
@@ -3148,5 +3148,19 @@
     "title": "Structural Causal Models in PyMC",
     "section": "Causal Estimands and the Do-Operator",
     "text": "Causal Estimands and the Do-Operator\n\n\n\n\n\nCausal Hierarchy\n\n\n\nThe graph algebra of the do-calculus sets rules on admissable structures required to warrant valid causal claims when accounting for different species of confounding.\nThey complement the development and analysis of SEM models, providing minimalist admissablility conditions for a causal interpretation of these structural relations.\nThe substantive justification of the causal claims implicit in a SEM model need to be made more explicitly by the researcher with reference to evaluation of model fit to data by comparing to competing models."
+  },
+  {
+    "objectID": "talks/ukraine_sem/talk4ukraine.html#graph-mutilation-in-pymc",
+    "href": "talks/ukraine_sem/talk4ukraine.html#graph-mutilation-in-pymc",
+    "title": "Structural Causal Models in PyMC",
+    "section": "Graph Mutilation in PyMC",
+    "text": "Graph Mutilation in PyMC\n\n\n## Model Estimated on Data\nidata_sem, model_sem = make_sem()\npm.model_to_graphviz(model_sem)\n\n\n## The Do-Operator in Action\nmodel_beta0 = do(model_sem, \n{\"betas\": [0, 0 , 0]}, \nprune_vars=True)\npm.model_to_graphviz(model_beta0)"
+  },
+  {
+    "objectID": "talks/ukraine_sem/talk4ukraine.html#the-sem-model-in-pymc",
+    "href": "talks/ukraine_sem/talk4ukraine.html#the-sem-model-in-pymc",
+    "title": "Structural Causal Models in PyMC",
+    "section": "The SEM Model in PyMC",
+    "text": "The SEM Model in PyMC\nDefining the DAG\n\ncoords = {\n    \"obs\": list(range(len(df))),\n    \"indicators\": [\"motiv\", \"harm\", \"stabi\", \"verbal\", \"ses\", \"ppsych\", \"read\", \"arith\", \"spell\"],\n    \"indicators_1\": [\"motiv\", \"harm\", \"stabi\"],\n    \"indicators_2\": [\"verbal\", \"ses\", \"ppsych\"],\n    \"indicators_3\": [\"read\", \"arith\", \"spell\"],\n    \"latent\": [\"adjust\", \"risk\", \"achieve\"],\n    \"paths\": [\"risk->adjust\", \"risk-->achieve\", \"adjust-->achieve\"]\n    }\n\n    obs_idx = list(range(len(df)))\n    with pm.Model(coords=coords) as model:\n\n        # Set up Factor Loadings\n        lambdas_1 = make_lambda('indicators_1', 'lambdas1', priors=[1, .5]) #adjust\n        lambdas_2 = make_lambda('indicators_2', 'lambdas2', priors=[1, .5]) # risk\n        lambdas_3 = make_lambda('indicators_3', 'lambdas3', priors=[1, .5]) # achieve\n        \n        # Specify covariance structure between latent factors\n        sd_dist = pm.Exponential.dist(1.0, shape=3)\n        chol, _, _ = pm.LKJCholeskyCov(\"chol_cov\", n=3, eta=2, sd_dist=sd_dist, compute_corr=True)\n        ksi = pm.MvNormal(\"ksi\", 0, chol=chol, dims=(\"obs\", \"latent\"))\n\n        ## Build Regression Components\n        coefs = pm.Normal('betas', 0, .5, dims='paths')\n        zeros = pt.zeros((3, 3))\n        ## adjust ~ risk\n        zeros1 = pt.set_subtensor(zeros[1, 0], coefs[0])\n        ## achieve ~ risk + adjust\n        zeros2 = pt.set_subtensor(zeros1[1, 2], coefs[1])\n        coefs_ = pt.set_subtensor(zeros2[0, 2], coefs[2])\n        \n        structural_relations = pm.Deterministic('endogenous_structural_paths', \n        pm.math.dot(ksi, coefs_))\n\n        # Construct Pseudo Observation matrix based on Factor Loadings\n        m1 = ksi[obs_idx, 0] * lambdas_1[0] +  structural_relations[obs_idx, 0] #adjust\n        m2 = ksi[obs_idx, 0] * lambdas_1[1] +  structural_relations[obs_idx, 0] #adjust\n        m3 = ksi[obs_idx, 0] * lambdas_1[2] +  structural_relations[obs_idx, 0] #adjust\n        m4 = ksi[obs_idx, 1] * lambdas_2[0] +  structural_relations[obs_idx, 1]  #risk\n        m5 = ksi[obs_idx, 1] * lambdas_2[1] +  structural_relations[obs_idx, 1]  #risk\n        m6 = ksi[obs_idx, 1] * lambdas_2[2] +  structural_relations[obs_idx, 1]  #risk\n        m7 = ksi[obs_idx, 2] * lambdas_3[0] +  structural_relations[obs_idx, 2]  #achieve\n        m8 = ksi[obs_idx, 2] * lambdas_3[1] +  structural_relations[obs_idx, 2]  #achieve\n        m9 = ksi[obs_idx, 2] * lambdas_3[2] +  structural_relations[obs_idx, 2]  #achieve\n\n        mu = pm.Deterministic(\"mu\", pm.math.stack([m1, m2, m3, m4, m5, m6, m7, m8, m9]).T)\n\n\n        ## Error Terms\n        Psi = pm.InverseGamma(\"Psi\", 2, 13, dims=\"indicators\")\n\n        # Likelihood\n        _ = pm.Normal(\n            \"likelihood\",\n            mu,\n            Psi,\n            observed=df[coords['indicators']].values,\n        )"
   }
 ]

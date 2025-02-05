@@ -483,7 +483,7 @@ Nathaniel Forde
 <li><span class="blue"><strong>Structural Equation Models</strong></span>
 <ul>
 <li>Adding Structural Components</li>
-<li>The Generative Model in PyMC</li>
+<li>The SEM Model in PyMC</li>
 <li>Model Comparison: CFA and SEM</li>
 </ul></li>
 <li><span class="blue"><strong>Causal Estimands and the Do-Operator</strong></span>
@@ -720,91 +720,91 @@ Y \sim 1 + \widehat{Z} + u \\
 <p><span class="math display">\[p(\mathbf{x_{i}}^{T}.....\mathbf{x_{q}}^{T} | \text{Ksi}, \Psi, \tau, \Lambda) \sim Normal(\tau + \Lambda\cdot \text{Ksi}, \Psi)\]</span></p>
 <p><span class="math display">\[ \lambda_{11} ..... \lambda_{21} ..... \lambda_{31} \in \Lambda \]</span></p>
 <div class="cell" data-execution_count="1">
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="41">
 
 <style type="text/css">
-#T_5c04b_row0_col0, #T_5c04b_row0_col1, #T_5c04b_row0_col2, #T_5c04b_row1_col0, #T_5c04b_row1_col1, #T_5c04b_row1_col2, #T_5c04b_row2_col0, #T_5c04b_row2_col1, #T_5c04b_row2_col2, #T_5c04b_row3_col0, #T_5c04b_row3_col1, #T_5c04b_row3_col2, #T_5c04b_row4_col0, #T_5c04b_row4_col1, #T_5c04b_row4_col2 {
+#T_e0969_row0_col0, #T_e0969_row0_col1, #T_e0969_row0_col2, #T_e0969_row1_col0, #T_e0969_row1_col1, #T_e0969_row1_col2, #T_e0969_row2_col0, #T_e0969_row2_col1, #T_e0969_row2_col2, #T_e0969_row3_col0, #T_e0969_row3_col1, #T_e0969_row3_col2, #T_e0969_row4_col0, #T_e0969_row4_col1, #T_e0969_row4_col2 {
   background-color: lightcoral;
 }
-#T_5c04b_row0_col3, #T_5c04b_row0_col4, #T_5c04b_row0_col5, #T_5c04b_row1_col3, #T_5c04b_row1_col4, #T_5c04b_row1_col5, #T_5c04b_row2_col3, #T_5c04b_row2_col4, #T_5c04b_row2_col5, #T_5c04b_row3_col3, #T_5c04b_row3_col4, #T_5c04b_row3_col5, #T_5c04b_row4_col3, #T_5c04b_row4_col4, #T_5c04b_row4_col5 {
+#T_e0969_row0_col3, #T_e0969_row0_col4, #T_e0969_row0_col5, #T_e0969_row1_col3, #T_e0969_row1_col4, #T_e0969_row1_col5, #T_e0969_row2_col3, #T_e0969_row2_col4, #T_e0969_row2_col5, #T_e0969_row3_col3, #T_e0969_row3_col4, #T_e0969_row3_col5, #T_e0969_row4_col3, #T_e0969_row4_col4, #T_e0969_row4_col5 {
   background-color: moccasin;
 }
 </style>
-<table id="T_5c04b">
+<table id="T_e0969">
   <thead>
     <tr>
       <th class="blank level0">&nbsp;</th>
-      <th id="T_5c04b_level0_col0" class="col_heading level0 col0">motiv</th>
-      <th id="T_5c04b_level0_col1" class="col_heading level0 col1">harm</th>
-      <th id="T_5c04b_level0_col2" class="col_heading level0 col2">stabi</th>
-      <th id="T_5c04b_level0_col3" class="col_heading level0 col3">ppsych</th>
-      <th id="T_5c04b_level0_col4" class="col_heading level0 col4">ses</th>
-      <th id="T_5c04b_level0_col5" class="col_heading level0 col5">verbal</th>
-      <th id="T_5c04b_level0_col6" class="col_heading level0 col6">read</th>
-      <th id="T_5c04b_level0_col7" class="col_heading level0 col7">arith</th>
-      <th id="T_5c04b_level0_col8" class="col_heading level0 col8">spell</th>
+      <th id="T_e0969_level0_col0" class="col_heading level0 col0">motiv</th>
+      <th id="T_e0969_level0_col1" class="col_heading level0 col1">harm</th>
+      <th id="T_e0969_level0_col2" class="col_heading level0 col2">stabi</th>
+      <th id="T_e0969_level0_col3" class="col_heading level0 col3">ppsych</th>
+      <th id="T_e0969_level0_col4" class="col_heading level0 col4">ses</th>
+      <th id="T_e0969_level0_col5" class="col_heading level0 col5">verbal</th>
+      <th id="T_e0969_level0_col6" class="col_heading level0 col6">read</th>
+      <th id="T_e0969_level0_col7" class="col_heading level0 col7">arith</th>
+      <th id="T_e0969_level0_col8" class="col_heading level0 col8">spell</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th id="T_5c04b_level0_row0" class="row_heading level0 row0">0</th>
-      <td id="T_5c04b_row0_col0" class="data row0 col0">-7.907122</td>
-      <td id="T_5c04b_row0_col1" class="data row0 col1">-5.075312</td>
-      <td id="T_5c04b_row0_col2" class="data row0 col2">-3.138836</td>
-      <td id="T_5c04b_row0_col3" class="data row0 col3">-17.800210</td>
-      <td id="T_5c04b_row0_col4" class="data row0 col4">4.766450</td>
-      <td id="T_5c04b_row0_col5" class="data row0 col5">-3.633360</td>
-      <td id="T_5c04b_row0_col6" class="data row0 col6">-3.488981</td>
-      <td id="T_5c04b_row0_col7" class="data row0 col7">-9.989121</td>
-      <td id="T_5c04b_row0_col8" class="data row0 col8">-6.567873</td>
+      <th id="T_e0969_level0_row0" class="row_heading level0 row0">0</th>
+      <td id="T_e0969_row0_col0" class="data row0 col0">-7.907122</td>
+      <td id="T_e0969_row0_col1" class="data row0 col1">-5.075312</td>
+      <td id="T_e0969_row0_col2" class="data row0 col2">-3.138836</td>
+      <td id="T_e0969_row0_col3" class="data row0 col3">-17.800210</td>
+      <td id="T_e0969_row0_col4" class="data row0 col4">4.766450</td>
+      <td id="T_e0969_row0_col5" class="data row0 col5">-3.633360</td>
+      <td id="T_e0969_row0_col6" class="data row0 col6">-3.488981</td>
+      <td id="T_e0969_row0_col7" class="data row0 col7">-9.989121</td>
+      <td id="T_e0969_row0_col8" class="data row0 col8">-6.567873</td>
     </tr>
     <tr>
-      <th id="T_5c04b_level0_row1" class="row_heading level0 row1">1</th>
-      <td id="T_5c04b_row1_col0" class="data row1 col0">1.751478</td>
-      <td id="T_5c04b_row1_col1" class="data row1 col1">-4.155847</td>
-      <td id="T_5c04b_row1_col2" class="data row1 col2">3.520752</td>
-      <td id="T_5c04b_row1_col3" class="data row1 col3">7.009367</td>
-      <td id="T_5c04b_row1_col4" class="data row1 col4">-6.048681</td>
-      <td id="T_5c04b_row1_col5" class="data row1 col5">-7.693461</td>
-      <td id="T_5c04b_row1_col6" class="data row1 col6">-4.520552</td>
-      <td id="T_5c04b_row1_col7" class="data row1 col7">8.196238</td>
-      <td id="T_5c04b_row1_col8" class="data row1 col8">8.778973</td>
+      <th id="T_e0969_level0_row1" class="row_heading level0 row1">1</th>
+      <td id="T_e0969_row1_col0" class="data row1 col0">1.751478</td>
+      <td id="T_e0969_row1_col1" class="data row1 col1">-4.155847</td>
+      <td id="T_e0969_row1_col2" class="data row1 col2">3.520752</td>
+      <td id="T_e0969_row1_col3" class="data row1 col3">7.009367</td>
+      <td id="T_e0969_row1_col4" class="data row1 col4">-6.048681</td>
+      <td id="T_e0969_row1_col5" class="data row1 col5">-7.693461</td>
+      <td id="T_e0969_row1_col6" class="data row1 col6">-4.520552</td>
+      <td id="T_e0969_row1_col7" class="data row1 col7">8.196238</td>
+      <td id="T_e0969_row1_col8" class="data row1 col8">8.778973</td>
     </tr>
     <tr>
-      <th id="T_5c04b_level0_row2" class="row_heading level0 row2">2</th>
-      <td id="T_5c04b_row2_col0" class="data row2 col0">14.472570</td>
-      <td id="T_5c04b_row2_col1" class="data row2 col1">-4.540677</td>
-      <td id="T_5c04b_row2_col2" class="data row2 col2">4.070600</td>
-      <td id="T_5c04b_row2_col3" class="data row2 col3">23.734260</td>
-      <td id="T_5c04b_row2_col4" class="data row2 col4">-16.970670</td>
-      <td id="T_5c04b_row2_col5" class="data row2 col5">-3.909941</td>
-      <td id="T_5c04b_row2_col6" class="data row2 col6">-4.818170</td>
-      <td id="T_5c04b_row2_col7" class="data row2 col7">7.529984</td>
-      <td id="T_5c04b_row2_col8" class="data row2 col8">-5.688716</td>
+      <th id="T_e0969_level0_row2" class="row_heading level0 row2">2</th>
+      <td id="T_e0969_row2_col0" class="data row2 col0">14.472570</td>
+      <td id="T_e0969_row2_col1" class="data row2 col1">-4.540677</td>
+      <td id="T_e0969_row2_col2" class="data row2 col2">4.070600</td>
+      <td id="T_e0969_row2_col3" class="data row2 col3">23.734260</td>
+      <td id="T_e0969_row2_col4" class="data row2 col4">-16.970670</td>
+      <td id="T_e0969_row2_col5" class="data row2 col5">-3.909941</td>
+      <td id="T_e0969_row2_col6" class="data row2 col6">-4.818170</td>
+      <td id="T_e0969_row2_col7" class="data row2 col7">7.529984</td>
+      <td id="T_e0969_row2_col8" class="data row2 col8">-5.688716</td>
     </tr>
     <tr>
-      <th id="T_5c04b_level0_row3" class="row_heading level0 row3">3</th>
-      <td id="T_5c04b_row3_col0" class="data row3 col0">-1.165421</td>
-      <td id="T_5c04b_row3_col1" class="data row3 col1">-5.668406</td>
-      <td id="T_5c04b_row3_col2" class="data row3 col2">2.600437</td>
-      <td id="T_5c04b_row3_col3" class="data row3 col3">1.493158</td>
-      <td id="T_5c04b_row3_col4" class="data row3 col4">1.396363</td>
-      <td id="T_5c04b_row3_col5" class="data row3 col5">21.409450</td>
-      <td id="T_5c04b_row3_col6" class="data row3 col6">-3.138441</td>
-      <td id="T_5c04b_row3_col7" class="data row3 col7">5.730547</td>
-      <td id="T_5c04b_row3_col8" class="data row3 col8">-2.915676</td>
+      <th id="T_e0969_level0_row3" class="row_heading level0 row3">3</th>
+      <td id="T_e0969_row3_col0" class="data row3 col0">-1.165421</td>
+      <td id="T_e0969_row3_col1" class="data row3 col1">-5.668406</td>
+      <td id="T_e0969_row3_col2" class="data row3 col2">2.600437</td>
+      <td id="T_e0969_row3_col3" class="data row3 col3">1.493158</td>
+      <td id="T_e0969_row3_col4" class="data row3 col4">1.396363</td>
+      <td id="T_e0969_row3_col5" class="data row3 col5">21.409450</td>
+      <td id="T_e0969_row3_col6" class="data row3 col6">-3.138441</td>
+      <td id="T_e0969_row3_col7" class="data row3 col7">5.730547</td>
+      <td id="T_e0969_row3_col8" class="data row3 col8">-2.915676</td>
     </tr>
     <tr>
-      <th id="T_5c04b_level0_row4" class="row_heading level0 row4">4</th>
-      <td id="T_5c04b_row4_col0" class="data row4 col0">-4.222899</td>
-      <td id="T_5c04b_row4_col1" class="data row4 col1">-10.072150</td>
-      <td id="T_5c04b_row4_col2" class="data row4 col2">-6.030737</td>
-      <td id="T_5c04b_row4_col3" class="data row4 col3">-5.985864</td>
-      <td id="T_5c04b_row4_col4" class="data row4 col4">-18.376400</td>
-      <td id="T_5c04b_row4_col5" class="data row4 col5">-1.438816</td>
-      <td id="T_5c04b_row4_col6" class="data row4 col6">-2.009742</td>
-      <td id="T_5c04b_row4_col7" class="data row4 col7">-0.623953</td>
-      <td id="T_5c04b_row4_col8" class="data row4 col8">-1.024624</td>
+      <th id="T_e0969_level0_row4" class="row_heading level0 row4">4</th>
+      <td id="T_e0969_row4_col0" class="data row4 col0">-4.222899</td>
+      <td id="T_e0969_row4_col1" class="data row4 col1">-10.072150</td>
+      <td id="T_e0969_row4_col2" class="data row4 col2">-6.030737</td>
+      <td id="T_e0969_row4_col3" class="data row4 col3">-5.985864</td>
+      <td id="T_e0969_row4_col4" class="data row4 col4">-18.376400</td>
+      <td id="T_e0969_row4_col5" class="data row4 col5">-1.438816</td>
+      <td id="T_e0969_row4_col6" class="data row4 col6">-2.009742</td>
+      <td id="T_e0969_row4_col7" class="data row4 col7">-0.623953</td>
+      <td id="T_e0969_row4_col8" class="data row4 col8">-1.024624</td>
     </tr>
   </tbody>
 </table>
@@ -879,24 +879,48 @@ Y \sim 1 + \widehat{Z} + u \\
 <h2>Model Estimates: Factor Loadings</h2>
 <div class="columns">
 <div class="column">
-<p><img data-src="images/factorweights.png"> The weights accorded to each of the indicator metrics on each of the specified factors.</p>
+<p><img data-src="images/factorweights.png"> <img data-src="images/mm_traceplot.png"></p>
 </div><div class="column">
-<p><img data-src="images/mm_traceplot.png"> Healthy traceplots indicating reasonable exploration of the sample space</p>
+<div class="fragment fade-in">
+<ul>
+<li>The weights accorded to each of the indicator metrics on each of the specified factors are scaled.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Consistency in the factor loadings is a gauge of factor coherence.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Invariance of the loading scale across groups supports the argument to robust constructs.</li>
+</ul>
+</div>
 </div>
 </div>
 </section>
 <section id="model-fit-covariance-structures" class="slide level2">
 <h2>Model Fit: Covariance Structures</h2>
-<p><img data-src="images/measuremodel_resids.png"> The residuals between the sample covariance and model predicted covariances are largely small</p>
+<p><img data-src="images/measuremodel_resids.png"> The differences between the sample covariance and model predicted covariances are small.</p>
 </section>
 <section id="model-fit-posterior-predictive-checks" class="slide level2">
 <h2>Model Fit: Posterior Predictive Checks</h2>
-<p><img data-src="images/measuremodel_ppc.png"> The model can successfully retrodict the observed data</p>
+<p><img data-src="images/measuremodel_ppc.png"> The model can successfully retrodict the observed data, indicating good model fit.</p>
 </section>
-<section id="model-implications-latent-scores" class="slide level2">
+<section id="model-implications-latent-scores" class="slide level2 smaller">
 <h2>Model Implications: Latent Scores</h2>
-
-<img data-src="images/latent_measures.png" class="r-stretch"><p>What are the relations between these Latent components?</p>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p><img data-src="images/latent_measures.png"></p>
+</div><div class="column" style="width:30%;">
+<ul>
+<li>Bayesian Models <strong>sample</strong> the Latent constructs</li>
+<li>Assess the measurement profile of individual outliers under intervention.</li>
+<li>Allows us to interrogate what are the relations between these Latent components?</li>
+<li>How do thet vary under pressure?</li>
+</ul>
+</div>
+</div>
 </section></section>
 <section>
 <section id="structural-equation-models" class="title-slide slide level1 center">
@@ -905,103 +929,114 @@ Y \sim 1 + \widehat{Z} + u \\
 </section>
 <section id="adding-structural-components" class="slide level2">
 <h2>Adding Structural Components</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># measurement model</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>adjust <span class="op">=~</span> motiv <span class="op">+</span> harm <span class="op">+</span> stabi</span>
-<span id="cb3-3"><a href="#cb3-3"></a>risk <span class="op">=~</span> verbal <span class="op">+</span> ses <span class="op">+</span> ppsych</span>
-<span id="cb3-4"><a href="#cb3-4"></a>achieve <span class="op">=~</span> read <span class="op">+</span> arith <span class="op">+</span> spell</span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="co"># focal regressions</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>adjust <span class="op">~</span> risk </span>
-<span id="cb3-8"><a href="#cb3-8"></a>achieve <span class="op">~</span> adjust <span class="op">+</span> risk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<h3 id="regression-structures-are-overlaid">Regression Structures are Overlaid</h3>
+<div class="columns">
+<div class="column r-fit-text">
+<p><code>adjust =~ motiv + harm + stabi</code></p>
+<p><code>risk =~ verbal + ses + ppsych</code></p>
+<p><code>achieve =~ read + arith + spell</code></p>
+<p><code>adjust ~ risk</code></p>
+<p><code>achieve ~ adjust + risk</code></p>
+</div><div class="column r-fit-text">
 <p><span class="math display">\[SEM : \underbrace{\text{Ksi}^{*}}_{latent} = \underbrace{\mathbf{B}\text{Ksi}}_{structural \\ component} + \underbrace{\Lambda\cdot \text{Ksi}}_{measurement \\ component}\]</span></p>
 <p><span class="math display">\[CFA : \underbrace{\text{Ksi}^{*}}_{latent} = \underbrace{\mathbf{0}\text{Ksi}}_{structural \\ component} + \underbrace{\Lambda\cdot \text{Ksi}}_{measurement \\ component}\]</span></p>
+</div>
+</div>
 </section>
-<section id="the-structural-matrix" class="slide level2">
+<section id="the-structural-matrix" class="slide level2 smaller">
 <h2>The Structural Matrix</h2>
 <p><span class="math display">\[ \overbrace{\text{Ksi}}^{latent} = \begin{bmatrix} \overbrace{2.5}^{adjust} &amp; \overbrace{3.2}^{risk} &amp; \overbrace{7.3}^{achieve} \\ ... &amp; ... &amp; ...
 \\ ... &amp; ... &amp; ...  \\ ... &amp; ... \\ 3.9 &amp; ...\end{bmatrix} \begin{bmatrix} 0 &amp; \beta_{12} &amp; \beta_{13}
 \\ \beta_{21} &amp; 0 &amp; \beta_{23}
 \\ \beta_{31} &amp; \beta_{32} &amp; 0 \end{bmatrix} = \underbrace{\mathbf{B}}_{Regression \\ Coefficients} \]</span></p>
+<div class="r-stack">
 <div class="fragment fade-in">
 <p><img data-src="images/B_matrix_target.png"></p>
 </div>
+</div>
 </section>
-<section id="the-structural-matrix-1" class="slide level2">
+<section id="the-structural-matrix-1" class="slide level2 smaller">
 <h2>The Structural Matrix</h2>
+<p>The specification of the structural matrix encodes the candidate regression relations which are to be evaluated in the SEM fit.</p>
 <p><span class="math display">\[ \overbrace{\text{Ksi}}^{latent} = \begin{bmatrix} \overbrace{2.5}^{adjust} &amp; \overbrace{3.2}^{risk} &amp; \overbrace{7.3}^{achieve} \\ ... &amp; ... &amp; ...
 \\ ... &amp; ... &amp; ...  \\ ... &amp; ... \\ 3.9 &amp; ...\end{bmatrix} \begin{bmatrix} 0 &amp; 0 &amp; \color{blue}{\beta_{13}}
 \\ \color{blue}{\beta_{21}} &amp; 0 &amp; \color{blue}{\beta_{23}}
 \\ 0 &amp; 0 &amp; 0 \end{bmatrix} = \underbrace{\mathbf{B}}_{Regression \\ Coefficients} \]</span></p>
-<p>The specification of the structural matrix encodes the candidate regression relations which are to be evaluated in the SEM fit.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a>adjust <span class="op">~</span> risk </span>
-<span id="cb4-2"><a href="#cb4-2"></a>achieve <span class="op">~</span> adjust <span class="op">+</span> risk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="r-stack">
+<p><code>adjust ~ risk</code></p>
+</div>
+<div class="r-stack">
+<p><code>achieve ~ adjust + risk</code></p>
+</div>
 </section>
-<section id="the-generative-model-in-pymc" class="slide level2">
-<h2>The Generative Model in PyMC</h2>
-<div class="sourceCode" id="cb5" data-code-line-numbers="|25-35|36-47"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a></span>
-<span id="cb5-2"><a href="#cb5-2"></a>coords <span class="op">=</span> {</span>
-<span id="cb5-3"><a href="#cb5-3"></a>    <span class="st">"obs"</span>: <span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(df))),</span>
-<span id="cb5-4"><a href="#cb5-4"></a>    <span class="st">"indicators"</span>: [<span class="st">"motiv"</span>, <span class="st">"harm"</span>, <span class="st">"stabi"</span>, <span class="st">"verbal"</span>, <span class="st">"ses"</span>, <span class="st">"ppsych"</span>, <span class="st">"read"</span>, <span class="st">"arith"</span>, <span class="st">"spell"</span>],</span>
-<span id="cb5-5"><a href="#cb5-5"></a>    <span class="st">"indicators_1"</span>: [<span class="st">"motiv"</span>, <span class="st">"harm"</span>, <span class="st">"stabi"</span>],</span>
-<span id="cb5-6"><a href="#cb5-6"></a>    <span class="st">"indicators_2"</span>: [<span class="st">"verbal"</span>, <span class="st">"ses"</span>, <span class="st">"ppsych"</span>],</span>
-<span id="cb5-7"><a href="#cb5-7"></a>    <span class="st">"indicators_3"</span>: [<span class="st">"read"</span>, <span class="st">"arith"</span>, <span class="st">"spell"</span>],</span>
-<span id="cb5-8"><a href="#cb5-8"></a>    <span class="st">"latent"</span>: [<span class="st">"adjust"</span>, <span class="st">"risk"</span>, <span class="st">"achieve"</span>],</span>
-<span id="cb5-9"><a href="#cb5-9"></a>    <span class="st">"paths"</span>: [<span class="st">"risk-&gt;adjust"</span>, <span class="st">"risk--&gt;achieve"</span>, <span class="st">"adjust--&gt;achieve"</span>]</span>
-<span id="cb5-10"><a href="#cb5-10"></a>    }</span>
-<span id="cb5-11"><a href="#cb5-11"></a></span>
-<span id="cb5-12"><a href="#cb5-12"></a>    obs_idx <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(df)))</span>
-<span id="cb5-13"><a href="#cb5-13"></a>    <span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model:</span>
-<span id="cb5-14"><a href="#cb5-14"></a></span>
-<span id="cb5-15"><a href="#cb5-15"></a>        <span class="co"># Set up Factor Loadings</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a>        lambdas_1 <span class="op">=</span> make_lambda(<span class="st">'indicators_1'</span>, <span class="st">'lambdas1'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>]) <span class="co">#adjust</span></span>
-<span id="cb5-17"><a href="#cb5-17"></a>        lambdas_2 <span class="op">=</span> make_lambda(<span class="st">'indicators_2'</span>, <span class="st">'lambdas2'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>]) <span class="co"># risk</span></span>
-<span id="cb5-18"><a href="#cb5-18"></a>        lambdas_3 <span class="op">=</span> make_lambda(<span class="st">'indicators_3'</span>, <span class="st">'lambdas3'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>]) <span class="co"># achieve</span></span>
-<span id="cb5-19"><a href="#cb5-19"></a>        </span>
-<span id="cb5-20"><a href="#cb5-20"></a>        <span class="co"># Specify covariance structure between latent factors</span></span>
-<span id="cb5-21"><a href="#cb5-21"></a>        sd_dist <span class="op">=</span> pm.Exponential.dist(<span class="fl">1.0</span>, shape<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb5-22"><a href="#cb5-22"></a>        chol, _, _ <span class="op">=</span> pm.LKJCholeskyCov(<span class="st">"chol_cov"</span>, n<span class="op">=</span><span class="dv">3</span>, eta<span class="op">=</span><span class="dv">2</span>, sd_dist<span class="op">=</span>sd_dist, compute_corr<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-23"><a href="#cb5-23"></a>        ksi <span class="op">=</span> pm.MvNormal(<span class="st">"ksi"</span>, <span class="dv">0</span>, chol<span class="op">=</span>chol, dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"latent"</span>))</span>
-<span id="cb5-24"><a href="#cb5-24"></a></span>
-<span id="cb5-25"><a href="#cb5-25"></a>        <span class="co">## Build Regression Components</span></span>
-<span id="cb5-26"><a href="#cb5-26"></a>        coefs <span class="op">=</span> pm.Normal(<span class="st">'betas'</span>, <span class="dv">0</span>, <span class="fl">.5</span>, dims<span class="op">=</span><span class="st">'paths'</span>)</span>
-<span id="cb5-27"><a href="#cb5-27"></a>        zeros <span class="op">=</span> pt.zeros((<span class="dv">3</span>, <span class="dv">3</span>))</span>
-<span id="cb5-28"><a href="#cb5-28"></a>        <span class="co">## adjust ~ risk</span></span>
-<span id="cb5-29"><a href="#cb5-29"></a>        zeros1 <span class="op">=</span> pt.set_subtensor(zeros[<span class="dv">1</span>, <span class="dv">0</span>], coefs[<span class="dv">0</span>])</span>
-<span id="cb5-30"><a href="#cb5-30"></a>        <span class="co">## achieve ~ risk + adjust</span></span>
-<span id="cb5-31"><a href="#cb5-31"></a>        zeros2 <span class="op">=</span> pt.set_subtensor(zeros1[<span class="dv">1</span>, <span class="dv">2</span>], coefs[<span class="dv">1</span>])</span>
-<span id="cb5-32"><a href="#cb5-32"></a>        coefs_ <span class="op">=</span> pt.set_subtensor(zeros2[<span class="dv">0</span>, <span class="dv">2</span>], coefs[<span class="dv">2</span>])</span>
-<span id="cb5-33"><a href="#cb5-33"></a>        </span>
-<span id="cb5-34"><a href="#cb5-34"></a>        structural_relations <span class="op">=</span> pm.Deterministic(<span class="st">'endogenous_structural_paths'</span>, </span>
-<span id="cb5-35"><a href="#cb5-35"></a>        pm.math.dot(ksi, coefs_))</span>
-<span id="cb5-36"><a href="#cb5-36"></a></span>
-<span id="cb5-37"><a href="#cb5-37"></a>        <span class="co"># Construct Pseudo Observation matrix based on Factor Loadings</span></span>
-<span id="cb5-38"><a href="#cb5-38"></a>        m1 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">0</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">0</span>] <span class="co">#adjust</span></span>
-<span id="cb5-39"><a href="#cb5-39"></a>        m2 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">1</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">0</span>] <span class="co">#adjust</span></span>
-<span id="cb5-40"><a href="#cb5-40"></a>        m3 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">2</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">0</span>] <span class="co">#adjust</span></span>
-<span id="cb5-41"><a href="#cb5-41"></a>        m4 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">0</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">1</span>]  <span class="co">#risk</span></span>
-<span id="cb5-42"><a href="#cb5-42"></a>        m5 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">1</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">1</span>]  <span class="co">#risk</span></span>
-<span id="cb5-43"><a href="#cb5-43"></a>        m6 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">2</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">1</span>]  <span class="co">#risk</span></span>
-<span id="cb5-44"><a href="#cb5-44"></a>        m7 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">0</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">2</span>]  <span class="co">#achieve</span></span>
-<span id="cb5-45"><a href="#cb5-45"></a>        m8 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">1</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">2</span>]  <span class="co">#achieve</span></span>
-<span id="cb5-46"><a href="#cb5-46"></a>        m9 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">2</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">2</span>]  <span class="co">#achieve</span></span>
-<span id="cb5-47"><a href="#cb5-47"></a></span>
-<span id="cb5-48"><a href="#cb5-48"></a>        mu <span class="op">=</span> pm.Deterministic(<span class="st">"mu"</span>, pm.math.stack([m1, m2, m3, m4, m5, m6, m7, m8, m9]).T)</span>
-<span id="cb5-49"><a href="#cb5-49"></a></span>
-<span id="cb5-50"><a href="#cb5-50"></a></span>
-<span id="cb5-51"><a href="#cb5-51"></a>        <span class="co">## Error Terms</span></span>
-<span id="cb5-52"><a href="#cb5-52"></a>        Psi <span class="op">=</span> pm.InverseGamma(<span class="st">"Psi"</span>, <span class="dv">2</span>, <span class="dv">13</span>, dims<span class="op">=</span><span class="st">"indicators"</span>)</span>
-<span id="cb5-53"><a href="#cb5-53"></a></span>
-<span id="cb5-54"><a href="#cb5-54"></a>        <span class="co"># Likelihood</span></span>
-<span id="cb5-55"><a href="#cb5-55"></a>        _ <span class="op">=</span> pm.Normal(</span>
-<span id="cb5-56"><a href="#cb5-56"></a>            <span class="st">"likelihood"</span>,</span>
-<span id="cb5-57"><a href="#cb5-57"></a>            mu,</span>
-<span id="cb5-58"><a href="#cb5-58"></a>            Psi,</span>
-<span id="cb5-59"><a href="#cb5-59"></a>            observed<span class="op">=</span>df[coords[<span class="st">'indicators'</span>]].values,</span>
-<span id="cb5-60"><a href="#cb5-60"></a>        )</span>
-<span id="cb5-61"><a href="#cb5-61"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="the-sem-model-in-pymc" class="slide level2 smaller">
+<h2>The SEM Model in PyMC</h2>
+<h3 id="defining-the-dag">Defining the DAG</h3>
+<div class="sourceCode" id="cb3" data-code-line-numbers="|25-35|36-47"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2"></a>coords <span class="op">=</span> {</span>
+<span id="cb3-3"><a href="#cb3-3"></a>    <span class="st">"obs"</span>: <span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(df))),</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    <span class="st">"indicators"</span>: [<span class="st">"motiv"</span>, <span class="st">"harm"</span>, <span class="st">"stabi"</span>, <span class="st">"verbal"</span>, <span class="st">"ses"</span>, <span class="st">"ppsych"</span>, <span class="st">"read"</span>, <span class="st">"arith"</span>, <span class="st">"spell"</span>],</span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="st">"indicators_1"</span>: [<span class="st">"motiv"</span>, <span class="st">"harm"</span>, <span class="st">"stabi"</span>],</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    <span class="st">"indicators_2"</span>: [<span class="st">"verbal"</span>, <span class="st">"ses"</span>, <span class="st">"ppsych"</span>],</span>
+<span id="cb3-7"><a href="#cb3-7"></a>    <span class="st">"indicators_3"</span>: [<span class="st">"read"</span>, <span class="st">"arith"</span>, <span class="st">"spell"</span>],</span>
+<span id="cb3-8"><a href="#cb3-8"></a>    <span class="st">"latent"</span>: [<span class="st">"adjust"</span>, <span class="st">"risk"</span>, <span class="st">"achieve"</span>],</span>
+<span id="cb3-9"><a href="#cb3-9"></a>    <span class="st">"paths"</span>: [<span class="st">"risk-&gt;adjust"</span>, <span class="st">"risk--&gt;achieve"</span>, <span class="st">"adjust--&gt;achieve"</span>]</span>
+<span id="cb3-10"><a href="#cb3-10"></a>    }</span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a>    obs_idx <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(df)))</span>
+<span id="cb3-13"><a href="#cb3-13"></a>    <span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> model:</span>
+<span id="cb3-14"><a href="#cb3-14"></a></span>
+<span id="cb3-15"><a href="#cb3-15"></a>        <span class="co"># Set up Factor Loadings</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>        lambdas_1 <span class="op">=</span> make_lambda(<span class="st">'indicators_1'</span>, <span class="st">'lambdas1'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>]) <span class="co">#adjust</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a>        lambdas_2 <span class="op">=</span> make_lambda(<span class="st">'indicators_2'</span>, <span class="st">'lambdas2'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>]) <span class="co"># risk</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a>        lambdas_3 <span class="op">=</span> make_lambda(<span class="st">'indicators_3'</span>, <span class="st">'lambdas3'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>]) <span class="co"># achieve</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>        </span>
+<span id="cb3-20"><a href="#cb3-20"></a>        <span class="co"># Specify covariance structure between latent factors</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>        sd_dist <span class="op">=</span> pm.Exponential.dist(<span class="fl">1.0</span>, shape<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb3-22"><a href="#cb3-22"></a>        chol, _, _ <span class="op">=</span> pm.LKJCholeskyCov(<span class="st">"chol_cov"</span>, n<span class="op">=</span><span class="dv">3</span>, eta<span class="op">=</span><span class="dv">2</span>, sd_dist<span class="op">=</span>sd_dist, compute_corr<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-23"><a href="#cb3-23"></a>        ksi <span class="op">=</span> pm.MvNormal(<span class="st">"ksi"</span>, <span class="dv">0</span>, chol<span class="op">=</span>chol, dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"latent"</span>))</span>
+<span id="cb3-24"><a href="#cb3-24"></a></span>
+<span id="cb3-25"><a href="#cb3-25"></a>        <span class="co">## Build Regression Components</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a>        coefs <span class="op">=</span> pm.Normal(<span class="st">'betas'</span>, <span class="dv">0</span>, <span class="fl">.5</span>, dims<span class="op">=</span><span class="st">'paths'</span>)</span>
+<span id="cb3-27"><a href="#cb3-27"></a>        zeros <span class="op">=</span> pt.zeros((<span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb3-28"><a href="#cb3-28"></a>        <span class="co">## adjust ~ risk</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>        zeros1 <span class="op">=</span> pt.set_subtensor(zeros[<span class="dv">1</span>, <span class="dv">0</span>], coefs[<span class="dv">0</span>])</span>
+<span id="cb3-30"><a href="#cb3-30"></a>        <span class="co">## achieve ~ risk + adjust</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a>        zeros2 <span class="op">=</span> pt.set_subtensor(zeros1[<span class="dv">1</span>, <span class="dv">2</span>], coefs[<span class="dv">1</span>])</span>
+<span id="cb3-32"><a href="#cb3-32"></a>        coefs_ <span class="op">=</span> pt.set_subtensor(zeros2[<span class="dv">0</span>, <span class="dv">2</span>], coefs[<span class="dv">2</span>])</span>
+<span id="cb3-33"><a href="#cb3-33"></a>        </span>
+<span id="cb3-34"><a href="#cb3-34"></a>        structural_relations <span class="op">=</span> pm.Deterministic(<span class="st">'endogenous_structural_paths'</span>, </span>
+<span id="cb3-35"><a href="#cb3-35"></a>        pm.math.dot(ksi, coefs_))</span>
+<span id="cb3-36"><a href="#cb3-36"></a></span>
+<span id="cb3-37"><a href="#cb3-37"></a>        <span class="co"># Construct Pseudo Observation matrix based on Factor Loadings</span></span>
+<span id="cb3-38"><a href="#cb3-38"></a>        m1 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">0</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">0</span>] <span class="co">#adjust</span></span>
+<span id="cb3-39"><a href="#cb3-39"></a>        m2 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">1</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">0</span>] <span class="co">#adjust</span></span>
+<span id="cb3-40"><a href="#cb3-40"></a>        m3 <span class="op">=</span> ksi[obs_idx, <span class="dv">0</span>] <span class="op">*</span> lambdas_1[<span class="dv">2</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">0</span>] <span class="co">#adjust</span></span>
+<span id="cb3-41"><a href="#cb3-41"></a>        m4 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">0</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">1</span>]  <span class="co">#risk</span></span>
+<span id="cb3-42"><a href="#cb3-42"></a>        m5 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">1</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">1</span>]  <span class="co">#risk</span></span>
+<span id="cb3-43"><a href="#cb3-43"></a>        m6 <span class="op">=</span> ksi[obs_idx, <span class="dv">1</span>] <span class="op">*</span> lambdas_2[<span class="dv">2</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">1</span>]  <span class="co">#risk</span></span>
+<span id="cb3-44"><a href="#cb3-44"></a>        m7 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">0</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">2</span>]  <span class="co">#achieve</span></span>
+<span id="cb3-45"><a href="#cb3-45"></a>        m8 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">1</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">2</span>]  <span class="co">#achieve</span></span>
+<span id="cb3-46"><a href="#cb3-46"></a>        m9 <span class="op">=</span> ksi[obs_idx, <span class="dv">2</span>] <span class="op">*</span> lambdas_3[<span class="dv">2</span>] <span class="op">+</span>  structural_relations[obs_idx, <span class="dv">2</span>]  <span class="co">#achieve</span></span>
+<span id="cb3-47"><a href="#cb3-47"></a></span>
+<span id="cb3-48"><a href="#cb3-48"></a>        mu <span class="op">=</span> pm.Deterministic(<span class="st">"mu"</span>, pm.math.stack([m1, m2, m3, m4, m5, m6, m7, m8, m9]).T)</span>
+<span id="cb3-49"><a href="#cb3-49"></a></span>
+<span id="cb3-50"><a href="#cb3-50"></a></span>
+<span id="cb3-51"><a href="#cb3-51"></a>        <span class="co">## Error Terms</span></span>
+<span id="cb3-52"><a href="#cb3-52"></a>        Psi <span class="op">=</span> pm.InverseGamma(<span class="st">"Psi"</span>, <span class="dv">2</span>, <span class="dv">13</span>, dims<span class="op">=</span><span class="st">"indicators"</span>)</span>
+<span id="cb3-53"><a href="#cb3-53"></a></span>
+<span id="cb3-54"><a href="#cb3-54"></a>        <span class="co"># Likelihood</span></span>
+<span id="cb3-55"><a href="#cb3-55"></a>        _ <span class="op">=</span> pm.Normal(</span>
+<span id="cb3-56"><a href="#cb3-56"></a>            <span class="st">"likelihood"</span>,</span>
+<span id="cb3-57"><a href="#cb3-57"></a>            mu,</span>
+<span id="cb3-58"><a href="#cb3-58"></a>            Psi,</span>
+<span id="cb3-59"><a href="#cb3-59"></a>            observed<span class="op">=</span>df[coords[<span class="st">'indicators'</span>]].values,</span>
+<span id="cb3-60"><a href="#cb3-60"></a>        )</span>
+<span id="cb3-61"><a href="#cb3-61"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="model-comparison" class="slide level2">
 <h2>Model Comparison</h2>
+<h3 id="local-and-global-fit">Local and Global Fit</h3>
 <div class="columns">
 <div class="column">
 <div class="quarto-figure quarto-figure-center">
@@ -1055,50 +1090,50 @@ Y \sim 1 + \widehat{Z} + u \\
 </div>
 </div>
 </section>
-<section id="graphs-mutilation-in-pymc" class="slide level2">
-<h2>Graphs Mutilation in PyMC</h2>
+<section id="graph-mutilation-in-pymc" class="slide level2">
+<h2>Graph Mutilation in PyMC</h2>
 <div class="columns">
 <div class="column">
-<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">## Model Estimated on Data</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>idata_sem, model_sem <span class="op">=</span> make_sem()</span>
-<span id="cb6-3"><a href="#cb6-3"></a>pm.model_to_graphviz(model_sem)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">## Model Estimated on Data</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>idata_sem, model_sem <span class="op">=</span> make_sem()</span>
+<span id="cb4-3"><a href="#cb4-3"></a>pm.model_to_graphviz(model_sem)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><img data-src="images/sem_model_graph.png"></p>
 </div><div class="column">
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">## The Do-Operator in Action</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>model_beta0 <span class="op">=</span> do(model_sem, </span>
-<span id="cb7-3"><a href="#cb7-3"></a>{<span class="st">"betas"</span>: [<span class="dv">0</span>, <span class="dv">0</span> , <span class="dv">0</span>]}, </span>
-<span id="cb7-4"><a href="#cb7-4"></a>prune_vars<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb7-5"><a href="#cb7-5"></a>pm.model_to_graphviz(model_beta0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">## The Do-Operator in Action</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>model_beta0 <span class="op">=</span> do(model_sem, </span>
+<span id="cb5-3"><a href="#cb5-3"></a>{<span class="st">"betas"</span>: [<span class="dv">0</span>, <span class="dv">0</span> , <span class="dv">0</span>]}, </span>
+<span id="cb5-4"><a href="#cb5-4"></a>prune_vars<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a>pm.model_to_graphviz(model_beta0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><img data-src="images/mutilated_sem_graph.png"></p>
 </div>
 </div>
 </section>
 <section id="causal-estimands-under-intervention" class="slide level2">
 <h2>Causal Estimands under Intervention</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a>model_beta0 <span class="op">=</span> do(model_sem, {<span class="st">"betas"</span>: [<span class="dv">0</span>, <span class="dv">0</span> , <span class="dv">0</span>]}, prune_vars<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb8-2"><a href="#cb8-2"></a>model_beta1 <span class="op">=</span> do(model_sem, {<span class="st">"betas"</span>: [<span class="fl">.6</span>, <span class="fl">.3</span>, <span class="fl">.7</span>]}, prune_vars<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb8-3"><a href="#cb8-3"></a></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="co"># Sample new data assuming path parameters 0: P(Y | c, do(beta=0))</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a>idata_z0 <span class="op">=</span> pm.sample_posterior_predictive(</span>
-<span id="cb8-6"><a href="#cb8-6"></a>    idata_sem,</span>
-<span id="cb8-7"><a href="#cb8-7"></a>    model<span class="op">=</span>model_beta0,</span>
-<span id="cb8-8"><a href="#cb8-8"></a>    predictions<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb8-9"><a href="#cb8-9"></a>    var_names<span class="op">=</span>[<span class="st">"likelihood"</span>, <span class="st">"betas"</span>,],</span>
-<span id="cb8-10"><a href="#cb8-10"></a>)</span>
-<span id="cb8-11"><a href="#cb8-11"></a><span class="co"># Sample new data assuming substantive specification: P(Y | c, do(z=[.6, .3, .7]))</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a>idata_z1 <span class="op">=</span> pm.sample_posterior_predictive(</span>
-<span id="cb8-13"><a href="#cb8-13"></a>    idata_sem,</span>
-<span id="cb8-14"><a href="#cb8-14"></a>    model<span class="op">=</span>model_beta1,</span>
-<span id="cb8-15"><a href="#cb8-15"></a>    predictions<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb8-16"><a href="#cb8-16"></a>    var_names<span class="op">=</span>[<span class="st">"likelihood"</span>, <span class="st">"betas"</span>],</span>
-<span id="cb8-17"><a href="#cb8-17"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a>model_beta0 <span class="op">=</span> do(model_sem, {<span class="st">"betas"</span>: [<span class="dv">0</span>, <span class="dv">0</span> , <span class="dv">0</span>]}, prune_vars<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>model_beta1 <span class="op">=</span> do(model_sem, {<span class="st">"betas"</span>: [<span class="fl">.6</span>, <span class="fl">.3</span>, <span class="fl">.7</span>]}, prune_vars<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co"># Sample new data assuming path parameters 0: P(Y | c, do(beta=0))</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>idata_z0 <span class="op">=</span> pm.sample_posterior_predictive(</span>
+<span id="cb6-6"><a href="#cb6-6"></a>    idata_sem,</span>
+<span id="cb6-7"><a href="#cb6-7"></a>    model<span class="op">=</span>model_beta0,</span>
+<span id="cb6-8"><a href="#cb6-8"></a>    predictions<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-9"><a href="#cb6-9"></a>    var_names<span class="op">=</span>[<span class="st">"likelihood"</span>, <span class="st">"betas"</span>,],</span>
+<span id="cb6-10"><a href="#cb6-10"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co"># Sample new data assuming substantive specification: P(Y | c, do(z=[.6, .3, .7]))</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>idata_z1 <span class="op">=</span> pm.sample_posterior_predictive(</span>
+<span id="cb6-13"><a href="#cb6-13"></a>    idata_sem,</span>
+<span id="cb6-14"><a href="#cb6-14"></a>    model<span class="op">=</span>model_beta1,</span>
+<span id="cb6-15"><a href="#cb6-15"></a>    predictions<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-16"><a href="#cb6-16"></a>    var_names<span class="op">=</span>[<span class="st">"likelihood"</span>, <span class="st">"betas"</span>],</span>
+<span id="cb6-17"><a href="#cb6-17"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="causal-estimands-under-intervention-1" class="slide level2">
 <h2>Causal Estimands under Intervention</h2>
 <p><span class="math display">\[ E\Big[(Y| do(\beta=0)) - (Y | do(\beta \neq 0) \Big] \]</span> <img data-src="images/causal_estimands.png"></p>
 </section>
 <section id="model-fit-sensitivity-under-intervention" class="slide level2">
-<h2>Model Fit Sensitivity under Intervention</h2>
+<h2>Model Fit: Sensitivity under Intervention</h2>
 <div class="columns">
 <div class="column">
 <p><img data-src="images/counterfactual_residuals.png"></p>
@@ -1109,6 +1144,7 @@ Y \sim 1 + \widehat{Z} + u \\
 </section>
 <section id="conclusion" class="slide level2 smaller">
 <h2>Conclusion</h2>
+<h3 class="smaller" id="credibility-versus-certification">Credibility versus Certification</h3>
 <div class="columns">
 <div class="column r-fit-text">
 <blockquote>
@@ -1121,7 +1157,7 @@ Y \sim 1 + \widehat{Z} + u \\
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="images/starON.jpg"></p>
-<p></p><figcaption>An Inference Engine</figcaption><p></p>
+<p></p><figcaption>An Inference Engine adding ***’s to our conclusion</figcaption><p></p>
 </figure>
 </div>
 </div>
