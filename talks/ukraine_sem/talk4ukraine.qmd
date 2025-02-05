@@ -263,7 +263,7 @@ Causal Structural Models generate valid causal claims just when:
 
 ::: {.column .r-fit-text}
 
-![Theory and Credibility](images/framework.png)
+![Theory and Credibility by Ashworth et al](images/framework.png)
 
 ::: {.fragment .fade-in}
 $$ \Bigg( \begin{array}{cc}
@@ -306,7 +306,7 @@ $$ ACHIEVE \sim f_{ACHIEVE}(read, arith, spell, U)$$
 
 Non-parametric phrasing of SCMs under-specifies the relations of interest. 
 
-CFA models estimates the multivariate correlation structure while imposing causal structure and dependencies
+CFA models estimates the multivariate correlation structure while imposing the [__focal causal structure__]{.blue} and dependencies to "hide" detail in measurement error. 
 :::
 ::: {.column .r-fit-text}
 ![](images/factor_structure.png)
