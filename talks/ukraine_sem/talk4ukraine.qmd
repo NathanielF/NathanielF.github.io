@@ -17,39 +17,13 @@ date: last-modified
 image: "images/factor_structure.png"
 ---
 
+
+
 # The Pitch
 
-Valid causal claims are of paramount importance in science. Structural causal models impose extra-statistical constraints on the derivation of causal claims from data.
+Structural causal models impose extra-statistical constraints on the derivation of [__valid causal claims__]{.blue} from data.
 
 These constraints can be understood concretely with reference to the SEM literature. We outline the development of structural causal models in the Bayesian setting highlighting the use of the do-operator on generative model graph structures. 
-
-## Agenda {.smaller}
-:::: {.columns}
-::: {.column}
-- Valid Causal Structure
-    - Form and Content of Causal Inference
-    - Abstract Conception
-    - Concrete Conception
-    - The Bayesian Phrasing
-    - Implementation in Code
-- Measurement Models
-    - Measurement Models Abstract Conception
-    - Bayesian Phrasing: Concrete Example
-    - Bayesian Phrasing: Code in PyMC
-    - Model Fit and Diagnostics
-:::
-::: {.column}
-- Structural Equation Models
-    - Adding Structural Components
-    - The Generative Model in PyMC
-    - Model Comparison: CFA and SEM
-- Sensitivity Analysis and the Do-Operator
-    - The Do-Calculus and Sensitivity Analysis
-    - What-if Structures and the Do-Operator
-    - The Do-Operator in PyMC
-    - Causal Estimands under Intervention
-:::
-::::
 
 ## Preliminaries {.smaller}
 
@@ -68,6 +42,37 @@ These constraints can be understood concretely with reference to the SEM literat
 :::
 
 ![My Website](images/QR_CODE.png)
+
+
+## Agenda {.smaller}
+### Abstract -> Concrete -> Code
+:::: {.columns}
+::: {.column}
+- [__Valid Causal Structure__]{.blue}
+    - Form and Content of Causal Inference
+    - Abstract Conception
+    - Concrete Conception
+    - The Bayesian Phrasing
+    - Implementation in Code
+- [__Factor Structures__]{.blue}
+    - Measurement Models: Abstract Conception
+    - Bayesian Phrasing: Concrete Example
+    - Bayesian Phrasing: Code in PyMC
+    - Model Fit and Diagnostics
+:::
+::: {.column}
+- [__Structural Equation Models__]{.blue}
+    - Adding Structural Components
+    - The Generative Model in PyMC
+    - Model Comparison: CFA and SEM
+- [__Causal Estimands and the Do-Operator__]{.blue}
+    - The Do-Calculus and Minimum Valid Structure
+    - What-if Structures and the Do-Operator
+    - The Do-Operator in PyMC
+    - Causal Estimands under Intervention
+:::
+::::
+
 
 # Valid Causal Structure
 
@@ -119,7 +124,7 @@ $$ IV \sim f_{IV}(U_{IV})$$
 :::
 ::: {.column .r-fit-text}
 $$ y \sim 1 + Z + u $$
-Regression Approximation to estimating [__valid__]{.blue} coefficients in systems of simultaneous equation.
+Regression Approximation to estimating [__valid__]{.blue} coefficients in systems of simultaneous equation via 2SLS.
 :::
 ::: {.column .r-fit-text}
 $$ y \sim 1 + \widehat{Z} + u $$
@@ -274,7 +279,7 @@ $$
 :::
 
 ::::
-# Measurement Models
+# Factor Structures
 
 ## Measurement Models {.smaller}
 ###  and Conditional Exchangeability
@@ -553,7 +558,7 @@ coords = {
 SEM model achieves better performance on the local and global model checks than the CFA model
 ::::
 
-## The Do-Calculus and Sensitivity Analysis {.smaller}
+## Causal Estimands and the Do-Operator {.smaller}
 
 :::: {.columns}
 ::: {.column}
@@ -649,12 +654,19 @@ The plots are scaled identically here between -1 and 1. Highlighting significant
 :::: 
 
 ## Conclusion {.smaller}
+:::: {.columns}
+::: {.column .r-fit-text}
 > "SEM is an inference engine that takes in two inputs, qualitative causal assumptions and empirical data, and derives two logical
 consequences of these inputs: quantitative causal conclusions and statistical measures
 of fit for the testable implications of the assumptions. Failure to fit the data casts doubt on the strong causal assumptions of zero coefficients or zero covariances and guides
 the researcher to diagnose, or repair the structural misspecifications. __[Fitting the data
-does not “prove” the causal assumptions, but it makes them tentatively more plausible.]{.blue}__
-Any such positive results need to be replicated and to withstand the criticisms of
-researchers who suggest other models for the same data. "
+does not “prove” the causal assumptions, but it makes them tentatively more plausible.]{.blue}__ "
 
 - Bollen and Pearl in _Eight myths about causality and structural equation models_
+:::
+
+::: {.column}
+
+![An Inference Engine](images/starON.jpg)
+:::
+::::
