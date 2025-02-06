@@ -281,7 +281,7 @@ $$
 ::::
 # Factor Structures
 
-## Measurement Models {.smaller}
+## Confirmatory Factor Structures {.smaller}
 ###  and Conditional Exchangeability
 
 Assumptions of exchangeability in survey measurement and De-Finetti's theorem
@@ -296,7 +296,7 @@ and in paticular latent factors $\Lambda$ are hypothetical __[common causes]{.bl
 $$ Y(0), Y(1) \perp\!\!\!\!\perp T | \Lambda$$
 
 
-## Measurement Models in SCMs
+## Factor Structures as Measurement Models
 
 ::::{.columns}
 ::: {.column .r-fit-text}
@@ -315,7 +315,7 @@ CFA models estimates the multivariate correlation structure while imposing the [
 
 
 ## Measurement Models {.smaller}
-### and Factor Structures
+### and Structured Priors
 
 The Confirmatory Factor Model can also be phrased in the Bayesian way.
 
@@ -406,7 +406,7 @@ with pm.Model(coords=coords) as model:
 
 
 ```
-## Model Estimates: Factor Loadings
+## Model Estimates: Factor Loadings {.smaller}
 
 ::: {.columns}
 ::: {.column}
@@ -466,9 +466,12 @@ The model can successfully retrodict the observed data, indicating good model fi
 
 `achieve =~ read + arith + spell`
 
+::: {.fragment .fade-in}
+
 `adjust ~ risk` 
 
 `achieve ~ adjust + risk`
+:::
 :::
 
 
