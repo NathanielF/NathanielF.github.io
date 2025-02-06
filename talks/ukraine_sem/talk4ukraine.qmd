@@ -39,6 +39,7 @@ These constraints can be understood concretely with reference to the SEM literat
 ## Code or it didn't Happen
 - The worked examples used here can be found [here](https://www.pymc.io/projects/examples/en/latest/case_studies/CFA_SEM.html)
 - <a href="notebook/bayesian_sem.ipynb" download>Download SEM Notebook</a>
+- <a href="notebook/sem_data.csv" download>SEM Data</a>
 :::
 
 ![My Website](images/QR_CODE.png)
