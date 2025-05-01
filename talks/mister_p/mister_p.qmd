@@ -14,6 +14,7 @@ categories: [bayesian, missing data, causal inference]
 image: "images/final_plot.png"
 date: last-modified
 draft: False
+jupyter: pymc_causal
 ---
 
 ## Preliminaries {.smaller}
@@ -48,6 +49,9 @@ Multilevel Regression with Post-stratification is a __corrective__ technique for
 ## Agenda
 ::: {.fragment .fade-in}
 - Regression as Strata specific Summarisation
+::: 
+::: {.fragment .fade-in}
+- Hierarchical Regression and Probabilistic Programming
 ::: 
 ::: {.fragment .fade-in}
 - Sampling and Probability Sampling 
@@ -192,6 +196,54 @@ to account for different varieties of risk across the strata of our population
 :::
 
 :::
+
+
+## Hierarchical Regression and PPLs
+### Differences in Strata drawn from Random Distribution
+
+$$ y = \beta_{0} + (\beta_{1} + \color{red}\gamma_{1,g}\color{black})X_{1} + \beta_{2}X_{2}$$
+
+where 
+
+$$\beta_{i} \sim Normal(0, \color{purple}\sigma_{i}\color{black})$$
+
+and 
+
+$$\gamma_{1,g} \sim Normal(0, \color{purple}\sigma_{i}\color{black}) \text{ for } g \in G$$
+
+$$\sigma_{i} \sim InverseGamma(?, ?)$$
+
+## Hierarchical Regression and PPLs
+### Vectorisation and Python Implementation
+
+```{python}
+#| echo: true
+
+import numpy as np
+import pandas as pd
+
+b0, b1, b2 = 1, 2, 4
+b_g = np.random.normal(0, 1, 5)
+X = np.random.normal(0, 1, size=(100, 2))
+groups = np.array(['A', 'B', 'C', 'D', 'E']*20)
+grp_indx, uniques = pd.factorize(groups)
+
+y = b0 + (b1 +b_g[grp_indx])*X[:, 0] + b2*X[:, 1]
+
+```
+
+
+## Hierarchical Regression and PPLs {.smaller}
+### Vectorisation and Python Implementation
+
+```{python}
+
+pd.DataFrame({'g': groups, 'b_g': b_g[grp_indx], 'X0': X[:, 0], 'X1': X[:, 1], 'y': y}).head(10)
+
+
+
+```
+
 
 # Sampling and Probability Sampling 
 In which we discuss the manner in which sample bias can corrupt the inferences drawn in even theoretically sound regression models. 

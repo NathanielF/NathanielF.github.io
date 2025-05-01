@@ -2,6 +2,7 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/mister_p/mister_p.html",
       "/talks/ukraine_sem/talk4ukraine.html",
       "/talks/lbs_sem_causal/lbs_sem_causal.html",
       "/talks/pycon_ireland_causalpy/pycon_2024.html",
@@ -11,7 +12,6 @@
       "/talks/missing_data/missing_data_causal.html",
       "/talks/bayesian_mixer/bayesian_mixer_london.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
-      "/talks/mister_p/mister_p.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
       "/talks/tenuous_relations/first_talk.html"

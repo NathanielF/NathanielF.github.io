@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.335">
+<meta name="generator" content="quarto-1.6.41">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Examined Algorithms – talks</title>
+<title>talks – Examined Algorithms</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -17,7 +17,7 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
 </style>
@@ -37,17 +37,23 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -56,8 +62,10 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 <script>
@@ -90,149 +98,104 @@ ul.task-list li input[type="checkbox"] {
   })
   </script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Examined Algorithms</span>
     </a>
   </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html">
- <span class="menu-text">Blog</span></a>
+    <a class="nav-link" href="./blog.html"> 
+<span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./opensource.html">
- <span class="menu-text">Open Source Projects</span></a>
+    <a class="nav-link" href="./opensource.html"> 
+<span class="menu-text">Open Source Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./talks.html" aria-current="page">
- <span class="menu-text">Talks</span></a>
+    <a class="nav-link active" href="./talks.html" aria-current="page"> 
+<span class="menu-text">Talks</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./resume/Nathaniel_Forde_Resume.pdf">
- <span class="menu-text">CV</span></a>
+    <a class="nav-link" href="./resume/Nathaniel_Forde_Resume.pdf"> 
+<span class="menu-text">CV</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/NathanielF"><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/NathanielF"> <i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/forde_nathaniel"><i class="bi bi-twitter" role="img">
+    <a class="nav-link" href="https://twitter.com/forde_nathaniel"> <i class="bi bi-twitter" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
-              <div class="quarto-toggle-container">
-                  <a href="" class="quarto-reader-toggle nav-link" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
   <div class="quarto-reader-toggle-btn">
   <i class="bi"></i>
   </div>
 </a>
-              </div>
-              <div id="quarto-search" class="" title="Search"></div>
-          </div> <!-- /navcollapse -->
+</div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"></h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
-      </button>
-    </div>
-  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
-    <div class="sidebar-menu-container"> 
-    <ul class="list-unstyled mt-1">
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Logic</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Logic/Introduction - Logic Topics.html" class="sidebar-item-text sidebar-link">Introduction - Logic Topics</a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Philosophy</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Philosophy/Introduction - Philosophy Topics.html" class="sidebar-item-text sidebar-link">Introduction - Philosophy Topics</a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Philosophy/Thinking about Statistics.html" class="sidebar-item-text sidebar-link">Statistical Models and the Problem of Induction</a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Philosophy/Sorites Paradox and Survival Analysis.html" class="sidebar-item-text sidebar-link">The Sorites Paradox</a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Statistics</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Statistics/Introduction - Statistics Topics.html" class="sidebar-item-text sidebar-link">Introduction - Statistics Topics</a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Statistics/Analogies between Missing Data and Causal Inference.html" class="sidebar-item-text sidebar-link">Taxonomies of Missing-ness</a>
-  </div>
-</li>
-      </ul>
-  </li>
-    </ul>
-    </div>
-</nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(13)</span></div><div class="category" data-category="SCM">SCM <span class="quarto-category-count">(1)</span></div><div class="category" data-category="SEM">SEM <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VAR">VAR <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bayesian">bayesian <span class="quarto-category-count">(11)</span></div><div class="category" data-category="causal">causal <span class="quarto-category-count">(1)</span></div><div class="category" data-category="causal inference">causal inference <span class="quarto-category-count">(4)</span></div><div class="category" data-category="cfa">cfa <span class="quarto-category-count">(1)</span></div><div class="category" data-category="counting">counting <span class="quarto-category-count">(1)</span></div><div class="category" data-category="discrete choice">discrete choice <span class="quarto-category-count">(3)</span></div><div class="category" data-category="fun">fun <span class="quarto-category-count">(1)</span></div><div class="category" data-category="histogram">histogram <span class="quarto-category-count">(1)</span></div><div class="category" data-category="missing data">missing data <span class="quarto-category-count">(3)</span></div><div class="category" data-category="people analytics">people analytics <span class="quarto-category-count">(1)</span></div><div class="category" data-category="probability">probability <span class="quarto-category-count">(1)</span></div><div class="category" data-category="propensity scores">propensity scores <span class="quarto-category-count">(1)</span></div><div class="category" data-category="pymc">pymc <span class="quarto-category-count">(1)</span></div><div class="category" data-category="sem">sem <span class="quarto-category-count">(1)</span></div><div class="category" data-category="sensitivity analysis">sensitivity analysis <span class="quarto-category-count">(1)</span></div><div class="category" data-category="survival analysis">survival analysis <span class="quarto-category-count">(1)</span></div><div class="category" data-category="timeseries analysis">timeseries analysis <span class="quarto-category-count">(1)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(13)</span></div><div class="category" data-category="U0NN">SCM <span class="quarto-category-count">(1)</span></div><div class="category" data-category="U0VN">SEM <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VkFS">VAR <span class="quarto-category-count">(1)</span></div><div class="category" data-category="YmF5ZXNpYW4=">bayesian <span class="quarto-category-count">(11)</span></div><div class="category" data-category="Y2F1c2Fs">causal <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Y2F1c2FsJTIwaW5mZXJlbmNl">causal inference <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Y2Zh">cfa <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Y291bnRpbmc=">counting <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZGlzY3JldGUlMjBjaG9pY2U=">discrete choice <span class="quarto-category-count">(3)</span></div><div class="category" data-category="ZnVu">fun <span class="quarto-category-count">(1)</span></div><div class="category" data-category="aGlzdG9ncmFt">histogram <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bWlzc2luZyUyMGRhdGE=">missing data <span class="quarto-category-count">(3)</span></div><div class="category" data-category="cGVvcGxlJTIwYW5hbHl0aWNz">people analytics <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHJvYmFiaWxpdHk=">probability <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHJvcGVuc2l0eSUyMHNjb3Jlcw==">propensity scores <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHltYw==">pymc <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c2Vt">sem <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c2Vuc2l0aXZpdHklMjBhbmFseXNpcw==">sensitivity analysis <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3Vydml2YWwlMjBhbmFseXNpcw==">survival analysis <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dGltZXNlcmllcyUyMGFuYWx5c2lz">timeseries analysis <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
-<main class="content column-body" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
 
 
 
@@ -264,447 +227,38 @@ ul.task-list li input[type="checkbox"] {
     </div>
 </div>
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="bayesian,causal,SCM,SEM" data-listing-date-sort="1738855499000" data-listing-file-modified-sort="1738855499212" data-listing-reading-time-sort="15.76">
+<div class="quarto-post image-right" data-index="0" data-categories="YmF5ZXNpYW4lMkNtaXNzaW5nJTIwZGF0YSUyQ2NhdXNhbCUyMGluZmVyZW5jZQ==" data-listing-date-sort="1746080164000" data-listing-file-modified-sort="1746080164616" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1499">
 <div class="thumbnail">
-<p><a href="./talks/ukraine_sem/talk4ukraine.html"> <img src="./talks/ukraine_sem/images/factor_structure.png" class="thumnail-image"> </a></p>
+<p><a href="./talks/mister_p/mister_p.html" class="no-external"></a></p><a href="./talks/mister_p/mister_p.html" class="no-external">
+<p><img loading="lazy" src="./talks/mister_p/images/final_plot.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/mister_p/mister_p.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./talks/ukraine_sem/talk4ukraine.html">
 <h3 class="no-anchor listing-title">
-Structural Causal Models in PyMC
+<a href="./talks/mister_p/mister_p.html" class="no-external">Multilevel Regression and Post-Stratification</a>
 </h3>
 <div class="listing-subtitle">
-Conditionalisation Strategies and Valid Causal Inference
+<a href="./talks/mister_p/mister_p.html" class="no-external">Stratum Specific effect modification</a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
 bayesian
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('causal'); return false;">
-causal
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('SCM'); return false;">
-SCM
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('SEM'); return false;">
-SEM
-</div>
-</div>
-<a href="./talks/ukraine_sem/talk4ukraine.html">
-<div class="listing-description">
-<p>Talk for <span>Workshops for Ukraine</span></p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/ukraine_sem/talk4ukraine.html">
-<div class="listing-date">
-Feb 6, 2025
-</div>
-<div class="listing-reading-time">
-15 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="probability,pymc,sem,cfa" data-listing-date-sort="1735743385000" data-listing-file-modified-sort="1735743385374" data-listing-reading-time-sort="0.195">
-<div class="thumbnail">
-<p><a href="./talks/lbs_sem_causal/lbs_sem_causal.html"> <img src="./talks/lbs_sem_causal/podcast_image.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/lbs_sem_causal/lbs_sem_causal.html">
-<h3 class="no-anchor listing-title">
-Learning Bayesian Statistics: SEM and CFA
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
-probability
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
-pymc
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('sem'); return false;">
-sem
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('cfa'); return false;">
-cfa
-</div>
-</div>
-<a href="./talks/lbs_sem_causal/lbs_sem_causal.html">
-<div class="listing-description">
-<p>Interview on Learning Bayesian Statistics Podcast on SEM models in PyMC</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/lbs_sem_causal/lbs_sem_causal.html">
-<div class="listing-date">
-Jan 1, 2025
-</div>
-<div class="listing-reading-time">
-0 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="bayesian,sensitivity analysis,causal inference" data-listing-date-sort="1731737141000" data-listing-file-modified-sort="1731737141992" data-listing-reading-time-sort="7.16">
-<div class="thumbnail">
-<p><a href="./talks/pycon_ireland_causalpy/pycon_2024.html"> <img src="./talks/pycon_ireland_causalpy/images/causalpy.webp" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/pycon_ireland_causalpy/pycon_2024.html">
-<h3 class="no-anchor listing-title">
-Uncertainty and Causal Inference in Python
-</h3>
-<div class="listing-subtitle">
-CausalPy and Quasi-Experimental Designs
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
-bayesian
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('sensitivity analysis'); return false;">
-sensitivity analysis
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('causal inference'); return false;">
-causal inference
-</div>
-</div>
-<a href="./talks/pycon_ireland_causalpy/pycon_2024.html">
-<div class="listing-description">
-
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/pycon_ireland_causalpy/pycon_2024.html">
-<div class="listing-date">
-Nov 16, 2024
-</div>
-<div class="listing-reading-time">
-7 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="counting,fun,histogram" data-listing-date-sort="1731249301000" data-listing-file-modified-sort="1731249301540" data-listing-reading-time-sort="4.09">
-<div class="thumbnail">
-<p><a href="./talks/stem_talk_junior_infants/working_in_stem.html"> <img src="./talks/stem_talk_junior_infants/images/heightdist.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/stem_talk_junior_infants/working_in_stem.html">
-<h3 class="no-anchor listing-title">
-Working as a Data Scientist
-</h3>
-<div class="listing-subtitle">
-From guessing to learning
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('counting'); return false;">
-counting
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('fun'); return false;">
-fun
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('histogram'); return false;">
-histogram
-</div>
-</div>
-<a href="./talks/stem_talk_junior_infants/working_in_stem.html">
-<div class="listing-description">
-<p>Fun talk for Wyatt’s Junior infants class on working in STEM</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/stem_talk_junior_infants/working_in_stem.html">
-<div class="listing-date">
-Nov 10, 2024
-</div>
-<div class="listing-reading-time">
-4 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="bayesian,missing data" data-listing-date-sort="1731248016000" data-listing-file-modified-sort="1731248016434" data-listing-reading-time-sort="0.22">
-<div class="thumbnail">
-<p><a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html"> <img src="./talks/pydata_berlin_recording/snapshot.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html">
-<h3 class="no-anchor listing-title">
-Missing Data and Bayesian Imputation
-</h3>
-<div class="listing-subtitle">
-PyData Berlin 2024 Recording
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
-bayesian
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('missing data'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('bWlzc2luZyUyMGRhdGE='); return false;">
 missing data
 </div>
-</div>
-<a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html">
-<div class="listing-description">
-In April 2024 I gave a talk at PyData Berlin on the usage of bayesian imputation techniques in people analytics. The Slides can be found here
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html">
-<div class="listing-date">
-Nov 10, 2024
-</div>
-<div class="listing-reading-time">
-0 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-categories="bayesian,discrete choice" data-listing-date-sort="1725995852000" data-listing-file-modified-sort="1725995852462" data-listing-reading-time-sort="0.235">
-<div class="thumbnail">
-<p><a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html"> <img src="./talks/pycon_ireland_recording/snapshot.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html">
-<h3 class="no-anchor listing-title">
-Discrete Choice and Random Utility Models
-</h3>
-<div class="listing-subtitle">
-PyCon 2023 Ireland Recording
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
-bayesian
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('discrete choice'); return false;">
-discrete choice
-</div>
-</div>
-<a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html">
-<div class="listing-description">
-In November 2023 I gave a talk at PyCon Ireland on the usage of discrete choice models for the estimation of market share. The Slides can be found here
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html">
-<div class="listing-date">
-Sep 10, 2024
-</div>
-<div class="listing-reading-time">
-0 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="6" data-categories="bayesian,missing data,causal inference" data-listing-date-sort="1714076273000" data-listing-file-modified-sort="1714076273816" data-listing-reading-time-sort="13.875">
-<div class="thumbnail">
-<p><a href="./talks/missing_data/missing_data_causal.html"> <img src="./talks/missing_data/images/final_empowerment_imputed.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/missing_data/missing_data_causal.html">
-<h3 class="no-anchor listing-title">
-Missing Data and Bayesian Imputation with PyMC
-</h3>
-<div class="listing-subtitle">
-Causal Narratives in Survey Analysis
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
-bayesian
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('missing data'); return false;">
-missing data
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('causal inference'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('Y2F1c2FsJTIwaW5mZXJlbmNl'); return false;">
 causal inference
 </div>
 </div>
-<a href="./talks/missing_data/missing_data_causal.html">
 <div class="listing-description">
-
+<a href="./talks/mister_p/mister_p.html" class="no-external"></a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./talks/missing_data/missing_data_causal.html">
+<a href="./talks/mister_p/mister_p.html" class="no-external">
 <div class="listing-date">
-Apr 25, 2024
-</div>
-<div class="listing-reading-time">
-13 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="7" data-categories="bayesian,discrete choice" data-listing-date-sort="1711472391000" data-listing-file-modified-sort="1711472391287" data-listing-reading-time-sort="14.965">
-<div class="thumbnail">
-<p><a href="./talks/bayesian_mixer/bayesian_mixer_london.html"> <img src="./talks/bayesian_mixer/images/individual_heterogeniety.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/bayesian_mixer/bayesian_mixer_london.html">
-<h3 class="no-anchor listing-title">
-Model Evaluation and Discrete Choice Scenarios
-</h3>
-<div class="listing-subtitle">
-Bayesian Mixer London
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
-bayesian
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('discrete choice'); return false;">
-discrete choice
-</div>
-</div>
-<a href="./talks/bayesian_mixer/bayesian_mixer_london.html">
-<div class="listing-description">
-
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/bayesian_mixer/bayesian_mixer_london.html">
-<div class="listing-date">
-Mar 26, 2024
-</div>
-<div class="listing-reading-time">
-14 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="8" data-categories="bayesian,propensity scores,causal inference" data-listing-date-sort="1709294347000" data-listing-file-modified-sort="1709294347931" data-listing-reading-time-sort="4.45">
-<div class="thumbnail">
-<p><a href="./talks/lbs_non_param_causal/non_param_causal.html"> <img src="./talks/lbs_non_param_causal/images/ps_scores.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/lbs_non_param_causal/non_param_causal.html">
-<h3 class="no-anchor listing-title">
-Non Parametric Causal Inference with PyMC
-</h3>
-<div class="listing-subtitle">
-Propensity Scores, Debiased ML and Causal Mediation
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
-bayesian
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('propensity scores'); return false;">
-propensity scores
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('causal inference'); return false;">
-causal inference
-</div>
-</div>
-<a href="./talks/lbs_non_param_causal/non_param_causal.html">
-<div class="listing-description">
-
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/lbs_non_param_causal/non_param_causal.html">
-<div class="listing-date">
-Mar 1, 2024
-</div>
-<div class="listing-reading-time">
-4 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="9" data-categories="bayesian,missing data,causal inference" data-listing-date-sort="1704105692000" data-listing-file-modified-sort="1704105692043" data-listing-reading-time-sort="6.925">
-<div class="thumbnail">
-<p><a href="./talks/mister_p/mister_p.html"> <img src="./talks/mister_p/images/final_plot.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/mister_p/mister_p.html">
-<h3 class="no-anchor listing-title">
-Multilevel Regression and Post-Stratification
-</h3>
-<div class="listing-subtitle">
-Stratum Specific effect modification
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
-bayesian
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('missing data'); return false;">
-missing data
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('causal inference'); return false;">
-causal inference
-</div>
-</div>
-<a href="./talks/mister_p/mister_p.html">
-<div class="listing-description">
-
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/mister_p/mister_p.html">
-<div class="listing-date">
-Jan 1, 2024
-</div>
-<div class="listing-reading-time">
-6 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="10" data-categories="bayesian,survival analysis,people analytics" data-listing-date-sort="1703963070000" data-listing-file-modified-sort="1703963070697" data-listing-reading-time-sort="8.13">
-<div class="thumbnail">
-<p><a href="./talks/survival_regression/time_to_attrition.html"> <img src="./talks/survival_regression/images/frailty_terms.png" class="thumnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./talks/survival_regression/time_to_attrition.html">
-<h3 class="no-anchor listing-title">
-Survival Regression Models in PyMC
-</h3>
-<div class="listing-subtitle">
-Time to Attrition in People Analytics
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
-bayesian
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('survival analysis'); return false;">
-survival analysis
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('people analytics'); return false;">
-people analytics
-</div>
-</div>
-<a href="./talks/survival_regression/time_to_attrition.html">
-<div class="listing-description">
-
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./talks/survival_regression/time_to_attrition.html">
-<div class="listing-date">
-Dec 30, 2023
+May 1, 2025
 </div>
 <div class="listing-reading-time">
 8 min
@@ -712,81 +266,469 @@ Dec 30, 2023
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="11" data-categories="bayesian,discrete choice" data-listing-date-sort="1699684099000" data-listing-file-modified-sort="1699684099921" data-listing-reading-time-sort="12.85">
+<div class="quarto-post image-right" data-index="1" data-categories="YmF5ZXNpYW4lMkNjYXVzYWwlMkNTQ00lMkNTRU0=" data-listing-date-sort="1738855499000" data-listing-file-modified-sort="1738855499212" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3152">
 <div class="thumbnail">
-<p><a href="./talks/pycon_ireland/pycon_ireland_discrete.html"> <img src="./talks/pycon_ireland/images/pycon_ireland.jpeg" class="thumnail-image"> </a></p>
+<p><a href="./talks/ukraine_sem/talk4ukraine.html" class="no-external"></a></p><a href="./talks/ukraine_sem/talk4ukraine.html" class="no-external">
+<p><img loading="lazy" src="./talks/ukraine_sem/images/factor_structure.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/ukraine_sem/talk4ukraine.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./talks/pycon_ireland/pycon_ireland_discrete.html">
 <h3 class="no-anchor listing-title">
-Discrete Choice and Random Utility Models
+<a href="./talks/ukraine_sem/talk4ukraine.html" class="no-external">Structural Causal Models in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-PyCon Ireland
+<a href="./talks/ukraine_sem/talk4ukraine.html" class="no-external">Conditionalisation Strategies and Valid Causal Inference</a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
 bayesian
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('discrete choice'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('Y2F1c2Fs'); return false;">
+causal
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('U0NN'); return false;">
+SCM
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('U0VN'); return false;">
+SEM
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/ukraine_sem/talk4ukraine.html" class="no-external">Talk for <span>Workshops for Ukraine</span></a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/ukraine_sem/talk4ukraine.html" class="no-external">
+<div class="listing-date">
+Feb 6, 2025
+</div>
+<div class="listing-reading-time">
+16 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="2" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDc2VtJTJDY2Zh" data-listing-date-sort="1735743385000" data-listing-file-modified-sort="1735743385374" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="39">
+<div class="thumbnail">
+<p><a href="./talks/lbs_sem_causal/lbs_sem_causal.html" class="no-external"></a></p><a href="./talks/lbs_sem_causal/lbs_sem_causal.html" class="no-external">
+<p><img loading="lazy" src="./talks/lbs_sem_causal/podcast_image.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/lbs_sem_causal/lbs_sem_causal.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/lbs_sem_causal/lbs_sem_causal.html" class="no-external">Learning Bayesian Statistics: SEM and CFA</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/lbs_sem_causal/lbs_sem_causal.html" class="no-external"></a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
+probability
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
+pymc
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('c2Vt'); return false;">
+sem
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Y2Zh'); return false;">
+cfa
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/lbs_sem_causal/lbs_sem_causal.html" class="no-external">Interview on Learning Bayesian Statistics Podcast on SEM models in PyMC</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/lbs_sem_causal/lbs_sem_causal.html" class="no-external">
+<div class="listing-date">
+Jan 1, 2025
+</div>
+<div class="listing-reading-time">
+1 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="3" data-categories="YmF5ZXNpYW4lMkNzZW5zaXRpdml0eSUyMGFuYWx5c2lzJTJDY2F1c2FsJTIwaW5mZXJlbmNl" data-listing-date-sort="1731737141000" data-listing-file-modified-sort="1731737141992" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1432">
+<div class="thumbnail">
+<p><a href="./talks/pycon_ireland_causalpy/pycon_2024.html" class="no-external"></a></p><a href="./talks/pycon_ireland_causalpy/pycon_2024.html" class="no-external">
+<p><img loading="lazy" src="./talks/pycon_ireland_causalpy/images/causalpy.webp" class="thumbnail-image"></p>
+</a><p><a href="./talks/pycon_ireland_causalpy/pycon_2024.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/pycon_ireland_causalpy/pycon_2024.html" class="no-external">Uncertainty and Causal Inference in Python</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/pycon_ireland_causalpy/pycon_2024.html" class="no-external">CausalPy and Quasi-Experimental Designs</a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
+bayesian
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('c2Vuc2l0aXZpdHklMjBhbmFseXNpcw=='); return false;">
+sensitivity analysis
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Y2F1c2FsJTIwaW5mZXJlbmNl'); return false;">
+causal inference
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/pycon_ireland_causalpy/pycon_2024.html" class="no-external"></a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/pycon_ireland_causalpy/pycon_2024.html" class="no-external">
+<div class="listing-date">
+Nov 16, 2024
+</div>
+<div class="listing-reading-time">
+8 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="4" data-categories="Y291bnRpbmclMkNmdW4lMkNoaXN0b2dyYW0=" data-listing-date-sort="1731249301000" data-listing-file-modified-sort="1731249301540" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="818">
+<div class="thumbnail">
+<p><a href="./talks/stem_talk_junior_infants/working_in_stem.html" class="no-external"></a></p><a href="./talks/stem_talk_junior_infants/working_in_stem.html" class="no-external">
+<p><img loading="lazy" src="./talks/stem_talk_junior_infants/images/heightdist.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/stem_talk_junior_infants/working_in_stem.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/stem_talk_junior_infants/working_in_stem.html" class="no-external">Working as a Data Scientist</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/stem_talk_junior_infants/working_in_stem.html" class="no-external">From guessing to learning</a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('Y291bnRpbmc='); return false;">
+counting
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('ZnVu'); return false;">
+fun
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('aGlzdG9ncmFt'); return false;">
+histogram
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/stem_talk_junior_infants/working_in_stem.html" class="no-external"> Fun talk for Wyatt’s Junior infants class on working in STEM</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/stem_talk_junior_infants/working_in_stem.html" class="no-external">
+<div class="listing-date">
+Nov 10, 2024
+</div>
+<div class="listing-reading-time">
+5 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="5" data-categories="YmF5ZXNpYW4lMkNtaXNzaW5nJTIwZGF0YQ==" data-listing-date-sort="1731248016000" data-listing-file-modified-sort="1731248016434" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="44">
+<div class="thumbnail">
+<p><a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html" class="no-external"></a></p><a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html" class="no-external">
+<p><img loading="lazy" src="./talks/pydata_berlin_recording/snapshot.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html" class="no-external">Missing Data and Bayesian Imputation</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html" class="no-external">PyData Berlin 2024 Recording</a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
+bayesian
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('bWlzc2luZyUyMGRhdGE='); return false;">
+missing data
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html" class="no-external">In April 2024 I gave a talk at PyData Berlin on the usage of bayesian imputation techniques in people analytics. The Slides can be found here</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/pydata_berlin_recording/pydata_berlin_2024.html" class="no-external">
+<div class="listing-date">
+Nov 10, 2024
+</div>
+<div class="listing-reading-time">
+1 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="6" data-categories="YmF5ZXNpYW4lMkNkaXNjcmV0ZSUyMGNob2ljZQ==" data-listing-date-sort="1725995852000" data-listing-file-modified-sort="1725995852462" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="47">
+<div class="thumbnail">
+<p><a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html" class="no-external"></a></p><a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html" class="no-external">
+<p><img loading="lazy" src="./talks/pycon_ireland_recording/snapshot.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html" class="no-external">Discrete Choice and Random Utility Models</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html" class="no-external">PyCon 2023 Ireland Recording</a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
+bayesian
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('ZGlzY3JldGUlMjBjaG9pY2U='); return false;">
 discrete choice
 </div>
 </div>
-<a href="./talks/pycon_ireland/pycon_ireland_discrete.html">
 <div class="listing-description">
-
+<a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html" class="no-external">In November 2023 I gave a talk at PyCon Ireland on the usage of discrete choice models for the estimation of market share. The Slides can be found here</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/pycon_ireland_recording/pycon_ireland_recording.html" class="no-external">
+<div class="listing-date">
+Sep 10, 2024
+</div>
+<div class="listing-reading-time">
+1 min
 </div>
 </a>
 </div>
+</div>
+<div class="quarto-post image-right" data-index="7" data-categories="YmF5ZXNpYW4lMkNtaXNzaW5nJTIwZGF0YSUyQ2NhdXNhbCUyMGluZmVyZW5jZQ==" data-listing-date-sort="1714076273000" data-listing-file-modified-sort="1714076273816" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2775">
+<div class="thumbnail">
+<p><a href="./talks/missing_data/missing_data_causal.html" class="no-external"></a></p><a href="./talks/missing_data/missing_data_causal.html" class="no-external">
+<p><img loading="lazy" src="./talks/missing_data/images/final_empowerment_imputed.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/missing_data/missing_data_causal.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/missing_data/missing_data_causal.html" class="no-external">Missing Data and Bayesian Imputation with PyMC</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/missing_data/missing_data_causal.html" class="no-external">Causal Narratives in Survey Analysis</a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
+bayesian
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('bWlzc2luZyUyMGRhdGE='); return false;">
+missing data
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Y2F1c2FsJTIwaW5mZXJlbmNl'); return false;">
+causal inference
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/missing_data/missing_data_causal.html" class="no-external"></a>
+</div>
+</div>
 <div class="metadata">
-<a href="./talks/pycon_ireland/pycon_ireland_discrete.html">
+<a href="./talks/missing_data/missing_data_causal.html" class="no-external">
+<div class="listing-date">
+Apr 25, 2024
+</div>
+<div class="listing-reading-time">
+14 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="8" data-categories="YmF5ZXNpYW4lMkNkaXNjcmV0ZSUyMGNob2ljZQ==" data-listing-date-sort="1711472391000" data-listing-file-modified-sort="1711472391287" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2993">
+<div class="thumbnail">
+<p><a href="./talks/bayesian_mixer/bayesian_mixer_london.html" class="no-external"></a></p><a href="./talks/bayesian_mixer/bayesian_mixer_london.html" class="no-external">
+<p><img loading="lazy" src="./talks/bayesian_mixer/images/individual_heterogeniety.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/bayesian_mixer/bayesian_mixer_london.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/bayesian_mixer/bayesian_mixer_london.html" class="no-external">Model Evaluation and Discrete Choice Scenarios</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/bayesian_mixer/bayesian_mixer_london.html" class="no-external">Bayesian Mixer London</a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
+bayesian
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('ZGlzY3JldGUlMjBjaG9pY2U='); return false;">
+discrete choice
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/bayesian_mixer/bayesian_mixer_london.html" class="no-external"></a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/bayesian_mixer/bayesian_mixer_london.html" class="no-external">
+<div class="listing-date">
+Mar 26, 2024
+</div>
+<div class="listing-reading-time">
+15 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="9" data-categories="YmF5ZXNpYW4lMkNwcm9wZW5zaXR5JTIwc2NvcmVzJTJDY2F1c2FsJTIwaW5mZXJlbmNl" data-listing-date-sort="1709294347000" data-listing-file-modified-sort="1709294347931" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="890">
+<div class="thumbnail">
+<p><a href="./talks/lbs_non_param_causal/non_param_causal.html" class="no-external"></a></p><a href="./talks/lbs_non_param_causal/non_param_causal.html" class="no-external">
+<p><img loading="lazy" src="./talks/lbs_non_param_causal/images/ps_scores.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/lbs_non_param_causal/non_param_causal.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/lbs_non_param_causal/non_param_causal.html" class="no-external">Non Parametric Causal Inference with PyMC</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/lbs_non_param_causal/non_param_causal.html" class="no-external">Propensity Scores, Debiased ML and Causal Mediation</a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
+bayesian
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvcGVuc2l0eSUyMHNjb3Jlcw=='); return false;">
+propensity scores
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('Y2F1c2FsJTIwaW5mZXJlbmNl'); return false;">
+causal inference
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/lbs_non_param_causal/non_param_causal.html" class="no-external"></a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/lbs_non_param_causal/non_param_causal.html" class="no-external">
+<div class="listing-date">
+Mar 1, 2024
+</div>
+<div class="listing-reading-time">
+5 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="10" data-categories="YmF5ZXNpYW4lMkNzdXJ2aXZhbCUyMGFuYWx5c2lzJTJDcGVvcGxlJTIwYW5hbHl0aWNz" data-listing-date-sort="1703963070000" data-listing-file-modified-sort="1703963070697" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1626">
+<div class="thumbnail">
+<p><a href="./talks/survival_regression/time_to_attrition.html" class="no-external"></a></p><a href="./talks/survival_regression/time_to_attrition.html" class="no-external">
+<p><img loading="lazy" src="./talks/survival_regression/images/frailty_terms.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/survival_regression/time_to_attrition.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/survival_regression/time_to_attrition.html" class="no-external">Survival Regression Models in PyMC</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/survival_regression/time_to_attrition.html" class="no-external">Time to Attrition in People Analytics</a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
+bayesian
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('c3Vydml2YWwlMjBhbmFseXNpcw=='); return false;">
+survival analysis
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('cGVvcGxlJTIwYW5hbHl0aWNz'); return false;">
+people analytics
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/survival_regression/time_to_attrition.html" class="no-external"></a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/survival_regression/time_to_attrition.html" class="no-external">
+<div class="listing-date">
+Dec 30, 2023
+</div>
+<div class="listing-reading-time">
+9 min
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="11" data-categories="YmF5ZXNpYW4lMkNkaXNjcmV0ZSUyMGNob2ljZQ==" data-listing-date-sort="1699684099000" data-listing-file-modified-sort="1699684099921" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2570">
+<div class="thumbnail">
+<p><a href="./talks/pycon_ireland/pycon_ireland_discrete.html" class="no-external"></a></p><a href="./talks/pycon_ireland/pycon_ireland_discrete.html" class="no-external">
+<p><img loading="lazy" src="./talks/pycon_ireland/images/pycon_ireland.jpeg" class="thumbnail-image"></p>
+</a><p><a href="./talks/pycon_ireland/pycon_ireland_discrete.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./talks/pycon_ireland/pycon_ireland_discrete.html" class="no-external">Discrete Choice and Random Utility Models</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./talks/pycon_ireland/pycon_ireland_discrete.html" class="no-external">PyCon Ireland</a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
+bayesian
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('ZGlzY3JldGUlMjBjaG9pY2U='); return false;">
+discrete choice
+</div>
+</div>
+<div class="listing-description">
+<a href="./talks/pycon_ireland/pycon_ireland_discrete.html" class="no-external"></a>
+</div>
+</div>
+<div class="metadata">
+<a href="./talks/pycon_ireland/pycon_ireland_discrete.html" class="no-external">
 <div class="listing-date">
 Nov 11, 2023
 </div>
 <div class="listing-reading-time">
-12 min
+13 min
 </div>
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="12" data-categories="bayesian,VAR,timeseries analysis" data-listing-date-sort="1675468800000" data-listing-file-modified-sort="1693169762810" data-listing-reading-time-sort="0.025">
+<div class="quarto-post image-right" data-index="12" data-categories="YmF5ZXNpYW4lMkNWQVIlMkN0aW1lc2VyaWVzJTIwYW5hbHlzaXM=" data-listing-date-sort="1675468800000" data-listing-file-modified-sort="1693169762810" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="5">
 <div class="thumbnail">
-<p><a href="./talks/tenuous_relations/first_talk.html"> <img src="./talks/tenuous_relations/aggregations.png" class="thumnail-image"> </a></p>
+<p><a href="./talks/tenuous_relations/first_talk.html" class="no-external"></a></p><a href="./talks/tenuous_relations/first_talk.html" class="no-external">
+<p><img loading="lazy" src="./talks/tenuous_relations/aggregations.png" class="thumbnail-image"></p>
+</a><p><a href="./talks/tenuous_relations/first_talk.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./talks/tenuous_relations/first_talk.html">
 <h3 class="no-anchor listing-title">
-Tenuous Relations and Timeseries Analysis
+<a href="./talks/tenuous_relations/first_talk.html" class="no-external">Tenuous Relations and Timeseries Analysis</a>
 </h3>
 <div class="listing-subtitle">
-Berlin Timeseries
+<a href="./talks/tenuous_relations/first_talk.html" class="no-external">Berlin Timeseries</a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bayesian'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('YmF5ZXNpYW4='); return false;">
 bayesian
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('VAR'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('VkFS'); return false;">
 VAR
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('timeseries analysis'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('dGltZXNlcmllcyUyMGFuYWx5c2lz'); return false;">
 timeseries analysis
 </div>
 </div>
-<a href="./talks/tenuous_relations/first_talk.html">
 <div class="listing-description">
+<a href="./talks/tenuous_relations/first_talk.html" class="no-external">
 
-</div>
+<embed width="100%" height="800" type="application/pdf" src="tenuous_relations_presenation.pdf">
+
+
 </a>
 </div>
+</div>
 <div class="metadata">
-<a href="./talks/tenuous_relations/first_talk.html">
+<a href="./talks/tenuous_relations/first_talk.html" class="no-external">
 <div class="listing-date">
 Feb 4, 2023
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 </a>
 </div>
@@ -823,12 +765,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
     }
-  });
-  clipboard.on('success', function(e) {
+    return false;
+  }
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -860,11 +805,48 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -874,8 +856,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -887,9 +878,244 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -930,6 +1156,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 

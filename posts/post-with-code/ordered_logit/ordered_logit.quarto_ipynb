@@ -1,0 +1,149 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "date: \"2023-02-21T10:19:36Z\"\n",
+        "title: \"Ordered Categories and Anchor Points\"\n",
+        "categories: [\"probability\", \"ordered_logit\", \"anchor_points\"]\n",
+        "draft: true\n",
+        "---"
+      ],
+      "id": "a1708b57"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import numpy as np\n",
+        "from scipy.stats import norm, poisson, weibull_min, uniform, binom, dirichlet, nbinom, lognorm\n",
+        "import matplotlib.pyplot as plt\n",
+        "import statsmodels.api as sm\n",
+        "import pandas as pd"
+      ],
+      "id": "17ae24ca",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "judgment_dist = norm(55, 10)\n",
+        "judgements = judgment_dist.rvs(1000)\n",
+        "\n",
+        "counts_dist = poisson(10)\n",
+        "counts = counts_dist.rvs(1000)\n",
+        "\n",
+        "counts_dist_2 = poisson(3)\n",
+        "counts_2 = counts_dist_2.rvs(1000)\n",
+        "\n",
+        "time_dist = weibull_min(c=2, scale=6)\n",
+        "times = time_dist.rvs(1000)\n",
+        "\n",
+        "time_dist_2 = lognorm(scale=np.exp(3), s=.2)\n",
+        "times_2 = time_dist_2.rvs(1000)\n",
+        "\n",
+        "\n",
+        "tickets_dist = uniform(10, 20)\n",
+        "\n",
+        "\n",
+        "fig, axs = plt.subplots(2, 3, figsize=(11, 8))\n",
+        "axs = axs.flatten()\n",
+        "axs[0].hist(judgements, bins=30, ec='black')\n",
+        "axs[1].hist(counts, bins=30, ec='black')\n",
+        "axs[2].hist(counts_2, bins=30, ec='black')\n",
+        "axs[3].hist(times, bins=30, ec='black')\n",
+        "axs[4].hist(times_2, bins=30, ec='black')\n",
+        "\n",
+        "axs[0].set_title(\"Judgment\")\n",
+        "axs[1].set_title(\"Counts\")\n",
+        "axs[2].set_title(\"Counts2\")\n",
+        "axs[3].set_title(\"Times\")"
+      ],
+      "id": "be7872af",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "def draw_performance_metrics(individual):\n",
+        "    tickets = int(tickets_dist.rvs(1))\n",
+        "    t =  time_dist.rvs(tickets)\n",
+        "    t_2 =  time_dist_2.rvs(tickets)\n",
+        "    c = counts_dist.rvs(tickets)\n",
+        "    c_2 = counts_dist_2.rvs(tickets)\n",
+        "    j = judgment_dist.rvs(tickets)\n",
+        "\n",
+        "    return pd.DataFrame({'times':t, 'times_2': t_2, 'counts':c, 'counts_2': c_2, 'judgements':j, 'individual': individual, 'ticket': range(tickets)})\n",
+        "\n",
+        "def build_annual_record(n_employees):\n",
+        "    temp =[draw_performance_metrics(i) for i in range(n_employees)]\n",
+        "    return pd.concat(temp)\n",
+        "\n",
+        "\n",
+        "flat_weights_prior = dirichlet([1, 1, 1, 1, 1])\n",
+        "\n",
+        "def evaluate_blended_score(df, weights):\n",
+        "    agg = df.groupby('individual').agg({'times': 'median', 'times_2': 'median', 'counts': 'sum', 'counts_2': 'sum', 'judgements': 'mean'})\n",
+        "    normalized_agg=(agg-agg.min())/(agg.max()-agg.min())\n",
+        "    normalized_agg['blended_score'] = np.sum(normalized_agg*weights, axis=1)\n",
+        "    return normalized_agg\n",
+        "\n",
+        "\n",
+        "df = build_annual_record(1000)\n",
+        "df"
+      ],
+      "id": "9e94ba3f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "blended = evaluate_blended_score(df, np.array([1, 1, 1, 1, 1]))\n",
+        "fig, axs = plt.subplots(1, 2, figsize=(10, 10))\n",
+        "blended[['blended_score']].hist(bins=30, ec='black', color='slateblue', ax=axs[0])\n",
+        "sm.qqplot(blended['blended_score'], line ='45', ax=axs[1], label='Blended Score with Equal Weightings', color='slateblue')\n",
+        "axs[0].set_title('Blended Score with Equal Weightings')\n",
+        "axs[1].legend()\n",
+        "axs[1].set_title(\"QQ-Plot against Normal Distribution\")\n"
+      ],
+      "id": "ca6c924f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df = build_annual_record(1000)\n",
+        "fig, axs = plt.subplots(3, 4, figsize=(12, 10))\n",
+        "axs = axs.flatten()\n",
+        "for ax in axs:\n",
+        "    for c, i in zip(['red', 'blue', 'green', 'purple', 'darkblue'], range(5)):    \n",
+        "        random_weights = flat_weights_prior.rvs(1)\n",
+        "        blended = evaluate_blended_score(df, random_weights)\n",
+        "        ax.hist(blended['blended_score'], bins=30, alpha=1, color=c, histtype='step', density=True)\n",
+        "plt.suptitle(\"Possible Blended Score Distribution based on Weighting\", fontsize=20)\n"
+      ],
+      "id": "a775373c",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
