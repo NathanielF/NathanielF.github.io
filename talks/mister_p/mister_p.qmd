@@ -10,7 +10,7 @@ format:
     revealjs:
          theme: [default, clean.scss]
          footer: "Post-Stratification Weighting"
-categories: [bayesian, missing data, causal inference]
+categories: [bayesian, mister p, causal inference, weighting]
 image: "images/final_plot.png"
 date: last-modified
 draft: False

@@ -286,7 +286,7 @@ $$
 ###  and Conditional Exchangeability
 
 Assumptions of exchangeability in survey measurement and De-Finetti's theorem
-$$p(Y​,T, X_{1}…,X_n​)  =  \int p(Y, T, X_{1} ... X_n ​∣\theta)p(\theta)dp(\theta)$$
+$$p(Y​,T, X_{1}…,X_n​)  =  \int p(Y, T, X_{1} ... X_n ​∣\theta)p(\theta)d(\theta)$$
 
 ensures the observed data can be represented as conditionally independent mixture distribution where in general:
 
