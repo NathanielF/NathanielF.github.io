@@ -251,7 +251,7 @@ Nathaniel Forde
 </div>
 </div>
 
-<img data-src="images/QR_CODE.png" class="r-stretch"><div class="callout callout-tip callout-titled callout-style-default">
+<img data-src="images/QR_CODE.png" class="r-stretch quarto-figure-center"><p class="caption">QR Website Code</p><div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
@@ -272,9 +272,6 @@ Nathaniel Forde
 <p>Multilevel Regression with Post-stratification is a <strong>corrective</strong> technique for intellegently re-weighting the summaries to better reflect the true population distribution of opinion.</p>
 </section>
 <section id="agenda" class="slide level2">
-<h2>Agenda</h2>
-</section>
-<section id="agenda-1" class="slide level2">
 <h2>Agenda</h2>
 <div class="fragment fade-in">
 <ul>
@@ -320,12 +317,22 @@ Nathaniel Forde
 <div class="columns">
 <div class="column" style="width:40%;">
 <p><span class="math display">\[\hat{y_{i}} = \alpha + \beta_{1}X_{1} ... \beta_{n}X_{n}\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/regression.png"></p>
+<figcaption>OLS</figcaption>
+</figure>
+</div>
 <p>Assume <span class="math inline">\(y = \hat{y_{i}} + \epsilon\)</span> where <span class="math inline">\(E(\epsilon) = 0\)</span></p>
 </div><div class="column" style="width:60%;">
 <p><span class="math display">\[ E[y | X = x] = \alpha + \beta_{1}X_{1} ... \beta_{n}X_{n}\]</span></p>
 <p><span class="math display">\[ y  \sim Normal(\hat{y_{i}}, \sigma) \]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/3d_regression.png"></p>
+<figcaption>Multiple Regression Optimisation</figcaption>
+</figure>
+</div>
 </div></div>
 </section>
 <section id="regression-what-are-we-even-doing-1" class="slide level2 smaller">
@@ -337,11 +344,21 @@ Nathaniel Forde
 <span id="cb1-5"><a></a>diff <span class="op">=</span> predc <span class="op">-</span> pred1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="columns">
 <div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/path.png"></p>
+<figcaption>Choose Your Own Path</figcaption>
+</figure>
+</div>
 <p>As we add more covariates we add more combinatorial branches which define the available strata across our population of interest.</p>
 <p>A fitted regression model allows us to explore the conditional branching probabilities.</p>
 </div><div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/choose.jpeg"></p>
+<figcaption>Choose Your Own Adventure</figcaption>
+</figure>
+</div>
 </div></div>
 </section>
 <section id="regression-as-weighting-adjustment" class="slide level2 smaller">
@@ -353,7 +370,7 @@ Nathaniel Forde
 <h2>Regression as Weighting Adjustment</h2>
 <p>Regression <strong><span class="blue">automates</span></strong> the more manual re-weighting</p>
 
-<img data-src="images/weighted_average.png" class="r-stretch"></section>
+<img data-src="images/weighted_average.png" class="r-stretch quarto-figure-center"><p class="caption">Weighted Average</p></section>
 <section id="regression-as-effect-modification" class="slide level2">
 <h2>Regression as Effect Modification</h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a>reg <span class="op">=</span> bmb.Model(<span class="st">"Outcome ~ 1 + Treatment"</span>, df)</span>
@@ -368,7 +385,8 @@ Nathaniel Forde
 <div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="images/trt_effect.png" class="quarto-figure quarto-figure-center"></p>
+<p><img data-src="images/trt_effect.png"></p>
+<figcaption>Treatment Effect</figcaption>
 </figure>
 </div>
 </div><div class="column" style="width:50%;">
@@ -418,7 +436,7 @@ Nathaniel Forde
 <section id="hierarchical-regression-and-ppls-1" class="slide level2">
 <h2>Hierarchical Regression and PPLs</h2>
 <h3 id="vectorisation-and-python-implementation">Vectorisation and Python Implementation</h3>
-<div id="66f82db0" class="cell" data-execution_count="1">
+<div id="f8894517" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-2"><a></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb3-3"><a></a></span>
@@ -435,8 +453,8 @@ Nathaniel Forde
 <section id="hierarchical-regression-and-ppls-2" class="slide level2 smaller">
 <h2>Hierarchical Regression and PPLs</h2>
 <h3 id="vectorisation-and-python-implementation-1">Vectorisation and Python Implementation</h3>
-<div id="61ea35db" class="cell" data-execution_count="2">
-<div class="cell-output cell-output-display" data-execution_count="16">
+<div id="5386fb40" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="30">
 <div>
 <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -467,82 +485,82 @@ Nathaniel Forde
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>A</td>
-<td>1.60</td>
-<td>-0.55</td>
-<td>0.48</td>
-<td>0.93</td>
+<td>-0.94</td>
+<td>-1.13</td>
+<td>-0.78</td>
+<td>-3.34</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>B</td>
-<td>1.11</td>
-<td>-1.08</td>
-<td>-0.62</td>
-<td>-4.84</td>
+<td>0.26</td>
+<td>-1.69</td>
+<td>-0.26</td>
+<td>-3.88</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>C</td>
-<td>1.58</td>
-<td>-1.40</td>
-<td>-0.93</td>
-<td>-7.72</td>
+<td>1.09</td>
+<td>-0.43</td>
+<td>-0.64</td>
+<td>-2.88</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>D</td>
-<td>-1.64</td>
-<td>0.55</td>
-<td>0.49</td>
-<td>3.17</td>
+<td>1.05</td>
+<td>-0.54</td>
+<td>0.57</td>
+<td>1.64</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>E</td>
-<td>-0.19</td>
-<td>-0.05</td>
-<td>1.17</td>
-<td>5.58</td>
+<td>0.09</td>
+<td>-0.46</td>
+<td>-1.96</td>
+<td>-7.80</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>A</td>
-<td>1.60</td>
-<td>-1.91</td>
-<td>0.65</td>
-<td>-3.26</td>
+<td>-0.94</td>
+<td>1.59</td>
+<td>0.91</td>
+<td>6.32</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>B</td>
-<td>1.11</td>
-<td>-0.93</td>
-<td>-1.21</td>
-<td>-6.76</td>
+<td>0.26</td>
+<td>-0.39</td>
+<td>0.67</td>
+<td>2.79</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
 <td>C</td>
-<td>1.58</td>
-<td>0.34</td>
-<td>0.11</td>
-<td>2.63</td>
+<td>1.09</td>
+<td>1.06</td>
+<td>-0.28</td>
+<td>3.16</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
 <td>D</td>
-<td>-1.64</td>
-<td>-0.63</td>
-<td>0.26</td>
-<td>1.80</td>
+<td>1.05</td>
+<td>-1.04</td>
+<td>0.74</td>
+<td>0.79</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
 <td>E</td>
-<td>-0.19</td>
-<td>-0.64</td>
-<td>-0.13</td>
-<td>-0.67</td>
+<td>0.09</td>
+<td>-0.11</td>
+<td>1.40</td>
+<td>6.39</td>
 </tr>
 </tbody>
 </table>
@@ -561,7 +579,7 @@ Nathaniel Forde
 <p>We examine a comprehensive YouGov poll on whether employers should cover abortion in their coverage plans.</p>
 <p>We select a <strong>biased</strong> subsample.</p>
 
-<img data-src="images/the_data.png" class="r-stretch"></section>
+<img data-src="images/the_data.png" class="r-stretch quarto-figure-center"><p class="caption">State Level Data</p></section>
 <section id="deliberate-bias" class="slide level2">
 <h2>Deliberate Bias</h2>
 
@@ -569,7 +587,7 @@ Nathaniel Forde
 <section id="prep-data-for-modelling" class="slide level2">
 <h2>Prep Data for Modelling</h2>
 
-<img data-src="images/data_prep.png" class="r-stretch"></section>
+<img data-src="images/data_prep.png" class="r-stretch quarto-figure-center"><p class="caption">Aggregate Across Strata</p></section>
 <section id="modelling-of-survey-outcomes" class="slide level2 smaller">
 <h2>Modelling of Survey Outcomes</h2>
 <h3 id="bayesian-models-incorporate-different-sources-of-knowledge">Bayesian Models incorporate different sources of knowledge</h3>
@@ -605,15 +623,15 @@ Nathaniel Forde
 <section id="plotting-implications" class="slide level2">
 <h2>Plotting Implications</h2>
 
-<img data-src="images/exploratory_interactions.png" class="r-stretch"></section>
+<img data-src="images/exploratory_interactions.png" class="r-stretch quarto-figure-center"><p class="caption">Exploratory Interaction Effects</p></section>
 <section id="plotting-implications-1" class="slide level2">
 <h2>Plotting Implications</h2>
 
-<img data-src="images/plot_pred_by_class.png" class="r-stretch"></section>
+<img data-src="images/plot_pred_by_class.png" class="r-stretch quarto-figure-center"><p class="caption">Posterior Predictive By Class</p></section>
 <section id="investigating-marginal-contrasts" class="slide level2">
 <h2>Investigating Marginal Contrasts</h2>
 
-<img data-src="images/contrasts.png" class="r-stretch"></section></section>
+<img data-src="images/contrasts.png" class="r-stretch quarto-figure-center"><p class="caption">Marginal Differences</p></section></section>
 <section>
 <section id="stratum-specific-modelling" class="title-slide slide level1 center">
 <h1>Stratum Specific Modelling</h1>
@@ -647,9 +665,19 @@ Nathaniel Forde
 <h3 id="the-model-derived-coefficients">The Model Derived Coefficients</h3>
 <div class="columns">
 <div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/coefficients.png"></p>
+<figcaption>Estimated Coefficients</figcaption>
+</figure>
+</div>
 </div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/bias_model_fit.png"></p>
+<figcaption>Posterior Predictive Fit</figcaption>
+</figure>
+</div>
 </div></div>
 </section></section>
 <section>
@@ -669,7 +697,7 @@ Nathaniel Forde
 <span id="cb6-7"><a></a>new_data[<span class="st">"state_percent"</span>] <span class="op">=</span> new_data[<span class="st">"n"</span>] <span class="op">/</span> new_data[<span class="st">"state_total"</span>]</span>
 <span id="cb6-8"><a></a>new_data.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
-<img data-src="images/state_data.png" class="r-stretch"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a>result_adjust <span class="op">=</span> model_hierarchical.predict(result, </span>
+<img data-src="images/state_data.png" class="r-stretch quarto-figure-center"><p class="caption">Population by Strata</p><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a>result_adjust <span class="op">=</span> model_hierarchical.predict(result, </span>
 <span id="cb7-2"><a></a>data<span class="op">=</span>new_data, inplace<span class="op">=</span><span class="va">False</span>, kind<span class="op">=</span><span class="st">"pps"</span>)</span>
 <span id="cb7-3"><a></a>result_adjust</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
@@ -739,11 +767,11 @@ Nathaniel Forde
 <h2>Comparing Adjusted and Raw Predictions</h2>
 <p>Derived state level predictions using the biased sample and the corrected values.</p>
 
-<img data-src="images/comparison_predictions.png" class="r-stretch"></section>
+<img data-src="images/comparison_predictions.png" class="r-stretch quarto-figure-center"><p class="caption">Adjusted Predictions</p></section>
 <section id="comparing-adjusted-and-raw-predictions-1" class="slide level2">
 <h2>Comparing Adjusted and Raw Predictions</h2>
 
-<img data-src="images/final_plot.png" class="r-stretch"></section>
+<img data-src="images/final_plot.png" class="r-stretch quarto-figure-center"><p class="caption">Comparing Predictions to Adjusted Predictions</p></section>
 <section id="conclusion" class="slide level2 smaller">
 <h2>Conclusion</h2>
 <h3 id="the-need-for-reweighting">The Need for Reweighting</h3>

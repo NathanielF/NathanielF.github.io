@@ -1376,7 +1376,7 @@
     "href": "talks/mister_p/mister_p.html#agenda",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Agenda",
-    "text": "Agenda"
+    "text": "Agenda\n\n\nRegression as Strata specific Summarisation\n\n\n\n\nHierarchical Regression and Probabilistic Programming\n\n\n\n\nSampling and Probability Sampling\n\n\n\n\nStratum Specific Modelling\n\n\n\n\nStratum Specific Adjustment\n\n\n\n\nConclusion\n\nWhen to Adjust and Why?"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#agenda-1",
@@ -1390,21 +1390,21 @@
     "href": "talks/mister_p/mister_p.html#regression-what-are-we-even-doing",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Regression: What are we even doing?",
-    "text": "Regression: What are we even doing?\n\n\n\\[\\hat{y_{i}} = \\alpha + \\beta_{1}X_{1} ... \\beta_{n}X_{n}\\]\n\nAssume \\(y = \\hat{y_{i}} + \\epsilon\\) where \\(E(\\epsilon) = 0\\)\n\n\\[ E[y | X = x] = \\alpha + \\beta_{1}X_{1} ... \\beta_{n}X_{n}\\]\n\\[ y  \\sim Normal(\\hat{y_{i}}, \\sigma) \\]"
+    "text": "Regression: What are we even doing?\n\n\n\\[\\hat{y_{i}} = \\alpha + \\beta_{1}X_{1} ... \\beta_{n}X_{n}\\]\n\n\n\nOLS\n\n\nAssume \\(y = \\hat{y_{i}} + \\epsilon\\) where \\(E(\\epsilon) = 0\\)\n\n\\[ E[y | X = x] = \\alpha + \\beta_{1}X_{1} ... \\beta_{n}X_{n}\\]\n\\[ y  \\sim Normal(\\hat{y_{i}}, \\sigma) \\]\n\n\n\nMultiple Regression Optimisation"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#regression-what-are-we-even-doing-1",
     "href": "talks/mister_p/mister_p.html#regression-what-are-we-even-doing-1",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Regression: What are we even doing?",
-    "text": "Regression: What are we even doing?\nm0 = smf.ols('np.log(hwage) ~ job +  educ', data=df).fit()\nm1 = smf.ols('np.log(hwage) ~ job + educ + male ', data=df).fit()\npred = m0.predict(['software_engineer', 'college'])\npred1 = m1.predict(['software_engineer', 'college', 1])\ndiff = predc - pred1\n\n\n\nAs we add more covariates we add more combinatorial branches which define the available strata across our population of interest.\nA fitted regression model allows us to explore the conditional branching probabilities."
+    "text": "Regression: What are we even doing?\nm0 = smf.ols('np.log(hwage) ~ job +  educ', data=df).fit()\nm1 = smf.ols('np.log(hwage) ~ job + educ + male ', data=df).fit()\npred = m0.predict(['software_engineer', 'college'])\npred1 = m1.predict(['software_engineer', 'college', 1])\ndiff = predc - pred1\n\n\n\n\n\nChoose Your Own Path\n\n\nAs we add more covariates we add more combinatorial branches which define the available strata across our population of interest.\nA fitted regression model allows us to explore the conditional branching probabilities.\n\n\n\n\nChoose Your Own Adventure"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#regression-as-effect-modification",
     "href": "talks/mister_p/mister_p.html#regression-as-effect-modification",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Regression as Effect Modification",
-    "text": "Regression as Effect Modification\nreg = bmb.Model(\"Outcome ~ 1 + Treatment\", df)\nresults = reg.fit()\n\nreg_strata = bmb.Model(\"\"\"Outcome ~ 1 + Treatment + Risk_Strata \n+ Treatment_x_Risk_Strata\"\"\", df)\nresults_strata = reg_strata.fit()\nbmb.interpret.plot_predictions(reg, results, conditional=[\"Treatment\"])\nbmb.interpret.plot_predictions(reg_strata, results_strata, conditional=[\"Treatment\"])\n\n\n\n\n\n\n\n\n\n\n\nBambi’s Marginal Effects Interpretation module automates the implications of each model fit"
+    "text": "Regression as Effect Modification\nreg = bmb.Model(\"Outcome ~ 1 + Treatment\", df)\nresults = reg.fit()\n\nreg_strata = bmb.Model(\"\"\"Outcome ~ 1 + Treatment + Risk_Strata \n+ Treatment_x_Risk_Strata\"\"\", df)\nresults_strata = reg_strata.fit()\nbmb.interpret.plot_predictions(reg, results, conditional=[\"Treatment\"])\nbmb.interpret.plot_predictions(reg_strata, results_strata, conditional=[\"Treatment\"])\n\n\n\n\n\nTreatment Effect\n\n\n\n\n\n\nBambi’s Marginal Effects Interpretation module automates the implications of each model fit"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#regression-as-weighting-adjustment",
@@ -1425,7 +1425,7 @@
     "href": "talks/mister_p/mister_p.html#the-data",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "The Data",
-    "text": "The Data\nWe examine a comprehensive YouGov poll on whether employers should cover abortion in their coverage plans.\nWe select a biased subsample."
+    "text": "The Data\nWe examine a comprehensive YouGov poll on whether employers should cover abortion in their coverage plans.\nWe select a biased subsample.\n\nState Level Data"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#deliberate-bias",
@@ -1439,7 +1439,7 @@
     "href": "talks/mister_p/mister_p.html#prep-data-for-modelling",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Prep Data for Modelling",
-    "text": "Prep Data for Modelling"
+    "text": "Prep Data for Modelling\n\nAggregate Across Strata"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#exploratory-modelling",
@@ -1453,7 +1453,7 @@
     "href": "talks/mister_p/mister_p.html#plotting-implications",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Plotting Implications",
-    "text": "Plotting Implications"
+    "text": "Plotting Implications\n\nExploratory Interaction Effects"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#the-full-hierarchical-interaction-model",
@@ -1474,21 +1474,21 @@
     "href": "talks/mister_p/mister_p.html#learning-the-bias",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Learning the Bias",
-    "text": "Learning the Bias\nThe Model Derived Coefficients"
+    "text": "Learning the Bias\nThe Model Derived Coefficients\n\n\n\n\n\nEstimated Coefficients\n\n\n\n\n\n\nPosterior Predictive Fit"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#preliminaries",
     "href": "talks/mister_p/mister_p.html#preliminaries",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Preliminaries",
-    "text": "Preliminaries\n\n\n\n\n\n\nIntro\n\n\n\nI’m a data scientist at Personio\n\nBayesian statistician,\nReformed philosopher and logician.\n\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here"
+    "text": "Preliminaries\n\n\n\n\n\n\nIntro\n\n\n\nI’m a data scientist at Personio\n\nBayesian statistician,\nReformed philosopher and logician.\n\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nDisclaimer\n\n\nNone of Personio’s data was used in this presentation\n\n\n\n\nQR Website Code\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#predicting-vote-share",
     "href": "talks/mister_p/mister_p.html#predicting-vote-share",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Predicting Vote Share",
-    "text": "Predicting Vote Share\nUsing the Biased Model\nnew_data = (new_data.merge(\n    new_data.groupby(\"state\").agg({\"n\": \"sum\"})\n    .reset_index()\n    .rename({\"n\": \"state_total\"}, axis=1)\n)\n)\nnew_data[\"state_percent\"] = new_data[\"n\"] / new_data[\"state_total\"]\nnew_data.head()\n\nresult_adjust = model_hierarchical.predict(result, \ndata=new_data, inplace=False, kind=\"pps\")\nresult_adjust"
+    "text": "Predicting Vote Share\nUsing the Biased Model\nnew_data = (new_data.merge(\n    new_data.groupby(\"state\").agg({\"n\": \"sum\"})\n    .reset_index()\n    .rename({\"n\": \"state_total\"}, axis=1)\n)\n)\nnew_data[\"state_percent\"] = new_data[\"n\"] / new_data[\"state_total\"]\nnew_data.head()\n\nPopulation by Strataresult_adjust = model_hierarchical.predict(result, \ndata=new_data, inplace=False, kind=\"pps\")\nresult_adjust"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#adjusting-the-state-level-predictions",
@@ -1502,14 +1502,14 @@
     "href": "talks/mister_p/mister_p.html#comparing-adjusted-and-raw-predictions",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Comparing Adjusted and Raw Predictions",
-    "text": "Comparing Adjusted and Raw Predictions\nDerived state level predictions using the biased sample and the corrected values."
+    "text": "Comparing Adjusted and Raw Predictions\nDerived state level predictions using the biased sample and the corrected values.\n\nAdjusted Predictions"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#comparing-adjusted-and-raw-predictions-1",
     "href": "talks/mister_p/mister_p.html#comparing-adjusted-and-raw-predictions-1",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Comparing Adjusted and Raw Predictions",
-    "text": "Comparing Adjusted and Raw Predictions"
+    "text": "Comparing Adjusted and Raw Predictions\n\nComparing Predictions to Adjusted Predictions"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#conclusion",
@@ -1544,14 +1544,14 @@
     "href": "talks/mister_p/mister_p.html#plotting-implications-1",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Plotting Implications",
-    "text": "Plotting Implications"
+    "text": "Plotting Implications\n\nPosterior Predictive By Class"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#investigating-marginal-contrasts",
     "href": "talks/mister_p/mister_p.html#investigating-marginal-contrasts",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Investigating Marginal Contrasts",
-    "text": "Investigating Marginal Contrasts"
+    "text": "Investigating Marginal Contrasts\n\nMarginal Differences"
   },
   {
     "objectID": "talks/lbs_non_param_causal/non_param_causal.html#preliminaries",
@@ -3196,13 +3196,13 @@
     "href": "talks/mister_p/mister_p.html#hierarchical-regression-and-ppls-2",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Hierarchical Regression and PPLs",
-    "text": "Hierarchical Regression and PPLs\nVectorisation and Python Implementation\n\n\n\n\n\n\n\n\n\ng\nb_g\nX0\nX1\ny\n\n\n\n\n0\nA\n1.60\n-0.55\n0.48\n0.93\n\n\n1\nB\n1.11\n-1.08\n-0.62\n-4.84\n\n\n2\nC\n1.58\n-1.40\n-0.93\n-7.72\n\n\n3\nD\n-1.64\n0.55\n0.49\n3.17\n\n\n4\nE\n-0.19\n-0.05\n1.17\n5.58\n\n\n5\nA\n1.60\n-1.91\n0.65\n-3.26\n\n\n6\nB\n1.11\n-0.93\n-1.21\n-6.76\n\n\n7\nC\n1.58\n0.34\n0.11\n2.63\n\n\n8\nD\n-1.64\n-0.63\n0.26\n1.80\n\n\n9\nE\n-0.19\n-0.64\n-0.13\n-0.67"
+    "text": "Hierarchical Regression and PPLs\nVectorisation and Python Implementation\n\n\n\n\n\n\n\n\n\ng\nb_g\nX0\nX1\ny\n\n\n\n\n0\nA\n-0.94\n-1.13\n-0.78\n-3.34\n\n\n1\nB\n0.26\n-1.69\n-0.26\n-3.88\n\n\n2\nC\n1.09\n-0.43\n-0.64\n-2.88\n\n\n3\nD\n1.05\n-0.54\n0.57\n1.64\n\n\n4\nE\n0.09\n-0.46\n-1.96\n-7.80\n\n\n5\nA\n-0.94\n1.59\n0.91\n6.32\n\n\n6\nB\n0.26\n-0.39\n0.67\n2.79\n\n\n7\nC\n1.09\n1.06\n-0.28\n3.16\n\n\n8\nD\n1.05\n-1.04\n0.74\n0.79\n\n\n9\nE\n0.09\n-0.11\n1.40\n6.39"
   },
   {
     "objectID": "talks/mister_p/mister_p.html#regression-as-weighting-adjustment-1",
     "href": "talks/mister_p/mister_p.html#regression-as-weighting-adjustment-1",
     "title": "Multilevel Regression and Post-Stratification",
     "section": "Regression as Weighting Adjustment",
-    "text": "Regression as Weighting Adjustment\nRegression automates the more manual re-weighting"
+    "text": "Regression as Weighting Adjustment\nRegression automates the more manual re-weighting\n\nWeighted Average"
   }
 ]
