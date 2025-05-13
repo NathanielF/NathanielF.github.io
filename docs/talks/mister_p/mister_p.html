@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.6.41">
 
   <meta name="author" content="Nathaniel Forde">
-  <meta name="dcterms.date" content="2025-05-01">
+  <meta name="dcterms.date" content="2025-05-13">
   <title>Examined Algorithms – Multilevel Regression and Post-Stratification</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -213,7 +213,7 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">2025-05-01</p>
+  <p class="date">2025-05-13</p>
 </section>
 <section id="preliminaries" class="slide level2 smaller">
 <h2>Preliminaries</h2>
@@ -250,7 +250,8 @@ Nathaniel Forde
 </div>
 </div>
 </div>
-<div class="callout callout-tip callout-titled callout-style-default">
+
+<img data-src="images/QR_CODE.png" class="r-stretch"><div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
@@ -267,8 +268,8 @@ Nathaniel Forde
 <section>
 <section id="the-pitch" class="title-slide slide level1 center">
 <h1>The Pitch</h1>
-<p>Opt-out policies in SAAS customer surveys represent a risk for bias in survey derived summaries of sentiment</p>
-<p>Multilevel Regression with Post-stratification is a <strong>corrective</strong> technique for intellegently re-weighting the summaries to better reflect the true population distribution of sentiment.</p>
+<p>Opt-out policies in SAAS customer surveys represent a risk for bias in survey derived summaries of customer opinion</p>
+<p>Multilevel Regression with Post-stratification is a <strong>corrective</strong> technique for intellegently re-weighting the summaries to better reflect the true population distribution of opinion.</p>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
@@ -343,6 +344,16 @@ Nathaniel Forde
 <p><img data-src="images/choose.jpeg"></p>
 </div></div>
 </section>
+<section id="regression-as-weighting-adjustment" class="slide level2 smaller">
+<h2>Regression as Weighting Adjustment</h2>
+<p>Regression <strong><span class="blue">automates</span></strong> the more manual re-weighting</p>
+
+<img data-src="images/simple_average.png" class="r-stretch quarto-figure-center"><p class="caption">Simple Unweighted Average</p></section>
+<section id="regression-as-weighting-adjustment-1" class="slide level2 smaller">
+<h2>Regression as Weighting Adjustment</h2>
+<p>Regression <strong><span class="blue">automates</span></strong> the more manual re-weighting</p>
+
+<img data-src="images/weighted_average.png" class="r-stretch"></section>
 <section id="regression-as-effect-modification" class="slide level2">
 <h2>Regression as Effect Modification</h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a>reg <span class="op">=</span> bmb.Model(<span class="st">"Outcome ~ 1 + Treatment"</span>, df)</span>
@@ -367,16 +378,6 @@ Nathaniel Forde
 <figcaption>Bambi’s Marginal Effects Interpretation module automates the implications of each model fit</figcaption>
 </figure>
 </div>
-</div></div>
-</section>
-<section id="regression-as-weighting-adjustment" class="slide level2">
-<h2>Regression as Weighting Adjustment</h2>
-<p>Regression <strong><span class="blue">automates</span></strong> the more manual re-weighting that needs to occur to account for different varieties of risk across the strata of our population</p>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><img data-src="images/simple_average.png"></p>
-</div><div class="column" style="width:50%;">
-<p><img data-src="images/weighted_average.png"></p>
 </div></div>
 </section>
 <section id="the-need-for-re-weighting" class="slide level2">
@@ -406,18 +407,18 @@ Nathaniel Forde
 </section>
 <section id="hierarchical-regression-and-ppls" class="slide level2">
 <h2>Hierarchical Regression and PPLs</h2>
-<h3 id="differences-in-strata-drawn-from-random-distribution">Differences in Strata drawn from Random Distribution</h3>
+<h3 id="differences-in-strata-drawn-at-random">Differences in Strata drawn at Random?</h3>
 <p><span class="math display">\[ y = \beta_{0} + (\beta_{1} + \color{red}\gamma_{1,g}\color{black})X_{1} + \beta_{2}X_{2}\]</span></p>
 <p>where</p>
 <p><span class="math display">\[\beta_{i} \sim Normal(0, \color{purple}\sigma_{i}\color{black})\]</span></p>
 <p>and</p>
-<p><span class="math display">\[\gamma_{1,g} \sim Normal(0, \color{purple}\sigma_{i}\color{black}) \text{ for } g \in G\]</span></p>
+<p><span class="math display">\[\color{red}{\gamma_{1,g}}\color{black} \sim Normal(0, \color{purple}\sigma_{i}\color{black}) \text{ for } g \in G\]</span></p>
 <p><span class="math display">\[\sigma_{i} \sim InverseGamma(?, ?)\]</span></p>
 </section>
 <section id="hierarchical-regression-and-ppls-1" class="slide level2">
 <h2>Hierarchical Regression and PPLs</h2>
 <h3 id="vectorisation-and-python-implementation">Vectorisation and Python Implementation</h3>
-<div id="37393c92" class="cell" data-execution_count="1">
+<div id="66f82db0" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-2"><a></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb3-3"><a></a></span>
@@ -425,15 +426,16 @@ Nathaniel Forde
 <span id="cb3-5"><a></a>b_g <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">5</span>)</span>
 <span id="cb3-6"><a></a>X <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span>(<span class="dv">100</span>, <span class="dv">2</span>))</span>
 <span id="cb3-7"><a></a>groups <span class="op">=</span> np.array([<span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'C'</span>, <span class="st">'D'</span>, <span class="st">'E'</span>]<span class="op">*</span><span class="dv">20</span>)</span>
-<span id="cb3-8"><a></a>grp_indx, uniques <span class="op">=</span> pd.factorize(groups)</span>
-<span id="cb3-9"><a></a></span>
-<span id="cb3-10"><a></a>y <span class="op">=</span> b0 <span class="op">+</span> (b1 <span class="op">+</span>b_g[grp_indx])<span class="op">*</span>X[:, <span class="dv">0</span>] <span class="op">+</span> b2<span class="op">*</span>X[:, <span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-8"><a></a></span>
+<span id="cb3-9"><a></a><span class="co"># Factorize and index</span></span>
+<span id="cb3-10"><a></a>grp_indx, uniques <span class="op">=</span> pd.factorize(groups)</span>
+<span id="cb3-11"><a></a>y <span class="op">=</span> b0 <span class="op">+</span> (b1 <span class="op">+</span>b_g[grp_indx])<span class="op">*</span>X[:, <span class="dv">0</span>] <span class="op">+</span> b2<span class="op">*</span>X[:, <span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="hierarchical-regression-and-ppls-2" class="slide level2 smaller">
 <h2>Hierarchical Regression and PPLs</h2>
 <h3 id="vectorisation-and-python-implementation-1">Vectorisation and Python Implementation</h3>
-<div id="db280423" class="cell" data-execution_count="2">
+<div id="61ea35db" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 <style scoped="">
@@ -465,82 +467,82 @@ Nathaniel Forde
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>A</td>
-<td>0.343973</td>
-<td>0.916818</td>
-<td>1.109904</td>
-<td>7.588611</td>
+<td>1.60</td>
+<td>-0.55</td>
+<td>0.48</td>
+<td>0.93</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>B</td>
-<td>0.208319</td>
-<td>-0.686498</td>
-<td>-1.752630</td>
-<td>-7.526527</td>
+<td>1.11</td>
+<td>-1.08</td>
+<td>-0.62</td>
+<td>-4.84</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>C</td>
-<td>-1.612897</td>
-<td>0.316492</td>
-<td>1.461978</td>
-<td>6.970427</td>
+<td>1.58</td>
+<td>-1.40</td>
+<td>-0.93</td>
+<td>-7.72</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>D</td>
-<td>-0.566955</td>
-<td>-1.697468</td>
-<td>-0.025091</td>
-<td>-1.532912</td>
+<td>-1.64</td>
+<td>0.55</td>
+<td>0.49</td>
+<td>3.17</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>E</td>
-<td>0.914888</td>
-<td>-0.330259</td>
-<td>0.301293</td>
-<td>1.242503</td>
+<td>-0.19</td>
+<td>-0.05</td>
+<td>1.17</td>
+<td>5.58</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>A</td>
-<td>0.343973</td>
-<td>0.652999</td>
-<td>1.034193</td>
-<td>6.667386</td>
+<td>1.60</td>
+<td>-1.91</td>
+<td>0.65</td>
+<td>-3.26</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>B</td>
-<td>0.208319</td>
-<td>0.153657</td>
-<td>0.552471</td>
-<td>3.549208</td>
+<td>1.11</td>
+<td>-0.93</td>
+<td>-1.21</td>
+<td>-6.76</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
 <td>C</td>
-<td>-1.612897</td>
-<td>-0.085800</td>
-<td>-0.481120</td>
-<td>-0.957693</td>
+<td>1.58</td>
+<td>0.34</td>
+<td>0.11</td>
+<td>2.63</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
 <td>D</td>
-<td>-0.566955</td>
-<td>1.239837</td>
-<td>-2.094904</td>
-<td>-5.602873</td>
+<td>-1.64</td>
+<td>-0.63</td>
+<td>0.26</td>
+<td>1.80</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
 <td>E</td>
-<td>0.914888</td>
-<td>1.063792</td>
-<td>0.413589</td>
-<td>5.755189</td>
+<td>-0.19</td>
+<td>-0.64</td>
+<td>-0.13</td>
+<td>-0.67</td>
 </tr>
 </tbody>
 </table>
@@ -575,7 +577,7 @@ Nathaniel Forde
 <p>“In conventional sampling theory, the only scenario considered is essentially that of ‘drawing from an urn’, and the only probabilities that arise are those that presuppose the contents of the ‘urn’ or the ‘population’ already known, and seek to predict what ‘data’ we are likely to get as a result. …It was our use of probability theory as logic that has enabled us to do so easily what was impossible for those who thought of probability as a physical phenomenon associated with ‘randomness’. Quite the opposite; we have thought of probability distributions as <strong>carriers of information.</strong>” - Edwin Jaynes in <em>Probability: The Logic of Science</em> pg88 &amp; p117</p>
 </blockquote>
 </section>
-<section id="exploratory-modelling" class="slide level2">
+<section id="exploratory-modelling" class="slide level2 smaller">
 <h2>Exploratory Modelling</h2>
 <p>We fit a preliminary model to investigate the interactions across demographic splits. We specify a logit model using the binomial link.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>formula <span class="op">=</span> <span class="st">""" p(abortion, n) ~ C(state) + C(eth) + C(edu) + male + repvote"""</span></span>

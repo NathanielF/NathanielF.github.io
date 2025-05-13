@@ -32,6 +32,8 @@ jupyter: pymc_causal
 None of Personio's data was used in this presentation
 :::
 
+![](images/QR_CODE.png)
+
 ::: {.callout-tip}
 ## Code or it didn't Happen
 The worked examples used here can be found [here](https://bambinos.github.io/bambi/notebooks/mister_p.html)
@@ -40,9 +42,9 @@ The worked examples used here can be found [here](https://bambinos.github.io/bam
 
 # The Pitch
 
-Opt-out policies in SAAS customer surveys represent a risk for bias in survey derived summaries of sentiment
+Opt-out policies in SAAS customer surveys represent a risk for bias in survey derived summaries of customer opinion
 
-Multilevel Regression with Post-stratification is a __corrective__ technique for intellegently re-weighting the summaries to better reflect the true population distribution of sentiment.
+Multilevel Regression with Post-stratification is a __corrective__ technique for intellegently re-weighting the summaries to better reflect the true population distribution of opinion.
 
 ## Agenda
 
@@ -125,6 +127,21 @@ A fitted regression model allows us to explore the conditional branching probabi
 
 :::
 
+## Regression as Weighting Adjustment {.smaller}
+
+Regression __[automates]{.blue}__ the more manual re-weighting
+
+![Simple Unweighted Average](images/simple_average.png)
+
+
+
+## Regression as Weighting Adjustment {.smaller}
+
+Regression __[automates]{.blue}__ the more manual re-weighting
+
+![](images/weighted_average.png)
+
+
 ## Regression as Effect Modification
 
 ```{.python}
@@ -147,25 +164,6 @@ bmb.interpret.plot_predictions(reg_strata, results_strata, conditional=["Treatme
 
 ::: {.column width="50%"}
 ![Bambi's Marginal Effects Interpretation module automates the implications of each model fit](images/marginal_effects.png)
-:::
-
-:::
-
-## Regression as Weighting Adjustment
-
-Regression __[automates]{.blue}__ the more manual re-weighting that needs to occur
-to account for different varieties of risk across the strata of our population
-
-::: {.columns}
-
-::: {.column width="50%"}
-
-![](images/simple_average.png)
-
-:::
-
-::: {.column width="50%"}
-![](images/weighted_average.png)
 :::
 
 :::
@@ -199,7 +197,7 @@ to account for different varieties of risk across the strata of our population
 
 
 ## Hierarchical Regression and PPLs
-### Differences in Strata drawn from Random Distribution
+### Differences in Strata drawn at Random?
 
 $$ y = \beta_{0} + (\beta_{1} + \color{red}\gamma_{1,g}\color{black})X_{1} + \beta_{2}X_{2}$$
 
@@ -209,14 +207,14 @@ $$\beta_{i} \sim Normal(0, \color{purple}\sigma_{i}\color{black})$$
 
 and 
 
-$$\gamma_{1,g} \sim Normal(0, \color{purple}\sigma_{i}\color{black}) \text{ for } g \in G$$
+$$\color{red}{\gamma_{1,g}}\color{black} \sim Normal(0, \color{purple}\sigma_{i}\color{black}) \text{ for } g \in G$$
 
 $$\sigma_{i} \sim InverseGamma(?, ?)$$
 
 ## Hierarchical Regression and PPLs
 ### Vectorisation and Python Implementation
 
-```{python}
+```{python code-line-numbers="|9-11|"}
 #| echo: true
 
 import numpy as np
@@ -226,8 +224,9 @@ b0, b1, b2 = 1, 2, 4
 b_g = np.random.normal(0, 1, 5)
 X = np.random.normal(0, 1, size=(100, 2))
 groups = np.array(['A', 'B', 'C', 'D', 'E']*20)
-grp_indx, uniques = pd.factorize(groups)
 
+# Factorize and index
+grp_indx, uniques = pd.factorize(groups)
 y = b0 + (b1 +b_g[grp_indx])*X[:, 0] + b2*X[:, 1]
 
 ```
@@ -238,9 +237,7 @@ y = b0 + (b1 +b_g[grp_indx])*X[:, 0] + b2*X[:, 1]
 
 ```{python}
 
-pd.DataFrame({'g': groups, 'b_g': b_g[grp_indx], 'X0': X[:, 0], 'X1': X[:, 1], 'y': y}).head(10)
-
-
+pd.DataFrame({'g': groups, 'b_g': b_g[grp_indx], 'X0': X[:, 0], 'X1': X[:, 1], 'y': y}).round(2).head(10)
 
 ```
 
@@ -277,7 +274,7 @@ impossible for those who thought of probability as a physical phenomenon associa
 ‘randomness’. Quite the opposite; we have thought of probability distributions as __carriers
 of information.__" - Edwin Jaynes in _Probability: The Logic of Science_ pg88 & p117 
 
-## Exploratory Modelling
+## Exploratory Modelling {.smaller}
 
 We fit a preliminary model to investigate the interactions across demographic splits. We specify a logit model using the binomial link.
 
