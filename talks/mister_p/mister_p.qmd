@@ -1,6 +1,6 @@
 ---
 title: "Multilevel Regression and Post-Stratification"
-subtitle: "Stratum Specific effect modification"
+subtitle: "Stratum Specific effect modification with Bambi"
 author: 
     - name: Nathaniel Forde
       affiliations: 
@@ -242,7 +242,7 @@ pd.DataFrame({'g': groups, 'b_g': b_g[grp_indx], 'X0': X[:, 0], 'X1': X[:, 1], '
 
 
 # Sampling and Probability Sampling 
-In which we discuss the manner in which sample bias can corrupt the inferences drawn in even theoretically sound regression models. 
+In which we discuss the manner that sample bias can corrupt the inferences drawn from even theoretically sound regression models. 
 
 
 ## The Data 
@@ -275,7 +275,7 @@ of information.__" - Edwin Jaynes in _Probability: The Logic of Science_ pg88 & 
 
 ## Exploratory Modelling {.smaller}
 
-We fit a preliminary model to investigate the interactions across demographic splits. We specify a logit model using the binomial link.
+We fit a preliminary model to investigate the interactions across demographic splits using a logit model with the binomial link function.
 
 
 ```{.python}
@@ -299,7 +299,6 @@ fig, ax = bmb.interpret.plot_comparisons(
     fig_kwargs={"figsize": (12, 5), "sharey": True},
     legend=True,
 )
-ax[0].set_title("Comparison of Difference in Ethnicity \n within Age and Educational Strata");
 ```
 
 ## Plotting Implications
