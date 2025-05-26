@@ -11,10 +11,12 @@
             "id": "b4ab0f5e43c3f219",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "New tab"
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.8.10"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.8.10"
             }
           }
         ]
@@ -163,6 +165,14 @@
   },
   "active": "b4ab0f5e43c3f219",
   "lastOpenFiles": [
+    "Public/Philosophy/Repeat, Repeat, Repeat....html",
+    "Public/Philosophy/Repeat, Repeat, Repeat..._files/mediabag",
+    "Public/Philosophy/Repeat, Repeat, Repeat..._files",
+    "Wedding/Tattoo Idea.html",
+    "Wedding/Tattoo Idea_files/mediabag",
+    "Wedding/Tattoo Idea_files",
+    "Public/Philosophy/Repeat, Repeat, Repeat....md",
+    "Wedding/Tattoo Idea.md",
     "Wedding/Speech.md",
     "Wedding/Ceremony.md",
     "Wedding/Speech.html",
@@ -170,11 +180,6 @@
     "Wedding/Speech_files",
     "Wedding/Three things.html",
     "Wedding/Three things_files/mediabag",
-    "Wedding/Three things_files",
-    "Public/Philosophy/Sorites Paradox and Survival Analysis.html",
-    "Public/Philosophy/Sorites Paradox and Survival Analysis_files/mediabag",
-    "Public/Philosophy/Sorites Paradox and Survival Analysis_files",
-    "Public/Philosophy/Introduction - Philosophy Topics.html",
     "Wedding/Three things.md",
     "Public/Philosophy/Thinking about Statistics.md",
     "Philosophy/Book - Thinking about Statistics.md",

@@ -4,6 +4,7 @@
     "items": [
       "/talks/mister_p/mister_p.html",
       "/talks/ukraine_sem/talk4ukraine.html",
+      "/talks/value_capture/value_capture.html",
       "/talks/lbs_sem_causal/lbs_sem_causal.html",
       "/talks/pycon_ireland_causalpy/pycon_2024.html",
       "/talks/stem_talk_junior_infants/working_in_stem.html",
@@ -21,6 +22,7 @@
     "listing": "/archive.html",
     "items": [
       "/posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html",
+      "/posts/post-with-code/discrete_choice_mlogit/mlogit.html",
       "/posts/post-with-code/multilevel_confounding/multilevel_models.html",
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/theoretical_risks_meehl/theoretical_risks_meehl.html"
@@ -49,6 +51,7 @@
     "listing": "/blog.html",
     "items": [
       "/posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html",
+      "/posts/post-with-code/discrete_choice_mlogit/mlogit.html",
       "/posts/post-with-code/multilevel_confounding/multilevel_models.html",
       "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
       "/posts/post-with-code/theoretical_risks_meehl/theoretical_risks_meehl.html"

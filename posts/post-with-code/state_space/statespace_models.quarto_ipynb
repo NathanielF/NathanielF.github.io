@@ -1,0 +1,278 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"State Space Models and Irish Weather\"\n",
+        "author: \"Nathaniel Forde\"\n",
+        "date: \"2022-08-15\"\n",
+        "categories: [\"probability\", \"state space\", \"ireland\"]\n",
+        "keep-ipynb: true\n",
+        "self-contained: true\n",
+        "draft: true\n",
+        "execute: \n",
+        "  enabled: true\n",
+        "jupyter: python3\n",
+        "---\n",
+        "\n",
+        "\n",
+        "## State Space models\n",
+        "\n",
+        "Station Name: PHOENIX PARK\n",
+        "Station Height: 48 M \n",
+        "Latitude:53.364  ,Longitude: -6.350\n",
+        "\n",
+        "\n",
+        "date:  -  Date and Time (utc)\n",
+        "rain:  -  Precipitation Amount (mm)\t  \n",
+        "temp:  -  Air Temperature (C)\t\n",
+        "wetb:  -  Wet Bulb Temperature (C)\n",
+        "dewpt: -  Dew Point Temperature (C)\n",
+        "vappr: -  Vapour Pressure (hPa)\t\t                 \n",
+        "rhum:  -  Relative Humidity (%) \n",
+        "msl:   -  Mean Sea Level Pressure (hPa)\n",
+        "ind:   -  Indicator\n"
+      ],
+      "id": "f291ad92"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "from matplotlib import pyplot as plt\n",
+        "import numpy as np\n",
+        "from matplotlib import cm\n",
+        "from jax.nn import one_hot\n",
+        "import jax.random as jr\n"
+      ],
+      "id": "3a055e9b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df = pd.read_csv('irish_weather/hly175.csv')\n",
+        "df['date'] = pd.to_datetime(df['date'])\n",
+        "df['year'] = df['date'].dt.year\n",
+        "df.set_index('date', inplace=True)\n",
+        "\n",
+        "def convert_float(col):\n",
+        "    parsed = []\n",
+        "    for i in range(len(df[col])):\n",
+        "        try:\n",
+        "            parsed.append(float(df.iloc[i][col]))\n",
+        "        except Exception as e:\n",
+        "            parsed.append(np.nan)\n",
+        "    return parsed\n",
+        "\n",
+        "df['temp'] = convert_float('temp')\n",
+        "df['rain'] = convert_float('rain')\n",
+        "df['wetb'] = convert_float('wetb')\n",
+        "\n",
+        "df.head()"
+      ],
+      "id": "29461418",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig, axs = plt.subplots(3, 1, figsize=(20, 20))\n",
+        "axs = axs.flatten()\n",
+        "for y in df['year'].unique():\n",
+        "    temp = df[df['year'] == y].reset_index().sort_values('date')\n",
+        "    axs[0].plot(temp['temp'], label=f'Year {y}', alpha=0.4)\n",
+        "    axs[1].plot(temp['rain'], label=f'Year {y}', alpha=0.4)\n",
+        "    axs[2].plot(temp['wetb'], label=f'Year {y}', alpha=0.4)\n",
+        "axs[0].set_title(\"Annual Air Temperature: C\")\n",
+        "axs[1].set_title(\"Annual Rain Fall\")\n",
+        "axs[0].set_xticks([])\n",
+        "axs[1].set_xticks([])\n",
+        "axs[1].legend()"
+      ],
+      "id": "c0554f9f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "from jax import vmap\n",
+        "\n",
+        "df_2020 = df[df['year'] == 2020]\n",
+        "emissions = df_2020[\"temp\"].to_numpy()\n",
+        "emissions\n",
+        "\n",
+        "emissions = np.atleast_2d(emissions).T\n",
+        "emissions\n"
+      ],
+      "id": "b7a449bc",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "from dynamax.hidden_markov_model import CategoricalHMM, GaussianHMM\n",
+        "\n",
+        "true_num_states = 2\n",
+        "emission_dim = 1\n",
+        "key = jr.PRNGKey(0)\n",
+        "\n",
+        "hmm = GaussianHMM(true_num_states, emission_dim)\n",
+        "params, props = hmm.initialize(key=key, method=\"kmeans\", emissions=emissions)\n"
+      ],
+      "id": "30992c36",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "params, lps = hmm.fit_em(params, props, emissions, num_iters=100)\n",
+        "params"
+      ],
+      "id": "eb447270",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "most_likely_states = hmm.most_likely_states(params, emissions)\n",
+        "most_likely_states"
+      ],
+      "id": "eaa63fe5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "plt.plot(np.arange(most_likely_states.shape[0]), most_likely_states)"
+      ],
+      "id": "eba69780",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fig, axs = plt.subplots(3,1, figsize=(16,10))\n",
+        "colours = cm.rainbow(np.linspace(0, 1, 4))\n",
+        "\n",
+        "for i, (ax, colour) in enumerate(zip(axs, colours)):\n",
+        "    # Use fancy indexing to plot data in each state.\n",
+        "    mask = most_likely_states == i\n",
+        "    #ax.plot(hist.reset_index()[\"Date\"].iloc[mask], hist[\"Close\"].iloc[mask], \".-\", c=colour)\n",
+        "    ax.plot(df_2020.index[mask], df_2020[\"temp\"].to_numpy()[mask],  \".-\", c=colour)\n",
+        "    ax.set_title(\"{0}th hidden state\".format(i))\n",
+        "\n",
+        "    # Format the ticks.\n",
+        "\n",
+        "    ax.grid(True)\n",
+        "\n",
+        "axs[2].plot(df_2020['temp'])"
+      ],
+      "id": "2e770884",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "num_timesteps = 365\n",
+        "\n",
+        "fig, axs = plt.subplots(2, 1, figsize=(10, 6))\n",
+        "axs = axs.flatten()\n",
+        "for i in range(5):\n",
+        "    true_states, emissions_samples = hmm.sample(params, jr.PRNGKey(i), num_timesteps)\n",
+        "    axs[0].plot(emissions_samples)\n",
+        "    axs[0].set_title(\"Samples from HMM\")\n",
+        "    axs[1].set_title(\"Samples States from HMM\")\n",
+        "    axs[1].plot(true_states)"
+      ],
+      "id": "6e2269eb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "posterior = hmm.filter(params, emissions)\n",
+        "print(f\"marginal likelihood: {posterior.marginal_loglik: .2f}\")\n",
+        "print(f\"posterior.filtered_probs.shape: {posterior.filtered_probs.shape}\")"
+      ],
+      "id": "353ba5c1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "def plot_posterior_probs(probs, states, title=\"\"):\n",
+        "    plt.imshow(states[None, :], extent=(0, num_timesteps, 0, 1), \n",
+        "               interpolation=\"none\", aspect=\"auto\", cmap=\"Greys\", alpha=0.25)\n",
+        "    plt.plot(probs[:, 1])   # probability of the loaded state (z=1)\n",
+        "    plt.xlabel(\"time\")\n",
+        "    plt.ylabel(\"p(summer)\")\n",
+        "    plt.ylim(0, 1)\n",
+        "    plt.title(title)\n",
+        "\n",
+        "plot_posterior_probs(posterior.filtered_probs, true_states,\n",
+        "                     title=\"Filtering Distribution\")"
+      ],
+      "id": "7b89a39e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "posterior_smooth = hmm.smoother(params, emissions)\n",
+        "print(f\"posterior.smoothed_probs.shape: {posterior_smooth.smoothed_probs.shape}\")\n"
+      ],
+      "id": "e40cf0ce",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "plot_posterior_probs(posterior_smooth.smoothed_probs, true_states,\n",
+        "                     title=\"Smoothing Distribution\")\n"
+      ],
+      "id": "96c1ea17",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/Users/nathanielforde/mambaforge/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
