@@ -5,6 +5,7 @@ author: "Nathaniel Forde"
 date: "2023-02-04"
 categories: [bayesian, VAR, timeseries analysis]
 image: "aggregations.png"
+abstract: "A talk on Bayesian Hierarchical Vector Autoregressive Timeseries models"
 ---
 
 # Hierarchical Bayesian VARs 
