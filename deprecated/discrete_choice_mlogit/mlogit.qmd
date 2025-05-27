@@ -1,0 +1,79 @@
+---
+title: "R Notebook"
+output: html_notebook
+execute:
+    eval: false
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(mlogit)
+library(bayesm)
+
+df = read.csv('TravelMode.csv')
+#df$choice <- df$choice == 'no'
+#df$mode <- as.factor(df$mode)
+df
+
+```
+
+```{r}
+library(dplyr)
+
+df |> group_by(mode) |> summarize(vcost=median(vcost), 
+                                  wait = median(wait),
+                                  travel = median(travel))
+
+
+
+```
+
+```{r}
+
+df_long = mlogit.data(df, choice='choice', shape='long', alt.var = "mode")
+df_long
+
+
+```
+
+
+```{r}
+mnl = mlogit(choice ~ vcost + wait + travel | 1, data=df_long)
+mnl |> summary()
+
+```
+
+```{r}
+
+nmnl = mlogit(choice ~ vcost + travel + wait, 
+              data=df_long, reflevel = 'air', 
+              nests=list(land = c('car', 'bus', 'train'), 
+                         air = c('air')
+                         ), 
+              un.nest.el = TRUE
+              )
+summary(nmnl)
+
+```
+
+```{r}
+options(scipen=999)
+data("Heating", package = "mlogit")
+H <- dfidx(Heating, choice = "depvar", varying = c(3:12))
+m <- mlogit(depvar ~ ic + oc | 1, H, 
+            nests=list(room = c("er", "gr"), 
+                       central = c("ec", "gc", "hp")))
+summary(m)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+

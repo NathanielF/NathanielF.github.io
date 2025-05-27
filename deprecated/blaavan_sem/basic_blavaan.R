@@ -1,0 +1,62 @@
+library(lavaan) # for the PoliticalDemocracy data
+library(blavaan)
+
+model <- '
+   # latent variable definitions
+     ind60 =~ x1 + x2 + x3
+     dem60 =~ y1 + y2 + y3 + y4
+     dem65 =~ y5 + y6 + y7 + y8
+   # regressions
+     dem60 ~ ind60
+     dem65 ~ ind60 + dem60
+   # residual covariances
+     y1 ~~ y5
+     y2 ~~ y4 + y6
+     y3 ~~ y7
+     y4 ~~ y8
+     y6 ~~ y8
+'
+
+model1 <- '
+   # latent variable definitions
+     ind60 =~ x1 + x2 + x3
+     dem60 =~ y1 + y2 + y3 + y4
+     dem65 =~ y5 + y6 + y7 + y8
+   # regressions
+     dem60 ~ ind60
+     dem65 ~ ind60 + dem60
+'
+
+fit <- bsem(model, data = PoliticalDemocracy)
+fit1 <- bsem(model1, data = PoliticalDemocracy)
+bc12 <- blavCompare(fit1, fit)
+
+
+resid_values <- residuals(fit, type='cor')
+
+
+model2 <- '
+#Measurement model
+SUP_Parents =~ sup_parents_p1 + sup_parents_p2 + sup_parents_p3
+SUP_Friends =~ sup_friends_p1 + sup_friends_p2 + sup_friends_p3
+SE_Academic =~ se_acad_p1 + se_acad_p2 + se_acad_p3
+SE_Social =~ se_social_p1 + se_social_p2 + se_social_p3
+LS  =~ ls_p1 + ls_p2 + ls_p3
+
+#Regressions
+SE_Academic ~ SUP_Parents + SUP_Friends
+SE_Social ~ SUP_Parents + SUP_Friends
+LS ~ SE_Academic + SE_Social + SUP_Parents + SUP_Friends
+
+#Residual covariances
+SE_Academic ~~ SE_Social
+'
+
+df <- read.csv('sem_data.csv')
+fit <- bsem(model2, data = df,  mcmcfile = T)
+
+summary(fit)
+
+resid_values <- residuals(fit, type='cor')
+
+

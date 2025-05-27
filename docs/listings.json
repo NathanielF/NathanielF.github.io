@@ -12,6 +12,7 @@
       "/talks/pycon_ireland_recording/pycon_ireland_recording.html",
       "/talks/missing_data/missing_data_causal.html",
       "/talks/bayesian_mixer/bayesian_mixer_london.html",
+      "/talks/utility_and_choice/discrete_choice_and_utility.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
@@ -51,10 +52,8 @@
     "listing": "/blog.html",
     "items": [
       "/posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html",
-      "/posts/post-with-code/discrete_choice_mlogit/mlogit.html",
       "/posts/post-with-code/multilevel_confounding/multilevel_models.html",
-      "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html",
-      "/posts/post-with-code/theoretical_risks_meehl/theoretical_risks_meehl.html"
+      "/posts/post-with-code/GAMs_and_GPs/gams_and_gps.html"
     ]
   }
 ]

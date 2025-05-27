@@ -1,0 +1,123 @@
+---
+date: "2021-01-22"
+title: "Factor Analysis and Construct Validity in Psychology"
+categories: ["construct_validity", "significance_tests", "factor analysis", "replicability"]
+image: ExplainedVariance.jpeg
+draft: false
+---
+
+In a prescient paper in the 1970s Paul Meehl wrote about the lack of cumulative success in the psychologocial sciences, and how this should be attributed to poor methodology rather than the sheer difficulty of the subject. He elaborates an impressive list of problems for modeling any psychological process. Common themes criss-cross the list and interact with one another in ways which could make you despair for the discipline. So it is, I think, somewhat surprising that Meehl locates the main problem not in the subject, but in the method of significance testing.
+
+We'll narrow our focus shortly, but first consider the breadth of the issues.
+
+## Meehl's Problems Plaguing Psychology
+| Problem                             | Description                                                                                            |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------|
+| Response-Classification Problem     | Difficulty attributing mental process to observed behaviour                                            |
+| Situation-Taxonomy Problem          | Difficulty isolating the stimulus from rough description of environment                                |
+| Unit of Measurement                 | Choice of scale e.g. ratio or interval, continuous or discrete                                         |
+| Individual Differences              | Common psychological dispositions arise from idiosyncratic mixture of influences                       |
+| Polygenetic Hereditry               | Common psychological dispositions have complex causal roots                                          |
+| Divergent Causality                 | Very sensitive to initial conditions, slight differences at source result in large differences in outcomes                  |
+| Idiographic Problem                 | Often relates to the specific discovery of facts rather than generalisable laws                        |
+| Unknown Critical Events             | Paucity of medical history or local context                                                            |
+| Nuisance Variables                  | Difficulty deciphering wealth of related variables                                                     |
+| Feedback Loops                      | Interventions lead to changing behaviour, disrupting the study                                         |
+| AutoCatalytic Processes             | Individual influences on their own psychological disposition during tests                              |
+| Random Walk                         | Differences in dispositional response often due to random flux, rather than different causal influence |
+| Sheer Number of Variables           | Cumulative influence of small random-drift can have decisive impact on the psychological disposition   |
+| Importance of Cultural Factors      | Weight of an individual variable may vary with cultural context                                        |
+| Context-Dependent Stochastilogicals | Any derived rule of behaviour is likely only probabilisitic and subject to contextual variation.       |
+| Open Concepts                       | Latent psychological factors under study "evolve" as we include/remove indicative measures             |
+| Intentionality, Purpose and Meaning | Purpose drives behaviour and changes in behaviour                                                      |
+| Rule Governance                     | People follow rules influencing their behaviour                                                        |
+| Uniquely Human Events & Powers      | There are some behaviours which have no animal/ape analogies to compare. Limiting data                 |
+| Ethical Constraints on Research     | Constraints on some decisive testing methodologies due to ethical abuses.                              |
+
+We're going to focus on two of the problems that most clearly relate the issue of significance testing: **open concepts, context-dependent stochastilogicals**. These issues are tightly coupled with the ability to falsify psychological hypotheses since they both serve as reasons to doubt contrary evidence and therefore deny us a decisive rejection of our hypotheses even when they conflict with observable data. This difficulty directly undermines the paradigm of null-hypothesis testing in psychology, since they imply that we are incapable of placing the null under severe scrutiny. 
+
+## The Recipe: Open Concepts and Context Sensitive Stocastologicals
+
+The ugly word "stochastological" is to be contrasted with the, perhaps more familar but also pompous, notion of a nomological inference - one which is valid by appeal to a wholly general law. 
+
+$$ \text{(Nomological): } \forall x(Fx \rightarrow Gx) $$ 
+
+Meehl argues that the idiosyncratic and individual specific patterns of causation in psychology short-circuit any appeals to over-arching rules. Even when we can consistently measure a disposition common across individuals, the nature of the observed patterns support probabilistic inference not law-like generalisations. Even then the underlying probabilities are liable to change with the context. You might be prone to defer to authority in 9 of 10 cases, but always exhibit knee jerk refusal when prompted by a political opponent. 
+
+$$ \text{(Stochastic): }  \underbrace{P(Gx | Fx) \geq 0.90}_{context = c} $$
+
+Combine this issue with contingencies of measurement and the dynamic nature of the scales, and we have a recipe for undermining any null-hypothsis significance test. Consider iteritive model building which tests for predictive aspects of some latent factor, say risk-aversion, on performance at a related task. Say the factor was initially derived from a set of observational measures: 
+
+$$ \underbrace{ feature4,  \overbrace{ \text{ feature5, } \overbrace{feature1 , feature2, feature3 }^{\text{initial feature measures}}}^{\text{final feature measures}}}_{\text{Intuitive Concept}} \twoheadrightarrow \text{Construct} $$
+
+Now each iteration was designed to test the imagined psychological constructand the features are observational traits associated with risk-taking. Each additional feature seemed reasonable at time. We may even have gotten better predictive accuracy. But the model build and the changing measurements raises question over what we're constructing and whether it truly "captures" the pre-theoretical psychological concept.
+
+ Now we have a measure of risk-aversion and we try to render an intuitive hypothesis mathematically precise with respect to our construct. This is itself an art, but for the moment assume we can state $(H)$. Since the hypothesis test is supposed to infer the falsity of the assumptions from evidence contrary to the main hypothesis i.e. if when assuming the hypothesis and our auxilary commitments (regarding measurement and context) we find evidence inconsistent with our expectations, then we should reject the hypothesis! In practice the hypothesis is ussually far more entrenched in the minds of the experimenters than the extensive auxillary commitments, so we normally seek the source of predictive error in mistakes made than with the key hypothesis. 
+
+$$ (H \wedge A) \rightarrow O , \neg O \vdash \neg (H \wedge A) \text{ ....so not A}$$
+
+In this way we preserve the hypothesis and remove it from exposure to a strict test of its accuracy. This experiment is really only validating the consistency of the data with a nebulous range of auxilary commitments, and as such allows the experimenter to move the goal-posts almost at whim. 
+
+Meehl concedes that there may be some justification for this procedure if we would grant that $(H)$ has in some sense a greater "verisimilitude" than the auxilary commitments. Psychology differs from other disciplines in that the objects of measurement and the manner of measurement are not tightly bound. The truth "content" of claims about measurement of length, for instance, stand or fall with claims about the measurement instrument - they are so intimately connected that the measurement apparatus is almost definitional. You might object that appeals to versimilitude in some way puts the cart before the horse. We're designing an experiement to test $(H)$, how can we presume it's truth in testing!? This is fair but only points to difficulty of making $(H)$ precise and the distance between mental phenomena and our measurement of it 
+
+## Open Concepts and Factor Analysis
+If we're lucky we have a clear idea of how to measure the psychological phenomenon of interest and you can devise a survey to capture the details. If instead you just have some data and you think there might be a latent factor driving the observations, then the the factor analysis effectively tries to group the observed variable by their correlations. The underlying statistical model for $m$ factors states:
+
+<div class="theorem" text='The Factor Model'>
+Assume the model 
+$$\mathbf{X} = \mathbf{\mu}^{p \times 1}  + \mathbf{L}^{p \times m} \mathbf{F}^{m \times 1} +\epsilon^{p \times 1} $$
+
+where $\mathbf{X}$ is our data matrix recording the observational data while $\mu$ is the mean vector with entries for each column in $\mathbf{X}$. So our observational data is deemed a function modifying the multivariate mean as a linear function of latent factors $\mathbf{F}$ with factor loadings $l_{i, j} \in \mathbf{L}$, for each of the observed variables $i$ and for each $j$ of the $m$ factors. 
+
+
+The model assumes $\mathbf{F}$ and  $\epsilon$ are independent and $E(\mathbf{F}) = \mathbf{0}, Cov(\mathbf{F}) = \mathbf{I}$ In addition note that $E(\epsilon) = \mathbf{0}$ and $Cov(\epsilon) = \Psi$ where $\Psi$ is a diagonal matrix.
+
+Then we can show that $$Cov(\mathbf{X}) = \mathbf{LL}^{'} + \Psi$$
+</div>
+
+That's a bit abstract, but the point is just that each factor is a linear construct of the observed data, and we can choose how many constructs to build. An important consequence of this fact is that we can express the variance of each observed feature in terms of the loadings and a random variance, so if we can explain a high portion of their variance in a low number of factors we can be reasonably sure that the dimensional reduction remains representative of the diversity in the original data set. 
+
+$$ Var(X_i) = \underbrace{l_{i, j}^{2} + l_{i, 2}^{2} ... l_{i, m}^{2}}\_{communalities} + \psi_{i}$$ 
+
+<div class='proof'>
+$$ (\mathbf{X} - \mu) = (\mathbf{L}\mathbf{F} + \epsilon)$$
+$$ \Rightarrow (\mathbf{X} - \mu)(\mathbf{X} - \mu)^{'} = (\mathbf{L}\mathbf{F} + \epsilon)(\mathbf{L}\mathbf{F} + \epsilon)^{'}$$
+$$ = (\mathbf{L}\mathbf{F} + \epsilon)((\mathbf{L}\mathbf{F})^{'} + \epsilon^{'}) $$
+$$ = \mathbf{L}\mathbf{F}(\mathbf{L}\mathbf{F})^{'} + \epsilon(\mathbf{L}\mathbf{F})^{'} + \mathbf{L}\mathbf{F}\epsilon^{'} + \epsilon\epsilon^{'}$$
+$$ \Rightarrow E((\mathbf{X} - \mu)(\mathbf{X} - \mu)^{'}) = E( (\mathbf{L}\mathbf{F} + \epsilon)(\mathbf{L}\mathbf{F} + \epsilon)^{'})$$
+$$ \Rightarrow Cov(\mathbf{X}) = \mathbf{L}E(\mathbf{F}\mathbf{F}^{'})\mathbf{L}^{'} + E(\epsilon\mathbf{F}^{'})\mathbf{L}^{'} + \mathbf{L}E(\mathbf{F}\epsilon^{'}) + E(\epsilon\epsilon^{'}) $$
+$$ = \mathbf{L}\mathbf{L}^{'} + \Psi $$
+</div>
+
+### Estimating the latent factor values
+Various techniques can be applied to estimate the loadings $\mathbf{L}$ based on a strategic decomposition of sample covariance matrix to derive the principal factors. The typical technique is to use the eigenvalue decomposition, but a maximum likelihood method is also feasible. It is another question altogeher for how to estimate the factor scores $f_{j} \in \mathbf{F}$ from our derived factor loadings. 
+
+This is a two step, where we base an estimate on a set of prior estimates. One or more latent factors are assumed, observable features postulated to be related are grouped and from these we derive a recipe for constructing the latent factor as a composite of the observed features. From this recipe, we can then by a process of optimisation derive estimates for the values of the latent feature. We won't dwell on the details here, but I want to stress the level of abstraction! When it comes to test the hypotheses about the underlying psychological phenomenon, this method has certain mathematical appeal but it is not above question. It is these kind of contingencies: the bespoke assumptions of the model, but correlation and covariance relationship between the observed features and richness of the data required to discover the expected values of $\mathbf{L}, \mathbf{f}_j$ respectively, coupled with the difficulty of interpreting the factors in light of the original psychological concept, that undermine cumulative progress in psychology.
+
+## Weighing the Hypothesis 
+These observations suggest that the notion construct validity is not easily resolved and as such our initial hypotheses are plagued by innumerable auxilary commitments. It is with these considerations in mind that Paul Meehl can write:
+
+> "*[T]he almost universal reliance on merely refutng the null hypothesis as the standard method 
+> for corroborating substantive theories in the soft areas is a terrible mistake, is basically unsound, poor scientific strategy and one of the worst things that ever happened in theory of   psychology*" - Theoretical Risks and Tabular Asteriks, Sir Karl, Sir Ronald and the Slow Progress of Soft Psychology
+
+The accumulation of auxilary commitments makes the cumulative confirmation of substantive psychological theory proportionaly unlikely. At best we may get lucky in some cases, but the character of the object under study is so dynamic that simple significance tests are next to useless. The "distance" between the latent factor and our measurement of it supply an almost endless set of auxilary commitments which can come under pressure when evaluating a given hypothesis. 
+
+But there is a tension since difficulty of measurement does not necessarily undermine the theory. In particular, there are theory's which have a high degree of intuitive plausibility ("verisimilitude") but escape our ability to properly measure. Any measurement construct is at best an attempted proxy. There are some historic measures of construct validity such as Cronbach's alpha which at least test for a directional consistency in the observed features. 
+
+## Factor Reliability: An Example in Code. 
+
+```{=html}
+<iframe width="90%" height="1000" overflow-x="scroll", name="iframe" src="TheoreticalRisks_Meehl.html" scrolling="yes"></iframe>
+```
+
+# Generalisability and Replicability
+
+We've seen a brief example of factor analysis, an attempt to derive a psychological construct from observable data. We've shown how to deploy a measure of the factor's reliability in the Cronbach alpha measurement. But we've only really shown that some features co-vary together, or show some degree of correlation. This alone is too quick and dirty to support any inference to the reality of the latent factor. At this height of abstraction it's hard to see how any appeals to "versimilitude" could even get off the ground. Meehl's scepticism about significance testing in this domain might even have been too generous. 
+
+But his framing is valuable. The problem stated suggests a rephrasal where we test a theory for replicability over a range of admissable auxilary and contextual commitments. Holding one fixed as we vary the other in a genuine exercise of exploratory experiementation. 
+
+$$ \forall i \forall j \Bigg( T \wedge A_{i} \wedge C_{j} \Rightarrow O \Bigg) $$
+
+This emphasis concedes the difficulty of the subject and makes it explicit over the testing routine. Plausibility can then accrue to theory in a more gradual fashion as appropriate to the difficulties of the subject. 
+
+- <a href="/notebooks/TheoreticalRisks_Meehl.ipynb" download>Download Jupyter Notebook: Factor Analysis and Cronbach's Alpha</a>

@@ -1,0 +1,111 @@
+---
+date: "2021-02-06T10:19:36Z"
+title: "Pricing, Simultaneity and IV Regression"
+categories: ["pricing", "demand", "elasticity", "iv-regression"]
+image: "IV.jpeg"
+draft: true
+---
+
+Demand curve analysis is the academic study of tolerable robbery and stock market manias spike demand curves. You've likely seen the cobweb like diagrams that chart the trajectories of supply and demand as a function of price. These are aids to estimate the depth of your pockets. Acceptable elascticities of pricing always emerge as a consequence of tolerable changes in demand. A pricing strategy is a question of latitude, how far can we stretch your budget to account for "surplus value"? It assumes there is a limit to your enthusiasm and aims to find it. 
+
+# Historical Difficulties and Modern Instruments
+Even if the intention is manipulation, you might take some comfort in the fact that the task is inherently hard. As early as 1914 Moore would observe the difficulty in modelling demand as a static phenomena. Any rule was obsolete almost immediately after invention. 
+
+> "Two fundamental defects in the current theoretical method of treating economic questions are exemplified in the case of the theory of demand: first, the assumption is made that all other things being equal (the old cetteris
+paribus) ... The 'other things' that are supposed to remain equal are seldom mentioned and are never completely enumerated; and consequently the assumption that, other unmentioned and unenumerated factors remaining constant, the law of demand will be of a certain type, is really tantamount to saying that under conditions which are unanalyzed and unknown, the law of demand will take the supposed definite form." - cited in The History of Econometric Ideas pg 143
+
+He hoped for more success in modelling demand as a dynamical and evolving system subject to change but clearly correlated with structural features of supply. It would another 14 years before Philip Wright's pioneering work on Instrumental variables (IV) would be used to solve the now typical system of supply and demand curves. Before turning to some of those details, it's worth saying something about why it's valuable to understand price's impact behaviour, and why it's so hard to model. 
+
+# Elastic Demand and Market Prices
+Your beliefs and desires, however motivated, are expressed by your consumption and ruthlessly exploited. Your individual demand function over a set of goods may be a complicated and nuanced expression of your desires, income and prices on offer:
+
+$$ D_{i}^{\mathbf{g}}(P_{g1}, P_{g2}, ..., I) + \epsilon_{i} \text{ for all individuals} $$
+
+But you are a cog in a wider scheme. The market demand is a crass abstraction over all the individual demand.
+
+$$ D_{m}^{\mathbf{g}} = \sum_{i = 0}^{n} D_{i}(P_{g1}, P_{g2}, ... , I) + \epsilon_{i} $$
+
+A measure of price sensitivity may then be established in the market by monitoring how demand varies with price. This is the notion of demand elasticity with respect to price. Again we generalise over all the individuals of the market and calculate the rate of change in demand with respect to the fluctuations of the "market price" - ussually some average of all the display prices over offerings in the market.
+
+$$ \text{ (Elasticity):     } \eta_{P_{m}}^{D_{m}} = \frac{\dfrac{\partial D_{m}}{D\_{m}}}{\dfrac{\partial P_{m}}{P\_{m}}} = \dfrac{P_{m} \partial D_{m} }{D_{m} \partial P_{m}} $$
+
+This is a convenient measure in that both the numerator and denominator have been normalised as percentages, so it makes sense even if the demand and price are calculated on different units of magnitude. 
+
+| Relation  | Magnitude |  Label |  Interpretation |
+|---|---|---|---|
+| $P_{m} \partial D_{m} > D_{m} \partial P_{m}$  |  > 1 |  Elastic |  If $P_{m}$ rises 1%, $D_{m}$ falls more than 1% |
+|  $P_{m} \partial D_{m} = D_{m} \partial P_{m}$ | =1  | Unit Elastic  | If $P_{m}$ rises 1%, $D_{m}$ falls exactly 1% |
+| $P_{m} \partial D_{m} < D_{m} \partial P_{m}$ |  <1 | Inelastic | If $P_{m}$ rises 1%, $D_{m}$ falls less than 1% |
+
+Seen from the perspective of a firm, this metric gives a view of the market appetite and whether it's safe to raise prices. 
+
+![Diffference between demand environments](elastic_demand.png)
+
+# The Perspective of the Firm.
+Pricing strategies available to any firm are relative to it's place in a market: ranging from an entirely dominant monopolist to one among many in a perfectly competitive market We can write out the equation for profit as price times quantity sold minus costs. 
+
+$$ Profit = (P \times D(P)) - C $$
+
+We can generally assume the demand curves downward as an with an increase in price and that costs slope upward with an increase quantities. 
+
+$$ \dfrac{dD}{dP} < 0 \text{ and } \dfrac{dC}{dD} > 0$$ 
+
+So we can find the firm's maximimum just when:
+
+$$ \dfrac{dProfit}{dD} = D(P)\dfrac{dP}{dD}  + P(\dfrac{dD}{dP} \dfrac{dP}{dD})  - \dfrac{dC}{dD} = D(P)\dfrac{dP}{dD}  + P  - \dfrac{dC}{dD} = 0$$
+
+this implies that:
+
+$$  D\dfrac{dP}{dD}  + P  = \dfrac{dC}{dD} \Leftrightarrow P\Big[\dfrac{D}{P}\dfrac{dP}{dD} + 1 \Big] = \dfrac{dC}{dD} \Leftrightarrow P\Big[\frac{1}{\eta_{P}^{D}} + 1 \Big] = \dfrac{dC}{dD} $$
+
+which is just to say that the firm maximises it's profit at the point when it's marginal profit exactly equals it's marginal cost, and that we can always think of the marginal profit as an expression of price and the elasticities of the demand curve. Specifically, the elasticity is a multiplier of price. This makes sense since if the marginal profit was less than the marginal cost, it would always pay to cease/slow production, and if the marginal profit was greater then it would always pay to increase production. 
+
+# Statistical Estimation of Simultaneous Equations
+Taken together these dimensions of business all mutually influence one another. This was the chief historic difficulty in estimating the invididual curves. We'll follow David Freedman's example and discuss the supply and demand system for butter, estimating supply as a function of price (P), wage costs (W), and the cost of hay (H), while predicting the demand based on sale price and the price of french bread (F) and olive oil (O). 
+
+$$ \text{Supply } = a_{0} + a_{1}P + a_{2}W + a_{3}H + \delta_{t} $$
+
+$$ \text{Demand } = b_{0} + b_{1}P + b_{2}F + b_{3}O + \epsilon_{t} $$
+
+which implies that when: 
+
+$$ a_{0} + a_{1}P + a_{2}W + a_{3}H + \delta_{t}  = b_{0} + b_{1}P + b_{2}F + b_{3}O + \epsilon_{t} $$
+
+$$ (a_{0} + a_{1}P + a_{2}W + a_{3}H + \delta_{t}) - a_{1}P - b_{1}P  = (b_{0} + b_{1}P + b_{2}F + b_{3}O + \epsilon_{t}) - a_{1}P - b_{1}P  $$
+
+$$ (a_{0} + a_{2}W + a_{3}H + \delta_{t}) - b_{1}P = (b_{0} + b_{2}F + b_{3}O + \epsilon_{t}) - a_{1}P  $$
+
+$$ - b_{1}P = (b_{0} + b_{2}F + b_{3}O + \epsilon_{t}) - (a_{0} + a_{2}W + a_{3}H + \delta_{t}) - a_{1}P  $$
+
+$$ a_{1}P  - b_{1}P = (b_{0} + b_{2}F + b_{3}O + \epsilon_{t}) - (a_{0} + a_{2}W + a_{3}H + \delta_{t}) $$
+$$ P(a_{1}  - b_{1}) = (b_{0} + b_{2}F + b_{3}O + \epsilon_{t}) - (a_{0} + a_{2}W + a_{3}H + \delta_{t}) $$
+
+$$ P = \dfrac{(b_{0} + b_{2}F + b_{3}O + \epsilon\_{t}) - (a_{0} + a_{2}W + a_{3}H + \delta_{t})}{(a_{1}  - b_{1})} $$
+
+So the explanatory variable $P$ in the above system is a function of both error terms, and when there is correlation between price and the error terms the assumptions of OLS regression are violated. This is, in particular, true when we wish to estimate demand regressed on price. 
+
+<iframe width="100%" height="1500" name="iframe" src="Simultaneity Bias and IV Regression.html"  frameborder="0" scrolling="yes" onload="resizeIframe(this)"></iframe>
+
+The careful specification of an instrument allows us to properly identify the regression equation and avoid the problem of simultaniety bias. In practice the discovery of suitable instrumental variables is a difficult endeavour. 
+
+## Market Power and Price Discrimination
+Despite this solution the firm does not operate alone in the market, and it often operates in many markets. Even if dominant it does not have the discretion to set prices as it pleases. Demand is not a simple equation even if you control for supply.
+
+> The dominant firm, however, is different. It sets the tone for the market, but it
+must still take account of the competitive fringe, especially when setting its price.
+In particular, the dominant firm supplies whatever the competitive fringe does not
+supply. The price it charges must account for this. -  W. Paczkowski, *Pricing Analytics* pg 56
+
+The corressponding demand equation must then take into account that the supply offered by competitors is priced so as to chip away at the dominance and subtract some of the market demand from the competitive fringe. 
+
+$$ D_{df} = D_{m} - S_{cf} $$
+
+The dynamics of the situation is then especially volatile if the dominant firm tries to press their advantage too greatly by manipulating prices. This stems from the reduction in market power in a competitive market. Market power is often measured on a scale called the Lerner's Index: 
+
+$$ \text{LI: } \frac{P - \dfrac{dC}{dD}}{P} $$
+
+This effectively gauges the market power of a firm by the power it has to set its own prices over and above its marginal costs. These are some of the complexities that impact practical considerations of price setting. They suggest that minimal requirements of a pricing model are well defined notions of the market, costs, products, demand and power. These are the ingredients which we need to measure any kind of optimisation over the product offering. The recent efforts to democratise stock market investing disupt this process along at least three dimensions, (i) the bounds of the market place have expanded and (ii) questions of market power have shifted slightly, and (iii) demand spikes are no simple function of price. It remains to be seen whether this shift marks a new era or yet more new forms of sophisticated theft. 
+
+- <a href="Simultaneity Bias and IV Regression.ipynb" download>Download Jupyter Notebook: Simultaneity Bias and IV Regression</a>
+
+

@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.335">
+<meta name="generator" content="quarto-1.6.41">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Examined Algorithms – opensource</title>
+<title>opensource – Examined Algorithms</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -17,7 +17,7 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
 </style>
@@ -37,17 +37,23 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -56,8 +62,10 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 <script>
@@ -90,149 +98,104 @@ ul.task-list li input[type="checkbox"] {
   })
   </script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Examined Algorithms</span>
     </a>
   </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html">
- <span class="menu-text">Blog</span></a>
+    <a class="nav-link" href="./blog.html"> 
+<span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./opensource.html" aria-current="page">
- <span class="menu-text">Open Source Projects</span></a>
+    <a class="nav-link active" href="./opensource.html" aria-current="page"> 
+<span class="menu-text">Open Source Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./talks.html">
- <span class="menu-text">Talks</span></a>
+    <a class="nav-link" href="./talks.html"> 
+<span class="menu-text">Talks</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./resume/Nathaniel_Forde_Resume.pdf">
- <span class="menu-text">CV</span></a>
+    <a class="nav-link" href="./resume/Nathaniel_Forde_Resume.pdf"> 
+<span class="menu-text">CV</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/NathanielF"><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/NathanielF"> <i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/forde_nathaniel"><i class="bi bi-twitter" role="img">
+    <a class="nav-link" href="https://twitter.com/forde_nathaniel"> <i class="bi bi-twitter" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
-              <div class="quarto-toggle-container">
-                  <a href="" class="quarto-reader-toggle nav-link" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
   <div class="quarto-reader-toggle-btn">
   <i class="bi"></i>
   </div>
 </a>
-              </div>
-              <div id="quarto-search" class="" title="Search"></div>
-          </div> <!-- /navcollapse -->
+</div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"></h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
-      </button>
-    </div>
-  </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<header id="title-block-header" class="quarto-title-block"></header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
-    <div class="sidebar-menu-container"> 
-    <ul class="list-unstyled mt-1">
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">Logic</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Logic/Introduction - Logic Topics.html" class="sidebar-item-text sidebar-link">Introduction - Logic Topics</a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">Philosophy</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Philosophy/Introduction - Philosophy Topics.html" class="sidebar-item-text sidebar-link">Introduction - Philosophy Topics</a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Philosophy/Thinking about Statistics.html" class="sidebar-item-text sidebar-link">Statistical Models and the Problem of Induction</a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Philosophy/Sorites Paradox and Survival Analysis.html" class="sidebar-item-text sidebar-link">The Sorites Paradox</a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Statistics</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Statistics/Introduction - Statistics Topics.html" class="sidebar-item-text sidebar-link">Introduction - Statistics Topics</a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./notes/certain_things/Public/Statistics/Analogies between Missing Data and Causal Inference.html" class="sidebar-item-text sidebar-link">Taxonomies of Missing-ness</a>
-  </div>
-</li>
-      </ul>
-  </li>
-    </ul>
-    </div>
-</nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(14)</span></div><div class="category" data-category="autoregressive">autoregressive <span class="quarto-category-count">(2)</span></div><div class="category" data-category="calibration">calibration <span class="quarto-category-count">(1)</span></div><div class="category" data-category="causal inference">causal inference <span class="quarto-category-count">(4)</span></div><div class="category" data-category="cfa">cfa <span class="quarto-category-count">(1)</span></div><div class="category" data-category="discrete choice">discrete choice <span class="quarto-category-count">(1)</span></div><div class="category" data-category="frailty models">frailty models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="hierarchical_models">hierarchical_models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="imputation">imputation <span class="quarto-category-count">(1)</span></div><div class="category" data-category="instrumental variables">instrumental variables <span class="quarto-category-count">(2)</span></div><div class="category" data-category="likert scales">likert scales <span class="quarto-category-count">(1)</span></div><div class="category" data-category="longitudinal models">longitudinal models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="missing_data">missing_data <span class="quarto-category-count">(1)</span></div><div class="category" data-category="non parametric">non parametric <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ordinal regression">ordinal regression <span class="quarto-category-count">(1)</span></div><div class="category" data-category="post-stratification">post-stratification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="probability">probability <span class="quarto-category-count">(10)</span></div><div class="category" data-category="propensity">propensity <span class="quarto-category-count">(1)</span></div><div class="category" data-category="pymc">pymc <span class="quarto-category-count">(10)</span></div><div class="category" data-category="regression">regression <span class="quarto-category-count">(4)</span></div><div class="category" data-category="sem">sem <span class="quarto-category-count">(1)</span></div><div class="category" data-category="subjective utility">subjective utility <span class="quarto-category-count">(1)</span></div><div class="category" data-category="survey data">survey data <span class="quarto-category-count">(1)</span></div><div class="category" data-category="survival models">survival models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="time-to-failure">time-to-failure <span class="quarto-category-count">(1)</span></div><div class="category" data-category="weighting">weighting <span class="quarto-category-count">(1)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(14)</span></div><div class="category" data-category="YXV0b3JlZ3Jlc3NpdmU=">autoregressive <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Y2FsaWJyYXRpb24=">calibration <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Y2F1c2FsJTIwaW5mZXJlbmNl">causal inference <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Y2Zh">cfa <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZGlzY3JldGUlMjBjaG9pY2U=">discrete choice <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZnJhaWx0eSUyMG1vZGVscw==">frailty models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="aGllcmFyY2hpY2FsX21vZGVscw==">hierarchical_models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="aW1wdXRhdGlvbg==">imputation <span class="quarto-category-count">(1)</span></div><div class="category" data-category="aW5zdHJ1bWVudGFsJTIwdmFyaWFibGVz">instrumental variables <span class="quarto-category-count">(2)</span></div><div class="category" data-category="bGlrZXJ0JTIwc2NhbGVz">likert scales <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bG9uZ2l0dWRpbmFsJTIwbW9kZWxz">longitudinal models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bWlzc2luZ19kYXRh">missing_data <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bm9uJTIwcGFyYW1ldHJpYw==">non parametric <span class="quarto-category-count">(1)</span></div><div class="category" data-category="b3JkaW5hbCUyMHJlZ3Jlc3Npb24=">ordinal regression <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cG9zdC1zdHJhdGlmaWNhdGlvbg==">post-stratification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHJvYmFiaWxpdHk=">probability <span class="quarto-category-count">(10)</span></div><div class="category" data-category="cHJvcGVuc2l0eQ==">propensity <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHltYw==">pymc <span class="quarto-category-count">(10)</span></div><div class="category" data-category="cmVncmVzc2lvbg==">regression <span class="quarto-category-count">(4)</span></div><div class="category" data-category="c2Vt">sem <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3ViamVjdGl2ZSUyMHV0aWxpdHk=">subjective utility <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3VydmV5JTIwZGF0YQ==">survey data <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3Vydml2YWwlMjBtb2RlbHM=">survival models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dGltZS10by1mYWlsdXJl">time-to-failure <span class="quarto-category-count">(1)</span></div><div class="category" data-category="d2VpZ2h0aW5n">weighting <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-body" id="quarto-document-content">
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+
 
 
 
@@ -264,42 +227,41 @@ ul.task-list li input[type="checkbox"] {
     </div>
 </div>
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="probability,pymc,sem,cfa" data-listing-date-sort="1727564400000" data-listing-file-modified-sort="1731537391457" data-listing-reading-time-sort="0.215">
+<div class="quarto-post image-right" data-index="0" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDc2VtJTJDY2Zh" data-listing-date-sort="1727564400000" data-listing-file-modified-sort="1731537391457" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="43">
 <div class="thumbnail">
-<p><a href="./oss/pymc/sem_cfa_pymc.html"> <img src="./oss/pymc/covariance_structure.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/sem_cfa_pymc.html" class="no-external"></a></p><a href="./oss/pymc/sem_cfa_pymc.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/covariance_structure.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/sem_cfa_pymc.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/sem_cfa_pymc.html">
 <h3 class="no-anchor listing-title">
-SEM and CFA in PyMC
+<a href="./oss/pymc/sem_cfa_pymc.html" class="no-external">SEM and CFA in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/sem_cfa_pymc.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('sem'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('c2Vt'); return false;">
 sem
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('cfa'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('Y2Zh'); return false;">
 cfa
 </div>
 </div>
-<a href="./oss/pymc/sem_cfa_pymc.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/sem_cfa_pymc.html">
+<a href="./oss/pymc/sem_cfa_pymc.html" class="no-external">
 <div class="listing-date">
 Sep 29, 2024
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Bayesian Measurement Models and Structural Regressions
@@ -307,39 +269,38 @@ Bayesian Measurement Models and Structural Regressions
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="1" data-categories="regression,instrumental variables,causal inference" data-listing-date-sort="1718406000000" data-listing-file-modified-sort="1731537543858" data-listing-reading-time-sort="0.36">
+<div class="quarto-post image-right" data-index="1" data-categories="cmVncmVzc2lvbiUyQ2luc3RydW1lbnRhbCUyMHZhcmlhYmxlcyUyQ2NhdXNhbCUyMGluZmVyZW5jZQ==" data-listing-date-sort="1718406000000" data-listing-file-modified-sort="1731537543858" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="72">
 <div class="thumbnail">
-<p><a href="./oss/causalpy/justifying_instruments.html"> <img src="./oss/causalpy/instrument.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/causalpy/justifying_instruments.html" class="no-external"></a></p><a href="./oss/causalpy/justifying_instruments.html" class="no-external">
+<p><img loading="lazy" src="./oss/causalpy/instrument.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/causalpy/justifying_instruments.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/causalpy/justifying_instruments.html">
 <h3 class="no-anchor listing-title">
-Justifying Instruments in CausalPy
+<a href="./oss/causalpy/justifying_instruments.html" class="no-external">Justifying Instruments in CausalPy</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/causalpy/justifying_instruments.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('regression'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cmVncmVzc2lvbg=='); return false;">
 regression
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('instrumental variables'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('aW5zdHJ1bWVudGFsJTIwdmFyaWFibGVz'); return false;">
 instrumental variables
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('causal inference'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('Y2F1c2FsJTIwaW5mZXJlbmNl'); return false;">
 causal inference
 </div>
 </div>
-<a href="./oss/causalpy/justifying_instruments.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/causalpy/justifying_instruments.html">
+<a href="./oss/causalpy/justifying_instruments.html" class="no-external">
 <div class="listing-date">
 Jun 15, 2024
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Credibility in Bayesian IV designs
@@ -347,42 +308,41 @@ Credibility in Bayesian IV designs
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="2" data-categories="regression,propensity,causal inference,weighting" data-listing-date-sort="1715382000000" data-listing-file-modified-sort="1731537470984" data-listing-reading-time-sort="0.265">
+<div class="quarto-post image-right" data-index="2" data-categories="cmVncmVzc2lvbiUyQ3Byb3BlbnNpdHklMkNjYXVzYWwlMjBpbmZlcmVuY2UlMkN3ZWlnaHRpbmc=" data-listing-date-sort="1715382000000" data-listing-file-modified-sort="1731537470984" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="53">
 <div class="thumbnail">
-<p><a href="./oss/causalpy/inv_prop_weights.html"> <img src="./oss/causalpy/dag.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/causalpy/inv_prop_weights.html" class="no-external"></a></p><a href="./oss/causalpy/inv_prop_weights.html" class="no-external">
+<p><img loading="lazy" src="./oss/causalpy/dag.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/causalpy/inv_prop_weights.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/causalpy/inv_prop_weights.html">
 <h3 class="no-anchor listing-title">
-Inverse Propensity Score Weighting in CausalPy
+<a href="./oss/causalpy/inv_prop_weights.html" class="no-external">Inverse Propensity Score Weighting in CausalPy</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/causalpy/inv_prop_weights.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('regression'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cmVncmVzc2lvbg=='); return false;">
 regression
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('propensity'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvcGVuc2l0eQ=='); return false;">
 propensity
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('causal inference'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('Y2F1c2FsJTIwaW5mZXJlbmNl'); return false;">
 causal inference
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('weighting'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('d2VpZ2h0aW5n'); return false;">
 weighting
 </div>
 </div>
-<a href="./oss/causalpy/inv_prop_weights.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/causalpy/inv_prop_weights.html">
+<a href="./oss/causalpy/inv_prop_weights.html" class="no-external">
 <div class="listing-date">
 May 11, 2024
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Propensity Weighting Adjustment for Causal Inference
@@ -390,42 +350,41 @@ Propensity Weighting Adjustment for Causal Inference
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="3" data-categories="probability,pymc,non parametric,causal inference" data-listing-date-sort="1708992000000" data-listing-file-modified-sort="1731537328493" data-listing-reading-time-sort="0.54">
+<div class="quarto-post image-right" data-index="3" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDbm9uJTIwcGFyYW1ldHJpYyUyQ2NhdXNhbCUyMGluZmVyZW5jZQ==" data-listing-date-sort="1708992000000" data-listing-file-modified-sort="1731537328493" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="108">
 <div class="thumbnail">
-<p><a href="./oss/pymc/bnp.html"> <img src="./oss/pymc/bnp_cate.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/bnp.html" class="no-external"></a></p><a href="./oss/pymc/bnp.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/bnp_cate.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/bnp.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/bnp.html">
 <h3 class="no-anchor listing-title">
-Bayesian Non Parametric Causal Inference in PyMC
+<a href="./oss/pymc/bnp.html" class="no-external">Bayesian Non Parametric Causal Inference in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/bnp.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('non parametric'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('bm9uJTIwcGFyYW1ldHJpYw=='); return false;">
 non parametric
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('causal inference'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('Y2F1c2FsJTIwaW5mZXJlbmNl'); return false;">
 causal inference
 </div>
 </div>
-<a href="./oss/pymc/bnp.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/bnp.html">
+<a href="./oss/pymc/bnp.html" class="no-external">
 <div class="listing-date">
 Feb 27, 2024
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Non Parametric Causal Models and Mediation Analysis
@@ -433,42 +392,41 @@ Non Parametric Causal Models and Mediation Analysis
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="4" data-categories="probability,pymc,survival models,frailty models" data-listing-date-sort="1701129600000" data-listing-file-modified-sort="1731537264730" data-listing-reading-time-sort="0.47">
+<div class="quarto-post image-right" data-index="4" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDc3Vydml2YWwlMjBtb2RlbHMlMkNmcmFpbHR5JTIwbW9kZWxz" data-listing-date-sort="1701129600000" data-listing-file-modified-sort="1731537264730" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="94">
 <div class="thumbnail">
-<p><a href="./oss/pymc/frailty_survival.html"> <img src="./oss/pymc/frailty_terms.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/frailty_survival.html" class="no-external"></a></p><a href="./oss/pymc/frailty_survival.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/frailty_terms.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/frailty_survival.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/frailty_survival.html">
 <h3 class="no-anchor listing-title">
-Frailty Survival Models in PyMC
+<a href="./oss/pymc/frailty_survival.html" class="no-external">Frailty Survival Models in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/frailty_survival.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('survival models'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('c3Vydml2YWwlMjBtb2RlbHM='); return false;">
 survival models
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('frailty models'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('ZnJhaWx0eSUyMG1vZGVscw=='); return false;">
 frailty models
 </div>
 </div>
-<a href="./oss/pymc/frailty_survival.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/frailty_survival.html">
+<a href="./oss/pymc/frailty_survival.html" class="no-external">
 <div class="listing-date">
 Nov 28, 2023
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Accelerated Failure and Hierarchical Survival Models for Attrition Models
@@ -476,39 +434,38 @@ Accelerated Failure and Hierarchical Survival Models for Attrition Models
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="5" data-categories="regression,post-stratification,survey data" data-listing-date-sort="1695250800000" data-listing-file-modified-sort="1731537699094" data-listing-reading-time-sort="0.485">
+<div class="quarto-post image-right" data-index="5" data-categories="cmVncmVzc2lvbiUyQ3Bvc3Qtc3RyYXRpZmljYXRpb24lMkNzdXJ2ZXklMjBkYXRh" data-listing-date-sort="1695250800000" data-listing-file-modified-sort="1731537699094" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="97">
 <div class="thumbnail">
-<p><a href="./oss/bambi/mr_p.html"> <img src="./oss/bambi/mr_p.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/bambi/mr_p.html" class="no-external"></a></p><a href="./oss/bambi/mr_p.html" class="no-external">
+<p><img loading="lazy" src="./oss/bambi/mr_p.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/bambi/mr_p.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/bambi/mr_p.html">
 <h3 class="no-anchor listing-title">
-Multilevel Regression and Post-Stratification
+<a href="./oss/bambi/mr_p.html" class="no-external">Multilevel Regression and Post-Stratification</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/bambi/mr_p.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('regression'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cmVncmVzc2lvbg=='); return false;">
 regression
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('post-stratification'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cG9zdC1zdHJhdGlmaWNhdGlvbg=='); return false;">
 post-stratification
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('survey data'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('c3VydmV5JTIwZGF0YQ=='); return false;">
 survey data
 </div>
 </div>
-<a href="./oss/bambi/mr_p.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/bambi/mr_p.html">
+<a href="./oss/bambi/mr_p.html" class="no-external">
 <div class="listing-date">
 Sep 21, 2023
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Weighting Adjustments as Correctives for Survey Bias
@@ -516,39 +473,38 @@ Weighting Adjustments as Correctives for Survey Bias
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="6" data-categories="regression,instrumental variables,causal inference" data-listing-date-sort="1692054000000" data-listing-file-modified-sort="1731537625408" data-listing-reading-time-sort="0.335">
+<div class="quarto-post image-right" data-index="6" data-categories="cmVncmVzc2lvbiUyQ2luc3RydW1lbnRhbCUyMHZhcmlhYmxlcyUyQ2NhdXNhbCUyMGluZmVyZW5jZQ==" data-listing-date-sort="1692054000000" data-listing-file-modified-sort="1731537625408" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="67">
 <div class="thumbnail">
-<p><a href="./oss/causalpy/instrumental_variables.html"> <img src="./oss/causalpy/iv_reg.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/causalpy/instrumental_variables.html" class="no-external"></a></p><a href="./oss/causalpy/instrumental_variables.html" class="no-external">
+<p><img loading="lazy" src="./oss/causalpy/iv_reg.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/causalpy/instrumental_variables.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/causalpy/instrumental_variables.html">
 <h3 class="no-anchor listing-title">
-Bayesian IV Regression in CausalPy
+<a href="./oss/causalpy/instrumental_variables.html" class="no-external">Bayesian IV Regression in CausalPy</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/causalpy/instrumental_variables.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('regression'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cmVncmVzc2lvbg=='); return false;">
 regression
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('instrumental variables'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('aW5zdHJ1bWVudGFsJTIwdmFyaWFibGVz'); return false;">
 instrumental variables
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('causal inference'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('Y2F1c2FsJTIwaW5mZXJlbmNl'); return false;">
 causal inference
 </div>
 </div>
-<a href="./oss/causalpy/instrumental_variables.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/causalpy/instrumental_variables.html">
+<a href="./oss/causalpy/instrumental_variables.html" class="no-external">
 <div class="listing-date">
 Aug 15, 2023
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Bayesian IV designs as Structural Multivariate Models
@@ -556,42 +512,41 @@ Bayesian IV designs as Structural Multivariate Models
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="7" data-categories="probability,pymc,discrete choice,subjective utility" data-listing-date-sort="1689375600000" data-listing-file-modified-sort="1731537136037" data-listing-reading-time-sort="0.325">
+<div class="quarto-post image-right" data-index="7" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDZGlzY3JldGUlMjBjaG9pY2UlMkNzdWJqZWN0aXZlJTIwdXRpbGl0eQ==" data-listing-date-sort="1689375600000" data-listing-file-modified-sort="1731537136037" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="65">
 <div class="thumbnail">
-<p><a href="./oss/pymc/discrete_choice.html"> <img src="./oss/pymc/discrete_choice_individuals.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/discrete_choice.html" class="no-external"></a></p><a href="./oss/pymc/discrete_choice.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/discrete_choice_individuals.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/discrete_choice.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/discrete_choice.html">
 <h3 class="no-anchor listing-title">
-Discrete Choice Models in PyMC
+<a href="./oss/pymc/discrete_choice.html" class="no-external">Discrete Choice Models in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/discrete_choice.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('discrete choice'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('ZGlzY3JldGUlMjBjaG9pY2U='); return false;">
 discrete choice
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('subjective utility'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('c3ViamVjdGl2ZSUyMHV0aWxpdHk='); return false;">
 subjective utility
 </div>
 </div>
-<a href="./oss/pymc/discrete_choice.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/discrete_choice.html">
+<a href="./oss/pymc/discrete_choice.html" class="no-external">
 <div class="listing-date">
 Jul 15, 2023
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Latent Utility Econometric Models for Demand Estimation
@@ -599,42 +554,41 @@ Latent Utility Econometric Models for Demand Estimation
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="8" data-categories="probability,pymc,ordinal regression,likert scales" data-listing-date-sort="1685574000000" data-listing-file-modified-sort="1731536876453" data-listing-reading-time-sort="0.705">
+<div class="quarto-post image-right" data-index="8" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDb3JkaW5hbCUyMHJlZ3Jlc3Npb24lMkNsaWtlcnQlMjBzY2FsZXM=" data-listing-date-sort="1685574000000" data-listing-file-modified-sort="1731536876453" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="141">
 <div class="thumbnail">
-<p><a href="./oss/pymc/ordinal_regression.html"> <img src="./oss/pymc/Latent_ordinal_scales.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/ordinal_regression.html" class="no-external"></a></p><a href="./oss/pymc/ordinal_regression.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/Latent_ordinal_scales.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/ordinal_regression.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/ordinal_regression.html">
 <h3 class="no-anchor listing-title">
-Ordinal Regression Models in PyMC
+<a href="./oss/pymc/ordinal_regression.html" class="no-external">Ordinal Regression Models in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/ordinal_regression.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('ordinal regression'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('b3JkaW5hbCUyMHJlZ3Jlc3Npb24='); return false;">
 ordinal regression
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('likert scales'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('bGlrZXJ0JTIwc2NhbGVz'); return false;">
 likert scales
 </div>
 </div>
-<a href="./oss/pymc/ordinal_regression.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/ordinal_regression.html">
+<a href="./oss/pymc/ordinal_regression.html" class="no-external">
 <div class="listing-date">
 Jun 1, 2023
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Ordinal Regression for analysing Survey Response data
@@ -642,39 +596,38 @@ Ordinal Regression for analysing Survey Response data
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="9" data-categories="probability,pymc,longitudinal models" data-listing-date-sort="1681081200000" data-listing-file-modified-sort="1731536686114" data-listing-reading-time-sort="0.65">
+<div class="quarto-post image-right" data-index="9" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDbG9uZ2l0dWRpbmFsJTIwbW9kZWxz" data-listing-date-sort="1681081200000" data-listing-file-modified-sort="1731536686114" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="130">
 <div class="thumbnail">
-<p><a href="./oss/pymc/longitudinal_models.html"> <img src="./oss/pymc/longitudinal_models_pic.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/longitudinal_models.html" class="no-external"></a></p><a href="./oss/pymc/longitudinal_models.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/longitudinal_models_pic.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/longitudinal_models.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/longitudinal_models.html">
 <h3 class="no-anchor listing-title">
-Longitudinal Models in PyMC
+<a href="./oss/pymc/longitudinal_models.html" class="no-external">Longitudinal Models in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/longitudinal_models.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('longitudinal models'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('bG9uZ2l0dWRpbmFsJTIwbW9kZWxz'); return false;">
 longitudinal models
 </div>
 </div>
-<a href="./oss/pymc/longitudinal_models.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/longitudinal_models.html">
+<a href="./oss/pymc/longitudinal_models.html" class="no-external">
 <div class="listing-date">
 Apr 10, 2023
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Hierarchical Regression based Growth Models
@@ -682,42 +635,41 @@ Hierarchical Regression based Growth Models
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="10" data-categories="probability,pymc,missing_data,imputation" data-listing-date-sort="1675987200000" data-listing-file-modified-sort="1731536535545" data-listing-reading-time-sort="0.545">
+<div class="quarto-post image-right" data-index="10" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDbWlzc2luZ19kYXRhJTJDaW1wdXRhdGlvbg==" data-listing-date-sort="1675987200000" data-listing-file-modified-sort="1731536535545" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="109">
 <div class="thumbnail">
-<p><a href="./oss/pymc/missing_info.html"> <img src="./oss/pymc/missing_data.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/missing_info.html" class="no-external"></a></p><a href="./oss/pymc/missing_info.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/missing_data.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/missing_info.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/missing_info.html">
 <h3 class="no-anchor listing-title">
-Missing Data Imputation in PyMC
+<a href="./oss/pymc/missing_info.html" class="no-external">Missing Data Imputation in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/missing_info.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('missing_data'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('bWlzc2luZ19kYXRh'); return false;">
 missing_data
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('imputation'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('aW1wdXRhdGlvbg=='); return false;">
 imputation
 </div>
 </div>
-<a href="./oss/pymc/missing_info.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/missing_info.html">
+<a href="./oss/pymc/missing_info.html" class="no-external">
 <div class="listing-date">
 Feb 10, 2023
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Missing data imputation and Employee Engagement Surveys
@@ -725,42 +677,41 @@ Missing data imputation and Employee Engagement Surveys
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="11" data-categories="probability,pymc,time-to-failure,calibration" data-listing-date-sort="1673308800000" data-listing-file-modified-sort="1731536399855" data-listing-reading-time-sort="0.36">
+<div class="quarto-post image-right" data-index="11" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDdGltZS10by1mYWlsdXJlJTJDY2FsaWJyYXRpb24=" data-listing-date-sort="1673308800000" data-listing-file-modified-sort="1731536399855" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="72">
 <div class="thumbnail">
-<p><a href="./oss/pymc/reliability_stats.html"> <img src="./oss/pymc/reliability_cdf.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/reliability_stats.html" class="no-external"></a></p><a href="./oss/pymc/reliability_stats.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/reliability_cdf.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/reliability_stats.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/reliability_stats.html">
 <h3 class="no-anchor listing-title">
-Reliability Statistics in PyMC
+<a href="./oss/pymc/reliability_stats.html" class="no-external">Reliability Statistics in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/reliability_stats.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('time-to-failure'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('dGltZS10by1mYWlsdXJl'); return false;">
 time-to-failure
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('calibration'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('Y2FsaWJyYXRpb24='); return false;">
 calibration
 </div>
 </div>
-<a href="./oss/pymc/reliability_stats.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/reliability_stats.html">
+<a href="./oss/pymc/reliability_stats.html" class="no-external">
 <div class="listing-date">
 Jan 10, 2023
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Reliability assessment with Survival analysis in PyMC
@@ -768,42 +719,41 @@ Reliability assessment with Survival analysis in PyMC
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="12" data-categories="probability,pymc,autoregressive,hierarchical_models" data-listing-date-sort="1671062400000" data-listing-file-modified-sort="1731536289700" data-listing-reading-time-sort="0.395">
+<div class="quarto-post image-right" data-index="12" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDYXV0b3JlZ3Jlc3NpdmUlMkNoaWVyYXJjaGljYWxfbW9kZWxz" data-listing-date-sort="1671062400000" data-listing-file-modified-sort="1731536289700" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="79">
 <div class="thumbnail">
-<p><a href="./oss/pymc/bayesian_var_model.html"> <img src="./oss/pymc/hierarchical_var.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/bayesian_var_model.html" class="no-external"></a></p><a href="./oss/pymc/bayesian_var_model.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/hierarchical_var.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/bayesian_var_model.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/bayesian_var_model.html">
 <h3 class="no-anchor listing-title">
-Bayesian Vector Autoregressive Models in PyMC
+<a href="./oss/pymc/bayesian_var_model.html" class="no-external">Bayesian Vector Autoregressive Models in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/bayesian_var_model.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('autoregressive'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('YXV0b3JlZ3Jlc3NpdmU='); return false;">
 autoregressive
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('hierarchical_models'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('aGllcmFyY2hpY2FsX21vZGVscw=='); return false;">
 hierarchical_models
 </div>
 </div>
-<a href="./oss/pymc/bayesian_var_model.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/bayesian_var_model.html">
+<a href="./oss/pymc/bayesian_var_model.html" class="no-external">
 <div class="listing-date">
 Dec 15, 2022
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 VAR and Hierarchical VARs for GDP models in PyMC
@@ -811,39 +761,38 @@ VAR and Hierarchical VARs for GDP models in PyMC
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="13" data-categories="probability,pymc,autoregressive" data-listing-date-sort="1660518000000" data-listing-file-modified-sort="1731535927637" data-listing-reading-time-sort="0.42">
+<div class="quarto-post image-right" data-index="13" data-categories="cHJvYmFiaWxpdHklMkNweW1jJTJDYXV0b3JlZ3Jlc3NpdmU=" data-listing-date-sort="1660518000000" data-listing-file-modified-sort="1731535927637" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="84">
 <div class="thumbnail">
-<p><a href="./oss/pymc/autoregressive_forecasting.html"> <img src="./oss/pymc/autoregressive_forecast.png" class="thumnail-image"> </a></p>
+<p><a href="./oss/pymc/autoregressive_forecasting.html" class="no-external"></a></p><a href="./oss/pymc/autoregressive_forecasting.html" class="no-external">
+<p><img loading="lazy" src="./oss/pymc/autoregressive_forecast.png" class="thumbnail-image"></p>
+</a><p><a href="./oss/pymc/autoregressive_forecasting.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<a href="./oss/pymc/autoregressive_forecasting.html">
 <h3 class="no-anchor listing-title">
-Autoregressive Forecasting in PyMC
+<a href="./oss/pymc/autoregressive_forecasting.html" class="no-external">Autoregressive Forecasting in PyMC</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./oss/pymc/autoregressive_forecasting.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHJvYmFiaWxpdHk='); return false;">
 probability
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('pymc'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('cHltYw=='); return false;">
 pymc
 </div>
-<div class="listing-category" onclick="window.quartoListingCategory('autoregressive'); return false;">
+<div class="listing-category" onclick="window.quartoListingCategory('YXV0b3JlZ3Jlc3NpdmU='); return false;">
 autoregressive
 </div>
 </div>
-<a href="./oss/pymc/autoregressive_forecasting.html"> </a>
 </div>
 <div class="metadata">
-<a href="./oss/pymc/autoregressive_forecasting.html">
+<a href="./oss/pymc/autoregressive_forecasting.html" class="no-external">
 <div class="listing-date">
 Aug 15, 2022
 </div>
 <div class="listing-reading-time">
-0 min
+1 min
 </div>
 <div class="metadata-value listing-abstract">
 Implementing Autoregressive Structural forecasting models in PyMC
@@ -883,12 +832,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
     }
-  });
-  clipboard.on('success', function(e) {
+    return false;
+  }
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -920,11 +872,48 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -934,8 +923,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -947,9 +945,244 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -990,6 +1223,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 
