@@ -1,0 +1,15 @@
+---
+title: "Bayesian Nested Logit and Consumer Choice"
+author: "Nathaniel Forde"
+date: "2025-06-20"
+categories: ["utility", "consumer choice", "causal inference" ]
+image: "non-proportional-change.png"
+abstract: "Bayesian Estimation of Nested Logit Discrete Choice Model"
+---
+
+# Discrete Choice Models in PyMC Marketin
+
+In this project I sought to add the functionality for bayesian versions  to the [PyMC Marketing](https://www.pymc-marketing.io/en/latest/index.html) package. I added classes for the estimation of the multinomial logit and nested logit discrete choice models. We demonstrated how these classes can be used to esitmate patterns of consumer preference. In particular we highlight the differences between proportional and non-proportional patterns of product substitution using these models. The demonstration of the multinomial logit can be found [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/mnl_logit.html) and the nested logit [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html)
+
+
+![The Nested Logit Model Structure with Conditional and Marginal Probabilities across Nests](nested_logit_graphviz.svg)

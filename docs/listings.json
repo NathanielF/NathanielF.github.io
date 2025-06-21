@@ -32,6 +32,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/pymc_marketing/nested_logit.html",
       "/oss/pymc/sem_cfa_pymc.html",
       "/oss/causalpy/justifying_instruments.html",
       "/oss/causalpy/inv_prop_weights.html",

@@ -1,4 +1,4 @@
 
-It's hard to cling to the sophistry of control if plan after plan becomes subtly derailed by awkward and intransigent truths. If every utterance from your infertile mind is rooted out and rendered false in portrait. There may be a mismatch between expectation and reality. The benefit of working at the coal face is how this friction between facts and fiction is so brutally exposed. 
+It's hard to cling to the sophistry of control when plan after plan becomes subtly derailed by awkward and intransigent truths. If every utterance from your infertile mind is rooted out and rendered false in portrait, there may be a mismatch between expectation and reality. The benefit of working at the coal face is how this friction between facts and fiction is so brutally exposed. 
 
 Comforting facades are quickly shorn of their veneer, leaving only the rough hewn details that don't press against the  jagged edges of reality. Learning is a process of painful revelation. But not every exposure is equally illuminating. What then, do we lose when we side-step the sharp edges and retreat to the sanctity of comfortable ignorance? 
