@@ -9,7 +9,7 @@
 <meta name="author" content="Nathaniel Forde">
 <meta name="dcterms.date" content="2025-06-20">
 
-<title>Bayesian Nested Logit and Consumer Choice – Examined Algorithms</title>
+<title>Bayesian Nested Logit in PyMC Marketing – Examined Algorithms</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -137,7 +171,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#discrete-choice-models-in-pymc-marketin" id="toc-discrete-choice-models-in-pymc-marketin" class="nav-link active" data-scroll-target="#discrete-choice-models-in-pymc-marketin">Discrete Choice Models in PyMC Marketin</a></li>
+  <li><a href="#discrete-choice-models-for-consumer-choice" id="toc-discrete-choice-models-for-consumer-choice" class="nav-link active" data-scroll-target="#discrete-choice-models-for-consumer-choice">Discrete Choice Models for Consumer Choice</a></li>
   </ul>
 </nav>
     </div>
@@ -146,7 +180,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Bayesian Nested Logit and Consumer Choice</h1>
+<h1 class="title">Bayesian Nested Logit in PyMC Marketing</h1>
   <div class="quarto-categories">
     <div class="quarto-category">utility</div>
     <div class="quarto-category">consumer choice</div>
@@ -186,9 +220,37 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="discrete-choice-models-in-pymc-marketin" class="level1">
-<h1>Discrete Choice Models in PyMC Marketin</h1>
-<p>In this project I sought to add the functionality for bayesian versions to the <a href="https://www.pymc-marketing.io/en/latest/index.html">PyMC Marketing</a> package. I added classes for the estimation of the multinomial logit and nested logit discrete choice models. We demonstrated how these classes can be used to esitmate patterns of consumer preference. In particular we highlight the differences between proportional and non-proportional patterns of product substitution using these models. The demonstration of the multinomial logit can be found <a href="https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/mnl_logit.html">here</a> and the nested logit <a href="https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html">here</a></p>
+<section id="discrete-choice-models-for-consumer-choice" class="level1">
+<h1>Discrete Choice Models for Consumer Choice</h1>
+<p>In this project I sought to add the functionality for bayesian versions to the <a href="https://www.pymc-marketing.io/en/latest/index.html">PyMC Marketing</a> package. I added classes for the estimation of the multinomial logit and nested logit discrete choice models. We demonstrated how these classes can be used to esitmate patterns of consumer preference. We built a formula style interface for specifying the model set up.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>utility_formulas <span class="op">=</span> [</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gc ~ ic_gc + oc_gc | income + rooms "</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ec ~ ic_ec + oc_ec | income + rooms "</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gr ~ ic_gr + oc_gr | income + rooms "</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"er ~ ic_er + oc_er | income + rooms "</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hp ~ ic_hp + oc_hp | income + rooms "</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>nesting_structure <span class="op">=</span> {<span class="st">"central"</span>: [<span class="st">"gc"</span>, <span class="st">"ec"</span>], <span class="st">"room"</span>: [<span class="st">"hp"</span>, <span class="st">"gr"</span>, <span class="st">"er"</span>]}</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>nstL_1 <span class="op">=</span> NestedLogit(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    utility_formulas,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"depvar"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    covariates<span class="op">=</span>[<span class="st">"ic"</span>, <span class="st">"oc"</span>],</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    nesting_structure<span class="op">=</span>nesting_structure,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    model_config<span class="op">=</span>{</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"alphas_"</span>: Prior(<span class="st">"Normal"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">5</span>, dims<span class="op">=</span><span class="st">"alts"</span>),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"betas"</span>: Prior(<span class="st">"Normal"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">1</span>, dims<span class="op">=</span><span class="st">"alt_covariates"</span>),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"betas_fixed_"</span>: Prior(<span class="st">"Normal"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">1</span>, dims<span class="op">=</span><span class="st">"fixed_covariates"</span>),</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"lambdas_nests"</span>: Prior(<span class="st">"Beta"</span>, alpha<span class="op">=</span><span class="dv">2</span>, beta<span class="op">=</span><span class="dv">2</span>, dims<span class="op">=</span><span class="st">"nests"</span>),</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>nstL_1</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In particular we highlight the differences between proportional and non-proportional patterns of product substitution using these models. The demonstration of the multinomial logit can be found <a href="https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/mnl_logit.html">here</a> and the nested logit <a href="https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html">here</a></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="nested_logit_graphviz.svg" class="img-fluid figure-img"></p>

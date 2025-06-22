@@ -1,5 +1,5 @@
 ---
-title: "Bayesian Nested Logit and Consumer Choice"
+title: "Bayesian Nested Logit in PyMC Marketing"
 author: "Nathaniel Forde"
 date: "2025-06-20"
 categories: ["utility", "consumer choice", "causal inference" ]
@@ -7,9 +7,42 @@ image: "non-proportional-change.png"
 abstract: "Bayesian Estimation of Nested Logit Discrete Choice Model"
 ---
 
-# Discrete Choice Models in PyMC Marketin
+# Discrete Choice Models for Consumer Choice
 
-In this project I sought to add the functionality for bayesian versions  to the [PyMC Marketing](https://www.pymc-marketing.io/en/latest/index.html) package. I added classes for the estimation of the multinomial logit and nested logit discrete choice models. We demonstrated how these classes can be used to esitmate patterns of consumer preference. In particular we highlight the differences between proportional and non-proportional patterns of product substitution using these models. The demonstration of the multinomial logit can be found [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/mnl_logit.html) and the nested logit [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html)
+In this project I sought to add the functionality for bayesian versions  to the [PyMC Marketing](https://www.pymc-marketing.io/en/latest/index.html) package. I added classes for the estimation of the multinomial logit and nested logit discrete choice models. We demonstrated how these classes can be used to esitmate patterns of consumer preference. We built a formula style interface for specifying the model set up. 
+
+
+```{.python}
+utility_formulas = [
+    "gc ~ ic_gc + oc_gc | income + rooms ",
+    "ec ~ ic_ec + oc_ec | income + rooms ",
+    "gr ~ ic_gr + oc_gr | income + rooms ",
+    "er ~ ic_er + oc_er | income + rooms ",
+    "hp ~ ic_hp + oc_hp | income + rooms ",
+]
+
+
+nesting_structure = {"central": ["gc", "ec"], "room": ["hp", "gr", "er"]}
+
+
+nstL_1 = NestedLogit(
+    df,
+    utility_formulas,
+    "depvar",
+    covariates=["ic", "oc"],
+    nesting_structure=nesting_structure,
+    model_config={
+        "alphas_": Prior("Normal", mu=0, sigma=5, dims="alts"),
+        "betas": Prior("Normal", mu=0, sigma=1, dims="alt_covariates"),
+        "betas_fixed_": Prior("Normal", mu=0, sigma=1, dims="fixed_covariates"),
+        "lambdas_nests": Prior("Beta", alpha=2, beta=2, dims="nests"),
+    },
+)
+nstL_1
+
+
+```
+In particular we highlight the differences between proportional and non-proportional patterns of product substitution using these models. The demonstration of the multinomial logit can be found [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/mnl_logit.html) and the nested logit [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html)
 
 
 ![The Nested Logit Model Structure with Conditional and Marginal Probabilities across Nests](nested_logit_graphviz.svg)
