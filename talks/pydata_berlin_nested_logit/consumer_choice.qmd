@@ -1,0 +1,387 @@
+---
+title: "Discrete Choice Models in PyMC-Marketing"
+subtitle: "A Choose-Your-Own-Adventure in Bayesian Consumer Choice Modeling"
+author: "Nathaniel Forde"
+format: 
+  revealjs:
+    theme: [default, clean.scss]
+    slide-number: true
+    preview-links: auto
+---
+
+## Preliminaries {.smaller}
+
+:::{.callout-warning}
+## Who am I?
+- I'm a __data scientist__ at __[Personio]{.blue}__ 
+    - Bayesian statistician, 
+    - Reformed philosopher and logician. 
+- Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
+:::
+ 
+::: {.callout-tip}
+## Code or it didn't Happen
+The worked examples used here can be found [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html)
+:::
+
+![My Website](images/QR_CODE.png)
+
+
+## **The Pitch**: _Choice Matters_
+
+Consumer choice is everywhere — from cereal to cars to climate systems. Business **success hinges** on understanding these choices: pricing, product design, market segmentation.
+
+Classic models fall short with unrealistic assumptions and pricing experiments can be costly. 
+
+Use better models with **PyMC-Marketing** and simulate pricing interventions safely. 
+
+## Agenda
+
+- The Choice Setting and Bayesian Background
+- Choice Data and PyMC-Marketing
+- Mulitnomial Logit and the IIA Problem
+- Nested Logit and Market Structure
+- Choose your own Adventure
+
+# The __Choice Setting__ and _Bayesian Background_
+
+## The Adventure Begins: 
+### Choosing our Own Path
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](images/choose.jpeg)
+
+:::
+
+::: {.column width="50%"}
+
+::: {.fragment .fade-in}
+- 21 Discrete Possible Endings!
+:::
+::: {.fragment .fade-in}
+- The Luxury of being able to explore all paths
+:::
+::: {.fragment .fade-in}
+- Deterministic Routing and preferred Endings
+:::
+::: {.fragment .fade-in}
+- Peeking ahead and "cheating" fate.
+:::
+
+:::
+
+::::
+
+## The Scaling Difficulty
+### Genuine Uncertainty and the Multiplicity of Paths
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![Growing up is grappling with uncertainty](images/evolution.jpg)
+
+:::
+
+::: {.column width="50%"}
+
+::: {.fragment .fade-in}
+- Continuum Possible Endings
+:::
+::: {.fragment .fade-in}
+- Impossibility of precise Survey and Oversight
+:::
+::: {.fragment .fade-in}
+- Probabilistic Choice over Paths
+:::
+::: {.fragment .fade-in}
+- Certainty (if any) only in Expectation and Breadth of Possibility
+:::
+
+:::
+
+::::
+
+## Sampling the Path Trajectories
+### Bayesian Inference over Unrealised Worlds
+
+$$ p(\theta_{w_{i}} | Y) = \dfrac{p(\theta_{w_{i}})p(Y | \theta_{i})}{\sum_{j}^{N} p(\theta_{w_j})p(Y | \theta_{w_j}) }$$
+
+:::{.r-stack}
+**_Inference_**: What is the most plausible world given the data?
+:::
+::: {.fragment .fade-in}
+:::: {.columns}
+::: {.column width="20%"}
+
+- $\mathbf{\theta_{w_{1}}} \rightsquigarrow$
+
+- $\mathbf{\theta_{w_{2}}} \rightsquigarrow$
+
+- $\mathbf{\theta_{w_{3}}} \rightsquigarrow$
+
+:::
+
+::: {.column width="40%"}
+
+- $f(\alpha_{w_1}, \beta_{w_1}^{0}, \beta_{w_1}^{1}) \rightsquigarrow$ 
+
+- $f(\alpha_{w_2}, \beta_{w_2}^{0}, \beta_{w_2}^{1}) \rightsquigarrow$ 
+
+- $f(\alpha_{w_3}, \beta_{w_3}^{0}, \beta_{w_3}^{1}) \rightsquigarrow$ 
+
+:::
+
+::: {.column width="40%"}
+
+- $p(Y |w_1)$
+  <img src="images/world.jpg" alt="Small image" width="50"> $\downarrow$
+- $p(Y | w_2)$
+  <img src="images/world.jpg" alt="Small image" width="50"> $\downarrow$
+- $p(Y | w3)$
+  <img src="images/world.jpg" alt="Small image" width="50">$\downarrow$
+
+:::
+
+::::
+
+:::{.r-stack}
+**_Counterfactual Inference_**: What plausibly happens in nearby worlds?
+:::
+:::
+
+## The Path Before Us
+
+![**The Consumer's Dilemma**: What drives us to Choose in the face such vast Possibility?](images/adventure_book.png)
+
+
+## Revealed Preference
+### Utility driven Choice
+
+:::: {.columns}
+
+::: {.column width="30%"}
+<img src="images/choose_your_path.png" alt="Choice" height="500"/>
+:::
+
+::: {.column width="70%"}
+### The Consumer's Dilemma
+*"What drives human choice?"*
+
+- Utility maximization
+- Rational decision-making
+- Expected value calculations
+- Impulse and *advertising*?
+
+*Each purchase tells a story of preference...*
+:::
+
+::::
+
+---
+
+## World State Informs Choice {.smaller}
+### The Mathematical Foundation of Decision
+
+The utility function forms the cornerstone of choice modeling:
+
+$$\color{red}U_{ij} = \color{blue}\alpha_{ij} + \color{blue}\beta_{ij}^{1} \color{black}\cdot X_{ij}^{1} + \color{blue} \beta_{ij}^{2} \color{black}\cdot X_{ij}^{2} $$
+
+$$P_{ij} = \frac{\exp(\color{red}U_{ij})}{\sum_{k=1}^{J} \exp(\color{red}U_{ik})} $$
+
+Where:
+
+- $U_{ij}$ represents the systematic utility for individual $i$ choosing alternative $j$ at a particular world state $w = \{ \color{blue}\alpha_{ij}, \color{blue}\beta_{ij}^{1}, \color{blue}\beta_{ij}^{2} X_{ij}^{1}, X_{ij}^{2} \}$
+- $X_{ij}$ represents observed covariates (product attributes) and $\color{blue}\theta$ structural parameters within the world $w$.
+- Collectively, the mathematical structure and your observed data are combined to make a theory of the data generating process for the world $w$.
+
+
+---
+
+## Relative Utility and Marginal Effects {.smaller}
+### Paths Diverge
+
+Do you value the company of others? Do you fear it? **What about the average cave dweller?**
+
+:::{.r-stack}
+<img src="images/pathdiverging.jpeg" alt="Choice" width="1000" height="300"/>
+:::
+
+$$ u(\text{Light shaft + Silence}) - u(\text{Glowing Fire + Conversational Echoes}) > 0?$$
+
+
+
+# Choice Data and **_PyMC-Marketing_**
+
+
+## PyMC-Marketing {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+<img src="images/pymc-marketing.png" alt="Choice"/>
+:::
+
+::: {.column width="50%"}
+### Bayesian Marketing Analytics
+
+- Uncertainty-aware decisions: model not just what people choose, but how sure we are.
+- Causal inference ready: run interventions, not just predictions.
+- Modern Bayesian engine for scalability, flexibility, and transparency.
+- Intuitive syntax with powerful underlying math.
+:::
+::::
+
+
+## Choice Data
+
+![Choice Scenarios specified with attributes and choice outcomes for each discrete alternative](images/choice_data.png)
+
+## Utility Matrix
+### Intuitive Formula Specification
+:::: {.columns}
+::: {.column width="60%"}
+$$ \begin{split} \begin{split} \begin{pmatrix}
+u_{gc}   \\
+u_{gr}   \\
+u_{ec}   \\
+u_{er}   \\
+u_{hp}   \\
+\end{pmatrix} =  \begin{pmatrix}
+gc_{ic} & gc_{oc}  \\
+gr_{ic} & gr_{oc}  \\
+ec_{ic} & ec_{oc}  \\
+er_{ic} & er_{oc}  \\
+hp_{ic} & hp_{oc}  \\
+\end{pmatrix} \begin{pmatrix}
+\color{blue}\beta_{ic}   \\
+\color{blue}\beta_{oc}   \\
+\end{pmatrix}  \end{split}
+\end{split}
+$$
+
+:::
+
+::: {.column width="40%"}
+```{.python}
+
+utility_formulas = [
+    "gc ~ ic_gc + oc_gc ",
+    "gr ~ ic_gr + oc_gr ",
+    "ec ~ ic_ec + oc_ec ",
+    "er ~ ic_er + oc_er ",
+    "hp ~ ic_hp + oc_hp ",
+]
+
+mnl = MNLogit(df, utility_formulas, "depvar", covariates=["ic", "oc"])
+mnl
+
+```
+
+:::
+
+::::
+
+# Multinomial Logit and the _**IIA Problem**_
+
+## Multinomial Logit: The Simple Path Forward {.smaller}
+
+The probability of choosing alternative $j$ follows the elegant logistic form:
+
+$$\frac{\exp(\color{red}U_{ij})}{\sum_{k=1}^{J} \exp(\color{red}U_{ik})} = P_{ij} \Rightarrow s_{j}(\color{blue}\theta_{w})=P(u_{j}>u_{k};\forall_{k̸=j})$$
+
+### Key Aspects
+
+- **New Model Class**: MNLogit with Wilkinson-style formula interface
+- **Alternative-Specific Attributes**: Price, quality, brand effects
+- **Individual Fixed Attributes**: Income, demographics, preferences
+- **Causal Inference Ready**: Built-in counterfactual analysis
+
+---
+
+## PyMC-Marketing Implementation {.smaller}
+### Trace Paths through Possible Worlds
+
+```{.python}
+
+utility_formulas = [
+    "gc ~ ic_gc + oc_gc | income + rooms + agehed",
+    "gr ~ ic_gr + oc_gr | income + rooms + agehed",
+    "ec ~ ic_ec + oc_ec | income + rooms + agehed",
+    "er ~ ic_er + oc_er | income + rooms + agehed",
+    "hp ~ ic_hp + oc_hp | income + rooms + agehed",
+]
+
+mnl = MNLogit(df, utility_formulas, "depvar", covariates=["ic", "oc"])
+mnl.sample()
+
+```
+
+:::{.r-stack}
+![](images/traceplot.png)
+:::
+
+
+## The IIA Problem - A Plot Twist
+
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+![](images/red_bus.png)
+
+::: {.fragment .fade-in}
+- 50% Red Bus 50% Car
+:::
+::: {.fragment .fade-in}
+- What happens if we introduce a Blue Bus?
+:::
+::: {.fragment .fade-in}
+- 33% Red Bus, 33% Blue Bus, 33% Car
+:::
+
+:::
+
+::: {.column width="60%"}
+The Multinomial Logit enforces the Indepdence of Irrelevant Alternatives property into preference calculations. 
+
+$$\dfrac{P_{j}}{P_{i}}  = \dfrac{ \dfrac{e^{U_{j}}}{\sum_{i}^{n}e^{U_{k}}}}{\dfrac{e^{U_{i}}}{\sum_{i}^{n}e^{U_{k}}}} = \dfrac{e^{U_{j}}}{e^{U_{i}}} = e^{U_{j} - U_{k}}$$
+
+::: {.fragment .fade-in}
+__Key Take-away__: _The Model Ignores Market Structure_
+:::
+
+:::
+::::
+
+## Counterfactual Inference {.smaller}
+### Counterfactual Plausibility as Criteria of Adequacy
+
+```{.python}
+new_policy_df = df.copy()
+new_policy_df[["ic_ec", "ic_er"]] = new_policy_df[["ic_ec", "ic_er"]] * 1.5
+
+## Posterior Predictive Forecast under counterfactual setting
+idata_new_policy = mnl.apply_intervention(new_choice_df=new_policy_df)
+
+## Compare Old and New Policy Settings
+change_df = mnl.calculate_share_change(mnl.idata, mnl.intervention_idata)
+change_df
+```
+:::: {.columns}
+
+::: {.column width="40%"}
+![](images/change_mnl.png)
+:::
+
+::: {.column width="60%"}
+![](images/change_plot_mnl.webp)
+:::
+::::
+
+
+# The __Nested Logit__ and _Market Structure_
+

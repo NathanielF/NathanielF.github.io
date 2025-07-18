@@ -214,7 +214,7 @@
     "href": "talks.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification with Bambi\n\n\n\nbayesian\n\n\nmister p\n\n\ncausal inference\n\n\nweighting\n\n\n\n\n\n\n\n\n\nMay 14, 2025\n\n\n8 min\n\n\n\n\n\n\n\n\n\n\n\n\nStructural Causal Models in PyMC\n\n\nConditionalisation Strategies and Valid Causal Inference\n\n\n\nbayesian\n\n\ncausal\n\n\nSCM\n\n\nSEM\n\n\n\nTalk for Workshops for Ukraine\n\n\n\n\n\nMay 13, 2025\n\n\n16 min\n\n\n\n\n\n\n\n\n\n\n\n\nValue Capture: The Horror\n\n\nExperimentation Reading Group\n\n\n\nphilosophy\n\n\nmeasurement\n\n\nvalue\n\n\nexperimentation\n\n\n\nA presentation of Thi Nguyen’s Value Capture paper with a focus on the horror of capture in hierarchical organisations structures\n\n\n\n\n\nMay 4, 2025\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\nLearning Bayesian Statistics: SEM and CFA\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nsem\n\n\ncfa\n\n\n\nInterview on Learning Bayesian Statistics Podcast on SEM models in PyMC\n\n\n\n\n\nJan 1, 2025\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\nUncertainty and Causal Inference in Python\n\n\nCausalPy and Quasi-Experimental Designs\n\n\n\nbayesian\n\n\nsensitivity analysis\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nNov 16, 2024\n\n\n8 min\n\n\n\n\n\n\n\n\n\n\n\n\nWorking as a Data Scientist\n\n\nFrom guessing to learning\n\n\n\ncounting\n\n\nfun\n\n\nhistogram\n\n\n\n Fun talk for Wyatt’s Junior infants class on working in STEM\n\n\n\n\n\nNov 10, 2024\n\n\n5 min\n\n\n\n\n\n\n\n\n\n\n\n\nMissing Data and Bayesian Imputation\n\n\nPyData Berlin 2024 Recording\n\n\n\nbayesian\n\n\nmissing data\n\n\n\n\n\n\n\n\n\nNov 10, 2024\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon 2023 Ireland Recording\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\nSep 10, 2024\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nApr 25, 2024\n\n\n14 min\n\n\n\n\n\n\n\n\n\n\n\n\nModel Evaluation and Discrete Choice Scenarios\n\n\nBayesian Mixer London\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\nMar 26, 2024\n\n\n15 min\n\n\n\n\n\n\n\n\n\n\n\n\nChoice Models and Subjective Utility\n\n\nDublin Data Science\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\nMar 23, 2024\n\n\n15 min\n\n\n\n\n\n\n\n\n\n\n\n\nNon Parametric Causal Inference with PyMC\n\n\nPropensity Scores, Debiased ML and Causal Mediation\n\n\n\nbayesian\n\n\npropensity scores\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nMar 1, 2024\n\n\n5 min\n\n\n\n\n\n\n\n\n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n9 min\n\n\n\n\n\n\n\n\n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n13 min\n\n\n\n\n\n\n\n\n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\nA talk on Bayesian Hierarchical Vector Autoregressive Timeseries models\n\n\n\n\n\nFeb 4, 2023\n\n\n1 min\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\nDiscrete Choice Models in PyMC-Marketing\n\n\nA Choose-Your-Own-Adventure in Bayesian Consumer Choice Modeling\n\n\n\n\n\n\n\n\n5 min\n\n\n\n\n\n\n\n\n\n\n\n\nMultilevel Regression and Post-Stratification\n\n\nStratum Specific effect modification with Bambi\n\n\n\nbayesian\n\n\nmister p\n\n\ncausal inference\n\n\nweighting\n\n\n\n\n\n\n\n\n\nMay 14, 2025\n\n\n8 min\n\n\n\n\n\n\n\n\n\n\n\n\nStructural Causal Models in PyMC\n\n\nConditionalisation Strategies and Valid Causal Inference\n\n\n\nbayesian\n\n\ncausal\n\n\nSCM\n\n\nSEM\n\n\n\nTalk for Workshops for Ukraine\n\n\n\n\n\nMay 13, 2025\n\n\n16 min\n\n\n\n\n\n\n\n\n\n\n\n\nValue Capture: The Horror\n\n\nExperimentation Reading Group\n\n\n\nphilosophy\n\n\nmeasurement\n\n\nvalue\n\n\nexperimentation\n\n\n\nA presentation of Thi Nguyen’s Value Capture paper with a focus on the horror of capture in hierarchical organisations structures\n\n\n\n\n\nMay 4, 2025\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\nLearning Bayesian Statistics: SEM and CFA\n\n\n\n\n\n\nprobability\n\n\npymc\n\n\nsem\n\n\ncfa\n\n\n\nInterview on Learning Bayesian Statistics Podcast on SEM models in PyMC\n\n\n\n\n\nJan 1, 2025\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\nUncertainty and Causal Inference in Python\n\n\nCausalPy and Quasi-Experimental Designs\n\n\n\nbayesian\n\n\nsensitivity analysis\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nNov 16, 2024\n\n\n8 min\n\n\n\n\n\n\n\n\n\n\n\n\nWorking as a Data Scientist\n\n\nFrom guessing to learning\n\n\n\ncounting\n\n\nfun\n\n\nhistogram\n\n\n\n Fun talk for Wyatt’s Junior infants class on working in STEM\n\n\n\n\n\nNov 10, 2024\n\n\n5 min\n\n\n\n\n\n\n\n\n\n\n\n\nMissing Data and Bayesian Imputation\n\n\nPyData Berlin 2024 Recording\n\n\n\nbayesian\n\n\nmissing data\n\n\n\n\n\n\n\n\n\nNov 10, 2024\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon 2023 Ireland Recording\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\nSep 10, 2024\n\n\n1 min\n\n\n\n\n\n\n\n\n\n\n\n\nMissing Data and Bayesian Imputation with PyMC\n\n\nCausal Narratives in Survey Analysis\n\n\n\nbayesian\n\n\nmissing data\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nApr 25, 2024\n\n\n14 min\n\n\n\n\n\n\n\n\n\n\n\n\nModel Evaluation and Discrete Choice Scenarios\n\n\nBayesian Mixer London\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\nMar 26, 2024\n\n\n15 min\n\n\n\n\n\n\n\n\n\n\n\n\nNon Parametric Causal Inference with PyMC\n\n\nPropensity Scores, Debiased ML and Causal Mediation\n\n\n\nbayesian\n\n\npropensity scores\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nMar 1, 2024\n\n\n5 min\n\n\n\n\n\n\n\n\n\n\n\n\nSurvival Regression Models in PyMC\n\n\nTime to Attrition in People Analytics\n\n\n\nbayesian\n\n\nsurvival analysis\n\n\npeople analytics\n\n\n\n\n\n\n\n\n\nDec 30, 2023\n\n\n9 min\n\n\n\n\n\n\n\n\n\n\n\n\nDiscrete Choice and Random Utility Models\n\n\nPyCon Ireland\n\n\n\nbayesian\n\n\ndiscrete choice\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\n13 min\n\n\n\n\n\n\n\n\n\n\n\n\nTenuous Relations and Timeseries Analysis\n\n\nBerlin Timeseries\n\n\n\nbayesian\n\n\nVAR\n\n\ntimeseries analysis\n\n\n\nA talk on Bayesian Hierarchical Vector Autoregressive Timeseries models\n\n\n\n\n\nFeb 4, 2023\n\n\n1 min\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "talks/tenuous_relations/first_talk.html",
@@ -3285,5 +3285,292 @@
     "title": "Bayesian Nested Logit in PyMC Marketing",
     "section": "",
     "text": "Discrete Choice Models for Consumer Choice\nIn this project I sought to add the functionality for bayesian versions to the PyMC Marketing package. I added classes for the estimation of the multinomial logit and nested logit discrete choice models. We demonstrated how these classes can be used to esitmate patterns of consumer preference. We built a formula style interface for specifying the model set up.\nutility_formulas = [\n    \"gc ~ ic_gc + oc_gc | income + rooms \",\n    \"ec ~ ic_ec + oc_ec | income + rooms \",\n    \"gr ~ ic_gr + oc_gr | income + rooms \",\n    \"er ~ ic_er + oc_er | income + rooms \",\n    \"hp ~ ic_hp + oc_hp | income + rooms \",\n]\n\n\nnesting_structure = {\"central\": [\"gc\", \"ec\"], \"room\": [\"hp\", \"gr\", \"er\"]}\n\n\nnstL_1 = NestedLogit(\n    df,\n    utility_formulas,\n    \"depvar\",\n    covariates=[\"ic\", \"oc\"],\n    nesting_structure=nesting_structure,\n    model_config={\n        \"alphas_\": Prior(\"Normal\", mu=0, sigma=5, dims=\"alts\"),\n        \"betas\": Prior(\"Normal\", mu=0, sigma=1, dims=\"alt_covariates\"),\n        \"betas_fixed_\": Prior(\"Normal\", mu=0, sigma=1, dims=\"fixed_covariates\"),\n        \"lambdas_nests\": Prior(\"Beta\", alpha=2, beta=2, dims=\"nests\"),\n    },\n)\nnstL_1\n\nIn particular we highlight the differences between proportional and non-proportional patterns of product substitution using these models. The demonstration of the multinomial logit can be found here and the nested logit here\n\n\n\nThe Nested Logit Model Structure with Conditional and Marginal Probabilities across Nests"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-adventure-begins-a-tale-of-two-choices",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-adventure-begins-a-tale-of-two-choices",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "The Adventure Begins: A Tale of Two Choices",
+    "text": "The Adventure Begins: A Tale of Two Choices\n\n\nThe Model Developer’s Journey\n“Which path shall I take?”\n\nMultinomial Logit (MNL) - The familiar trail\nNested Logit - The advanced expedition\nMixed Logit - The future frontier\n\nEvery choice shapes the model’s destiny…\n\nThe Consumer’s Dilemma\n“What drives human choice?”\n\nUtility maximization\nRational decision-making\nIndependence of Irrelevant Alternatives (IIA)\nExpected value calculations\n\nEach purchase tells a story of preference…"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-1-the-foundation---understanding-choice-architecture",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-1-the-foundation---understanding-choice-architecture",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 1: The Foundation - Understanding Choice Architecture",
+    "text": "Chapter 1: The Foundation - Understanding Choice Architecture\nThe Mathematical Foundation of Decision\nThe utility function forms the cornerstone of choice modeling:\n\\(U_{ij} = V_{ij} + \\epsilon_{ij}\\)\nWhere: - \\(V_{ij}\\) represents the systematic utility for individual \\(i\\) choosing alternative \\(j\\) - \\(\\epsilon_{ij}\\) captures the random component of choice\nThe Choose-Your-Own-Adventure Moment: Do we assume independence in our error terms, or do we allow for correlation?"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-2-the-multinomial-logit---the-classic-tale",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-2-the-multinomial-logit---the-classic-tale",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 2: The Multinomial Logit - The Classic Tale",
+    "text": "Chapter 2: The Multinomial Logit - The Classic Tale\nThe Simple Path Forward\nThe probability of choosing alternative \\(j\\) follows the elegant logistic form:\n\\(P_{ij} = \\frac{\\exp(V_{ij})}{\\sum_{k=1}^{J} \\exp(V_{ik})}\\)\nKey Contributions in PR #1654\n\nNew Model Class: MNLogit with Wilkinson-style formula interface\nAlternative-Specific Attributes: Price, quality, brand effects\nIndividual Fixed Attributes: Income, demographics, preferences\nCausal Inference Ready: Built-in counterfactual analysis"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-3-the-iia-problem---a-plot-twist",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-3-the-iia-problem---a-plot-twist",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 3: The IIA Problem - A Plot Twist",
+    "text": "Chapter 3: The IIA Problem - A Plot Twist\n\\[\\dfrac{P_{j}}{P_{i}} = \\dfrac{softmax(U_{j})}{softmax(U_{i})} = \\dfrac{ \\dfrac{e^{U_{j}}}{\\sum_{i}^{n}e^{U_{k}}}}{\\dfrac{e^{U_{i}}}{\\sum_{i}^{n}e^{U_{k}}}} = \\dfrac{e^{U_{j}}}{e^{U_{i}}} = e^{U_{j} - U_{k}}\\]"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-4-the-nested-logit---advanced-expedition",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-4-the-nested-logit---advanced-expedition",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 4: The Nested Logit - Advanced Expedition",
+    "text": "Chapter 4: The Nested Logit - Advanced Expedition\nBreaking Free from Independence\nThe nested logit introduces a two-stage choice process:\nStage 1 - Choose a nest: \\(P_i(\\text{nest}) = \\frac{\\exp(\\lambda_n I_{in})}{\\sum_{m} \\exp(\\lambda_m I_{im})}\\)\nStage 2 - Choose within nest: \\(P_{ij|\\text{nest}} = \\frac{\\exp(V_{ij}/\\lambda_n)}{\\sum_{k \\in \\text{nest}} \\exp(V_{ik}/\\lambda_n)}\\)\nWhere \\(I_{in} = \\ln\\left(\\sum_{j \\in \\text{nest}} \\exp(V_{ij}/\\lambda_n)\\right)\\) is the inclusive value"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-5-implementation-mastery---the-developers-toolkit",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-5-implementation-mastery---the-developers-toolkit",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 5: Implementation Mastery - The Developer’s Toolkit",
+    "text": "Chapter 5: Implementation Mastery - The Developer’s Toolkit\nNew Capabilities Added\nCore Models: - MNLogit: Multinomial logit with formula interface - NestedLogit: Up to 3-level nesting structures\nFormula Syntax: - Alternative-specific effects: car ~ cost + time - Fixed individual effects: car ~ cost + time | income + age - Flexible nesting: Public transport vs private transport\nNesting Structure: - Hierarchical grouping of alternatives - Realistic substitution patterns - Flexible depth up to 3 levels"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-6-the-data-adventure---real-world-applications",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-6-the-data-adventure---real-world-applications",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 6: The Data Adventure - Real-World Applications",
+    "text": "Chapter 6: The Data Adventure - Real-World Applications\nTwo New Datasets Journey\nCrackers Choice Dataset (3,157 observations): - Consumer packaged goods decisions - Price sensitivity analysis - Brand preference modeling\nHeating System Choice (901 observations): - Durable goods selection - Installation cost impacts - Energy efficiency preferences\nChoose Your Analysis Path\n“Will you explore price elasticity in fast-moving consumer goods, or investigate long-term investment decisions in home heating?”"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-7-causal-inference---the-power-of-counterfactuals",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-7-causal-inference---the-power-of-counterfactuals",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 7: Causal Inference - The Power of Counterfactuals",
+    "text": "Chapter 7: Causal Inference - The Power of Counterfactuals\nBeyond Prediction: Understanding Impact\nThe MNL Limitation: - Price increase on Product A - MNL: Proportional reallocation to all other products - Original shares: [0.4, 0.3, 0.3] for products A, B, C - New shares (MNL): [0.32, 0.34, 0.34] - Unrealistic\nThe Nested Logit Solution: - Realistic substitution within nests - Products A & B in same nest, C in different nest - New shares (Nested): [0.32, 0.38, 0.30] - More realistic\nThe Adventure Continues\n“Each intervention reveals new paths through the choice landscape…”"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-8-technical-architecture---the-implementation-story",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-8-technical-architecture---the-implementation-story",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 8: Technical Architecture - The Implementation Story",
+    "text": "Chapter 8: Technical Architecture - The Implementation Story\nCode Structure Contributions\nFiles Added (10,525+ lines): - mnl_logit.py: Core multinomial logit implementation - nested_logit.py: Nested logit with flexible nesting - Two comprehensive Jupyter notebooks - Complete test suites with 93.99% coverage\nKey Design Decisions: - Wilkinson formula syntax for intuitive specification - Wide-format data input (industry standard) - Bayesian parameter identification with proper constraints - Built-in visualization and counterfactual tools"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-9-the-mathematical-journey---parameter-identification",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-9-the-mathematical-journey---parameter-identification",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 9: The Mathematical Journey - Parameter Identification",
+    "text": "Chapter 9: The Mathematical Journey - Parameter Identification\nSolving the Identification Challenge\nMultinomial Logit Constraints: \\(\\alpha_{J} = 0 \\text{ (reference category)}\\) \\(\\beta_{\\text{fixed},J} = 0 \\text{ (reference category)}\\)\nNested Logit Complexity: - Nest-specific scale parameters: \\(0 &lt; \\lambda_n \\leq 1\\) - Cross-nest correlation structure - Hierarchical parameter identification\nThe Bayesian Advantage\n“In the realm of uncertainty, Bayesian methods provide the compass for navigating parameter space…”"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-10-benchmarking-excellence---validation-journey",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-10-benchmarking-excellence---validation-journey",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 10: Benchmarking Excellence - Validation Journey",
+    "text": "Chapter 10: Benchmarking Excellence - Validation Journey\nStanding on Giants’ Shoulders\nR’s mlogit Package Comparison: - Parameter recovery validation - Likelihood convergence verification - Prediction accuracy assessment\nPython Ecosystem Integration: - Beyond pylogit capabilities - PyMC probabilistic programming power - Seamless scikit-learn compatibility\nChoose Your Validation Adventure\n“Will you trust the classical frequentist path, or embrace the Bayesian uncertainty quantification?”"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-11-future-pathways---the-adventure-continues",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-11-future-pathways---the-adventure-continues",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 11: Future Pathways - The Adventure Continues",
+    "text": "Chapter 11: Future Pathways - The Adventure Continues\nThe Mixed Logit Frontier\nNext Chapter Preview: - Random coefficient models - Unobserved heterogeneity - Hierarchical Bayesian structures\nThe Developer’s Next Choice: - Extend to mixed logit models with random coefficients - Incorporate taste heterogeneity across populations - Add temporal dynamics to choice modeling"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-12-the-gallery-of-adventures---visual-storytelling",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#chapter-12-the-gallery-of-adventures---visual-storytelling",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Chapter 12: The Gallery of Adventures - Visual Storytelling",
+    "text": "Chapter 12: The Gallery of Adventures - Visual Storytelling\nTwo New Notebook Expeditions\nMultinomial Logit Journey: - Cracker choice modeling - Price intervention analysis - IIA demonstration\nNested Logit Expedition: - Heating system decisions - Realistic substitution patterns - Advanced nesting structures\nThe Visual Narrative\n“Every plot tells a story, every coefficient reveals a preference, every counterfactual opens a new chapter…”"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#epilogue-the-choice-is-yours",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#epilogue-the-choice-is-yours",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Epilogue: The Choice is Yours",
+    "text": "Epilogue: The Choice is Yours\nWhat This Adventure Brings to PyMC-Marketing\n\n\nFor Model Developers: - Intuitive formula interface - Flexible nesting structures - Comprehensive testing suite - Rich documentation and examples\nChoose Your Development Path: - Extend to mixed logit models - Add dynamic choice modeling - Integrate with marketing mix models\n\nFor Business Applications: - Realistic market simulation - Causal intervention analysis - Price optimization support - Product portfolio decisions\nChoose Your Business Adventure: - Pricing strategy optimization - Product launch planning - Market share forecasting - Competitive response modeling"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-final-page-technical-summary",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-final-page-technical-summary",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "The Final Page: Technical Summary",
+    "text": "The Final Page: Technical Summary\nContribution Statistics\n\n52 commits of dedicated development\n10,525+ lines of new functionality\n14 files modified across the codebase\n93.99% test coverage achieved\n2 comprehensive example notebooks\nBeyond parity with R’s mlogit and Python’s pylogit\n\nThe Adventure’s Impact\n“In the grand choose-your-own-adventure of statistical modeling, this contribution opens new chapters in the story of human choice understanding. Whether you’re a developer seeking elegant APIs or a business analyst pursuing causal insights, the path forward is now illuminated by Bayesian light.”"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#appendix-the-technical-compass",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#appendix-the-technical-compass",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Appendix: The Technical Compass",
+    "text": "Appendix: The Technical Compass\nKey Formula Reference\nMultinomial Logit Probability: \\(P_{ij} = \\frac{\\exp(\\alpha_j + \\mathbf{x}_{ij}'\\boldsymbol{\\beta} + \\mathbf{z}_i'\\boldsymbol{\\gamma}_j)}{\\sum_{k=1}^{J} \\exp(\\alpha_k + \\mathbf{x}_{ik}'\\boldsymbol{\\beta} + \\mathbf{z}_i'\\boldsymbol{\\gamma}_k)}\\)\nNested Logit Probability: \\(P_{ij} = P_{i|\\text{nest}} \\times P_{ij|\\text{nest}} = \\frac{\\exp(\\lambda_n I_{in})}{\\sum_m \\exp(\\lambda_m I_{im})} \\times \\frac{\\exp(V_{ij}/\\lambda_n)}{\\sum_{k \\in \\text{nest}} \\exp(V_{ik}/\\lambda_n)}\\)\nInclusive Value: \\(I_{in} = \\ln\\left(\\sum_{j \\in \\text{nest}} \\exp(V_{ij}/\\lambda_n)\\right)\\)\nThe mathematical foundation upon which all choice adventures are built…"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-pitch-choosing-the-right-trail-matters",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-pitch-choosing-the-right-trail-matters",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "The Pitch: Choosing the Right Trail Matters",
+    "text": "The Pitch: Choosing the Right Trail Matters\nConsumer choice is everywhere — from cereal to cars to climate systems. Business success hinges on understanding these choices: pricing, product design, market segmentation.Classic models fall short with unrealistic assumptions."
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-pitch-choice-matters",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-pitch-choice-matters",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "The Pitch: Choice Matters",
+    "text": "The Pitch: Choice Matters\nConsumer choice is everywhere — from cereal to cars to climate systems. Business success hinges on understanding these choices: pricing, product design, market segmentation.\nClassic models fall short with unrealistic assumptions and pricing experiments can be costly.\nUse better models with PyMC-Marketing and simulate pricing interventions safely."
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#preliminaries",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#preliminaries",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Preliminaries",
+    "text": "Preliminaries\n\n\n\n\n\n\nWho am I?\n\n\n\nI’m a data scientist at Personio\n\nBayesian statistician,\nReformed philosopher and logician.\n\nWebsite: https://nathanielf.github.io/\n\n\n\n\n\n\n\n\n\n\nCode or it didn’t Happen\n\n\nThe worked examples used here can be found here\n\n\n\n\nMy Website"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-adventure-begins",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-adventure-begins",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "The Adventure Begins:",
+    "text": "The Adventure Begins:\nChoosing our Own Path\n\n\n\n\n\n\n21 Discrete Possible Endings!\n\n\n\n\nThe Luxury of being able to explore all paths\n\n\n\n\nDeterministic Routing and preferred Endings\n\n\n\n\nPeeking ahead and “cheating” fate."
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#choice",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#choice",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Choice",
+    "text": "Choice\n\n\nThe Model Developer’s Journey\n“Which path shall I take?”\n\nMultinomial Logit (MNL) - The familiar trail\nNested Logit - The advanced expedition\nMixed Logit - The future frontier\n\nEvery choice shapes the model’s destiny…\n\nThe Consumer’s Dilemma\n“What drives human choice?”\n\nUtility maximization\nRational decision-making\nIndependence of Irrelevant Alternatives (IIA)\nExpected value calculations\n\nEach purchase tells a story of preference…"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-difficulty-scaling",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-difficulty-scaling",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "The Difficulty Scaling",
+    "text": "The Difficulty Scaling\nGenuine Uncertainty and the Multiplicity of Paths\n\n\n\n\n\n\nContinuum Possible Endings\n\n\n\n\nImpossibility of precise Survey\n\n\n\n\nProbabilistic Choice of paths\n\n\n\n\nCertainty (if any) only in Expectation"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-scaling-difficulty",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-scaling-difficulty",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "The Scaling Difficulty",
+    "text": "The Scaling Difficulty\nGenuine Uncertainty and the Multiplicity of Paths\n\n\n\n\n\nGrowing up is grappling with uncertainty\n\n\n\n\n\nContinuum Possible Endings\n\n\n\n\nImpossibility of precise Survey and Oversight\n\n\n\n\nProbabilistic Choice over Paths\n\n\n\n\nCertainty (if any) only in Expectation and Breadth of Possibility"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#sampling-the-path-trajectories",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#sampling-the-path-trajectories",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Sampling the Path Trajectories",
+    "text": "Sampling the Path Trajectories\nBayesian Inference over Unrealised Worlds\n\\[ p(\\theta_{w_{i}} | Y) = \\dfrac{p(\\theta_{w_{i}})p(Y | \\theta_{i})}{\\sum_{j}^{N} p(\\theta_{w_j})p(Y | \\theta_{w_j}) }\\]\n\nInference: What is the most plausible world given the data?\n\n\n\n\n\n\\(\\mathbf{\\theta_{w_{1}}} \\rightsquigarrow\\)\n\\(\\mathbf{\\theta_{w_{2}}} \\rightsquigarrow\\)\n\\(\\mathbf{\\theta_{w_{3}}} \\rightsquigarrow\\)\n\n\n\n\\(f(\\alpha_{w_1}, \\beta_{w_1}^{0}, \\beta_{w_1}^{1}) \\rightsquigarrow\\)\n\\(f(\\alpha_{w_2}, \\beta_{w_2}^{0}, \\beta_{w_2}^{1}) \\rightsquigarrow\\)\n\\(f(\\alpha_{w_3}, \\beta_{w_3}^{0}, \\beta_{w_3}^{1}) \\rightsquigarrow\\)\n\n\n\n\\(p(Y |w_1)\\)  \\(\\downarrow\\)\n\\(p(Y | w_2)\\)  \\(\\downarrow\\)\n\\(p(Y | w3)\\) \\(\\downarrow\\)\n\n\n\nCounterfactual Inference: What plausibly happens in nearby worlds?"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-path-before-us",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-path-before-us",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "The Path Before Us",
+    "text": "The Path Before Us\n\nThe Consumer’s Dilemma: What drives us to Choose in the face such vast Possibility?"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#revealed-preference",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#revealed-preference",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Revealed Preference",
+    "text": "Revealed Preference\nUtility driven Choice\n\n\n\n\nThe Consumer’s Dilemma\n“What drives human choice?”\n\nUtility maximization\nRational decision-making\nExpected value calculations\nImpulse and advertising?\n\nEach purchase tells a story of preference…"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#world-state-informs-choice",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#world-state-informs-choice",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "World State Informs Choice",
+    "text": "World State Informs Choice\nThe Mathematical Foundation of Decision\nThe utility function forms the cornerstone of choice modeling:\n\\[\\color{red}U_{ij} = \\color{blue}\\alpha_{ij} + \\color{blue}\\beta_{ij}^{1} \\color{black}\\cdot X_{ij}^{1} + \\color{blue} \\beta_{ij}^{2} \\color{black}\\cdot X_{ij}^{2} \\]\n\\[P_{ij} = \\frac{\\exp(\\color{red}U_{ij})}{\\sum_{k=1}^{J} \\exp(\\color{red}U_{ik})} \\]\nWhere:\n\n\\(U_{ij}\\) represents the systematic utility for individual \\(i\\) choosing alternative \\(j\\) at a particular world state \\(w = \\{ \\color{blue}\\alpha_{ij}, \\color{blue}\\beta_{ij}^{1}, \\color{blue}\\beta_{ij}^{2} X_{ij}^{1}, X_{ij}^{2} \\}\\)\n\\(X_{ij}\\) represents observed covariates (product attributes) and \\(\\color{blue}\\theta\\) structural parameters within the world \\(w\\).\nCollectively, the mathematical structure and your observed data are combined to make a theory of the data generating process for the world \\(w\\)."
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#utility-and-marginal-effects",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#utility-and-marginal-effects",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Utility and Marginal Effects",
+    "text": "Utility and Marginal Effects\n\nLight shaft versus Glowing Fire?"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-simple-path-forward",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-simple-path-forward",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "The Simple Path Forward",
+    "text": "The Simple Path Forward\nThe probability of choosing alternative \\(j\\) follows the elegant logistic form:\n\\(\\frac{\\exp(\\color{red}U_{ij})}{\\sum_{k=1}^{J} \\exp(\\color{red}U_{ik})} = P_{ij} \\Rightarrow s_{j}(\\color{blue}\\theta)=P(u_{j}&gt;u_{k};\\forall_{k̸=j})\\)\nKey Contributions in PR #1654\n\nNew Model Class: MNLogit with Wilkinson-style formula interface\nAlternative-Specific Attributes: Price, quality, brand effects\nIndividual Fixed Attributes: Income, demographics, preferences\nCausal Inference Ready: Built-in counterfactual analysis"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#relative-utility-and-marginal-effects",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#relative-utility-and-marginal-effects",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Relative Utility and Marginal Effects",
+    "text": "Relative Utility and Marginal Effects\nPaths Diverge\nDo you value the company of others? Do you fear it? What about the average cave dweller?\n\n\n\n\\[ u(\\text{Light shaft + Silence}) - u(\\text{Glowing Fire + Conversational Echoes}) &gt; 0?\\]"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#agenda",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#agenda",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Agenda",
+    "text": "Agenda\n\nThe Choice Setting and Bayesian Background\nChoice Data and PyMC-Marketing\nMulitnomial Logit and the IIA Problem\nNested Logit and Market Structure\nChoose your own Adventure"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#pymc-marketing",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#pymc-marketing",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "PyMC-Marketing",
+    "text": "PyMC-Marketing\n\n\n\n\nBayesian Marketing Analytics\n\nUncertainty-aware decisions: model not just what people choose, but how sure we are.\nCausal inference ready: run interventions, not just predictions.\nModern Bayesian engine for scalability, flexibility, and transparency.\nIntuitive syntax with powerful underlying math."
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#choice-data",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#choice-data",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Choice Data",
+    "text": "Choice Data\n\nChoice Scenarios specified with attributes and choice outcomes for each discrete alternative"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#multinomial-logit",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#multinomial-logit",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "Multinomial Logit",
+    "text": "Multinomial Logit"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#multinomial-logit-the-simple-path-forward",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#multinomial-logit-the-simple-path-forward",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Multinomial Logit: The Simple Path Forward",
+    "text": "Multinomial Logit: The Simple Path Forward\nThe probability of choosing alternative \\(j\\) follows the elegant logistic form:\n\\[\\frac{\\exp(\\color{red}U_{ij})}{\\sum_{k=1}^{J} \\exp(\\color{red}U_{ik})} = P_{ij} \\Rightarrow s_{j}(\\color{blue}\\theta_{w})=P(u_{j}&gt;u_{k};\\forall_{k̸=j})\\]\nKey Aspects\n\nNew Model Class: MNLogit with Wilkinson-style formula interface\nAlternative-Specific Attributes: Price, quality, brand effects\nIndividual Fixed Attributes: Income, demographics, preferences\nCausal Inference Ready: Built-in counterfactual analysis"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#pymc-marketing-implementation",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#pymc-marketing-implementation",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "PyMC-Marketing Implementation",
+    "text": "PyMC-Marketing Implementation\nTrace Paths through Possible Worlds\n\nutility_formulas = [\n    \"gc ~ ic_gc + oc_gc | income + rooms + agehed\",\n    \"gr ~ ic_gr + oc_gr | income + rooms + agehed\",\n    \"ec ~ ic_ec + oc_ec | income + rooms + agehed\",\n    \"er ~ ic_er + oc_er | income + rooms + agehed\",\n    \"hp ~ ic_hp + oc_hp | income + rooms + agehed\",\n]\n\nmnl = MNLogit(df, utility_formulas, \"depvar\", covariates=[\"ic\", \"oc\"])\nmnl.sample()"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#utility-matrix",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#utility-matrix",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Utility Matrix",
+    "text": "Utility Matrix\nIntuitive Formula Specification\n\n\n\\[ \\begin{split} \\begin{split} \\begin{pmatrix}\nu_{gc}   \\\\\nu_{gr}   \\\\\nu_{ec}   \\\\\nu_{er}   \\\\\nu_{hp}   \\\\\n\\end{pmatrix} =  \\begin{pmatrix}\ngc_{ic} & gc_{oc}  \\\\\ngr_{ic} & gr_{oc}  \\\\\nec_{ic} & ec_{oc}  \\\\\ner_{ic} & er_{oc}  \\\\\nhp_{ic} & hp_{oc}  \\\\\n\\end{pmatrix} \\begin{pmatrix}\n\\color{blue}\\beta_{ic}   \\\\\n\\color{blue}\\beta_{oc}   \\\\\n\\end{pmatrix}  \\end{split}\n\\end{split}\n\\]\n\n\nutility_formulas = [\n    \"gc ~ ic_gc + oc_gc \",\n    \"gr ~ ic_gr + oc_gr \",\n    \"ec ~ ic_ec + oc_ec \",\n    \"er ~ ic_er + oc_er \",\n    \"hp ~ ic_hp + oc_hp \",\n]\n\nmnl = MNLogit(df, utility_formulas, \"depvar\", covariates=[\"ic\", \"oc\"])\nmnl"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-red-busblue-bus-paradox",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-red-busblue-bus-paradox",
+    "title": "The Art of Choice: Discrete Decision Models in PyMC-Marketing",
+    "section": "The Red Bus/Blue Bus Paradox",
+    "text": "The Red Bus/Blue Bus Paradox\nImagine a commuter’s choice between: - Car (probability 0.6) - Blue Bus (probability 0.4)\nNow introduce a Red Bus (identical to Blue Bus)…\nMNL Prediction: Each bus gets 0.2 probability, car stays 0.6 Reality: Car should get ~0.67, each bus ~0.165\nThe Adventure’s Crossroads\n\n“The path splits before you. To the left lies the familiar but flawed trail of independence. To the right, a more complex but realistic journey through nested structures…”"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-iia-problem---a-plot-twist",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-iia-problem---a-plot-twist",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "The IIA Problem - A Plot Twist",
+    "text": "The IIA Problem - A Plot Twist\n\n\n\n\n\n50% Red Bus 50% Car\n\n\n\n\nWhat happens if we introduce a Blue Bus?\n\n\n\n\n33% Red Bus, 33% Blue Bus, 33% Car\n\n\n\nThe Multinomial Logit enforces the Indepdence of Irrelevant Alternatives property into preference calculations.\n\\[\\dfrac{P_{j}}{P_{i}}  = \\dfrac{ \\dfrac{e^{U_{j}}}{\\sum_{i}^{n}e^{U_{k}}}}{\\dfrac{e^{U_{i}}}{\\sum_{i}^{n}e^{U_{k}}}} = \\dfrac{e^{U_{j}}}{e^{U_{i}}} = e^{U_{j} - U_{k}}\\]\n\nKey Take-away: The Model Ignores Market Structure"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#counterfactual-plausibility-as-criteria-of-adequacy",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#counterfactual-plausibility-as-criteria-of-adequacy",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Counterfactual Plausibility as Criteria of Adequacy",
+    "text": "Counterfactual Plausibility as Criteria of Adequacy\nCounterfactual Choice Scenarios\nnew_policy_df = df.copy()\nnew_policy_df[[\"ic_ec\", \"ic_er\"]] = new_policy_df[[\"ic_ec\", \"ic_er\"]] * 1.5\n\n## Posterior Predictive Forecast under counterfactual setting\nidata_new_policy = mnl.apply_intervention(new_choice_df=new_policy_df)\n\n## Compare Old and New Policy Settings\nchange_df = mnl.calculate_share_change(mnl.idata, mnl.intervention_idata)\nchange_df"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#counterfactual-inference",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#counterfactual-inference",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Counterfactual Inference",
+    "text": "Counterfactual Inference\nCounterfactual Plausibility as Criteria of Adequacy\nnew_policy_df = df.copy()\nnew_policy_df[[\"ic_ec\", \"ic_er\"]] = new_policy_df[[\"ic_ec\", \"ic_er\"]] * 1.5\n\n## Posterior Predictive Forecast under counterfactual setting\nidata_new_policy = mnl.apply_intervention(new_choice_df=new_policy_df)\n\n## Compare Old and New Policy Settings\nchange_df = mnl.calculate_share_change(mnl.idata, mnl.intervention_idata)\nchange_df"
   }
 ]

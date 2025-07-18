@@ -2,6 +2,7 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/pydata_berlin_nested_logit/consumer_choice.html",
       "/talks/mister_p/mister_p.html",
       "/talks/ukraine_sem/talk4ukraine.html",
       "/talks/value_capture/value_capture.html",
@@ -12,7 +13,6 @@
       "/talks/pycon_ireland_recording/pycon_ireland_recording.html",
       "/talks/missing_data/missing_data_causal.html",
       "/talks/bayesian_mixer/bayesian_mixer_london.html",
-      "/talks/utility_and_choice/discrete_choice_and_utility.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
