@@ -7,6 +7,7 @@ format:
     theme: [default, clean.scss]
     slide-number: true
     preview-links: auto
+image: "images/choose.jpeg"
 ---
 
 ## Preliminaries {.smaller}
@@ -374,14 +375,103 @@ change_df
 :::: {.columns}
 
 ::: {.column width="40%"}
-![](images/change_mnl.png)
+![Proportional Substitution Patterns](images/change_mnl.png)
 :::
 
 ::: {.column width="60%"}
-![](images/change_plot_mnl.webp)
+![Product Switching follows prior Market share irrespective of product type](images/change_plot_mnl.webp)
 :::
 ::::
+
+## Here be Dragons
+:::{.r-stack}
+<img src="images/mnl_dragons.png" alt="Choice" height="800"/>
+:::
 
 
 # The __Nested Logit__ and _Market Structure_
 
+
+## Considered Choice {.smaller}
+### Branching Probability Trees
+
+:::: {.columns}
+
+::: {.column width="60%"}
+- $U = Y + W$ 
+- $P(i) \text{ when } i \in Alts$
+- $P(\text{choose nest B}) \cdot P(\text{choose i} | \text{ i} \in \text{B})$
+
+- $P(\text{choose nest B}) = \dfrac{e^{W + \lambda_{k}I_{k}}}{\sum_{l=1}^{K} e^{W + \lambda_{l}I_{l}}}$
+
+- $P(\text{choose i} | \text{ i} \in \text{B}) = \dfrac{e^{Y_{i} / \lambda_{k}}}{\sum_{j \in B_{k}} e^{Y_{j} / \lambda_{k}}}
+$
+:::
+
+::: {.column width="40%"}
+
+::: {.fragment .fade-in}
+$I_{k} = ln \sum_{j \in B_{k}}  e^{Y_{j} / \lambda_{k}} \\ \text{ and } \lambda_{k} \sim Beta(1, 1)$
+
+The __log-sum__ component allows for the utility of any alternatives within a nest to **_"bubble up"_** and influence the attractiveness of the overall nest. 
+:::
+
+
+
+:::
+::::
+
+:::{.r-stack}
+<img src="images/Threetypestwolevelnests.png" alt="Choice" height="200"/>
+:::
+
+## Nesting Structure in PyMC-Marketing {.smaller}
+
+
+```{.python}
+utility_formulas = [
+    "gc ~ ic_gc + oc_gc | income + rooms ",
+    "ec ~ ic_ec + oc_ec | income + rooms ",
+    "gr ~ ic_gr + oc_gr | income + rooms ",
+    "er ~ ic_er + oc_er | income + rooms ",
+    "hp ~ ic_hp + oc_hp | income + rooms ",
+]
+
+nesting_structure = {"central": ["gc", "ec"], "room": ["hp", "gr", "er"]}
+
+nstL_1 = NestedLogit(
+    df,
+    utility_formulas,
+    "depvar",
+    covariates=["ic", "oc"],
+    nesting_structure=nesting_structure,
+    model_config={
+        "alphas_": Prior("Normal", mu=0, sigma=5, dims="alts"),
+        "betas": Prior("Normal", mu=0, sigma=1, dims="alt_covariates"),
+        "betas_fixed_": Prior("Normal", mu=0, sigma=1, dims="fixed_covariates"),
+        "lambdas_nests": Prior("Beta", alpha=2, beta=2, dims="nests"),
+    },
+)
+nstL_1
+
+
+```
+
+## Behaviourial Insight in Product Preference
+
+![The relative importance of product attributes implied by our observed data](images/insight.webp)
+
+## Credible Counterfactuals
+### Non-Proportional Substitution
+
+```{.python}
+new_policy_df = df.copy()
+new_policy_df[["ic_ec", "ic_er"]] = new_policy_df[["ic_ec", "ic_er"]] * 1.5
+
+idata_new_policy_1 = nstL_1.apply_intervention(new_choice_df=new_policy_df)
+change_df_1 = nstL_1.calculate_share_change(nstL_1.idata, nstL_1.intervention_idata)
+change_df_1
+
+```
+
+![Nested Logit allows for patterns of Non-Proportional Substitution under counterfactual settings](images/non_proportional_sub.png)

@@ -540,16 +540,99 @@ hp_{ic} &amp; hp_{oc}  \\
 <span id="cb3-9"><a></a>change_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="columns">
 <div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/change_mnl.png"></p>
+<figcaption>Proportional Substitution Patterns</figcaption>
+</figure>
+</div>
 </div><div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/change_plot_mnl.webp"></p>
+<figcaption>Product Switching follows prior Market share irrespective of product type</figcaption>
+</figure>
+</div>
 </div></div>
+</section>
+<section id="here-be-dragons" class="slide level2">
+<h2>Here be Dragons</h2>
+<div class="r-stack">
+<p><img src="images/mnl_dragons.png" alt="Choice" height="800"></p>
+</div>
 </section></section>
+<section>
 <section id="the-nested-logit-and-market-structure" class="title-slide slide level1 center">
 <h1>The <strong>Nested Logit</strong> and <em>Market Structure</em></h1>
 
-
 </section>
+<section id="considered-choice" class="slide level2 smaller">
+<h2>Considered Choice</h2>
+<h3 id="branching-probability-trees">Branching Probability Trees</h3>
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li><p><span class="math inline">\(U = Y + W\)</span></p></li>
+<li><p><span class="math inline">\(P(i) \text{ when } i \in Alts\)</span></p></li>
+<li><p><span class="math inline">\(P(\text{choose nest B}) \cdot P(\text{choose i} | \text{ i} \in \text{B})\)</span></p></li>
+<li><p><span class="math inline">\(P(\text{choose nest B}) = \dfrac{e^{W + \lambda_{k}I_{k}}}{\sum_{l=1}^{K} e^{W + \lambda_{l}I_{l}}}\)</span></p></li>
+<li><p><span class="math inline">\(P(\text{choose i} | \text{ i} \in \text{B}) = \dfrac{e^{Y_{i} / \lambda_{k}}}{\sum_{j \in B_{k}} e^{Y_{j} / \lambda_{k}}}\)</span></p></li>
+</ul>
+</div><div class="column" style="width:40%;">
+<div class="fragment fade-in">
+<p><span class="math inline">\(I_{k} = ln \sum_{j \in B_{k}}  e^{Y_{j} / \lambda_{k}} \\ \text{ and } \lambda_{k} \sim Beta(1, 1)\)</span></p>
+<p>The <strong>log-sum</strong> component allows for the utility of any alternatives within a nest to <strong><em>“bubble up”</em></strong> and influence the attractiveness of the overall nest.</p>
+</div>
+</div></div>
+<div class="r-stack">
+<p><img src="images/Threetypestwolevelnests.png" alt="Choice" height="200"></p>
+</div>
+</section>
+<section id="nesting-structure-in-pymc-marketing" class="slide level2 smaller">
+<h2>Nesting Structure in PyMC-Marketing</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>utility_formulas <span class="op">=</span> [</span>
+<span id="cb4-2"><a></a>    <span class="st">"gc ~ ic_gc + oc_gc | income + rooms "</span>,</span>
+<span id="cb4-3"><a></a>    <span class="st">"ec ~ ic_ec + oc_ec | income + rooms "</span>,</span>
+<span id="cb4-4"><a></a>    <span class="st">"gr ~ ic_gr + oc_gr | income + rooms "</span>,</span>
+<span id="cb4-5"><a></a>    <span class="st">"er ~ ic_er + oc_er | income + rooms "</span>,</span>
+<span id="cb4-6"><a></a>    <span class="st">"hp ~ ic_hp + oc_hp | income + rooms "</span>,</span>
+<span id="cb4-7"><a></a>]</span>
+<span id="cb4-8"><a></a></span>
+<span id="cb4-9"><a></a>nesting_structure <span class="op">=</span> {<span class="st">"central"</span>: [<span class="st">"gc"</span>, <span class="st">"ec"</span>], <span class="st">"room"</span>: [<span class="st">"hp"</span>, <span class="st">"gr"</span>, <span class="st">"er"</span>]}</span>
+<span id="cb4-10"><a></a></span>
+<span id="cb4-11"><a></a>nstL_1 <span class="op">=</span> NestedLogit(</span>
+<span id="cb4-12"><a></a>    df,</span>
+<span id="cb4-13"><a></a>    utility_formulas,</span>
+<span id="cb4-14"><a></a>    <span class="st">"depvar"</span>,</span>
+<span id="cb4-15"><a></a>    covariates<span class="op">=</span>[<span class="st">"ic"</span>, <span class="st">"oc"</span>],</span>
+<span id="cb4-16"><a></a>    nesting_structure<span class="op">=</span>nesting_structure,</span>
+<span id="cb4-17"><a></a>    model_config<span class="op">=</span>{</span>
+<span id="cb4-18"><a></a>        <span class="st">"alphas_"</span>: Prior(<span class="st">"Normal"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">5</span>, dims<span class="op">=</span><span class="st">"alts"</span>),</span>
+<span id="cb4-19"><a></a>        <span class="st">"betas"</span>: Prior(<span class="st">"Normal"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">1</span>, dims<span class="op">=</span><span class="st">"alt_covariates"</span>),</span>
+<span id="cb4-20"><a></a>        <span class="st">"betas_fixed_"</span>: Prior(<span class="st">"Normal"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">1</span>, dims<span class="op">=</span><span class="st">"fixed_covariates"</span>),</span>
+<span id="cb4-21"><a></a>        <span class="st">"lambdas_nests"</span>: Prior(<span class="st">"Beta"</span>, alpha<span class="op">=</span><span class="dv">2</span>, beta<span class="op">=</span><span class="dv">2</span>, dims<span class="op">=</span><span class="st">"nests"</span>),</span>
+<span id="cb4-22"><a></a>    },</span>
+<span id="cb4-23"><a></a>)</span>
+<span id="cb4-24"><a></a>nstL_1</span>
+<span id="cb4-25"><a></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="behaviourial-insight-in-product-preference" class="slide level2">
+<h2>Behaviourial Insight in Product Preference</h2>
+
+<img data-src="images/insight.webp" class="r-stretch quarto-figure-center"><p class="caption">The relative importance of product attributes implied by our observed data</p></section>
+<section id="credible-counterfactuals" class="slide level2">
+<h2>Credible Counterfactuals</h2>
+<h3 id="non-proportional-substitution">Non-Proportional Substitution</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a>new_policy_df <span class="op">=</span> df.copy()</span>
+<span id="cb5-2"><a></a>new_policy_df[[<span class="st">"ic_ec"</span>, <span class="st">"ic_er"</span>]] <span class="op">=</span> new_policy_df[[<span class="st">"ic_ec"</span>, <span class="st">"ic_er"</span>]] <span class="op">*</span> <span class="fl">1.5</span></span>
+<span id="cb5-3"><a></a></span>
+<span id="cb5-4"><a></a>idata_new_policy_1 <span class="op">=</span> nstL_1.apply_intervention(new_choice_df<span class="op">=</span>new_policy_df)</span>
+<span id="cb5-5"><a></a>change_df_1 <span class="op">=</span> nstL_1.calculate_share_change(nstL_1.idata, nstL_1.intervention_idata)</span>
+<span id="cb5-6"><a></a>change_df_1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+
+
+<img data-src="images/non_proportional_sub.png" class="r-stretch quarto-figure-center"><p class="caption">Nested Logit allows for patterns of Non-Proportional Substitution under counterfactual settings</p></section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
