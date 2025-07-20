@@ -254,3 +254,9 @@ $selection-bg: #26351c !default;
   height: auto;
   object-fit: contain;
 }
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block !important;
+}

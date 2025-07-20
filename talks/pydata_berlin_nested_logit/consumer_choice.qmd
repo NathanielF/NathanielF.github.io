@@ -104,13 +104,17 @@ Use better models with **PyMC-Marketing** and simulate pricing interventions saf
 
 ::::
 
-## Sampling the Path Trajectories
+## Sampling the Path Trajectories {.smaller}
 ### Bayesian Inference over Unrealised Worlds
-
-$$ p(\theta_{w_{i}} | Y) = \dfrac{p(\theta_{w_{i}})p(Y | \theta_{i})}{\sum_{j}^{N} p(\theta_{w_j})p(Y | \theta_{w_j}) }$$
 
 :::{.r-stack}
 **_Inference_**: What is the most plausible world given the data?
+:::
+$$ p(\theta_{w_{i}} | Y) = \dfrac{p(\theta_{w_{i}})p(Y | \theta_{i})}{\sum_{j}^{N} p(\theta_{w_j})p(Y | \theta_{w_j}) }$$
+
+
+:::{.r-stack}
+**_Counterfactual Inference_**: What plausibly happens in nearby worlds?
 :::
 ::: {.fragment .fade-in}
 :::: {.columns}
@@ -147,9 +151,6 @@ $$ p(\theta_{w_{i}} | Y) = \dfrac{p(\theta_{w_{i}})p(Y | \theta_{i})}{\sum_{j}^{
 
 ::::
 
-:::{.r-stack}
-**_Counterfactual Inference_**: What plausibly happens in nearby worlds?
-:::
 :::
 
 ## The Path Before Us
@@ -195,7 +196,7 @@ Where:
 
 - $U_{ij}$ represents the systematic utility for individual $i$ choosing alternative $j$ at a particular world state $w = \{ \color{blue}\alpha_{ij}, \color{blue}\beta_{ij}^{1}, \color{blue}\beta_{ij}^{2} X_{ij}^{1}, X_{ij}^{2} \}$
 - $X_{ij}$ represents observed covariates (product attributes) and $\color{blue}\theta$ structural parameters within the world $w$.
-- Collectively, the mathematical structure and your observed data are combined to make a theory of the data generating process for the world $w$.
+- Collectively, the [*__mathematical structure and world-state__*]{.blue} are combined to make a theory of the data generating process for the world $w$.
 
 
 ---
@@ -459,7 +460,7 @@ nstL_1
 
 ## Behaviourial Insight in Product Preference
 
-![The relative importance of product attributes implied by our observed data](images/insight.webp)
+![The relative importance of product attributes implied by our observed data](images/insight.webp){width=100% height=auto}
 
 ## Credible Counterfactuals
 ### Non-Proportional Substitution
@@ -475,3 +476,39 @@ change_df_1
 ```
 
 ![Nested Logit allows for patterns of Non-Proportional Substitution under counterfactual settings](images/non_proportional_sub.png)
+
+
+## Market Interventions and Implied Worlds
+
+![](images/nested_logit_before_after.webp)
+
+## Conclusion: Explore the Branching Worlds {.smaller}
+
+:::: {.columns}
+
+::: {.column width="60%"}
+$$ w = \{ \alpha, \beta^{1}, \beta_{2}, X^{1}, X^{2}  \} \\
+\Rightarrow w^{*} = \{ \alpha, \beta^{*}, \beta_{2}, X^{*}, X^{2}  \} $$ 
+
+```{.python}
+with pm.do(
+    model,
+    {"X1": np.ones(len(df)), 
+    "beta1": 0.5},
+    prune_vars=True,
+) as counterfactual_model:
+    idata_trt = pm.sample_posterior_predictive(idata, 
+    var_names=["like", "p"])
+
+```
+Causal Inference with the Do-Operator modifies world-state and data alike.
+:::
+
+::: {.column width="40%"}
+- Bayesian Models offer a data-informed tool for simulation experiments for *__ceteris-paribus__* inference. 
+- Plausible counterfactual inference depends on compelling world structure encoded in the model. 
+- Nested Logit models in [__PyMC-Marketing__]{.green} allows us to encode market structures for compelling intervention studies.
+- Revealing strategic behaviorial insights and unlocking new marketing strategies
+
+:::
+::::

@@ -3452,7 +3452,7 @@
     "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#sampling-the-path-trajectories",
     "title": "Discrete Choice Models in PyMC-Marketing",
     "section": "Sampling the Path Trajectories",
-    "text": "Sampling the Path Trajectories\nBayesian Inference over Unrealised Worlds\n\\[ p(\\theta_{w_{i}} | Y) = \\dfrac{p(\\theta_{w_{i}})p(Y | \\theta_{i})}{\\sum_{j}^{N} p(\\theta_{w_j})p(Y | \\theta_{w_j}) }\\]\n\nInference: What is the most plausible world given the data?\n\n\n\n\n\n\\(\\mathbf{\\theta_{w_{1}}} \\rightsquigarrow\\)\n\\(\\mathbf{\\theta_{w_{2}}} \\rightsquigarrow\\)\n\\(\\mathbf{\\theta_{w_{3}}} \\rightsquigarrow\\)\n\n\n\n\\(f(\\alpha_{w_1}, \\beta_{w_1}^{0}, \\beta_{w_1}^{1}) \\rightsquigarrow\\)\n\\(f(\\alpha_{w_2}, \\beta_{w_2}^{0}, \\beta_{w_2}^{1}) \\rightsquigarrow\\)\n\\(f(\\alpha_{w_3}, \\beta_{w_3}^{0}, \\beta_{w_3}^{1}) \\rightsquigarrow\\)\n\n\n\n\\(p(Y |w_1)\\)  \\(\\downarrow\\)\n\\(p(Y | w_2)\\)  \\(\\downarrow\\)\n\\(p(Y | w3)\\) \\(\\downarrow\\)\n\n\n\nCounterfactual Inference: What plausibly happens in nearby worlds?"
+    "text": "Sampling the Path Trajectories\nBayesian Inference over Unrealised Worlds\n\nInference: What is the most plausible world given the data?\n\n\\[ p(\\theta_{w_{i}} | Y) = \\dfrac{p(\\theta_{w_{i}})p(Y | \\theta_{i})}{\\sum_{j}^{N} p(\\theta_{w_j})p(Y | \\theta_{w_j}) }\\]\n\nCounterfactual Inference: What plausibly happens in nearby worlds?\n\n\n\n\n\n\\(\\mathbf{\\theta_{w_{1}}} \\rightsquigarrow\\)\n\\(\\mathbf{\\theta_{w_{2}}} \\rightsquigarrow\\)\n\\(\\mathbf{\\theta_{w_{3}}} \\rightsquigarrow\\)\n\n\n\n\\(f(\\alpha_{w_1}, \\beta_{w_1}^{0}, \\beta_{w_1}^{1}) \\rightsquigarrow\\)\n\\(f(\\alpha_{w_2}, \\beta_{w_2}^{0}, \\beta_{w_2}^{1}) \\rightsquigarrow\\)\n\\(f(\\alpha_{w_3}, \\beta_{w_3}^{0}, \\beta_{w_3}^{1}) \\rightsquigarrow\\)\n\n\n\n\\(p(Y |w_1)\\)  \\(\\downarrow\\)\n\\(p(Y | w_2)\\)  \\(\\downarrow\\)\n\\(p(Y | w3)\\) \\(\\downarrow\\)"
   },
   {
     "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#the-path-before-us",
@@ -3473,7 +3473,7 @@
     "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#world-state-informs-choice",
     "title": "Discrete Choice Models in PyMC-Marketing",
     "section": "World State Informs Choice",
-    "text": "World State Informs Choice\nThe Mathematical Foundation of Decision\nThe utility function forms the cornerstone of choice modeling:\n\\[\\color{red}U_{ij} = \\color{blue}\\alpha_{ij} + \\color{blue}\\beta_{ij}^{1} \\color{black}\\cdot X_{ij}^{1} + \\color{blue} \\beta_{ij}^{2} \\color{black}\\cdot X_{ij}^{2} \\]\n\\[P_{ij} = \\frac{\\exp(\\color{red}U_{ij})}{\\sum_{k=1}^{J} \\exp(\\color{red}U_{ik})} \\]\nWhere:\n\n\\(U_{ij}\\) represents the systematic utility for individual \\(i\\) choosing alternative \\(j\\) at a particular world state \\(w = \\{ \\color{blue}\\alpha_{ij}, \\color{blue}\\beta_{ij}^{1}, \\color{blue}\\beta_{ij}^{2} X_{ij}^{1}, X_{ij}^{2} \\}\\)\n\\(X_{ij}\\) represents observed covariates (product attributes) and \\(\\color{blue}\\theta\\) structural parameters within the world \\(w\\).\nCollectively, the mathematical structure and your observed data are combined to make a theory of the data generating process for the world \\(w\\)."
+    "text": "World State Informs Choice\nThe Mathematical Foundation of Decision\nThe utility function forms the cornerstone of choice modeling:\n\\[\\color{red}U_{ij} = \\color{blue}\\alpha_{ij} + \\color{blue}\\beta_{ij}^{1} \\color{black}\\cdot X_{ij}^{1} + \\color{blue} \\beta_{ij}^{2} \\color{black}\\cdot X_{ij}^{2} \\]\n\\[P_{ij} = \\frac{\\exp(\\color{red}U_{ij})}{\\sum_{k=1}^{J} \\exp(\\color{red}U_{ik})} \\]\nWhere:\n\n\\(U_{ij}\\) represents the systematic utility for individual \\(i\\) choosing alternative \\(j\\) at a particular world state \\(w = \\{ \\color{blue}\\alpha_{ij}, \\color{blue}\\beta_{ij}^{1}, \\color{blue}\\beta_{ij}^{2} X_{ij}^{1}, X_{ij}^{2} \\}\\)\n\\(X_{ij}\\) represents observed covariates (product attributes) and \\(\\color{blue}\\theta\\) structural parameters within the world \\(w\\).\nCollectively, the mathematical structure and world-state are combined to make a theory of the data generating process for the world \\(w\\)."
   },
   {
     "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#utility-and-marginal-effects",
@@ -3620,6 +3620,20 @@
     "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#credible-counterfactuals",
     "title": "Discrete Choice Models in PyMC-Marketing",
     "section": "Credible Counterfactuals",
-    "text": "Credible Counterfactuals\nNon-Proportional Substitution\nnew_policy_df = df.copy()\nnew_policy_df[[\"ic_ec\", \"ic_er\"]] = new_policy_df[[\"ic_ec\", \"ic_er\"]] * 1.5\n\nidata_new_policy_1 = nstL_1.apply_intervention(new_choice_df=new_policy_df)\nchange_df_1 = nstL_1.calculate_share_change(nstL_1.idata, nstL_1.intervention_idata)\nchange_df_1\n\n\n\nNested Logit allows for patterns of Non-Proportional Substitution under counterfactual settings"
+    "text": "Credible Counterfactuals\nNon-Proportional Substitution\nnew_policy_df = df.copy()\nnew_policy_df[[\"ic_ec\", \"ic_er\"]] = new_policy_df[[\"ic_ec\", \"ic_er\"]] * 1.5\n\nidata_new_policy_1 = nstL_1.apply_intervention(new_choice_df=new_policy_df)\nchange_df_1 = nstL_1.calculate_share_change(nstL_1.idata, nstL_1.intervention_idata)\nchange_df_1\n\nNested Logit allows for patterns of Non-Proportional Substitution under counterfactual settings"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#market-interventions-and-implied-worlds",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#market-interventions-and-implied-worlds",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Market Interventions and Implied Worlds",
+    "text": "Market Interventions and Implied Worlds"
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#conclusion-explore-the-branching-worlds",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#conclusion-explore-the-branching-worlds",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "Conclusion: Explore the Branching Worlds",
+    "text": "Conclusion: Explore the Branching Worlds\n\n\n\\[ w = \\{ \\alpha, \\beta^{1}, \\beta_{2}, X^{1}, X^{2}  \\} \\\\\n\\Rightarrow w^{*} = \\{ \\alpha, \\beta^{*}, \\beta_{2}, X^{*}, X^{2}  \\} \\]\nwith pm.do(\n    model,\n    {\"X1\": np.ones(len(df)), \n    \"beta1\": 0.5},\n    prune_vars=True,\n) as counterfactual_model:\n    idata_trt = pm.sample_posterior_predictive(idata, \n    var_names=[\"like\", \"p\"])\nCausal Inference with the Do-Operator modifies world-state and data alike.\n\n\nBayesian Models offer a data-informed tool for simulation experiments for ceteris-paribus inference.\nPlausible counterfactual inference depends on compelling world structure encoded in the model.\nNested Logit models in PyMC-Marketing allows us to encode market structures for compelling intervention studies.\nRevealing strategic behaviorial insights and unlocking new marketing strategies"
   }
 ]

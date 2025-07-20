@@ -94,7 +94,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-7ec18d3c9f0aac6b797d68870447fbc1.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-3ade86377462f3e3e46542412d572591.css">
   <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -325,12 +325,15 @@ Nathaniel Forde
 </div>
 </div></div>
 </section>
-<section id="sampling-the-path-trajectories" class="slide level2">
+<section id="sampling-the-path-trajectories" class="slide level2 smaller">
 <h2>Sampling the Path Trajectories</h2>
 <h3 id="bayesian-inference-over-unrealised-worlds">Bayesian Inference over Unrealised Worlds</h3>
-<p><span class="math display">\[ p(\theta_{w_{i}} | Y) = \dfrac{p(\theta_{w_{i}})p(Y | \theta_{i})}{\sum_{j}^{N} p(\theta_{w_j})p(Y | \theta_{w_j}) }\]</span></p>
 <div class="r-stack">
 <p><strong><em>Inference</em></strong>: What is the most plausible world given the data?</p>
+</div>
+<p><span class="math display">\[ p(\theta_{w_{i}} | Y) = \dfrac{p(\theta_{w_{i}})p(Y | \theta_{i})}{\sum_{j}^{N} p(\theta_{w_j})p(Y | \theta_{w_j}) }\]</span></p>
+<div class="r-stack">
+<p><strong><em>Counterfactual Inference</em></strong>: What plausibly happens in nearby worlds?</p>
 </div>
 <div class="fragment fade-in">
 <div class="columns">
@@ -353,9 +356,6 @@ Nathaniel Forde
 <li><span class="math inline">\(p(Y | w3)\)</span> <img src="images/world.jpg" alt="Small image" width="50"><span class="math inline">\(\downarrow\)</span></li>
 </ul>
 </div></div>
-<div class="r-stack">
-<p><strong><em>Counterfactual Inference</em></strong>: What plausibly happens in nearby worlds?</p>
-</div>
 </div>
 </section>
 <section id="the-path-before-us" class="slide level2">
@@ -390,7 +390,7 @@ Nathaniel Forde
 <ul>
 <li><span class="math inline">\(U_{ij}\)</span> represents the systematic utility for individual <span class="math inline">\(i\)</span> choosing alternative <span class="math inline">\(j\)</span> at a particular world state <span class="math inline">\(w = \{ \color{blue}\alpha_{ij}, \color{blue}\beta_{ij}^{1}, \color{blue}\beta_{ij}^{2} X_{ij}^{1}, X_{ij}^{2} \}\)</span></li>
 <li><span class="math inline">\(X_{ij}\)</span> represents observed covariates (product attributes) and <span class="math inline">\(\color{blue}\theta\)</span> structural parameters within the world <span class="math inline">\(w\)</span>.</li>
-<li>Collectively, the mathematical structure and your observed data are combined to make a theory of the data generating process for the world <span class="math inline">\(w\)</span>.</li>
+<li>Collectively, the <span class="blue"><em><strong>mathematical structure and world-state</strong></em></span> are combined to make a theory of the data generating process for the world <span class="math inline">\(w\)</span>.</li>
 </ul>
 </section>
 <section id="relative-utility-and-marginal-effects" class="slide level2 smaller">
@@ -619,7 +619,7 @@ hp_{ic} &amp; hp_{oc}  \\
 <section id="behaviourial-insight-in-product-preference" class="slide level2">
 <h2>Behaviourial Insight in Product Preference</h2>
 
-<img data-src="images/insight.webp" class="r-stretch quarto-figure-center"><p class="caption">The relative importance of product attributes implied by our observed data</p></section>
+<img data-src="images/insight.webp" style="width:100.0%" class="r-stretch quarto-figure-center"><p class="caption">The relative importance of product attributes implied by our observed data</p></section>
 <section id="credible-counterfactuals" class="slide level2">
 <h2>Credible Counterfactuals</h2>
 <h3 id="non-proportional-substitution">Non-Proportional Substitution</h3>
@@ -630,9 +630,37 @@ hp_{ic} &amp; hp_{oc}  \\
 <span id="cb5-5"><a></a>change_df_1 <span class="op">=</span> nstL_1.calculate_share_change(nstL_1.idata, nstL_1.intervention_idata)</span>
 <span id="cb5-6"><a></a>change_df_1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
+<img data-src="images/non_proportional_sub.png" class="r-stretch quarto-figure-center"><p class="caption">Nested Logit allows for patterns of Non-Proportional Substitution under counterfactual settings</p></section>
+<section id="market-interventions-and-implied-worlds" class="slide level2">
+<h2>Market Interventions and Implied Worlds</h2>
+
+<img data-src="images/nested_logit_before_after.webp" class="r-stretch"></section>
+<section id="conclusion-explore-the-branching-worlds" class="slide level2 smaller">
+<h2>Conclusion: Explore the Branching Worlds</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><span class="math display">\[ w = \{ \alpha, \beta^{1}, \beta_{2}, X^{1}, X^{2}  \} \\
+\Rightarrow w^{*} = \{ \alpha, \beta^{*}, \beta_{2}, X^{*}, X^{2}  \} \]</span></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a><span class="cf">with</span> pm.do(</span>
+<span id="cb6-2"><a></a>    model,</span>
+<span id="cb6-3"><a></a>    {<span class="st">"X1"</span>: np.ones(<span class="bu">len</span>(df)), </span>
+<span id="cb6-4"><a></a>    <span class="st">"beta1"</span>: <span class="fl">0.5</span>},</span>
+<span id="cb6-5"><a></a>    prune_vars<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb6-6"><a></a>) <span class="im">as</span> counterfactual_model:</span>
+<span id="cb6-7"><a></a>    idata_trt <span class="op">=</span> pm.sample_posterior_predictive(idata, </span>
+<span id="cb6-8"><a></a>    var_names<span class="op">=</span>[<span class="st">"like"</span>, <span class="st">"p"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Causal Inference with the Do-Operator modifies world-state and data alike.</p>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>Bayesian Models offer a data-informed tool for simulation experiments for <em><strong>ceteris-paribus</strong></em> inference.</li>
+<li>Plausible counterfactual inference depends on compelling world structure encoded in the model.</li>
+<li>Nested Logit models in <span class="green"><strong>PyMC-Marketing</strong></span> allows us to encode market structures for compelling intervention studies.</li>
+<li>Revealing strategic behaviorial insights and unlocking new marketing strategies</li>
+</ul>
+</div></div>
 
 
-<img data-src="images/non_proportional_sub.png" class="r-stretch quarto-figure-center"><p class="caption">Nested Logit allows for patterns of Non-Proportional Substitution under counterfactual settings</p></section></section>
+</section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
