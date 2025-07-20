@@ -462,6 +462,8 @@ nstL_1
 
 ![The relative importance of product attributes implied by our observed data](images/insight.webp){width=100% height=auto}
 
+The relative importance of installation costs versus operating costs might suggest where to impose a novel pricing strategy?
+
 ## Credible Counterfactuals
 ### Non-Proportional Substitution
 
@@ -505,10 +507,18 @@ Causal Inference with the Do-Operator modifies world-state and data alike.
 :::
 
 ::: {.column width="40%"}
+::: {.fragment .fade-in}
 - Bayesian Models offer a data-informed tool for simulation experiments for *__ceteris-paribus__* inference. 
+:::
+::: {.fragment .fade-in}
 - Plausible counterfactual inference depends on compelling world structure encoded in the model. 
+:::
+::: {.fragment .fade-in}
 - Nested Logit models in [__PyMC-Marketing__]{.green} allows us to encode market structures for compelling intervention studies.
-- Revealing strategic behaviorial insights and unlocking new marketing strategies
+:::
+::: {.fragment .fade-in}
+- Revealing behaviorial insights and unlocking new marketing _strategies for your adventure!_
+:::
 
 :::
 ::::
