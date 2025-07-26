@@ -1,0 +1,569 @@
+---
+title: "Amortized Bayesian Inference with PyTorch"
+date: "2025-07-25"
+categories: ["pytorch", "variational auto-encoders", "amortized bayesian inference"]
+keep-ipynb: false
+self-contained: true
+draft: true
+execute: 
+  enabled: True
+jupyter: pytorch-env
+image: "images/construction_bricks.jpg"
+author:
+    - url: https://nathanielf.github.io/
+    - affiliation: PyMC dev
+citation: true
+---
+
+## Reconstruction Error
+Why Amortize Bayes
+
+
+```{python}
+import torch
+import torchvision.datasets as dsets
+import pandas as pd
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+from torch.utils.data import Dataset, DataLoader
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.model_selection import train_test_split
+
+```
+
+
+## Job Satisfaction Data
+
+```{python}
+import numpy as np
+
+# Standard deviations
+stds = np.array([0.939, 1.017, 0.937, 0.562, 0.760, 0.524, 
+                 0.585, 0.609, 0.731, 0.711, 1.124, 1.001])
+
+n = len(stds)
+
+# Lower triangular correlation values as a flat list
+corr_values = [
+    1.000,
+    .668, 1.000,
+    .635, .599, 1.000,
+    .263, .261, .164, 1.000,
+    .290, .315, .247, .486, 1.000,
+    .207, .245, .231, .251, .449, 1.000,
+   -.206, -.182, -.195, -.309, -.266, -.142, 1.000,
+   -.280, -.241, -.238, -.344, -.305, -.230,  .753, 1.000,
+   -.258, -.244, -.185, -.255, -.255, -.215,  .554,  .587, 1.000,
+    .080,  .096,  .094, -.017,  .151,  .141, -.074, -.111,  .016, 1.000,
+    .061,  .028, -.035, -.058, -.051, -.003, -.040, -.040, -.018,  .284, 1.000,
+    .113,  .174,  .059,  .063,  .138,  .044, -.119, -.073, -.084,  .563,  .379, 1.000
+]
+
+# Fill correlation matrix
+corr_matrix = np.zeros((n, n))
+idx = 0
+for i in range(n):
+    for j in range(i+1):
+        corr_matrix[i, j] = corr_values[idx]
+        corr_matrix[j, i] = corr_values[idx]
+        idx += 1
+
+# Covariance matrix: Sigma = D * R * D
+cov_matrix = np.outer(stds, stds) * corr_matrix
+columns=["JW1","JW2","JW3", "UF1","UF2","FOR", "DA1","DA2","DA3", "EBA","ST","MI"]
+corr_df = pd.DataFrame(corr_matrix, columns=columns)
+
+cov_df = pd.DataFrame(cov_matrix, columns=columns)
+cov_df
+
+def make_sample(cov_matrix, size, columns):
+    sample_df = pd.DataFrame(np.random.multivariate_normal([0]*12, cov_matrix, size=size), columns=columns)
+    return sample_df
+
+sample_df = make_sample(cov_matrix, 263, columns)
+sample_df.head()
+
+```
+
+
+```{python}
+
+sample_df.corr()
+
+
+
+```
+
+## Variational Auto-Encoders
+
+```{python}
+scaler = StandardScaler()
+X = scaler.fit_transform(sample_df)
+X_train, X_test = train_test_split(X, test_size=0.2, random_state=42)
+
+X_train = torch.tensor(X_train, dtype=torch.float32)
+X_test = torch.tensor(X_test, dtype=torch.float32)
+
+```
+
+
+```{python}
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class NumericVAE(nn.Module):
+    def __init__(self, n_features, hidden_dim=64, latent_dim=8):
+        super().__init__()
+        
+        # ---------- ENCODER ----------
+        # First layer: compress input features into a hidden representation
+        self.fc1 = nn.Linear(n_features, hidden_dim)
+        
+        # Latent space parameters (q(z|x)): mean and log-variance
+        self.fc_mu = nn.Linear(hidden_dim, latent_dim)       # μ(x)
+        self.fc_logvar = nn.Linear(hidden_dim, latent_dim)   # log(σ^2(x))
+        
+        # ---------- DECODER ----------
+        # First layer: map latent variable z back into hidden representation
+        self.fc2 = nn.Linear(latent_dim, hidden_dim)
+        
+        # Output distribution parameters for reconstruction p(x|z)
+        # For numeric data, we predict both mean and log-variance per feature
+        self.fc_out_mu = nn.Linear(hidden_dim, n_features)        # μ_x(z)
+        self.fc_out_logvar = nn.Linear(hidden_dim, n_features)    # log(σ^2_x(z))
+
+    # ENCODER forward pass: input x -> latent mean, log-variance
+    def encode(self, x):
+        h = F.relu(self.fc1(x))       # Hidden layer with ReLU
+        mu = self.fc_mu(h)            # Latent mean vector
+        logvar = self.fc_logvar(h)    # Latent log-variance vector
+        return mu, logvar
+
+    # Reparameterization trick: sample z = μ + σ * ε  (ε ~ N(0,1))
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5 * logvar)   # σ = exp(0.5 * logvar)
+        eps = torch.randn_like(std)     # ε ~ N(0, I)
+        return mu + eps * std           # z = μ + σ * ε
+
+    # DECODER forward pass: latent z -> reconstructed mean, log-variance
+    def decode(self, z):
+        h = F.relu(self.fc2(z))             # Hidden layer with ReLU
+        recon_mu = self.fc_out_mu(h)        # Mean of reconstructed features
+        recon_logvar = self.fc_out_logvar(h)# Log-variance of reconstructed features
+        return recon_mu, recon_logvar
+
+    # Full forward pass: input x -> reconstructed (mean, logvar), latent params
+    def forward(self, x):
+        mu, logvar = self.encode(x)            # q(z|x)
+        z = self.reparameterize(mu, logvar)    # Sample z from q(z|x)
+        recon_mu, recon_logvar = self.decode(z)# p(x|z)
+        return (recon_mu, recon_logvar), mu, logvar
+
+    # Sample new synthetic data: z ~ N(0,I), decode to x
+    def generate(self, n_samples=100):
+        self.eval()
+        with torch.no_grad():
+            # Sample z from standard normal prior
+            z = torch.randn(n_samples, self.fc_mu.out_features)
+            
+            # Decode to get reconstruction distribution parameters
+            cont_mu, cont_logvar = self.decode(z)
+            
+            # Sample from reconstructed Gaussian: μ_x + σ_x * ε
+            return cont_mu + torch.exp(0.5 * cont_logvar) * torch.randn_like(cont_mu)
+
+
+```
+
+
+
+```{python}
+
+def vae_loss(x, mu_out, logvar_out, mu, logvar):
+    recon = -0.5 * torch.sum(logvar_out + (x - mu_out)**2 / torch.exp(logvar_out))
+    kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+    return -(recon - kl)
+
+
+```
+
+
+```{python}
+
+# | output: false
+
+vae = NumericVAE(n_features=X_train.shape[1])
+optimizer = torch.optim.Adam(vae.parameters(), lr=1e-3)
+
+train_loader = torch.utils.data.DataLoader(X_train, batch_size=32, shuffle=True)
+
+for epoch in range(3000):
+    vae.train()
+    total_loss = 0
+    for x in train_loader:
+        (mu_out, logvar_out), mu, logvar = vae(x)
+        loss = vae_loss(x, mu_out, logvar_out, mu, logvar)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    print(f"Epoch {epoch+1}, Loss: {total_loss/len(train_loader.dataset):.4f}")
+
+```
+
+
+
+```{python}
+
+vae.eval()
+synthetic_data = vae.generate(n_samples=263)
+synthetic_data = scaler.inverse_transform(synthetic_data.detach().numpy())
+
+synthetic_df = pd.DataFrame(synthetic_data, columns=columns)
+synthetic_df.head()
+```
+
+
+```{python}
+
+sample_df.corr() - synthetic_df.corr()
+
+
+
+```
+
+
+### Missing Data 
+
+
+```{python}
+sample_df_missing = sample_df.copy()
+
+# Randomly pick 5% of the total elements
+mask_remove = np.random.rand(*sample_df_missing.shape) < 0.03
+
+# Set those elements to NaN
+sample_df_missing[mask_remove] = np.nan
+sample_df_missing.head()
+
+```
+
+```{python}
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+
+class MissingDataDataset(Dataset):
+    def __init__(self, x, mask):
+        # x and mask are tensors of same shape
+        self.x = x
+        self.mask = mask
+        
+    def __len__(self):
+        return self.x.shape[0]
+    
+    def __getitem__(self, idx):
+        return self.x[idx], self.mask[idx]
+
+class NumericVAE_missing(nn.Module):
+    def __init__(self, n_features, hidden_dim=64, latent_dim=8):
+        super().__init__()
+        
+        # ---------- ENCODER ----------
+        # Input layer for imputed features
+        self.fc1_x = nn.Linear(n_features, hidden_dim)
+        
+        # Mask embedding layer
+        self.fc1_mask = nn.Linear(n_features, hidden_dim)
+        
+        # Combine embeddings (element-wise sum) -> latent params
+        self.fc_mu = nn.Linear(hidden_dim, latent_dim)       # μ(x)
+        self.fc_logvar = nn.Linear(hidden_dim, latent_dim)   # log(σ^2(x))
+        
+        # ---------- DECODER ----------
+        self.fc2 = nn.Linear(latent_dim, hidden_dim)
+        self.fc_out_mu = nn.Linear(hidden_dim, n_features)
+        self.fc_out_logvar = nn.Linear(hidden_dim, n_features)
+
+    def encode(self, x, mask):
+        # Impute missing values with zero
+        x_filled = torch.where(torch.isnan(x), torch.zeros_like(x), x)
+        
+        # Pass imputed input through fc1_x
+        h_x = F.relu(self.fc1_x(x_filled))
+        
+        # Pass mask through fc1_mask
+        h_mask = F.relu(self.fc1_mask(mask))
+        
+        # Combine embeddings (element-wise sum)
+        h = h_x + h_mask
+        
+        # Compute latent mean and log variance
+        mu = self.fc_mu(h)
+        logvar = self.fc_logvar(h)
+        return mu, logvar
+
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        return mu + eps * std
+
+    def decode(self, z):
+        h = F.relu(self.fc2(z))
+        recon_mu = self.fc_out_mu(h)
+        recon_logvar = self.fc_out_logvar(h)
+        return recon_mu, recon_logvar
+
+    def forward(self, x, mask):
+        mu, logvar = self.encode(x, mask)
+        z = self.reparameterize(mu, logvar)
+        recon_mu, recon_logvar = self.decode(z)
+        return (recon_mu, recon_logvar), mu, logvar
+
+    def generate(self, n_samples=100):
+        self.eval()
+        with torch.no_grad():
+            z = torch.randn(n_samples, self.fc_mu.out_features)
+            cont_mu, cont_logvar = self.decode(z)
+            return cont_mu + torch.exp(0.5 * cont_logvar) * torch.randn_like(cont_mu)
+
+
+
+
+```
+
+
+```{python}
+
+
+def vae_loss_with_missing(recon_mu, recon_logvar, x, mu, logvar, mask):
+    recon_var = torch.exp(recon_logvar)
+    
+    # Only penalize reconstruction for observed data
+    recon_loss = 0.5 * torch.sum(
+        mask * (recon_logvar + (x - recon_mu)**2 / recon_var)
+    )
+    
+    # KL divergence remains the same
+    kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+    return recon_loss, kl_div
+
+
+def beta_annealing(epoch, max_beta=1.0, anneal_epochs=100):
+
+    beta = min(max_beta, max_beta * epoch / anneal_epochs)
+    return beta
+
+```
+
+
+```{python}
+
+# | output: false
+
+# Prepare data: impute missing with 0 for now and create mask
+mask = ~sample_df_missing.isna()
+mask_tensor = torch.tensor(mask.values, dtype=torch.float32)
+x_tensor = torch.tensor(sample_df_missing.fillna(0).values, dtype=torch.float32)
+
+batch_size = 32  # or any batch size you prefer
+dataset = MissingDataDataset(x_tensor, mask_tensor)
+data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+# Create model & optimizer
+model = NumericVAE_missing(n_features=x_tensor.shape[1])
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+n_epochs = 300
+for epoch in range(n_epochs):
+    beta = beta_annealing(epoch, max_beta=1.0, anneal_epochs=50)
+    model.train()
+    
+    total_loss = 0
+    for x_batch, mask_batch in data_loader:
+        optimizer.zero_grad()
+        (recon_mu, recon_logvar), mu, logvar = model(x_batch, mask_batch)
+        recon_loss, kl_loss = vae_loss_with_missing(recon_mu, recon_logvar, x_batch, mu, logvar, mask_batch)
+        loss = recon_loss + beta * kl_loss
+        loss.backward()
+        optimizer.step()
+        
+        total_loss += loss.item() * x_batch.size(0)  # sum over batch
+
+    avg_loss = total_loss / len(dataset)  # average loss per sample
+    if (epoch + 1) % 50 == 0:
+        print(f"Epoch {epoch+1}/{n_epochs} - Avg Loss: {avg_loss:.4f}")
+
+
+```
+
+
+
+```{python}
+
+recon_data = model.generate(n_samples=len(sample_df_missing))
+
+# Rebuild imputed DataFrame
+imputed_array = sample_df_missing.to_numpy().copy()
+imputed_array[mask_remove] = recon_data[mask_remove]
+imputed_df = pd.DataFrame(imputed_array, columns=sample_df_missing.columns)
+
+reconstructed_df = pd.DataFrame(recon_data, columns=sample_df_missing.columns)
+
+print("\nSample imputed data:")
+print(imputed_df.head())
+
+
+
+```
+
+
+```{python}
+
+sample_df.corr() - imputed_df.corr()
+``` 
+
+```{python}
+
+sample_df.corr() - reconstructed_df.corr()
+
+```
+
+
+## Amortized Inference
+
+```{python}
+
+import os
+
+if not os.environ.get("KERAS_BACKEND"):
+    # Set to your favorite backend
+    os.environ["KERAS_BACKEND"] = "torch"
+
+import bayesflow as bf
+
+```
+
+
+```{python}
+
+def random_corr(dim):
+    A = np.random.randn(dim, dim)
+    Q, _ = np.linalg.qr(A)   # orthogonal matrix
+    R = Q @ Q.T              # PD correlation-like
+    D = np.diag(1 / np.sqrt(np.diag(R)))
+    return D @ R @ D
+
+def random_cov_lkj(dim):
+    R = random_corr(dim)
+    stds = np.exp(np.random.randn(dim))  # log-normal stds
+    D = np.diag(stds)
+    return D @ R @ D
+
+def likelihood(mu, sigma):
+    N = sample_df.shape[0]
+    dim = sample_df.shape[1]
+    Sigma = sigma.reshape(dim, dim)
+    return {"y": np.random.multivariate_normal(mu, Sigma, size=N)}
+
+def prior():
+    dim = sample_df_missing.shape[1]
+    mus = np.random.normal(0, 1, size=dim)
+    sigma = random_cov_lkj(dim)
+    return {"mu": mus, "sigma": sigma.ravel()}
+
+simulator = bf.make_simulator([prior, likelihood])
+sims=simulator.sample(1)
+
+adapter = (
+    bf.Adapter()
+    .as_set(["y"])
+    .convert_dtype("float64", "float32")
+    .concatenate(["mu", "sigma"], into="inference_variables")
+    .concatenate(['y'], into='summary_variables')
+)
+
+
+summary_network = bf.networks.SetTransformer(summary_dim=10)
+
+workflow = bf.BasicWorkflow(
+    simulator=simulator,
+    adapter=adapter,
+    summary_network=summary_network,
+    inference_network = bf.networks.CouplingFlow(),
+    inference_variables="y",
+    inference_conditions=["mu", "sigma"],
+    initial_learning_rate=1e-3,
+    standardize=None
+)
+
+```
+
+
+```{python}
+
+training_data = workflow.simulate(1000)
+validation_data = workflow.simulate(300)
+
+
+
+```
+
+
+
+
+
+```{python}
+#history = workflow.fit_offline(data=training_data, epochs=10, validation_data=validation_data);
+
+```
+
+
+
+```{python}
+#bf.diagnostics.loss(history);
+
+```
+
+
+```{python}
+#num_datasets = 300
+#num_samples = 1000
+
+# Simulate 300 scenarios
+#test_sims = workflow.simulate(num_datasets)
+
+# Obtain num_samples posterior samples per scenario
+#samples = workflow.sample(conditions=test_sims, num_samples=num_samples)
+
+#f = bf.diagnostics.plots.calibration_ecdf(samples, test_sims, difference=True)
+
+```
+
+
+```{python}
+
+#metrics = workflow.compute_default_diagnostics(test_data=300)
+#metrics
+
+```
+
+
+```{python}
+#post = workflow.sample(num_samples=200, conditions={'y': sample_df.values[None, :]})
+
+#samples = workflow.samples_to_data_frame(post)
+#samples
+
+
+```
+
+
+
+
