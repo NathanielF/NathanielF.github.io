@@ -6,7 +6,7 @@ keep-ipynb: false
 self-contained: true
 draft: true
 execute: 
-  enabled: false
+  enabled: true
 jupyter: pytorch-env
 abstract-title: "Heuristics in Latent Space"
 abstract: "The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Principal Components Analysis can be seen as a technique to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Amortized Bayesian inference seeks to unite the two heuristics."
@@ -99,10 +99,11 @@ sample_df.head()
 ```{python}
 data = sample_df.corr()
 
-def plot_heatmap(data, title="Correlation Matrix"):
+def plot_heatmap(data, title="Correlation Matrix",  vmin=-.2, vmax=.2, ax=None, figsize=(10, 6), colorbar=True):
     data_matrix = data.values
-    fig, ax = plt.subplots(figsize=(10,6))
-    im = ax.imshow(data, cmap='viridis')
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    im = ax.imshow(data, cmap='viridis', vmin=vmin, vmax=vmax)
 
     for i in range(data_matrix.shape[0]):
         for j in range(data_matrix.shape[1]):
@@ -114,12 +115,14 @@ def plot_heatmap(data, title="Correlation Matrix"):
             )
 
     ax.set_title(title)
-    #ax.set_xticklabels(data.columns)
-    #ax.set_yticklabels(data.columns)
-    plt.colorbar(im)
-    plt.show()
+    ax.set_xticklabels(data.columns)  
+    ax.set_xticks(np.arange(data.shape[1]))
+    ax.set_yticklabels(data.index)  
+    ax.set_yticks(np.arange(data.shape[0]))
+    if colorbar:
+        plt.colorbar(im)
 
-plot_heatmap(data)
+plot_heatmap(data, vmin=-1, vmax=1)
 
 ```
 
@@ -351,72 +354,8 @@ class MissingDataDataset(Dataset):
     def __getitem__(self, idx):
         return self.x[idx], self.mask[idx]
 
-class NumericVAE_missing(nn.Module):
-    def __init__(self, n_features, hidden_dim=64, latent_dim=8):
-        super().__init__()
-        
-        # ---------- ENCODER ----------
-        # Input layer for imputed features
-        self.fc1_x = nn.Linear(n_features, hidden_dim)
-        
-        # Mask embedding layer
-        self.fc1_mask = nn.Linear(n_features, hidden_dim)
-        
-        # Combine embeddings (element-wise sum) -> latent params
-        self.fc_mu = nn.Linear(hidden_dim, latent_dim)       # μ(x)
-        self.fc_logvar = nn.Linear(hidden_dim, latent_dim)   # log(σ^2(x))
-        
-        # ---------- DECODER ----------
-        self.fc2 = nn.Linear(latent_dim, hidden_dim)
-        self.fc_out_mu = nn.Linear(hidden_dim, n_features)
-        self.fc_out_logvar = nn.Linear(hidden_dim, n_features)
-
-    def encode(self, x, mask):
-        # Impute missing values with zero
-        x_filled = torch.where(torch.isnan(x), torch.zeros_like(x), x)
-        
-        # Pass imputed input through fc1_x
-        h_x = F.relu(self.fc1_x(x_filled))
-        
-        # Pass mask through fc1_mask
-        h_mask = F.relu(self.fc1_mask(mask))
-        
-        # Combine embeddings (element-wise sum)
-        h = h_x + h_mask
-        
-        # Compute latent mean and log variance
-        mu = self.fc_mu(h)
-        logvar = self.fc_logvar(h)
-        return mu, logvar
-
-    def reparameterize(self, mu, logvar):
-        std = torch.exp(0.5 * logvar)
-        eps = torch.randn_like(std)
-        return mu + eps * std
-
-    def decode(self, z):
-        h = F.relu(self.fc2(z))
-        recon_mu = self.fc_out_mu(h)
-        recon_logvar = self.fc_out_logvar(h)
-        return recon_mu, recon_logvar
-
-    def forward(self, x, mask):
-        mu, logvar = self.encode(x, mask)
-        z = self.reparameterize(mu, logvar)
-        recon_mu, recon_logvar = self.decode(z)
-        return (recon_mu, recon_logvar), mu, logvar
-
-    def generate(self, n_samples=100):
-        self.eval()
-        with torch.no_grad():
-            z = torch.randn(n_samples, self.fc_mu.out_features)
-            cont_mu, cont_logvar = self.decode(z)
-            return cont_mu + torch.exp(0.5 * cont_logvar) * torch.randn_like(cont_mu)
-
-
-
-
 ```
+
 
 
 ```{python}
@@ -496,10 +435,6 @@ class NumericVAE_missing(nn.Module):
             z = torch.randn(n_samples, self.fc_mu.out_features)
             recon_mu, recon_logvar = self.decode(z)
             return recon_mu + torch.exp(0.5 * recon_logvar) * torch.randn_like(recon_mu)
-
-
-
-
 
 
 ```
@@ -591,13 +526,12 @@ plot_heatmap(bootstrapped_resids, title="""Expected Residuals \n Under Bootstrap
 
 
 ```{python}
+recon_data = model.generate(n_samples=len(sample_df_missing))
 
 # Rebuild imputed DataFrame
 imputed_array = sample_df_missing.to_numpy().copy()
 imputed_array[mask_remove] = recon_data[mask_remove]
 imputed_df = pd.DataFrame(imputed_array, columns=sample_df_missing.columns)
-
-
 
 print("\nSample imputed data:")
 print(imputed_df.head())
@@ -612,11 +546,19 @@ print(imputed_df.head())
 plot_heatmap(sample_df.corr() - imputed_df.corr())
 ``` 
 
+
 ```{python}
 
-plot_heatmap(sample_df.corr() - reconstructed_df.corr())
-
+fig, axs = plt.subplots(1,2 ,figsize=(10, 30))
+axs = axs.flatten()
+plot_heatmap(sample_df_missing.head(50).fillna(99), vmin=-0, vmax=99, ax=axs[0], colorbar=False)
+axs[0].set_title("Missng Data", fontsize=20)
+plot_heatmap(imputed_df.head(50), vmin=-2, vmax=2, ax=axs[1], colorbar=False)
+axs[1].set_title("Imputed Data", fontsize=20);
+plt.tight_layout()
 ```
+
+
 
 ## Bayesian Inference
 
@@ -655,23 +597,12 @@ pm.model_to_graphviz(model)
 
 import arviz as az
 
+expected_corr = pd.DataFrame(az.summary(idata, var_names=['chol_corr'])['mean'].values.reshape((12, 12)), columns=sample_df.columns, index=sample_df.columns)
 
-pd.DataFrame(az.summary(idata, var_names=['chol_corr'])['mean'].values.reshape((12, 12)))
-
-```
-
-
-```{python}
-from matplotlib import pyplot as plt
-
-fig, axs = plt.subplots(6, 2, figsize=(10, 8))
-axs = axs.flatten()
-
-axs[0].hist(az.extract(idata['posterior_predictive'])['likelihood'].mean(dim=('obs'))[1, :].values)
+resids = sample_df.corr() - expected_corr
+plot_heatmap(resids)
 
 ```
-
-
 
 
 
@@ -692,260 +623,11 @@ pm.model_to_graphviz(model_missing)
 ```{python}
 
 
-pd.DataFrame(az.summary(idata_missing, var_names=['chol_corr'])['mean'].values.reshape((12, 12)))
+expected_corr = pd.DataFrame(az.summary(idata_missing, var_names=['chol_corr'])['mean'].values.reshape((12, 12)), columns=sample_df.columns, index=sample_df.columns)
 
-```
-
-
-
-## Amortized Inference
-
-```{python}
-
-import os
-
-if not os.environ.get("KERAS_BACKEND"):
-    # Set to your favorite backend
-    os.environ["KERAS_BACKEND"] = "torch"
-
-import bayesflow as bf
-device = torch.device("mps")
-
-```
-
-
-```{python}
-
-
-import numpy as np
-
-def lkj_cholesky(d, eta=1.0, independent=True):
-    L = np.zeros((d, d))
-
-    # First diagonal is 1
-    L[0, 0] = 1.0
-
-    for k in range(1, d):
-        # Sample the "radius" (diagonal element) using Beta distribution
-        alpha = eta + (d - k - 1) / 2.0
-        beta_sample = np.random.beta(alpha, alpha)
-        L[k, k] = np.sqrt(beta_sample)
-
-        # Sample the off-diagonal entries
-        z = np.random.normal(size=k)
-        z = z / np.linalg.norm(z) * np.sqrt(1 - L[k, k]**2)
-        L[k, :k] = z
-
-    # Build correlation matrix
-    corr = L @ L.T
-    sds = np.random.exponential(1, size=12)
-
-    # Build covariance matrix
-    D = np.diag(sds)
-    cov = D @ corr @ D
-    L = np.linalg.cholesky(cov)
-    if independent:
-        return D
-    else:
-        return L
-
-def prior(eta=1.0, sd_scale=1.0, independent=True):
-    dim = sample_df_missing.shape[1]
-    mus = np.random.normal(0, 1, size=dim)
-    L = lkj_cholesky(12)
-    if independent:
-        ## stores params as vector
-        params = np.diag(L)
-    else: 
-        params = L[np.tril_indices_from(L)]
-    return {"mu": mus, "sigma": params}
-
-
-def likelihood(mu, sigma):
-    d = len(mu)
-    N = sample_df.shape[0]
-    if sigma.ndim == 1:
-        ## reconstructs matrix
-        Sigma = np.diag(sigma)
-    else:
-        L = np.zeros((d, d))
-        L[np.tril_indices(d)] = sigma
-        Sigma = L @ L.T
-    y = np.random.multivariate_normal(mu, Sigma, N)
-    return {"y":  y.reshape(-1)}
-
-
-simulator = bf.make_simulator([prior, likelihood])
-
-adapter = (
-    bf.Adapter()
-    .constrain("sigma", lower=0)
-    .as_set(["y"])
-    .convert_dtype("float64", "float32")
-    .concatenate(["mu", "sigma"], into="inference_variables")
-    #.concatenate(['y'], into='summary_variables')
-)
-
-
-summary_network = bf.networks.DeepSet(summary_dim=24, 
-    hidden_units=[128, 128],
-    dropout_rate=0.3)
-
-workflow = bf.BasicWorkflow(
-    simulator=simulator,
-    adapter=adapter,
-    #summary_network=summary_network,
-    #inference_network = bf.networks.CouplingFlow(),
-    inference_variables="y",
-    inference_conditions=["mu", "sigma"],
-    initial_learning_rate=1e-3,
-)
-
-```
-
-
-
-```{python}
-
-training_data = workflow.simulate(5000)
-validation_data = workflow.simulate(100)
-
-```
-
-
-
-
-```{python}
-#history = workflow.fit_offline(data=training_data, num_batches_per_epoch=500, epochs=10, validation_data=validation_data, batch_size=64);
-
-
-history = workflow.fit_online(num_batches_per_epoch=1000, epochs=10, validation_data=validation_data, batch_size=32);
-
-```
-
-
-
-```{python}
-bf.diagnostics.loss(history);
-
-```
-
-
-```{python}
-
-metrics = workflow.compute_default_diagnostics(test_data=300)
-metrics
-
-```
-
-
-```{python}
-# Set the number of posterior draws you want to get
-num_samples = 1000
-
-# Simulate validation data (unseen during training)
-val_sims = simulator.sample(200)
-
-# Obtain num_samples samples of the parameter posterior for every validation dataset
-post_draws = workflow.sample(conditions=val_sims, num_samples=num_samples)
-
-# post_draws is a dictionary of draws with one element per named parameters
-post_draws.keys()
-
-```
-
-```{python}
-
-f = bf.diagnostics.plots.pairs_posterior(
-    estimates=post_draws, 
-    targets=val_sims,
-    dataset_id=0, 
-    variable_keys='mu'
-)
-
-```
-
-
-```{python}
-
-f = bf.diagnostics.plots.recovery(
-    estimates=post_draws, 
-    targets=val_sims,
-    variable_keys=['mu']
-)
+resids = sample_df.corr() - expected_corr
+plot_heatmap(resids)
 
 
 ```
-
-
-```{python}
-f = bf.diagnostics.plots.recovery(
-    estimates=post_draws, 
-    targets=val_sims,
-    variable_keys=['sigma']
-)
-
-```
-
-
-```{python}
-post_draws = workflow.sample(conditions={'y': sample_df.values}, num_samples=num_samples)
-
-post_draws
-expected_mus = post_draws['mu'][0, :, :].mean(axis=0)
-L = np.zeros((12, 12))
-L[np.tril_indices_from(L)] = post_draws['sigma'][0, :, :].mean(axis=0)
-
-expected_sigma = L @ L.T
-
-expected_sigma - cov_df
-
-```
-
-
-```{python}
-
-import keras
-import bayesflow as bf
-
-device = torch.device("mps")
-
-D = 12
-N = 10
-rng = np.random.default_rng(2025)
-
-
-def prior():
-    variance = rng.uniform(size=D)
-    return {"variance": variance}
-
-
-def likelihood(variance):
-    y = rng.normal(loc=np.zeros_like(variance), scale=np.sqrt(variance), size=(N, D))
-    # flatten data for use without summary network
-    return {"y": y.reshape(-1)}
-
-simulator = bf.make_simulator([prior, likelihood])
-
-validation_data = simulator.sample(100)
-keras.tree.map_structure(keras.ops.shape, validation_data)
-
-workflow = bf.BasicWorkflow(
-    simulator=simulator,
-    inference_variables="variance",
-    inference_conditions="y",
-    initial_learning_rate=1e-3,
-    standardize="all",
-)
-
-workflow.fit_online(num_batches_per_epoch=1000, epochs=10, validation_data=validation_data, batch_size=32);
-
-test_data = simulator.sample(200)
-
-workflow.plot_default_diagnostics(test_data);
-
-```
-
-
-
 
