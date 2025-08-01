@@ -165,17 +165,6 @@ plt.show()
 ## Variational Auto-Encoders
 
 ```{python}
-scaler = StandardScaler()
-X = scaler.fit_transform(sample_df)
-X_train, X_test = train_test_split(X, test_size=0.2, random_state=42)
-
-X_train = torch.tensor(X_train, dtype=torch.float32)
-X_test = torch.tensor(X_test, dtype=torch.float32)
-
-```
-
-
-```{python}
 
 class NumericVAE(nn.Module):
     def __init__(self, n_features, hidden_dim=64, latent_dim=8):
@@ -244,76 +233,145 @@ class NumericVAE(nn.Module):
 
 
 ```{python}
+def vae_loss(recon_mu, recon_logvar, x, mu, logvar):
+    # Reconstruction loss: Gaussian log likelihood
+    recon_var = torch.exp(recon_logvar)
+    recon_nll = 0.5 * (torch.log(2 * torch.pi * recon_var) + (x - recon_mu) ** 2 / recon_var)
+    recon_loss = recon_nll.sum(dim=1).mean()  # sum over features, mean over batch
 
-def vae_loss(x, mu_out, logvar_out, mu, logvar):
-    recon = -0.5 * torch.sum(logvar_out + (x - mu_out)**2 / torch.exp(logvar_out))
-    kl = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-    return -(recon - kl)
+    # KL divergence: D_KL(q(z|x) || p(z)) where p(z)=N(0,I)
+    kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1)
+    kl_loss = kl_div.mean()
 
+    return recon_loss + kl_loss, recon_loss, kl_loss
 
 ```
 
 
 ```{python}
+
+def prep_data_vae(sample_size=1000):
+    sample_df = make_sample(cov_matrix=cov_matrix, size=sample_size, columns=columns)
+
+    X_train, X_test = train_test_split(sample_df.values, test_size=0.2, random_state=890)
+
+    X_train = torch.tensor(X_train, dtype=torch.float32)
+    X_test = torch.tensor(X_test, dtype=torch.float32)
+
+    train_loader = torch.utils.data.DataLoader(X_train, batch_size=32, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(X_test, batch_size=32)
+    return train_loader, test_loader
+
 
 # | output: false
 
-vae = NumericVAE(n_features=X_train.shape[1])
+def train_vae(vae, optimizer, train, test, patience=30, wait=10, n_epochs=1000):
+    best_loss = float('inf')
+    losses = []
+
+    for epoch in range(n_epochs):
+        vae.train()
+        train_loss = 0.0
+        
+        for batch in train:
+            optimizer.zero_grad()
+
+            (recon_mu, recon_logvar), mu, logvar = vae(batch)
+            loss, recon_loss, kl_loss = vae_loss(recon_mu, recon_logvar, batch, mu, logvar)
+
+            loss.backward()
+            optimizer.step()
+
+            train_loss += loss.item() * batch.size(0)
+
+        avg_train_loss = train_loss / train.dataset.shape[0]
+
+        # --- Test Loop ---
+        vae.eval()
+        test_loss = 0.0
+        with torch.no_grad():
+            for batch in test:
+                (recon_mu, recon_logvar), mu, logvar = vae(batch)
+                loss, _, _ = vae_loss(recon_mu, recon_logvar, batch, mu, logvar)
+                test_loss += loss.item() * batch.size(0)
+        avg_test_loss = test_loss / test.dataset.shape[0]
+
+        print(f"Epoch {epoch+1}/{n_epochs} | Train Loss: {avg_train_loss:.4f} | Test Loss: {avg_test_loss:.4f}")
+
+        if test_loss < best_loss - 1e-4:
+            best_loss, wait = test_loss, 0
+            best_state = vae.state_dict()
+        else:
+            wait += 1
+            if wait >= patience:
+                print(f"Early stopping at epoch {epoch+1}")
+                vae.load_state_dict(best_state)  # restore best
+                break
+        losses.append([avg_train_loss, avg_test_loss, best_loss])
+
+    return vae, pd.DataFrame(losses, columns=['train_loss', 'test_loss', 'best_loss'])
+
+train_500, test_500 = prep_data_vae(500)
+vae = NumericVAE(n_features=train_500.dataset.shape[1], hidden_dim=64)
 optimizer = torch.optim.Adam(vae.parameters(), lr=1e-3)
-
-train_loader = torch.utils.data.DataLoader(X_train, batch_size=32, shuffle=True)
-
-for epoch in range(3000):
-    vae.train()
-    total_loss = 0
-    for x in train_loader:
-        (mu_out, logvar_out), mu, logvar = vae(x)
-        loss = vae_loss(x, mu_out, logvar_out, mu, logvar)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        total_loss += loss.item()
-    print(f"Epoch {epoch+1}, Loss: {total_loss/len(train_loader.dataset):.4f}")
-
-```
+vae_fit_500, losses_df_500 = train_vae(vae, optimizer, train_500, test_500)
 
 
+train_1000, test_1000 = prep_data_vae(1000)
+vae = NumericVAE(n_features=train_1000.dataset.shape[1], hidden_dim=64)
+optimizer = torch.optim.Adam(vae.parameters(), lr=1e-3)
+vae_fit_1000, losses_df_1000 = train_vae(vae, optimizer, train_1000, test_1000)
 
-```{python}
-
-vae.eval()
-synthetic_data = vae.generate(n_samples=263)
-synthetic_data = scaler.inverse_transform(synthetic_data.detach().numpy())
-
-synthetic_df = pd.DataFrame(synthetic_data, columns=columns)
-synthetic_df.head()
+train_10_000, test_10_000 = prep_data_vae(10_000)
+vae = NumericVAE(n_features=train_10_000.dataset.shape[1], hidden_dim=64)
+optimizer = torch.optim.Adam(vae.parameters(), lr=1e-3)
+vae_fit_10_000, losses_df_10_000 = train_vae(vae, optimizer, train_10_000, test_10_000)
 ```
 
 
 ```{python}
+fig, axs = plt.subplots(1, 3, figsize=(8, 6))
+axs=axs.flatten()
+losses_df_500[['train_loss', 'test_loss']].plot(ax=axs[0])
+losses_df_1000[['train_loss', 'test_loss']].plot(ax=axs[1])
+losses_df_10_000[['train_loss', 'test_loss']].plot(ax=axs[2])
 
-sample_df.corr() - synthetic_df.corr()
-
-
-
+axs[0].set_title("Training and Test Losses \n 500 observations");
+axs[1].set_title("Training and Test Losses \n 1000 observations");
+axs[2].set_title("Training and Test Losses \n 10_000 observations");
 ```
+
 
 ```{python}
 
-recons = []
-n_boot = 1000
-resid_array = np.zeros((n_boot, len(sample_df.columns), len(sample_df.columns)))
-for i in range(n_boot):
-    recon_data = vae.generate(n_samples=len(sample_df))
-    reconstructed_df = pd.DataFrame(recon_data, columns=sample_df.columns)
-    resid = sample_df.corr() - reconstructed_df.corr()
-    resid_array[i] = resid.values
-    recons.append(reconstructed_df)
+def bootstrap_residuals(vae_fit, X_test, sample_df, n_boot=1000):
+    recons = []
+    resid_array = np.zeros((n_boot, len(sample_df.columns), len(sample_df.columns)))
+    for i in range(n_boot):
+        recon_data = vae_fit.generate(n_samples=len(X_test))
+        reconstructed_df = pd.DataFrame(recon_data, columns=sample_df.columns)
+        resid = pd.DataFrame(X_test, columns=sample_df.columns).corr() - reconstructed_df.corr()
+        resid_array[i] = resid.values
+        recons.append(reconstructed_df)
 
-avg_resid = resid_array.mean(axis=0)
-bootstrapped_resids = pd.DataFrame(avg_resid, columns=sample_df.columns, index=sample_df.columns)
+    avg_resid = resid_array.mean(axis=0)
+    bootstrapped_resids = pd.DataFrame(avg_resid, columns=sample_df.columns, index=sample_df.columns)
+    return bootstrapped_resids
 
-plot_heatmap(bootstrapped_resids, title="""Expected Residuals \n Under Bootstrapped Reconstructions""")
+bootstrapped_resids_500 = bootstrap_residuals(vae_fit_500, pd.DataFrame(test_500.dataset, columns=sample_df.columns), sample_df)
+
+bootstrapped_resids_1000 = bootstrap_residuals(vae_fit_1000, pd.DataFrame(test_1000.dataset, columns=sample_df.columns), sample_df)
+
+bootstrapped_resids_10_000 = bootstrap_residuals(vae_fit_10_000, pd.DataFrame(test_10_000.dataset, columns=sample_df.columns), sample_df)
+
+
+fig, axs = plt.subplots(3, 1, figsize=(10, 20))
+axs = axs.flatten()
+plot_heatmap(bootstrapped_resids_500, title="""Expected Correlation Residuals for 500 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[0], colorbar=True, vmin=-.25, vmax=.25)
+
+plot_heatmap(bootstrapped_resids_1000, title="""Expected Correlation  Residuals  for 1000 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[1], colorbar=True, vmin=-.25, vmax=.25)
+
+plot_heatmap(bootstrapped_resids_10_000, title="""Expected Correlation  Residuals  for 10,000 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[2], colorbar=True, vmin=-.25, vmax=.25)
 
 
 
@@ -327,7 +385,7 @@ plot_heatmap(bootstrapped_resids, title="""Expected Residuals \n Under Bootstrap
 sample_df_missing = sample_df.copy()
 
 # Randomly pick 5% of the total elements
-mask_remove = np.random.rand(*sample_df_missing.shape) < 0.03
+mask_remove = np.random.rand(*sample_df_missing.shape) < 0.05
 
 # Set those elements to NaN
 sample_df_missing[mask_remove] = np.nan
@@ -353,6 +411,52 @@ class MissingDataDataset(Dataset):
     
     def __getitem__(self, idx):
         return self.x[idx], self.mask[idx]
+
+def prep_data_vae_missing(sample_size=1000, batch_size=32):
+    sample_df = make_sample(cov_matrix=cov_matrix, size=sample_size, columns=columns)
+
+    X_train, X_test = train_test_split(sample_df.values, test_size=0.2, random_state=890)
+
+    # Mask: 1=observed, 0=missing
+    mask_train = ~pd.DataFrame(X_train).isna()
+    mask_test = ~pd.DataFrame(X_test).isna()
+
+    # Tensors (keep NaNs for missing values)
+    x_train_tensor = torch.tensor(X_train, dtype=torch.float32)
+    mask_train_tensor = torch.tensor(mask_train.values, dtype=torch.float32)
+
+    x_test_tensor = torch.tensor(X_test, dtype=torch.float32)
+    mask_test_tensor = torch.tensor(mask_test.values, dtype=torch.float32)
+
+    train_dataset = MissingDataDataset(x_train_tensor, mask_train_tensor)
+    test_dataset = MissingDataDataset(x_test_tensor, mask_test_tensor)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    return train_loader, test_loader
+
+
+def vae_loss_missing(recon_mu, recon_logvar, x_filled, mu, logvar, mask):
+    """
+    VAE loss that skips missing values (NaNs) in x for the reconstruction term.
+    """
+
+    # Reconstruction loss (Gaussian NLL) only on observed values
+    recon_var = torch.exp(recon_logvar)
+    recon_nll = 0.5 * (torch.log(2 * torch.pi * recon_var) + (x_filled - recon_mu) ** 2 / recon_var)
+
+    # Apply mask and normalize by number of observed features per sample
+    recon_nll = recon_nll * mask  # zero-out missing features
+    obs_counts = mask.sum(dim=1).clamp(min=1)  # avoid division by 0
+    recon_loss = (recon_nll.sum(dim=1) / obs_counts).mean()
+
+    # KL divergence as usual
+    kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1)
+    kl_loss = kl_div.mean()
+
+    return recon_loss, kl_loss
+
 
 ```
 
@@ -443,18 +547,24 @@ class NumericVAE_missing(nn.Module):
 ```{python}
 
 
-def vae_loss_with_missing(recon_mu, recon_logvar, x, mu, logvar, mask):
-    recon_var = torch.exp(recon_logvar)
-    
-    # Only penalize reconstruction for observed data
-    recon_loss = 0.5 * torch.sum(
-        mask * (recon_logvar + (x - recon_mu)**2 / recon_var)
-    )
-    
-    # KL divergence remains the same
-    kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-    return recon_loss, kl_div
+def vae_loss_missing(recon_mu, recon_logvar, x, mu, logvar, mask):
+    # Fill missing values with 0 just for loss computation
+    x_filled = torch.where(mask.bool(), x, torch.zeros_like(x))
 
+    recon_var = torch.exp(recon_logvar)
+    recon_nll = 0.5 * (torch.log(2 * torch.pi * recon_var) +
+                       (x_filled - recon_mu) ** 2 / recon_var)
+
+    # Mask out missing values
+    recon_nll = recon_nll * mask
+    obs_counts = mask.sum(dim=1).clamp(min=1)
+    recon_loss = (recon_nll.sum(dim=1) / obs_counts).mean()
+
+    # KL divergence
+    kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1)
+    kl_loss = kl_div.mean()
+
+    return recon_loss, kl_loss
 
 def beta_annealing(epoch, max_beta=1.0, anneal_epochs=100):
 
@@ -467,39 +577,71 @@ def beta_annealing(epoch, max_beta=1.0, anneal_epochs=100):
 ```{python}
 
 # | output: false
+train_loader, test_loader = prep_data_vae_missing(10_000, batch_size=32)
 
-# Prepare data: impute missing with 0 for now and create mask
-mask = ~sample_df_missing.isna()
-mask_tensor = torch.tensor(mask.values, dtype=torch.float32)
-x_tensor = torch.tensor(sample_df_missing.fillna(0).values, dtype=torch.float32)
+vae_missing = NumericVAE_missing(n_features=next(iter(train_loader))[0].shape[1])
+optimizer = optim.Adam(vae_missing.parameters(), lr=1e-4)
 
-batch_size = 32  # or any batch size you prefer
-dataset = MissingDataDataset(x_tensor, mask_tensor)
-data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+best_loss = float('inf')
+patience, wait = 30, 0
+losses = []
 
-# Create model & optimizer
-model = NumericVAE_missing(n_features=x_tensor.shape[1])
-optimizer = optim.Adam(model.parameters(), lr=1e-3)
-
-n_epochs = 3000
+n_epochs = 1000
 for epoch in range(n_epochs):
-    beta = beta_annealing(epoch, max_beta=1.0, anneal_epochs=50)
-    model.train()
+    beta = beta_annealing(epoch, max_beta=1.0, anneal_epochs=10)
+    vae_missing.train()
     
-    total_loss = 0
-    for x_batch, mask_batch in data_loader:
+    train_loss = 0
+    for x_batch, mask_batch in train_loader:
         optimizer.zero_grad()
-        (recon_mu, recon_logvar), mu, logvar = model(x_batch, mask_batch)
-        recon_loss, kl_loss = vae_loss_with_missing(recon_mu, recon_logvar, x_batch, mu, logvar, mask_batch)
+        (recon_mu, recon_logvar), mu, logvar = vae_missing(x_batch, mask_batch)
+        recon_loss, kl_loss = vae_loss_missing(recon_mu, recon_logvar, x_batch, mu, logvar, mask_batch)
         loss = recon_loss + beta * kl_loss
         loss.backward()
         optimizer.step()
-        
-        total_loss += loss.item() * x_batch.size(0)  # sum over batch
+        train_loss += loss.item() * x_batch.size(0)
 
-    avg_loss = total_loss / len(dataset)  # average loss per sample
-    if (epoch + 1) % 50 == 0:
-        print(f"Epoch {epoch+1}/{n_epochs} - Avg Loss: {avg_loss:.4f}")
+    avg_train_loss = train_loss / len(train_loader.dataset)
+
+    # --- Validation ---
+    vae_missing.eval()
+    test_loss = 0.0
+    with torch.no_grad():
+        for x_batch, mask_batch in test_loader:
+            (recon_mu, recon_logvar), mu, logvar = vae_missing(x_batch, mask_batch)
+            recon_loss, kl_loss = vae_loss_missing(recon_mu, recon_logvar, x_batch, mu, logvar, mask_batch)
+            loss = recon_loss + kl_loss
+            test_loss += loss.item() * x_batch.size(0)
+    avg_test_loss = test_loss / len(test_loader.dataset)
+
+    print(f"Epoch {epoch+1}/{n_epochs} | Train: {avg_train_loss:.4f} | Test: {avg_test_loss:.4f}")
+
+    # Early stopping
+    if test_loss < best_loss - 1e-4:
+            best_loss, wait = test_loss, 0
+            best_state = vae_missing.state_dict()
+    else:
+        wait += 1
+        if wait >= patience:
+            print(f"Early stopping at epoch {epoch+1}")
+            vae_missing.load_state_dict(best_state)  # restore best
+            break
+    losses.append([avg_train_loss, avg_test_loss, best_loss])
+
+
+
+
+
+```
+
+
+```{python}
+
+bootstrapped_resids_500 = bootstrap_residuals(vae_missing, pd.DataFrame(test_loader.dataset.x, columns=sample_df.columns), sample_df)
+
+plot_heatmap(bootstrapped_resids_500)
+
+
 
 
 ```
@@ -512,9 +654,9 @@ recons = []
 n_boot = 500
 resid_array = np.zeros((n_boot, len(sample_df_missing.columns), len(sample_df_missing.columns)))
 for i in range(500):
-    recon_data = model.generate(n_samples=len(sample_df_missing))
+    recon_data = vae_missing.generate(n_samples=len(sample_df_missing))
     reconstructed_df = pd.DataFrame(recon_data, columns=sample_df_missing.columns)
-    resid = sample_df.corr() - reconstructed_df.corr()
+    resid = pd.DataFrame(test_loader.dataset.x, columns=sample_df_missing.columns).corr() - reconstructed_df.corr()
     resid_array[i] = resid.values
     recons.append(reconstructed_df)
 
@@ -526,15 +668,14 @@ plot_heatmap(bootstrapped_resids, title="""Expected Residuals \n Under Bootstrap
 
 
 ```{python}
-recon_data = model.generate(n_samples=len(sample_df_missing))
+recon_data = vae_missing.generate(n_samples=len(sample_df_missing))
 
 # Rebuild imputed DataFrame
 imputed_array = sample_df_missing.to_numpy().copy()
 imputed_array[mask_remove] = recon_data[mask_remove]
 imputed_df = pd.DataFrame(imputed_array, columns=sample_df_missing.columns)
 
-print("\nSample imputed data:")
-print(imputed_df.head())
+imputed_df.head()
 
 
 
@@ -549,12 +690,12 @@ plot_heatmap(sample_df.corr() - imputed_df.corr())
 
 ```{python}
 
-fig, axs = plt.subplots(1,2 ,figsize=(10, 30))
+fig, axs = plt.subplots(1,2 ,figsize=(9, 30))
 axs = axs.flatten()
 plot_heatmap(sample_df_missing.head(50).fillna(99), vmin=-0, vmax=99, ax=axs[0], colorbar=False)
-axs[0].set_title("Missng Data", fontsize=20)
+axs[0].set_title("Missng Data", fontsize=12)
 plot_heatmap(imputed_df.head(50), vmin=-2, vmax=2, ax=axs[1], colorbar=False)
-axs[1].set_title("Imputed Data", fontsize=20);
+axs[1].set_title("Imputed Data", fontsize=12);
 plt.tight_layout()
 ```
 
