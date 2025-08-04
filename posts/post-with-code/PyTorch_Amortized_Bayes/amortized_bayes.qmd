@@ -8,8 +8,8 @@ draft: true
 execute: 
   enabled: true
 jupyter: pytorch-env
-abstract-title: "Heuristics in Latent Space"
-abstract: "The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Principal Components Analysis can be seen as a technique to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Amortized Bayesian inference seeks to unite the two heuristics."
+abstract-title: "Transparency and Heuristics in Latent Space"
+abstract: "The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Principal Components Analysis can be seen as a technique to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias throught architectural specification but of the two, Bayesian methods do so transparently."
 image: "images/construction_bricks.jpg"
 author:
     - url: https://nathanielf.github.io/
@@ -249,6 +249,7 @@ def vae_loss(recon_mu, recon_logvar, x, mu, logvar):
 
 
 ```{python}
+# | output: false
 
 def prep_data_vae(sample_size=1000):
     sample_df = make_sample(cov_matrix=cov_matrix, size=sample_size, columns=columns)
@@ -263,9 +264,8 @@ def prep_data_vae(sample_size=1000):
     return train_loader, test_loader
 
 
-# | output: false
 
-def train_vae(vae, optimizer, train, test, patience=30, wait=10, n_epochs=1000):
+def train_vae(vae, optimizer, train, test, patience=10, wait=0, n_epochs=1000):
     best_loss = float('inf')
     losses = []
 
@@ -298,8 +298,8 @@ def train_vae(vae, optimizer, train, test, patience=30, wait=10, n_epochs=1000):
 
         print(f"Epoch {epoch+1}/{n_epochs} | Train Loss: {avg_train_loss:.4f} | Test Loss: {avg_test_loss:.4f}")
 
-        if test_loss < best_loss - 1e-4:
-            best_loss, wait = test_loss, 0
+        if  avg_test_loss < best_loss - 1e-4:
+            best_loss, wait = avg_test_loss, 0
             best_state = vae.state_dict()
         else:
             wait += 1
@@ -412,8 +412,20 @@ class MissingDataDataset(Dataset):
     def __getitem__(self, idx):
         return self.x[idx], self.mask[idx]
 
-def prep_data_vae_missing(sample_size=1000, batch_size=32):
+def prep_data_vae_missing(sample_size=1000, batch_size=32, missing_frac=0.2):
     sample_df = make_sample(cov_matrix=cov_matrix, size=sample_size, columns=columns)
+
+    total_values = sample_df.size
+    num_nans = int(total_values * missing_frac)
+
+    # Choose random flat indices
+    nan_indices = np.random.choice(total_values, num_nans, replace=False)
+
+    # Convert flat indices to (row, col)
+    rows, cols = np.unravel_index(nan_indices, sample_df.shape)
+
+    # Set the values to NaN
+    sample_df.values[rows, cols] = np.nan
 
     X_train, X_test = train_test_split(sample_df.values, test_size=0.2, random_state=890)
 
@@ -437,27 +449,6 @@ def prep_data_vae_missing(sample_size=1000, batch_size=32):
     return train_loader, test_loader
 
 
-def vae_loss_missing(recon_mu, recon_logvar, x_filled, mu, logvar, mask):
-    """
-    VAE loss that skips missing values (NaNs) in x for the reconstruction term.
-    """
-
-    # Reconstruction loss (Gaussian NLL) only on observed values
-    recon_var = torch.exp(recon_logvar)
-    recon_nll = 0.5 * (torch.log(2 * torch.pi * recon_var) + (x_filled - recon_mu) ** 2 / recon_var)
-
-    # Apply mask and normalize by number of observed features per sample
-    recon_nll = recon_nll * mask  # zero-out missing features
-    obs_counts = mask.sum(dim=1).clamp(min=1)  # avoid division by 0
-    recon_loss = (recon_nll.sum(dim=1) / obs_counts).mean()
-
-    # KL divergence as usual
-    kl_div = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1)
-    kl_loss = kl_div.mean()
-
-    return recon_loss, kl_loss
-
-
 ```
 
 
@@ -469,9 +460,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class NumericVAE_missing(nn.Module):
-    def __init__(self, n_features, hidden_dim=64, latent_dim=8):
+    def __init__(self, n_features, hidden_dim=64, latent_dim=8, dropout_rate=0.2):
         super().__init__()
         self.n_features = n_features
+        self.dropout = nn.Dropout(p=dropout_rate)
 
         # ---------- Learnable Imputation ----------
         # One learnable parameter per feature for missing values
@@ -506,6 +498,7 @@ class NumericVAE_missing(nn.Module):
 
         # Encode features and mask separately
         h_x = F.relu(self.fc1_x(x_filled))
+        h_x = self.dropout(h_x)
         h_mask = self.fc1_mask(mask)
 
         # Combine embeddings
@@ -523,8 +516,10 @@ class NumericVAE_missing(nn.Module):
 
     def decode(self, z):
         h = F.relu(self.fc2(z))
+        h = self.dropout(h)  # optional: decoder dropout
         recon_mu = self.fc_out_mu(h)
         recon_logvar = self.fc_out_logvar(h)
+        recon_logvar = torch.clamp(self.fc_out_logvar(h), -5, 5)
         return recon_mu, recon_logvar
 
     def forward(self, x, mask):
@@ -548,15 +543,22 @@ class NumericVAE_missing(nn.Module):
 
 
 def vae_loss_missing(recon_mu, recon_logvar, x, mu, logvar, mask):
-    # Fill missing values with 0 just for loss computation
-    x_filled = torch.where(mask.bool(), x, torch.zeros_like(x))
-
+    # Clamp log-variance for numerical stability
+    recon_logvar = torch.clamp(recon_logvar, min=-5.0, max=5.0)
     recon_var = torch.exp(recon_logvar)
-    recon_nll = 0.5 * (torch.log(2 * torch.pi * recon_var) +
-                       (x_filled - recon_mu) ** 2 / recon_var)
 
-    # Mask out missing values
-    recon_nll = recon_nll * mask
+    # Only use observed entries
+    masked_x = torch.where(mask.bool(), x, torch.zeros_like(x))
+    masked_diff_sq = ((masked_x - recon_mu) ** 2) * mask
+    masked_logvar = recon_logvar * mask
+    masked_var = recon_var * mask
+
+    # Gaussian NLL: only computed on observed entries
+    recon_nll = 0.5 * (
+        torch.log(2 * torch.pi * masked_var + 1e-8) + masked_diff_sq / (masked_var + 1e-8)
+    )
+
+    # Reduce over features and average over batch
     obs_counts = mask.sum(dim=1).clamp(min=1)
     recon_loss = (recon_nll.sum(dim=1) / obs_counts).mean()
 
@@ -565,6 +567,7 @@ def vae_loss_missing(recon_mu, recon_logvar, x, mu, logvar, mask):
     kl_loss = kl_div.mean()
 
     return recon_loss, kl_loss
+
 
 def beta_annealing(epoch, max_beta=1.0, anneal_epochs=100):
 
@@ -577,105 +580,71 @@ def beta_annealing(epoch, max_beta=1.0, anneal_epochs=100):
 ```{python}
 
 # | output: false
-train_loader, test_loader = prep_data_vae_missing(10_000, batch_size=32)
 
-vae_missing = NumericVAE_missing(n_features=next(iter(train_loader))[0].shape[1])
-optimizer = optim.Adam(vae_missing.parameters(), lr=1e-4)
+def fit_vae_missing(vae_missing, train_loader, test_loader, optimizer, patience=10, wait=0, n_epochs=1000):
+    best_loss = float('inf')
+    losses = []
 
-best_loss = float('inf')
-patience, wait = 30, 0
-losses = []
-
-n_epochs = 1000
-for epoch in range(n_epochs):
-    beta = beta_annealing(epoch, max_beta=1.0, anneal_epochs=10)
-    vae_missing.train()
-    
-    train_loss = 0
-    for x_batch, mask_batch in train_loader:
-        optimizer.zero_grad()
-        (recon_mu, recon_logvar), mu, logvar = vae_missing(x_batch, mask_batch)
-        recon_loss, kl_loss = vae_loss_missing(recon_mu, recon_logvar, x_batch, mu, logvar, mask_batch)
-        loss = recon_loss + beta * kl_loss
-        loss.backward()
-        optimizer.step()
-        train_loss += loss.item() * x_batch.size(0)
-
-    avg_train_loss = train_loss / len(train_loader.dataset)
-
-    # --- Validation ---
-    vae_missing.eval()
-    test_loss = 0.0
-    with torch.no_grad():
-        for x_batch, mask_batch in test_loader:
+    for epoch in range(n_epochs):
+        beta = beta_annealing(epoch, max_beta=1.0, anneal_epochs=30)
+        vae_missing.train()
+        
+        train_loss = 0
+        for x_batch, mask_batch in train_loader:
+            optimizer.zero_grad()
             (recon_mu, recon_logvar), mu, logvar = vae_missing(x_batch, mask_batch)
             recon_loss, kl_loss = vae_loss_missing(recon_mu, recon_logvar, x_batch, mu, logvar, mask_batch)
-            loss = recon_loss + kl_loss
-            test_loss += loss.item() * x_batch.size(0)
-    avg_test_loss = test_loss / len(test_loader.dataset)
+            loss = recon_loss + beta * kl_loss
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.item() * x_batch.size(0)
 
-    print(f"Epoch {epoch+1}/{n_epochs} | Train: {avg_train_loss:.4f} | Test: {avg_test_loss:.4f}")
+        avg_train_loss = train_loss / len(train_loader.dataset)
 
-    # Early stopping
-    if test_loss < best_loss - 1e-4:
-            best_loss, wait = test_loss, 0
-            best_state = vae_missing.state_dict()
-    else:
-        wait += 1
-        if wait >= patience:
-            print(f"Early stopping at epoch {epoch+1}")
-            vae_missing.load_state_dict(best_state)  # restore best
-            break
-    losses.append([avg_train_loss, avg_test_loss, best_loss])
+        # --- Validation ---
+        vae_missing.eval()
+        test_loss = 0.0
+        with torch.no_grad():
+            for x_batch, mask_batch in test_loader:
+                (recon_mu, recon_logvar), mu, logvar = vae_missing(x_batch, mask_batch)
+                recon_loss, kl_loss = vae_loss_missing(recon_mu, recon_logvar, x_batch, mu, logvar, mask_batch)
+                loss = recon_loss + kl_loss
+                test_loss += loss.item() * x_batch.size(0)
+        avg_test_loss = test_loss / len(test_loader.dataset)
 
+        print(f"Epoch {epoch+1}/{n_epochs} | Train: {avg_train_loss:.4f} | Test: {avg_test_loss:.4f}")
 
+        # Early stopping
+        if avg_test_loss < best_loss - 1e-4:
+                best_loss, wait = avg_test_loss, 0
+                best_state = vae_missing.state_dict()
+        else:
+            wait += 1
+            if wait >= patience:
+                print(f"Early stopping at epoch {epoch+1}")
+                vae_missing.load_state_dict(best_state)  # restore best
+                break
+        losses.append([avg_train_loss, avg_test_loss, best_loss])
+    losses_df = pd.DataFrame(losses, columns=['train_loss', 'test_loss', 'best_loss'])    
 
-
-
-```
-
-
-```{python}
-
-bootstrapped_resids_500 = bootstrap_residuals(vae_missing, pd.DataFrame(test_loader.dataset.x, columns=sample_df.columns), sample_df)
-
-plot_heatmap(bootstrapped_resids_500)
-
-
-
-
-```
-
+    return vae_missing, losses_df
 
 
-```{python}
+train_loader_5000, test_loader_5000 = prep_data_vae_missing(5000, batch_size=32)
+vae_missing_5000 = NumericVAE_missing(n_features=next(iter(train_loader_5000))[0].shape[1], latent_dim=12)
+optimizer = optim.Adam(vae_missing_5000.parameters(), lr=1e-4)
 
-recons = []
-n_boot = 500
-resid_array = np.zeros((n_boot, len(sample_df_missing.columns), len(sample_df_missing.columns)))
-for i in range(500):
-    recon_data = vae_missing.generate(n_samples=len(sample_df_missing))
-    reconstructed_df = pd.DataFrame(recon_data, columns=sample_df_missing.columns)
-    resid = pd.DataFrame(test_loader.dataset.x, columns=sample_df_missing.columns).corr() - reconstructed_df.corr()
-    resid_array[i] = resid.values
-    recons.append(reconstructed_df)
-
-avg_resid = resid_array.mean(axis=0)
-bootstrapped_resids = pd.DataFrame(avg_resid, columns=sample_df_missing.columns, index=sample_df_missing.columns)
-
-plot_heatmap(bootstrapped_resids, title="""Expected Residuals \n Under Bootstrapped Reconstructions""")
-```
+fit_vae_missing_5000, losses_df_missing_5000 = fit_vae_missing(vae_missing_5000, train_loader_5000, test_loader_5000, optimizer)
 
 
-```{python}
-recon_data = vae_missing.generate(n_samples=len(sample_df_missing))
 
-# Rebuild imputed DataFrame
-imputed_array = sample_df_missing.to_numpy().copy()
-imputed_array[mask_remove] = recon_data[mask_remove]
-imputed_df = pd.DataFrame(imputed_array, columns=sample_df_missing.columns)
+train_loader_25_000, test_loader_25_000 = prep_data_vae_missing(25_000, batch_size=32)
+vae_missing_25_000 = NumericVAE_missing(n_features=next(iter(train_loader_25_000))[0].shape[1], latent_dim=12)
+optimizer = optim.Adam(vae_missing_25_000.parameters(), lr=1e-4)
 
-imputed_df.head()
+fit_vae_missing_25_000, losses_df_missing_25_000 = fit_vae_missing(vae_missing_25_000, train_loader_25_000, test_loader_25_000, optimizer)
+
+
 
 
 
@@ -684,21 +653,19 @@ imputed_df.head()
 
 ```{python}
 
-plot_heatmap(sample_df.corr() - imputed_df.corr())
-``` 
+bootstrapped_resids_5000 = bootstrap_residuals(fit_vae_missing_5000, pd.DataFrame(test_loader_5000.dataset.x, columns=sample_df.columns), sample_df)
+
+bootstrapped_resids_25_000 = bootstrap_residuals(fit_vae_missing_25_000, pd.DataFrame(test_loader_25_000.dataset.x, columns=sample_df.columns), sample_df)
 
 
-```{python}
-
-fig, axs = plt.subplots(1,2 ,figsize=(9, 30))
+fig, axs = plt.subplots(2, 1, figsize=(10, 20))
 axs = axs.flatten()
-plot_heatmap(sample_df_missing.head(50).fillna(99), vmin=-0, vmax=99, ax=axs[0], colorbar=False)
-axs[0].set_title("Missng Data", fontsize=12)
-plot_heatmap(imputed_df.head(50), vmin=-2, vmax=2, ax=axs[1], colorbar=False)
-axs[1].set_title("Imputed Data", fontsize=12);
-plt.tight_layout()
-```
+plot_heatmap(bootstrapped_resids_5000, title="""Expected Correlation Residuals for 5000 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[0], colorbar=True, vmin=-.25, vmax=.25)
 
+plot_heatmap(bootstrapped_resids_25_000, title="""Expected Correlation  Residuals  for 25,000 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[1], colorbar=True, vmin=-.25, vmax=.25)
+
+
+```
 
 
 ## Bayesian Inference
