@@ -8,8 +8,7 @@ draft: false
 execute: 
   enabled: true
 jupyter: pytorch-env
-abstract-title: "Transparency and Heuristics in Latent Space"
-abstract: "The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Principal Components Analysis can be seen as a technique to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias through architectural specification but of the two, only Bayesian methods do so transparently."
+abstract: "The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Is the cost worth paying?"
 image: "images/construction_bricks.jpg"
 author:
     - url: https://nathanielf.github.io/
@@ -17,13 +16,19 @@ author:
 citation: true
 ---
 
+::: callout-note
+## Transparency and Heuristics in Latent Space
+The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Principal Components Analysis can be seen as a technique to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias through architectural specification but of the two, only Bayesian methods do so transparently.
+:::
+
 ## Reconstruction Error and Latent Representations
 
-In applied statistical modeling, the hardest problems are often those we can't directly observe. Reconstructing latent structure from noisy, incomplete data forces us to ask: what do we believe about the world, and how do our models reflect those beliefs? Can they reproduce plausible patterns?
+In applied statistical modeling, the hardest problems are often those we can't directly observe. Inferring latent structure from noisy, incomplete data forces us to ask: what do we believe about the world, and how do our models reflect those beliefs? Can they reproduce plausible patterns? What latent representation in the model space determines our predictions?
 
-This notebook explores how different modeling choices—deep generative models versus structured Bayesian inference—handle reconstruction, imputation, and inductive bias. Along the way, we confront a central difficulty: in high-dimensional latent spaces, it’s easy to be wrong in convincing ways. Learning to “fill in the blanks” isn’t just a technical challenge—it’s a philosophical one.
+This analysis explores how different modeling choices; deep generative models versus structured Bayesian inference—handle reconstruction, imputation, and inductive bias. Along the way, we confront a central difficulty: in high-dimensional latent spaces, it’s easy to be wrong in convincing ways. Learning to “fill in the blanks” isn’t just a technical challenge - it’s a philosophical one.
 
 **What we cover**:
+
 - Marginal reconstruction with VAEs
     - How well do deep generative models recover observed variables when trained on complete data?
 
