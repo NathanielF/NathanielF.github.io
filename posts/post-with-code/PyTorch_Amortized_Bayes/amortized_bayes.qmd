@@ -18,14 +18,14 @@ citation: true
 
 ::: callout-note
 ## Transparency and Heuristics in Latent Space
-The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Principal Components Analysis can be seen as a technique to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias through architectural specification but of the two, only Bayesian methods do so transparently.
+Principal Components Analysis can be seen as a technique to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias through architectural specification but of the two, only Bayesian methods do so transparently.
 :::
 
 ## Reconstruction Error and Latent Representations
 
 In applied statistical modeling, the hardest problems are often those we can't directly observe. Inferring latent structure from noisy, incomplete data forces us to ask: what do we believe about the world, and how do our models reflect those beliefs? Can they reproduce plausible patterns? What latent representation in the model space determines our predictions?
 
-This analysis explores how different modeling choices; deep generative models versus structured Bayesian inference—handle reconstruction, imputation, and inductive bias. Along the way, we confront a central difficulty: in high-dimensional latent spaces, it’s easy to be wrong in convincing ways. Learning to “fill in the blanks” isn’t just a technical challenge - it’s a philosophical one.
+This essay explores how different modeling choices; deep generative models are compared with structured Bayesian inference on how they handle reconstruction, imputation, and inductive bias. Along the way, we confront a central difficulty: in high-dimensional latent spaces, it’s easy to be wrong in convincing ways. Learning to “fill in the blanks” is only half the battle.
 
 **What we cover**:
 
@@ -67,6 +67,7 @@ import arviz as az
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 ```
 
@@ -76,7 +77,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 Job satisfaction is not one thing. It’s a bundle: how we think, how we feel, how we work. In our simulation, we model this bundle through twelve indicators—grouped into constructive thought strategies (JW1–JW3), dysfunctional patterns (UF1, UF2, FOR), well-being (DA1–DA3), and satisfaction outcomes (EBA, ST, MI). The Python code generates data by first defining a realistic correlation matrix and scaling it by standard deviations to yield a structured covariance matrix. From this, we draw synthetic observations using a multivariate normal distribution. This allows us to test estimators under controlled complexity.
 
 ```{python}
-import numpy as np
+# | code-fold: true
 
 # Standard deviations
 stds = np.array([0.939, 1.017, 0.937, 0.562, 0.760, 0.524, 
@@ -116,7 +117,6 @@ FEATURE_COLUMNS=["JW1","JW2","JW3", "UF1","UF2","FOR", "DA1","DA2","DA3", "EBA",
 corr_df = pd.DataFrame(corr_matrix, columns=FEATURE_COLUMNS)
 
 cov_df = pd.DataFrame(cov_matrix, columns=FEATURE_COLUMNS)
-cov_df
 
 def make_sample(cov_matrix, size, columns, missing_frac=0.0, impute=False):
     sample_df = pd.DataFrame(np.random.multivariate_normal([0]*12, cov_matrix, size=size), columns=FEATURE_COLUMNS)
@@ -140,7 +140,7 @@ def make_sample(cov_matrix, size, columns, missing_frac=0.0, impute=False):
     return sample_df
 
 sample_df = make_sample(cov_matrix, 263, FEATURE_COLUMNS)
-sample_df.head()
+sample_df.head(10)
 
 ```
 
@@ -148,13 +148,16 @@ sample_df.head()
 A first test of any model for the job satisfaction process is whether it recovers the observed correlation structure. The code extracts pairwise correlations from the simulated data and visualizes them using a heatmap. Strong ties—positive or negative—appear as vivid blocks, offering a visual audit of relational intensity. This pattern matters. While it does not imply causation, it does offer a benchmark: if a model can't replicate these patterns, it's likely missing structure.
 
 ```{python}
+
+#| code-fold: true
+#| 
 data = sample_df.corr()
 
 def plot_heatmap(data, title="Correlation Matrix",  vmin=-.2, vmax=.2, ax=None, figsize=(10, 6), colorbar=True):
     data_matrix = data.values
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
-    im = ax.imshow(data, cmap='viridis', vmin=vmin, vmax=vmax)
+    im = ax.imshow(data, cmap='magma', vmin=vmin, vmax=vmax)
 
     for i in range(data_matrix.shape[0]):
         for j in range(data_matrix.shape[1]):
@@ -191,6 +194,8 @@ U, S, VT = np.linalg.svd(X, full_matrices=False)
 SVD decomposes a matrix into interpretable parts: directions of variation, scaled by importance. The reconstruction plots show that a handful of components (principal axes) capture most of the variation in job satisfaction data. This supports the idea of latent representations: the surface complexity of our variables arises from simpler underlying factors. Variational autoencoders (VAEs) and Bayesian posterior predictive sampling attempt the same compression and recovery, but embed it within generative models. As we’ll see, their reconstruction quality also reflects the strength and focus of their latent encoding.
 
 ```{python}
+
+# | code-fold: true
 
 ranks = [2, 5, 12]
 reconstructions = []
@@ -311,7 +316,7 @@ The reconstruction loss assumes the decoder outputs a Gaussian distribution for 
 
 The KL divergence term acts as a regularizer. It measures how far the encoder’s learned distribution $q(z∣x)$ is from the standard normal prior $p(z)$. Without this term, the model could overfit—memorizing reconstructions without learning a useful latent structure. By keeping the latent codes close to $N(0,I)$, the model remains generative: we can sample from the prior and decode into valid synthetic data. In short, KL divergence ensures generalization and interpretability, while reconstruction loss ensures fidelity. Their sum is what guides learning in the VAE.
 
-### Traing VAE models
+### Training VAE models
 
 At the core of training deep learning models is backpropagation—an algorithm that computes gradients of a loss function with respect to each model parameter. `PyTorch` handles this automatically. We seperate the data into batches and compute the loss for each batch, Then calling `loss.backward()` computes these gradients via the chain rule. The optimizer then adjusts the weights with `optimizer.step()`, moving the model parameters in the direction that reduces the loss. Each training iteration refines the model, gradually improving its ability to encode and reconstruct the data. The train_vae function applies this cycle across epochs, using PyTorch’s autograd system to manage the entire computation graph.
 
@@ -320,6 +325,7 @@ The `prep_data_vae` function creates simulated data, adds optional missingness, 
 
 ```{python}
 
+# | code-fold: true
 
 def prep_data_vae(sample_size=1000, missing_frac=0.0, impute=False):
     sample_df = make_sample(cov_matrix=cov_matrix, size=sample_size, columns=FEATURE_COLUMNS, missing_frac=missing_frac, impute=impute)
@@ -412,6 +418,21 @@ vae_fit_10_000, losses_df_10_000 = train_vae(vae, optimizer, train_10_000, test_
 Training and test losses tell us how well the model fits the data—and how well it generalizes. The plots show these losses over training epochs for datasets of size 500, 1,000, and 10,000. A falling training loss indicates the model is learning to reconstruct the data. If test loss follows the same trend, generalization is improving too. If test loss flattens or rises while training loss keeps falling, the model may be overfitting—memorizing rather than learning.
 
 ```{python}
+
+# | code-fold: true
+
+def plot_metric_recovery(fit_vae, test_dataset):
+    recon_df = pd.DataFrame(fit_vae.generate(test_dataset.shape[0]), columns=FEATURE_COLUMNS)
+
+    test_df = pd.DataFrame(test_dataset, columns=FEATURE_COLUMNS)
+
+    fig, axs = plt.subplots(6, 2, figsize=(8, 20))
+    axs = axs.flatten()
+    for col, ax in zip(FEATURE_COLUMNS, axs):
+        ax.hist(recon_df[col], color='red', alpha=0.5, ec='grey', label=f'Reconstructed Metric {col}')
+        ax.hist(test_df[col], color='blue', alpha=0.5, ec='black', label=f'Test Metric {col}')
+        ax.legend()
+
 fig, axs = plt.subplots(1, 3, figsize=(8, 6))
 axs=axs.flatten()
 losses_df_500[['train_loss', 'test_loss']].plot(ax=axs[0])
@@ -424,6 +445,14 @@ axs[2].set_title("Training and Test Losses \n 10_000 observations");
 ```
 
 These curves also validate our early stopping rule. When test loss plateaus, training halts—preserving the model that best balances fidelity and generalization. The plots confirm that this dynamic works across scales. In sum, training and test loss curves are not just diagnostics of performance—they’re windows into the model’s learning process and how data scale affects estimation.
+
+We can also see that the models are able to re-construct the marginal metric distributions
+
+```{python}
+
+plot_metric_recovery(vae_fit_10_000, test_10_000.dataset)
+
+```
 
 To evaluate how well the VAE learns the joint structure of the data and not just feature-wise accuracy, we compare the correlation matrices of the reconstructed data. We treat the test set as ground truth and ask: does the VAE, when generating synthetic data, reproduce its dependency structure? For each bootstrap iteration, we sample new data from the trained VAE and compute its correlation matrix. We subtract this from the test set’s correlation matrix, storing the residuals. Averaging across 1,000 samples gives us the expected discrepancy between true and learned structure.
 
@@ -488,9 +517,7 @@ In the code above, we simulate this problem by introducing 5% random missingness
 
 ```{python}
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+# | code-fold: true
 
 
 class MissingDataDataset(Dataset):
@@ -538,9 +565,6 @@ To handle missing data, we extend the VAE by allowing it to learn how to impute.
 
 ```{python}
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 class NumericVAE_missing(nn.Module):
     def __init__(self, n_features, hidden_dim=64, latent_dim=24, dropout_rate=0.2):
@@ -738,19 +762,9 @@ The histograms below show how well the VAE reconstructs the marginal distributio
 
 ```{python}
 
-def plot_metric_recovery(fit_vae, test_loader):
-    recon_df = pd.DataFrame(fit_vae.generate(test_loader.dataset.x.shape[0]), columns=FEATURE_COLUMNS)
+# | code-fold: true
 
-    test_df = pd.DataFrame(test_loader.dataset.x, columns=FEATURE_COLUMNS)
-
-    fig, axs = plt.subplots(6, 2, figsize=(8, 20))
-    axs = axs.flatten()
-    for col, ax in zip(FEATURE_COLUMNS, axs):
-        ax.hist(recon_df[col], color='red', alpha=0.5, ec='grey', label=f'Reconstructed Metric {col}')
-        ax.hist(test_df[col], color='blue', alpha=0.5, ec='black', label=f'Test Metric {col}')
-        ax.legend()
-
-plot_metric_recovery(fit_vae_missing_5000, test_loader_5000)
+plot_metric_recovery(fit_vae_missing_5000, test_loader_5000.dataset.x)
 
 ```
 
@@ -792,6 +806,7 @@ We then train a standard VAE on this imputed data. The correlation residual heat
 
 ```{python}
 #| output: false
+#| 
 
 train_loader_imputed, test_loader_imputed = prep_data_vae(sample_size=10_000, missing_frac=0.2, impute=True)
 
@@ -805,6 +820,8 @@ bootstrapped_resids_10_000_imputed = bootstrap_residuals(vae_fit_10_000_imputed,
 ```
 
 ```{python}
+
+# | code-fold: true
 
 plot_heatmap(bootstrapped_resids_10_000_imputed, title="""Expected Correlation  Residuals  for 10,000 observations \n Under 1000 Bootstrapped Reconstructions""", colorbar=True, vmin=-.25, vmax=.25);
 ```

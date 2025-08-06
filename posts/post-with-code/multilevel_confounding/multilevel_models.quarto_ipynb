@@ -21,7 +21,7 @@
         "citation: true\n",
         "---"
       ],
-      "id": "8ac3e17d"
+      "id": "d1161271"
     },
     {
       "cell_type": "code",
@@ -49,7 +49,7 @@
         "\n",
         "np.random.seed(100)\n"
       ],
-      "id": "71e398d7",
+      "id": "4af861b7",
       "execution_count": null,
       "outputs": []
     },
@@ -91,7 +91,7 @@
         "\n",
         "First define a data generating process determined by group level effects:\n"
       ],
-      "id": "e0bdc9db"
+      "id": "0d0e09cc"
     },
     {
       "cell_type": "code",
@@ -119,7 +119,7 @@
         "sim_df = pd.DataFrame({'Y': Y, 'p': p, 's': s, 'g': g, 'X': X, 'Z': Z[g]})\n",
         "sim_df.head()"
       ],
-      "id": "7ac3de4b",
+      "id": "00bed385",
       "execution_count": null,
       "outputs": []
     },
@@ -129,7 +129,7 @@
       "source": [
         "This data generating process is characterised by the bernoulli outcome with group level confounds on the $X$ variable. If we model this relationship the confounding effects will bias naive parameter estimates on the covariates $X$, $Z$. We can imagine this is a class room setting with group-confounding due to teacher effects. In a DAG we see a picture something like this: \n"
       ],
-      "id": "93f98c16"
+      "id": "5724b860"
     },
     {
       "cell_type": "code",
@@ -145,7 +145,7 @@
         "'class temp \\n Z': [1, 1]})\n",
         "ax.set_title(\"Group Confounding in a DAG\", fontsize=12);"
       ],
-      "id": "71eb96fd",
+      "id": "2b7bb729",
       "execution_count": null,
       "outputs": []
     },
@@ -155,7 +155,7 @@
       "source": [
         "We can plot the data here to visualise the shares of the binary outcomes. \n"
       ],
-      "id": "2813bc1c"
+      "id": "23fc0456"
     },
     {
       "cell_type": "code",
@@ -164,7 +164,7 @@
         "g = sns.pairplot(sim_df[['Y', 'X', 'Z']], diag_kind=\"kde\", corner=True)\n",
         "g;"
       ],
-      "id": "154367ac",
+      "id": "d01d9580",
       "execution_count": null,
       "outputs": []
     },
@@ -190,7 +190,7 @@
         "\n",
         "We will use `Bambi` to specify the majority of these generalised linear models throughout this post. The formula syntax for `Bambi` enables us to specify generalised linear models with bernoulli outcomes. \n"
       ],
-      "id": "e9d6ace9"
+      "id": "c5262c26"
     },
     {
       "cell_type": "code",
@@ -203,7 +203,7 @@
         "naive_idata = naive_model.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True},)"
       ],
-      "id": "ab1f1983",
+      "id": "339da523",
       "execution_count": null,
       "outputs": []
     },
@@ -213,7 +213,7 @@
       "source": [
         "az.summary(naive_idata, var_names=['Intercept', 'X', 'Z'])"
       ],
-      "id": "78fadf87",
+      "id": "e3bc52f1",
       "execution_count": null,
       "outputs": []
     },
@@ -227,7 +227,7 @@
         "\n",
         "The additional syntax for creating the group level indicator variables is specified here. This will create a host of indicator variables for membership in each level of the group variable. \n"
       ],
-      "id": "bf7a3ab0"
+      "id": "3987bdcf"
     },
     {
       "cell_type": "code",
@@ -240,7 +240,7 @@
         "fixed_effects_idata = fixed_effects_model.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True},)"
       ],
-      "id": "15b01866",
+      "id": "49bee7b3",
       "execution_count": null,
       "outputs": []
     },
@@ -250,7 +250,7 @@
       "source": [
         "az.summary(fixed_effects_idata, var_names=['Intercept', 'X', 'Z'])"
       ],
-      "id": "6b04db5f",
+      "id": "41b02986",
       "execution_count": null,
       "outputs": []
     },
@@ -260,7 +260,7 @@
       "source": [
         "Now we see that the coefficient on the $X$ variable seems correct, but the coefficient on $Z$ is wildly wrong. Indeed the uncertainty interval on the $Z$ coefficient is huge. The fixed effect model was unable to learn anything about the correct parameter. Whereas the naive model seems to learn the correct $Z$ parameter but over estimates the $X$ coefficient. These are the kinds of trade-offs we need to be wary of as we account for the complexities of extensive group interactions in our model's functional form. \n"
       ],
-      "id": "545778da"
+      "id": "8dcbee1c"
     },
     {
       "cell_type": "code",
@@ -286,7 +286,7 @@
         "axs[1].set_title(\"Naive/Fixed Effect Model Z Coefficient\")\n",
         "axs[1].axvline(-0.5, color='k');\n"
       ],
-      "id": "1bb32999",
+      "id": "92fc9abd",
       "execution_count": null,
       "outputs": []
     },
@@ -300,7 +300,7 @@
         "\n",
         "The syntax for the random effects model is easily expressed in `bambi` too. These group level effects modify the intercept additively and are collectively drawn from a shared distribution implicit in the model. \n"
       ],
-      "id": "64ac5d3c"
+      "id": "253921f6"
     },
     {
       "cell_type": "code",
@@ -313,7 +313,7 @@
         "multilevel_model_idata = multilevel_model.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True},)"
       ],
-      "id": "7df25211",
+      "id": "9a57f046",
       "execution_count": null,
       "outputs": []
     },
@@ -323,7 +323,7 @@
       "source": [
         "This method posits a view that there is a shared underlying process generating each instance of group-behaviour i.e. the realised values of the outcome within each group. In the random effects multilevel model we replace the indivdual fixed effects indicator columns with additional parameters modifying the intercept term. This is the \"hierarchy\" or multi-level aspect of the specification.\n"
       ],
-      "id": "ccb0322b"
+      "id": "03793d86"
     },
     {
       "cell_type": "code",
@@ -331,7 +331,7 @@
       "source": [
         "az.summary(multilevel_model_idata, var_names=['X', 'Z', 'Intercept'])"
       ],
-      "id": "5df3a532",
+      "id": "4dbb94f6",
       "execution_count": null,
       "outputs": []
     },
@@ -345,7 +345,7 @@
         "\n",
         "For this technique we augment the model by supplying group an additional column. This column records the group-level means of the \"confounded variable\" i.e. the variable which is realised under group level influences. Adding the group mean(s) to the model in this sense somewhat absolves of the requirement to include an extra multiplicity of parameters. It's more akin to feature creation than model specification, but it serves the same purpose - it accounts for group level variation and provides a mechanism for the model to learn the appropriate weights to accord each group in the final calculation. \n"
       ],
-      "id": "e9b1cbcd"
+      "id": "bb3453f3"
     },
     {
       "cell_type": "code",
@@ -362,7 +362,7 @@
         "mundlak_idata = mundlak_model.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True},)"
       ],
-      "id": "1e8a5cd9",
+      "id": "beb146eb",
       "execution_count": null,
       "outputs": []
     },
@@ -372,7 +372,7 @@
       "source": [
         "Mundlak's insight is that this mechanism is akin to adding a whole slew of fixed-effect indicator variables for each group. It is a corrective mechanism for group confounding in our focal variable. We'll see how it allows for more flexible model specifications and has a role in making adjustments to aid identification in causal inference. \n"
       ],
-      "id": "efd4792e"
+      "id": "9c9e7c78"
     },
     {
       "cell_type": "code",
@@ -380,7 +380,7 @@
       "source": [
         "az.summary(mundlak_idata, var_names=['Intercept', 'X', 'Z'])"
       ],
-      "id": "297f2fac",
+      "id": "f9fb3902",
       "execution_count": null,
       "outputs": []
     },
@@ -394,7 +394,7 @@
         "\n",
         "The parameter recovery exercise shows striking differences across each of the models \n"
       ],
-      "id": "bff633a8"
+      "id": "6727b0c2"
     },
     {
       "cell_type": "code",
@@ -441,7 +441,7 @@
         "\n",
         "axs[2].axvline(-2, color='k', linestyle='--');"
       ],
-      "id": "fbe01e79",
+      "id": "a1220712",
       "execution_count": null,
       "outputs": []
     },
@@ -451,7 +451,7 @@
       "source": [
         "Importantly, we see that while the fixed effects model is focused on recovering the treatment effect on the $X$ covariate, it does so somewhat at the expense of accuracy on the other systematic components of the model. This focus renders the model less predictively accurate. If we compare the models on the cross-validation score, we see how the hierarchical mundlak model is to be preferred.\n"
       ],
-      "id": "953510b8"
+      "id": "edead309"
     },
     {
       "cell_type": "code",
@@ -461,7 +461,7 @@
         "'mundlak': mundlak_idata})\n",
         "compare_df"
       ],
-      "id": "74e01f5d",
+      "id": "a15604bc",
       "execution_count": null,
       "outputs": []
     },
@@ -471,7 +471,7 @@
       "source": [
         "az.plot_compare(compare_df);"
       ],
-      "id": "a8f1f637",
+      "id": "22bd9589",
       "execution_count": null,
       "outputs": []
     },
@@ -485,7 +485,7 @@
         "\n",
         "As good Bayesians we might be worry about the false precision of adding simple point estimates for the group mean covariates in the Mundlak model. We can remedy this by explicitly incorporating these values as an extra parameter and adding uncertainty to the draws on these parameters.  \n"
       ],
-      "id": "363416e3"
+      "id": "cc39cb44"
     },
     {
       "cell_type": "code",
@@ -519,7 +519,7 @@
         "\n",
         "    idata = pm.sample(idata_kwargs={\"log_likelihood\": True})"
       ],
-      "id": "104fe79c",
+      "id": "ce5789d8",
       "execution_count": null,
       "outputs": []
     },
@@ -529,7 +529,7 @@
       "source": [
         "Instead of merely adding a new feature to a regression we've added a second likelihood term for the predictor $X$ and seek to model this outcome as a function of the group means. In other words, we incorporate the idea that $X$ is confounded by some aspect of the group membership, and seek to estimate the nature of that confounding as it influences both the realisations of $X$ and $y$. Calibrating the `group_mean` parameter that is also included in our likelihood term for the $Y$ outcome. \n"
       ],
-      "id": "45c19f0c"
+      "id": "e3d73d5b"
     },
     {
       "cell_type": "code",
@@ -537,7 +537,7 @@
       "source": [
         "pm.model_to_graphviz(model)"
       ],
-      "id": "9c51f812",
+      "id": "e42f2f62",
       "execution_count": null,
       "outputs": []
     },
@@ -547,7 +547,7 @@
       "source": [
         "This model bakes more uncertainty into the process assuming a kind of measurement-error model, but again, the focus here is that we need to estimate a corrective adjustment factor for confounding effects that impact the estimation of impact due to our focal variable $X$. It's perhaps easier to see in this parameter recovery exercise than it is in real cases, but wherever we suspect plausible group level confounding you should consider Mundlak adjustments alongside your go-to fixed effects or random effects controls. \n"
       ],
-      "id": "939e3b9a"
+      "id": "f7d4b7f7"
     },
     {
       "cell_type": "code",
@@ -555,7 +555,7 @@
       "source": [
         "az.summary(idata, var_names=['Intercept', 'X', 'Z'])"
       ],
-      "id": "fac4cbfb",
+      "id": "4a64fed2",
       "execution_count": null,
       "outputs": []
     },
@@ -579,7 +579,7 @@
         "\n",
         "A natural three level group hierarchy occurs in the context of educational organisations and business org-charts. We can use this fact to interrogate briefly how inferential statements about treatment effects vary as a function of what and how we control for group level variation. We draw the following data set from _Linear Mixed Models: A Practical Guide Using Statistical Software_.\n"
       ],
-      "id": "3582db5b"
+      "id": "13a5564b"
     },
     {
       "cell_type": "code",
@@ -590,7 +590,7 @@
         "df['school_mean'] = df.groupby(['schoolid'])['mathprep'].transform(np.mean)\n",
         "df.head()"
       ],
-      "id": "1aa0ed95",
+      "id": "95c025e8",
       "execution_count": null,
       "outputs": []
     },
@@ -602,7 +602,7 @@
         "\n",
         "We'll plot the child's outcome `mathgain` against the `mathprep` and distinguish the patterns by school.  \n"
       ],
-      "id": "7976997b"
+      "id": "f690ee7f"
     },
     {
       "cell_type": "code",
@@ -640,7 +640,7 @@
         "\n",
         "axs[0].legend(handles=legend_elements);\n"
       ],
-      "id": "cd3e9ae5",
+      "id": "45f8ab18",
       "execution_count": null,
       "outputs": []
     },
@@ -650,7 +650,7 @@
       "source": [
         "We've plotted here the individual student outcomes. We've sized the dots by the poverty in their neighbourhoods and differentiated the markers by whether the student was in minority group. There are, in short, reasons here to worry about group-level confounding. There is a small number of observed students per school so the individual school level distributions show some extreme outliers but the overall distribution nicely converges to an approximately normal symmetric shape.\n"
       ],
-      "id": "e90866d8"
+      "id": "b1694266"
     },
     {
       "cell_type": "code",
@@ -667,7 +667,7 @@
         "axs[0].set_title(\"Cumulative Distribution Function by School\")\n",
         "axs[1].set_title(\"Overall Distribution\");"
       ],
-      "id": "570a855a",
+      "id": "576b02f4",
       "execution_count": null,
       "outputs": []
     },
@@ -692,7 +692,7 @@
         "\n",
         "To see the extent of redundany we can examine the dimensions of the covariate matrices that result from including more or less interaction terms. \n"
       ],
-      "id": "9febf71d"
+      "id": "832a247b"
     },
     {
       "cell_type": "code",
@@ -708,7 +708,7 @@
         "y, X2 = dmatrices(\"mathgain ~ mathprep + C(schoolid):C(childid)\", df, return_type=\"dataframe\")\n",
         "print(X2.shape)"
       ],
-      "id": "73ea6ec3",
+      "id": "efc2565d",
       "execution_count": null,
       "outputs": []
     },
@@ -720,7 +720,7 @@
         "\n",
         "Here we define a helper function to parse a complex interaction formula, remove the columns entirely composed of zeros and return a new formula and dataframe which has a suitable range of features to capture the variation structures in the data. \n"
       ],
-      "id": "e288c8b5"
+      "id": "c4e520e8"
     },
     {
       "cell_type": "code",
@@ -744,7 +744,7 @@
         "\n",
         "interaction_df.head()"
       ],
-      "id": "ae0cbd3b",
+      "id": "9aaa095d",
       "execution_count": null,
       "outputs": []
     },
@@ -758,7 +758,7 @@
         "\n",
         "Consider the variation in the coefficient values estimated for `mathprep` as we add more and more interaction effects. The addition of interaction effects generates a large number of completely 0 interaction terms which we remove here. \n"
       ],
-      "id": "07928d77"
+      "id": "62cd90cb"
     },
     {
       "cell_type": "code",
@@ -784,7 +784,7 @@
         "\n",
         "estimates_df"
       ],
-      "id": "8a717412",
+      "id": "dec62105",
       "execution_count": null,
       "outputs": []
     },
@@ -800,7 +800,7 @@
         "\n",
         "#### Minimal Model\n"
       ],
-      "id": "a74e0d31"
+      "id": "e4b06614"
     },
     {
       "cell_type": "code",
@@ -812,7 +812,7 @@
         "idata = model.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True})"
       ],
-      "id": "8ff64b9e",
+      "id": "24f42f16",
       "execution_count": null,
       "outputs": []
     },
@@ -822,7 +822,7 @@
       "source": [
         "The model specification here is deliberately minimalist we want to observe how much of the variation in the outcome can be accounted for by solely adding extensive controls for interactions of group level effects and the treatment but ignoring all else. \n"
       ],
-      "id": "76bee325"
+      "id": "1fa70287"
     },
     {
       "cell_type": "code",
@@ -830,7 +830,7 @@
       "source": [
         "model.graph()"
       ],
-      "id": "b1f57e47",
+      "id": "051e0709",
       "execution_count": null,
       "outputs": []
     },
@@ -840,7 +840,7 @@
       "source": [
         "We can see the derived sigma parameters here which can be understood as partialling out the variance of the outcome into components due to those group level effects and the unexplained residuals. \n"
       ],
-      "id": "2c2f0599"
+      "id": "6df2d522"
     },
     {
       "cell_type": "code",
@@ -848,7 +848,7 @@
       "source": [
         "az.summary(idata, var_names=['Intercept', '1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma', 'mathprep'])\n"
       ],
-      "id": "630db991",
+      "id": "1fab2f56",
       "execution_count": null,
       "outputs": []
     },
@@ -862,7 +862,7 @@
         "\n",
         "These models faciliate the calculation of the ICC statistics which is a measure of \"explained variance\". The thought is to gauge the proportion of variance ascribed to one set of random effects over and above the total estimated variance in the baseline model, including the residuals `mathgain_sigma`.\n"
       ],
-      "id": "8b6e2d8a"
+      "id": "1912982f"
     },
     {
       "cell_type": "code",
@@ -876,7 +876,7 @@
         "\n",
         "(a / c).mean().item() \n"
       ],
-      "id": "8422983f",
+      "id": "49bf64ad",
       "execution_count": null,
       "outputs": []
     },
@@ -886,7 +886,7 @@
       "source": [
         "((a + b) / c).mean().item()"
       ],
-      "id": "09339bb6",
+      "id": "5770949d",
       "execution_count": null,
       "outputs": []
     },
@@ -903,7 +903,7 @@
         "#### Adding Pupil Fixed Effects\n",
         "Here we add these fixed effects population parameters. But note they are not merely devices for controlling variance in the outcome, they're interpretation is likely of independent interest. \n"
       ],
-      "id": "a3994338"
+      "id": "d017b23c"
     },
     {
       "cell_type": "code",
@@ -915,7 +915,7 @@
         "idata_fixed = model_fixed.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True})"
       ],
-      "id": "0fdb42d0",
+      "id": "87ab24cb",
       "execution_count": null,
       "outputs": []
     },
@@ -926,7 +926,7 @@
         "az.summary(idata_fixed, var_names=['Intercept', 'sex', 'minority', 'ses', 'mathprep',\n",
         "'1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma'])"
       ],
-      "id": "7701687d",
+      "id": "2be0504b",
       "execution_count": null,
       "outputs": []
     },
@@ -938,7 +938,7 @@
         "\n",
         "#### Adding More Class and Pupil Level Fixed Effects\n"
       ],
-      "id": "4f7e7cde"
+      "id": "42df7179"
     },
     {
       "cell_type": "code",
@@ -950,7 +950,7 @@
         "idata_fixed_1 = model_fixed_1.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True})"
       ],
-      "id": "bc761050",
+      "id": "dfcb459f",
       "execution_count": null,
       "outputs": []
     },
@@ -961,7 +961,7 @@
         "az.summary(idata_fixed_1, var_names=['Intercept', \n",
         "'mathkind', 'sex', 'minority', 'ses', 'yearstea', 'mathknow', 'mathprep','1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma'])"
       ],
-      "id": "9794764e",
+      "id": "7a0599fd",
       "execution_count": null,
       "outputs": []
     },
@@ -973,7 +973,7 @@
         "az.plot_forest([idata, idata_fixed, idata_fixed_1], combined=True, var_names=['mathprep', '1|schoolid_sigma', '1|schoolid:classid_sigma', 'mathgain_sigma'], ax=ax)\n",
         "ax.axvline(1)"
       ],
-      "id": "998702ae",
+      "id": "a9a94507",
       "execution_count": null,
       "outputs": []
     },
@@ -983,7 +983,7 @@
       "source": [
         "We now make use of `bambi`s model interpretation module to plot the marginal effect on the outcome due to changes in the treatment intensity. \n"
       ],
-      "id": "53543c92"
+      "id": "1299c749"
     },
     {
       "cell_type": "code",
@@ -1009,7 +1009,7 @@
         "axs[1].set_xlabel('')\n",
         "axs[0].legend();\n"
       ],
-      "id": "582491f4",
+      "id": "d522ca4a",
       "execution_count": null,
       "outputs": []
     },
@@ -1029,7 +1029,7 @@
         "\n",
         "Event studies or dynamic treatment effects are an approach to measuring the gradual treatment effect as it evolves in time. We take this panel data set from the `pyfixest` package to demonstrate. \n"
       ],
-      "id": "1270393b"
+      "id": "5e1d0ab5"
     },
     {
       "cell_type": "code",
@@ -1039,7 +1039,7 @@
         "df_het = pd.read_csv(url)\n",
         "df_het.head()"
       ],
-      "id": "dbf2c374",
+      "id": "f6747bb5",
       "execution_count": null,
       "outputs": []
     },
@@ -1049,7 +1049,7 @@
       "source": [
         "Panel data of this kind of structure is difficult to intuit unless visualised. The key structures on which this DiD estimator works are the averages across state and time. We depict these here. Note how we define a causal contrast as the difference between the treated and control groups averages over time. In particular our estimator has to account for the fact that we have a \"dynamic\" control group. As each cohort is treated our treatment group expands and the causal contrast of interest is differently defined. To gain a view of the time-evolution of treatment we want to marginalise over the specifc cohorts and extract a view of the how the effects evolve after the introduction of the treatment in expectation. \n"
       ],
-      "id": "547d4d04"
+      "id": "854dbbc7"
     },
     {
       "cell_type": "code",
@@ -1071,7 +1071,7 @@
         "axs[0].set_title(\"Difference in Differences \\n State Mean Change an Individual Trajectories\")\n",
         "axs[1].set_title(\"Difference in Differences \\n Mean Change an Individual Trajectories\");"
       ],
-      "id": "5c97ed40",
+      "id": "9ca4a7c4",
       "execution_count": null,
       "outputs": []
     },
@@ -1085,7 +1085,7 @@
         "\n",
         "A natural question is to wonder how the treatment effect evolves over time? How does policy shift behaviours? Is it initially impactful converging to a quick plateau or a slowly building pattern of consistent growth?\n"
       ],
-      "id": "d5c4bc27"
+      "id": "25ecd112"
     },
     {
       "cell_type": "code",
@@ -1099,7 +1099,7 @@
         "\n",
         "fit_twfe_event.tidy()"
       ],
-      "id": "c24b527c",
+      "id": "884ec551",
       "execution_count": null,
       "outputs": []
     },
@@ -1109,7 +1109,7 @@
       "source": [
         "The model specification defines indicator variables for the relative years before and after the penultimate year before treatment is applied, it then  incorporates the fixed effects for state and year. The coefficient values ascribed the the relative year indicators are used to plot the event-study trajectories. This is a two-way fixed effects estimation routine where the fixed effects for state and year indicators absorb the variance due to those groupings. It is often estimated using a de-meaning technique which we will demonstrate below.\n"
       ],
-      "id": "6082ef42"
+      "id": "89c75c06"
     },
     {
       "cell_type": "code",
@@ -1124,7 +1124,7 @@
         "    yintercept=0,\n",
         ").show()\n"
       ],
-      "id": "50c807d6",
+      "id": "62563114",
       "execution_count": null,
       "outputs": []
     },
@@ -1134,7 +1134,7 @@
       "source": [
         "We can also aim to marginalise over the details of the temporal trajectories by defining the similar estimation routine on the individuals and their treatment indicator.\n"
       ],
-      "id": "c9b1718a"
+      "id": "92d7be1d"
     },
     {
       "cell_type": "code",
@@ -1148,7 +1148,7 @@
         "\n",
         "fit_twfe.tidy()\n"
       ],
-      "id": "e7d8b6d2",
+      "id": "2621394c",
       "execution_count": null,
       "outputs": []
     },
@@ -1162,7 +1162,7 @@
         "\n",
         "We implement the de-meaning technique and show \"equivalence by python\" as follows:"
       ],
-      "id": "8f20eaa3"
+      "id": "5fe77d57"
     },
     {
       "cell_type": "code",
@@ -1199,7 +1199,7 @@
         "\n",
         "d_event.head()"
       ],
-      "id": "83429360",
+      "id": "dbb5b635",
       "execution_count": null,
       "outputs": []
     },
@@ -1212,7 +1212,7 @@
         "### Event Study and De-Meaning\n",
         "Now we'll use the de-meaned data structure above to estimate an event study using `Bambi`. \n"
       ],
-      "id": "0eb0d4cf"
+      "id": "a0b4d32d"
     },
     {
       "cell_type": "code",
@@ -1225,7 +1225,7 @@
         "idata_twfe_event = model_twfe_event.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True},)\n"
       ],
-      "id": "037e6fc5",
+      "id": "608239e8",
       "execution_count": null,
       "outputs": []
     },
@@ -1235,7 +1235,7 @@
       "source": [
         "model_twfe_event"
       ],
-      "id": "4b1d8f60",
+      "id": "85b2ba9b",
       "execution_count": null,
       "outputs": []
     },
@@ -1245,7 +1245,7 @@
       "source": [
         "We can then plot the event-study and observe a similar pattern to the one observed with `pyfixest`. \n"
       ],
-      "id": "1c30fd2f"
+      "id": "35ec1710"
     },
     {
       "cell_type": "code",
@@ -1265,7 +1265,7 @@
         "plot_event_study(idata_twfe_event, ax)\n",
         "ax.legend();"
       ],
-      "id": "a7f0d059",
+      "id": "d0367a78",
       "execution_count": null,
       "outputs": []
     },
@@ -1275,7 +1275,7 @@
       "source": [
         "Similarly, we can de-mean the simple treatment indicator using the group means and marginalise over time periods to find a single treatment effect estimate. \n"
       ],
-      "id": "ac02fa19"
+      "id": "2d59ff26"
     },
     {
       "cell_type": "code",
@@ -1287,7 +1287,7 @@
         "idata_twfe_trt_demean = model_twfe_trt_demean.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True},)\n"
       ],
-      "id": "6e974951",
+      "id": "643f305a",
       "execution_count": null,
       "outputs": []
     },
@@ -1297,7 +1297,7 @@
       "source": [
         "az.summary(idata_twfe_trt_demean)"
       ],
-      "id": "b2e848c2",
+      "id": "c8461b19",
       "execution_count": null,
       "outputs": []
     },
@@ -1316,7 +1316,7 @@
         "\n",
         "We will see an example of this equivalence here."
       ],
-      "id": "085012e9"
+      "id": "4ce6a510"
     },
     {
       "cell_type": "code",
@@ -1335,7 +1335,7 @@
         "idata_twfe_trt_mundlak = model_twfe_trt_mundlak.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True})"
       ],
-      "id": "94dc2834",
+      "id": "5a0224db",
       "execution_count": null,
       "outputs": []
     },
@@ -1345,7 +1345,7 @@
       "source": [
         "az.plot_forest([idata_twfe_trt_demean, idata_twfe_trt_mundlak, idata_twfe_trt], combined=True, var_names=['treat'], model_names=['De-meaned', 'Mundlak', 'Simple']);"
       ],
-      "id": "89cca1da",
+      "id": "bc66692d",
       "execution_count": null,
       "outputs": []
     },
@@ -1359,7 +1359,7 @@
         "\n",
         "The vanilla TWFE estimator _can_ successfully recover the treatment effects in DiD designs and facilitate event studies of the same. However, the details of the estimation matter because this functional form is not always robust. Here we'll see other options that can recover substantially the same inferences and may prove more robust as we'll see below. The key to each is to articulate enough structural features that allow the model to modify effects based on the suspected group level confounds. Most crucially, the model needs to express (or account for) variation due to _relevant_ data generating process.  \n"
       ],
-      "id": "e623c5c0"
+      "id": "1c29c740"
     },
     {
       "cell_type": "code",
@@ -1391,7 +1391,7 @@
         "idata_twfe_event_2 = model_twfe_event_2.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True})\n"
       ],
-      "id": "6d5dafdd",
+      "id": "90dc6055",
       "execution_count": null,
       "outputs": []
     },
@@ -1401,7 +1401,7 @@
       "source": [
         "Having estimated the various alternatives model specifications we compare each against our baseline de-meaned event-study.\n"
       ],
-      "id": "27982dc7"
+      "id": "1396c83f"
     },
     {
       "cell_type": "code",
@@ -1433,7 +1433,7 @@
         "axs[2].legend()\n",
         "axs[3].legend();"
       ],
-      "id": "d85a1202",
+      "id": "5ba726be",
       "execution_count": null,
       "outputs": []
     },
@@ -1451,7 +1451,7 @@
         "\n",
         "Let's generate some data. "
       ],
-      "id": "c9fd3360"
+      "id": "f27dbaa5"
     },
     {
       "cell_type": "code",
@@ -1499,7 +1499,7 @@
         "sim_df = make_data(500, 40)\n",
         "sim_df.head()"
       ],
-      "id": "ff66db26",
+      "id": "d45c2a8b",
       "execution_count": null,
       "outputs": []
     },
@@ -1509,7 +1509,7 @@
       "source": [
         "We can now plot the staggered nature of the imagined treatment regime. \n"
       ],
-      "id": "497ceb7e"
+      "id": "732d72b9"
     },
     {
       "cell_type": "code",
@@ -1531,7 +1531,7 @@
         "ax.set_title(\"Simulated Cohorts Homogenous Treatment Effects \\n All Eventually Treated\", fontsize=20)\n",
         "ax.legend()"
       ],
-      "id": "663821bb",
+      "id": "c439320a",
       "execution_count": null,
       "outputs": []
     },
@@ -1541,7 +1541,7 @@
       "source": [
         "This data will present problems for the vanilla TWFE estimator. The issues stems from how each cohort receives a treatment and there are periods in the data when no group is in the \"control\" group. We can see how this plays out with de-meaning TWFE strategy. \n"
       ],
-      "id": "a25d829d"
+      "id": "8795e278"
     },
     {
       "cell_type": "code",
@@ -1563,7 +1563,7 @@
         "    yintercept=0,\n",
         ").show()"
       ],
-      "id": "43645c50",
+      "id": "83736a2d",
       "execution_count": null,
       "outputs": []
     },
@@ -1573,7 +1573,7 @@
       "source": [
         "This is not remotely close to the expected pattern. For contrast, consider an alternative estimator.\n"
       ],
-      "id": "f1abedc3"
+      "id": "1f2a2ea8"
     },
     {
       "cell_type": "code",
@@ -1599,7 +1599,7 @@
         "    xintercept=18.5,\n",
         ").show()"
       ],
-      "id": "eea3f783",
+      "id": "7d3d4c2c",
       "execution_count": null,
       "outputs": []
     },
@@ -1631,7 +1631,7 @@
         "\n",
         "Consider the following model specifications. \n"
       ],
-      "id": "2a8cb54c"
+      "id": "c594c32b"
     },
     {
       "cell_type": "code",
@@ -1669,7 +1669,7 @@
         "idata_twfe3 = model_twfe3.fit( inference_method=\"nuts_numpyro\",\n",
         "    idata_kwargs={\"log_likelihood\": True})"
       ],
-      "id": "37d3eea1",
+      "id": "af6f8652",
       "execution_count": null,
       "outputs": []
     },
@@ -1679,7 +1679,7 @@
       "source": [
         "These latter models will recover the appropriate treatment effects with slight variations due to the adapted functional form. The initial models will fail to capture the pattern correctly. \n"
       ],
-      "id": "e89d712b"
+      "id": "7dea59b7"
     },
     {
       "cell_type": "code",
@@ -1711,7 +1711,7 @@
         "axs[2].legend()\n",
         "axs[3].legend();"
       ],
-      "id": "0af4cc0d",
+      "id": "164821ae",
       "execution_count": null,
       "outputs": []
     },
@@ -1723,7 +1723,7 @@
         "\n",
         "### Evaluating Robustness of Functional Form\n"
       ],
-      "id": "7a15435c"
+      "id": "1ed84cc5"
     },
     {
       "cell_type": "code",
@@ -1782,7 +1782,7 @@
         "axs[1].set_title(f\"\"\"Bootstrapped Estimates of Event Study DGP \\n\n",
         "{formula1}\"\"\");"
       ],
-      "id": "1367f4fe",
+      "id": "fc0dcd85",
       "execution_count": null,
       "outputs": []
     },
@@ -1794,7 +1794,7 @@
         "\n",
         "We can also compare these models on standard adequacy measures. \n"
       ],
-      "id": "5b5a3f3b"
+      "id": "9c7c77de"
     },
     {
       "cell_type": "code",
@@ -1805,7 +1805,7 @@
         "            'mundlak_cohort_state_interactions': idata_twfe2, \n",
         "            'mundlak_state_hierarchical_year': idata_twfe3})"
       ],
-      "id": "c22707dd",
+      "id": "9039db8e",
       "execution_count": null,
       "outputs": []
     },
@@ -1815,7 +1815,7 @@
       "source": [
         "Again, we can plot the predictive performance of these models. Here we compare two via posterior predictive checks. Notable we see how the model with the better predictive performance also correctly estimates the treatement effects in the above plots. "
       ],
-      "id": "f65cf0c9"
+      "id": "7f38180f"
     },
     {
       "cell_type": "code",
@@ -1830,7 +1830,7 @@
         "axs[1].set_title(\"PPC checks for FE Mundlak Naive\")\n",
         "az.plot_ppc(idata_twfe, ax=axs[1]);"
       ],
-      "id": "156ede64",
+      "id": "e2cb8928",
       "execution_count": null,
       "outputs": []
     },
@@ -1848,7 +1848,7 @@
         "\n",
         "Statistical models do not mirror the world, they project patterns in the data. Each rupture between model and world is a gift that highlights deficits in our understanding - an impropriety of projections. It is therefore a delightful reversal to see, in Woolridge's proof, that the issue is not with the tooling but the thoughtless application of the tool. The unreasonable effectiveness of regression modelling is surely driven by projections of linearity on the world, but it remains compelling in approximation when used well. There are architectural constraints in causal inference - hard unyielding facts, that shape the contours of our design, and structure the steps we can make. The degree to which we can flexibly encode those structures in our models, the more compelling our models will be. It is this recognition of dual fit requirements between world and model - the focus on the conditions for identifiability - that lends causal inference any kind of credibility. The expressive capacity of generalised linear modelling enables us to articulate too many candidate pictures of the world. It's the business of science to cull those pictures, to find only the plausible representations of reality. "
       ],
-      "id": "32aed19b"
+      "id": "c4bf3fc7"
     }
   ],
   "metadata": {
