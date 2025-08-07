@@ -18,16 +18,19 @@ citation: true
 
 ::: callout-note
 ## Transparency and Heuristics in Latent Space
-Principal Components Analysis can be seen as a technique to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias through architectural specification but of the two, only Bayesian methods do so transparently.
+Principal Components Analysis can be seen as a technique to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias through architectural specification, but of the two, only Bayesian methods do so transparently.
 :::
 
 ## Reconstruction Error and Latent Representations
 
 In applied statistical modeling, the hardest problems are often those we can't directly observe. Inferring latent structure from noisy, incomplete data forces us to ask: what do we believe about the world, and how do our models reflect those beliefs? Can they reproduce plausible patterns? What latent representation in the model space determines our predictions?
 
-This essay explores how different modeling choices; deep generative models are compared with structured Bayesian inference on how they handle reconstruction, imputation, and inductive bias. Along the way, we confront a central difficulty: in high-dimensional latent spaces, it’s easy to be wrong in convincing ways. Learning to “fill in the blanks” is only half the battle.
+This essay explores how different modeling choices impact the ability to re-construct patterns in observed data. Variational auto-encoder models are compared with structured Bayesian inference on how they handle reconstruction, imputation, and inductive bias. Along the way, we confront a central difficulty: in high-dimensional latent spaces, it’s easy to be wrong in convincing ways. Learning to “fill in the blanks” is only half the battle - the real challenge to retain high fidelity between the reconstruction process and the data-generating process. Superficial similarity is not enough. 
 
 **What we cover**:
+
+- PCA and SVD
+    Linear Decompositions and reconstruction of complex multivariate data sets.
 
 - Marginal reconstruction with VAEs
     - How well do deep generative models recover observed variables when trained on complete data?
