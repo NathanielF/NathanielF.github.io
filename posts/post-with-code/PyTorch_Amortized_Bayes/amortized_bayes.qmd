@@ -860,7 +860,7 @@ def make_pymc_model(sample_df):
 
     return idata, model 
 
-sample_df = make_sample(cov_matrix, 263, FEATURE_COLUMNS)
+sample_df = make_sample(cov_matrix, 500, FEATURE_COLUMNS)
 
 idata, model = make_pymc_model(sample_df)
 ```
@@ -871,7 +871,7 @@ While the VAE also performs generative modeling, it does so with less targeted c
 pm.model_to_graphviz(model)
 ```
 
-An additional advantage of the Bayesian approach is that the explicit inductive bias encoded in the prior helps stabilize estimation in low-data regimes. Because we constrain the model to estimate only correlation structures consistent with the LKJ prior—i.e., valid, regularized correlation matrices—it becomes possible to recover the essential structure of the data even with a small sample size. In this case, using just 263 observations, the model still reconstructs the underlying correlation matrix with notable accuracy. This is a powerful demonstration of the bias–variance trade-off in action: by introducing structured assumptions through the prior, we reduce variance in our estimates and avoid overfitting, which would be more likely in a more flexible, under-constrained model like the VAE.
+An additional advantage of the Bayesian approach is that the explicit inductive bias encoded in the prior helps stabilize estimation in low-data regimes. Because we constrain the model to estimate only correlation structures consistent with the LKJ prior—i.e., valid, regularized correlation matrices—it becomes possible to recover the essential structure of the data even with a small sample size. In this case, using just 500 observations, the model still reconstructs the underlying correlation matrix with notable accuracy. This is a powerful demonstration of the bias–variance trade-off in action: by introducing structured assumptions through the prior, we reduce variance in our estimates and avoid overfitting, which would be more likely in a more flexible, under-constrained model like the VAE.
 
 ```{python}
 
@@ -889,13 +889,13 @@ plot_heatmap(resids)
 One of the most elegant features of Bayesian modeling is its native ability to handle missing data through implicit imputation. In our probabilistic model, we never need to manually fill in missing values or mask them—PyMC automatically marginalizes over the missing entries in the observed data during sampling. The model treats these missing values as additional unknowns and estimates them jointly with the other parameters using the same prior and likelihood structure. This is particularly valuable in survey data settings, such as job satisfaction responses, where non-response bias is common and must be accounted for directly. 
 
 ```{python}
-sample_df_missing = make_sample(cov_matrix, 263, FEATURE_COLUMNS, missing_frac=0.1)
+sample_df_missing = make_sample(cov_matrix, 500, FEATURE_COLUMNS, missing_frac=0.1)
 
 #| output: false 
 idata_missing, model_missing = make_pymc_model(sample_df_missing)
 ```
 
-Our example shows that, even with 10% missingness in a modest-sized dataset of only 263 observations, the posterior over the correlation matrix remains well-calibrated, accurately recovering the underlying covariance structure. This demonstrates the strength of Bayesian inference: its inductive bias (in this case via the LKJ prior) not only makes estimation more robust but also provides principled uncertainty quantification for both model parameters and imputed values, all within a unified framework.
+Our example shows that, even with 10% missingness in a modest-sized dataset of only 500 observations, the posterior over the correlation matrix remains well-calibrated, accurately recovering the underlying covariance structure. This demonstrates the strength of Bayesian inference: its inductive bias (in this case via the LKJ prior) not only makes estimation more robust but also provides principled uncertainty quantification for both model parameters and imputed values, all within a unified framework.
 
 ```{python}
 pm.model_to_graphviz(model_missing)
