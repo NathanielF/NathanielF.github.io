@@ -156,6 +156,10 @@ A stringent test of any model for the job satisfaction process is whether it rec
 #| 
 data = sample_df.corr()
 
+def get_srmr(resids):
+    srmr = np.sqrt(np.sum(np.tril(resids).flatten()**2) / (12*(12 + 1))/2) 
+    return srmr
+
 def plot_heatmap(data, title="Correlation Matrix",  vmin=-.2, vmax=.2, ax=None, figsize=(10, 6), colorbar=True, cmap='magma'):
     data_matrix = data.values
     if ax is None:
@@ -465,32 +469,35 @@ This bootstrapping approach is key. Any one synthetic sample from the VAE might 
 
 def bootstrap_residuals(vae_fit, X_test, n_boot=1000):
     recons = []
+    srmrs = []
     resid_array = np.zeros((n_boot, 12, 12))
     for i in range(n_boot):
         recon_data = vae_fit.generate(n_samples=len(X_test))
         reconstructed_df = pd.DataFrame(recon_data, columns=FEATURE_COLUMNS)
         resid = pd.DataFrame(corr_matrix, columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS) - reconstructed_df.corr()
+        srmr = get_srmr(resid)
+        srmrs.append(srmr)
         resid_array[i] = resid.values
         recons.append(reconstructed_df)
 
     avg_resid = resid_array.mean(axis=0)
     bootstrapped_resids = pd.DataFrame(avg_resid, columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS)
-    return bootstrapped_resids
+    return bootstrapped_resids, srmrs
 
-bootstrapped_resids_500 = bootstrap_residuals(vae_fit_500, pd.DataFrame(test_500.dataset, columns=FEATURE_COLUMNS))
+bootstrapped_resids_500, srmrs_500 = bootstrap_residuals(vae_fit_500, pd.DataFrame(test_500.dataset, columns=FEATURE_COLUMNS))
 
-bootstrapped_resids_1000 = bootstrap_residuals(vae_fit_1000, pd.DataFrame(test_1000.dataset, columns=FEATURE_COLUMNS))
+bootstrapped_resids_1000, srmrs_1000 = bootstrap_residuals(vae_fit_1000, pd.DataFrame(test_1000.dataset, columns=FEATURE_COLUMNS))
 
-bootstrapped_resids_10_000 = bootstrap_residuals(vae_fit_10_000, pd.DataFrame(test_10_000.dataset, columns=FEATURE_COLUMNS))
+bootstrapped_resids_10_000, srmrs_10_000 = bootstrap_residuals(vae_fit_10_000, pd.DataFrame(test_10_000.dataset, columns=FEATURE_COLUMNS))
 
 
 fig, axs = plt.subplots(3, 1, figsize=(10, 20))
 axs = axs.flatten()
-plot_heatmap(bootstrapped_resids_500, title="""Expected Correlation Residuals for 500 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[0], colorbar=True, vmin=-.25, vmax=.25)
+plot_heatmap(bootstrapped_resids_500, title=f"""Expected Correlation Residuals for 500 observations \n Under 1000 Bootstrapped Reconstructions. SRMR: {np.mean(srmrs_500).round(2)}""", ax=axs[0], colorbar=True, vmin=-.25, vmax=.25)
 
-plot_heatmap(bootstrapped_resids_1000, title="""Expected Correlation  Residuals  for 1000 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[1], colorbar=True, vmin=-.25, vmax=.25)
+plot_heatmap(bootstrapped_resids_1000, title=f"""Expected Correlation  Residuals  for 1000 observations \n Under 1000 Bootstrapped Reconstructions. SRMR: {np.mean(srmrs_1000).round(2)}""", ax=axs[1], colorbar=True, vmin=-.25, vmax=.25)
 
-plot_heatmap(bootstrapped_resids_10_000, title="""Expected Correlation  Residuals  for 10,000 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[2], colorbar=True, vmin=-.25, vmax=.25)
+plot_heatmap(bootstrapped_resids_10_000, title=f"""Expected Correlation  Residuals  for 10,000 observations \n Under 1000 Bootstrapped Reconstructions. SRMR: {np.mean(srmrs_10_000).round(2)}""", ax=axs[2], colorbar=True, vmin=-.25, vmax=.25)
 
 
 
@@ -781,16 +788,16 @@ The heatmaps below visualize the residuals between the observed and reconstructe
 
 ```{python}
 
-bootstrapped_resids_5000 = bootstrap_residuals(fit_vae_missing_5000, pd.DataFrame(test_loader_5000.dataset.x, columns=FEATURE_COLUMNS))
+bootstrapped_resids_5000, srmrs_5000 = bootstrap_residuals(fit_vae_missing_5000, pd.DataFrame(test_loader_5000.dataset.x, columns=FEATURE_COLUMNS))
 
-bootstrapped_resids_25_000 = bootstrap_residuals(fit_vae_missing_25_000, pd.DataFrame(test_loader_25_000.dataset.x, columns=FEATURE_COLUMNS))
+bootstrapped_resids_25_000, srmrs_25_000 = bootstrap_residuals(fit_vae_missing_25_000, pd.DataFrame(test_loader_25_000.dataset.x, columns=FEATURE_COLUMNS))
 
 
 fig, axs = plt.subplots(2, 1, figsize=(8, 15))
 axs = axs.flatten()
-plot_heatmap(bootstrapped_resids_5000, title="""Expected Correlation Residuals for 5000 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[0], colorbar=True, vmin=-.25, vmax=.25)
+plot_heatmap(bootstrapped_resids_5000, title=f"""Expected Correlation Residuals for 5000 observations \n Under 1000 Bootstrapped Reconstructions. SRMR: {np.mean(srmrs_5000).round(2)}""", ax=axs[0], colorbar=True, vmin=-.25, vmax=.25)
 
-plot_heatmap(bootstrapped_resids_25_000, title="""Expected Correlation  Residuals  for 25,000 observations \n Under 1000 Bootstrapped Reconstructions""", ax=axs[1], colorbar=True, vmin=-.25, vmax=.25)
+plot_heatmap(bootstrapped_resids_25_000, title=f"""Expected Correlation  Residuals  for 25,000 observations \n Under 1000 Bootstrapped Reconstructions SRMR: {np.mean(srmrs_25_000).round(2)}""", ax=axs[1], colorbar=True, vmin=-.25, vmax=.25)
 
 
 ```
@@ -817,7 +824,7 @@ vae = NumericVAE(n_features=train_loader_imputed.dataset.shape[1], hidden_dim=64
 optimizer = torch.optim.Adam(vae.parameters(), lr=1e-3)
 vae_fit_10_000_imputed, losses_df_10_000_imputed = train_vae(vae, optimizer, train_loader_imputed, test_loader_imputed)
 
-bootstrapped_resids_10_000_imputed = bootstrap_residuals(vae_fit_10_000_imputed, pd.DataFrame(test_loader_imputed.dataset, columns=FEATURE_COLUMNS))
+bootstrapped_resids_10_000_imputed, srmrs_10_000_imputed = bootstrap_residuals(vae_fit_10_000_imputed, pd.DataFrame(test_loader_imputed.dataset, columns=FEATURE_COLUMNS))
 
 
 ```
@@ -826,7 +833,7 @@ bootstrapped_resids_10_000_imputed = bootstrap_residuals(vae_fit_10_000_imputed,
 
 # | code-fold: true
 
-plot_heatmap(bootstrapped_resids_10_000_imputed, title="""Expected Correlation  Residuals  for 10,000 observations \n Under 1000 Bootstrapped Reconstructions""", colorbar=True, vmin=-.25, vmax=.25);
+plot_heatmap(bootstrapped_resids_10_000_imputed, title=f"""Expected Correlation  Residuals  for 10,000 observations \n Under 1000 Bootstrapped Reconstructions SRMR: {np.mean(srmrs_10_000_imputed).round(2)}""", colorbar=True, vmin=-.25, vmax=.25);
 ```
 
 This contrast highlights a recurring lesson in applied modeling: simple can outperform complex - especially when the complexity introduces new sources of opaque inductive bias. The masked VAE encoded specific assumptions about missingness and reconstruction that, despite being theoretically appealing, failed to generalize. In contrast, the imputation-plus-VAE approach leverages a simpler inductive bias: that missing values can be smoothed over without disrupting the overall dependency structure. In this context, that assumption proved to be not only adequate but effective.
@@ -879,7 +886,9 @@ An additional advantage of the Bayesian approach is that the explicit inductive 
 expected_corr = pd.DataFrame(az.summary(idata, var_names=['chol_corr'])['mean'].values.reshape((12, 12)), columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS)
 
 resids = pd.DataFrame(corr_matrix, columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS) - expected_corr
-plot_heatmap(resids, title="Expected Correlation Residuals  \n on the Posterior Correlation Estimate")
+
+srmr_bayes_500 = get_srmr(resids)
+plot_heatmap(resids, title=f"Expected Correlation Residuals  \n on the Posterior Correlation Estimate. SRMR: {np.mean(srmr_bayes_500).round(2)}")
 
 ```
 
@@ -889,9 +898,11 @@ plot_heatmap(resids, title="Expected Correlation Residuals  \n on the Posterior 
 One of the most elegant features of Bayesian modeling is its native ability to handle missing data through implicit imputation. In our probabilistic model, we never need to manually fill in missing values or mask them—PyMC automatically marginalizes over the missing entries in the observed data during sampling. The model treats these missing values as additional unknowns and estimates them jointly with the other parameters using the same prior and likelihood structure. This is particularly valuable in survey data settings, such as job satisfaction responses, where non-response bias is common and must be accounted for directly. 
 
 ```{python}
+#| output: false 
+#| 
 sample_df_missing = make_sample(cov_matrix, 500, FEATURE_COLUMNS, missing_frac=0.1)
 
-#| output: false 
+
 idata_missing, model_missing = make_pymc_model(sample_df_missing)
 ```
 
@@ -909,7 +920,9 @@ The model structure automatically parses out the observed from missing cells and
 expected_corr = pd.DataFrame(az.summary(idata_missing, var_names=['chol_corr'])['mean'].values.reshape((12, 12)), columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS)
 
 resids = pd.DataFrame(corr_matrix, columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS) - expected_corr
-plot_heatmap(resids, title="Expected Correlation Residuals  \n on the Posterior Correlation Estimate")
+
+srmr_bayes_500_missing = get_srmr(resids)
+plot_heatmap(resids, title=f"Expected Correlation Residuals  \n on the Posterior Correlation Estimate. SRMR: {np.mean(srmr_bayes_500_missing).round(2)}")
 
 
 ```
