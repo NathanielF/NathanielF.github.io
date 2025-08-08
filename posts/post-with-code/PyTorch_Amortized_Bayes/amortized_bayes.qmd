@@ -77,7 +77,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 ## Job Satisfaction Data
 
-Job satisfaction is not one thing. It’s a bundle: how we think, how we feel, how we work. In our simulation, we model this bundle through twelve indicators—grouped into constructive thought strategies (JW1–JW3), dysfunctional patterns (UF1, UF2, FOR), well-being (DA1–DA3), and satisfaction outcomes (EBA, ST, MI). The Python code generates data by first defining a realistic correlation matrix and scaling it by standard deviations to yield a structured covariance matrix. From this, we draw synthetic observations using a multivariate normal distribution. This allows us to test estimators under controlled complexity.
+Job satisfaction is not one thing. It’s a bundle: how we think, how we feel, how we work. In our simulation, we model this bundle through twelve indicators—grouped into constructive thought strategies (JW1–JW3), dysfunctional patterns (UF1, UF2, FOR), well-being (DA1–DA3), and satisfaction outcomes (EBA, ST, MI). This framing is adapted from the discussion in Vehkalahti and Everitt's _Multivariate Analysis for the Behavioral Sciences_. The Python code generates data by first defining a realistic correlation matrix and scaling it by standard deviations to yield a structured covariance matrix. From this, we draw synthetic observations using a multivariate normal distribution. This allows us to test estimators under controlled complexity.
 
 ```{python}
 # | code-fold: true
@@ -148,7 +148,7 @@ sample_df.head(10)
 ```
 
 
-A first test of any model for the job satisfaction process is whether it recovers the observed correlation structure. The code extracts pairwise correlations from the simulated data and visualizes them using a heatmap. Strong ties—positive or negative—appear as vivid blocks, offering a visual audit of relational intensity. This pattern matters. While it does not imply causation, it does offer a benchmark: if a model can't replicate these patterns, it's likely missing structure.
+A stringent test of any model for the job satisfaction process is whether it recovers the observed correlation structure. The code extracts pairwise correlations from the simulated data and visualizes them using a heatmap. Strong ties—positive or negative—appear as vivid blocks, offering a visual audit of relational intensity. This pattern matters. While it does not imply causation, it does offer a benchmark: if a model can't replicate these patterns, it's likely missing structure.
 
 ```{python}
 
@@ -185,7 +185,7 @@ plot_heatmap(data, vmin=-1, vmax=1)
 
 ### Singular Value Decomposition and Reconstruction Error
 
-Multivariate systems often lie on lower-dimensional structures. Principal Component Analysis (PCA), via Singular Value Decomposition (SVD), helps us explore this. Any data matrix $X$ can be decomposed as $X = U\Sigma V^{T}$ where $\Sigma$ contains singular values ordered by importance. Truncating this expansion at rank $k$ reconstructs an approximation of the original. The code below shows that even with only 2 or 5 components, much of the structure is retained. As we increase $k$ the reconstruction error falls—revealing the data's latent geometry.
+Multivariate systems often lie on lower-dimensional structures. Principal Component Analysis (PCA), via Singular Value Decomposition (SVD), helps us explore these spaces. Any data matrix $X$ can be decomposed as $X = U\Sigma V^{T}$ where $\Sigma$ contains singular values ordered by importance. Truncating this expansion at rank $k$ reconstructs an approximation of the original. The code below shows that even with only 2 or 5 components, much of the structure is retained. As we increase $k$ the reconstruction error falls—revealing the data's latent geometry.
 
 ```{python}
 
@@ -194,7 +194,7 @@ U, S, VT = np.linalg.svd(X, full_matrices=False)
 
 ```
 
-SVD decomposes a matrix into interpretable parts: directions of variation, scaled by importance. The reconstruction plots show that a handful of components (principal axes) capture most of the variation in job satisfaction data. This supports the idea of latent representations: the surface complexity of our variables arises from simpler underlying factors. Variational autoencoders (VAEs) and Bayesian posterior predictive sampling attempt the same compression and recovery, but embed it within generative models. As we’ll see, their reconstruction quality also reflects the strength and focus of their latent encoding.
+SVD decomposes a matrix into interpretable parts: directions of variation, scaled by importance. The reconstruction plots show that a handful of components (principal axes) capture most of the variation in job satisfaction data. This supports the idea of latent representations: __the surface complexity of our variables arises from simpler underlying factors.__ Variational autoencoders (VAEs) and Bayesian posterior predictive sampling attempt similar compression and recovery strategies, but embed it within generative models. As we’ll see, their reconstruction quality also reflects the strength and focus of their latent encoding.
 
 ```{python}
 
@@ -223,11 +223,11 @@ plt.show()
 
 ```
 
-SVD shows us that high-dimensional data can often be compressed with little loss. But it’s linear and fixed: it doesn’t learn. Variational autoencoders generalize this idea. Like PCA, they seek a latent representation, but they do so through non-linear mappings learned from data. An autoencoder has two parts: an encoder, which compresses data into a latent code, and a decoder, which reconstructs it. Unlike PCA, this process is flexible and adapts to the data distribution, not just its linear axes. The variational auto-encoder (VAE) extends this idea by placing probability distributions over these latent codes, allowing us to sample and generate new data points.
+SVD shows us that high-dimensional data can often be compressed with little loss. But it’s linear and fixed: it doesn’t learn a generalisable representation. Variational autoencoders generalize this idea. Like PCA, they seek a latent representation, but they do so through non-linear mappings learned from data. An autoencoder has two parts: an encoder, which compresses data into a latent measure, and a decoder, which reconstructs it. Unlike PCA, this process is flexible and adapts to the data distribution, not just its linear axes. The variational auto-encoder (VAE) extends this idea by placing probability distributions over these latent codes, allowing us to sample and generate new data points.
 
 ## Variational Auto-Encoders
 
-The NumericVAE class captures this structure. The encoder maps observed data to the parameters of a distribution over latent variables $z$ specifically a Gaussian with learned mean and variance: $q(z|x) = N(\mu(x), \sigma^{2}(x))$ Using the reparameterization trick, we sample $z \sim q(z| x)$ and decode it into a predicted distribution over the observed variables $p(x |z)$. This makes the model generative: not only can it reconstruct known data, it can synthesize new, plausible examples by sampling from the latent prior 
+The `NumericVAE` class below captures this structure. The encoder maps observed data to the parameters of a distribution over latent variables $z$ specifically a Gaussian with learned mean and variance: $q(z|x) = N(\mu(x), \sigma^{2}(x))$ Using the reparameterization trick, we sample $z \sim q(z| x)$ and decode it into a predicted distribution over the observed variables $p(x |z)$. This makes the model generative: not only can it reconstruct known data, it can synthesize new, plausible examples by sampling from the latent prior 
 $p(z) \sim N(0, I)$ and decoding. The result is a flexible, probabilistic architecture that mimics and extends the SVD idea of structure through compression.
 
 ```{python}
@@ -344,7 +344,7 @@ def prep_data_vae(sample_size=1000, missing_frac=0.0, impute=False):
 
 ```
 
-Training a variational autoencoder means adjusting a large array of weights to minimize reconstruction error and regularize the latent space. The `train_vae` function loops over batches from the training set, computes the loss, and updates the model via backpropagation. Each batch yields predicted distributions over features, from which we compute both the reconstruction loss and the KL divergence. These are averaged and logged for both training and held-out test data. Early stopping halts training when improvements plateau—preventing overfitting while preserving the best model seen so far.
+Training a variational autoencoder means adjusting a large array of weights to minimize reconstruction error and regularize the latent space. The `train_vae` function loops over batches from the training set, computes the loss, and updates the model via backpropagation. Each batch yields predicted distributions over features, from which we compute both the reconstruction loss and the KL divergence. These are averaged and logged for both training and held-out test data. Early stopping halts training when improvements plateau. Preventing overfitting while preserving the best model seen so far.
 
 ```{python}
 
@@ -418,7 +418,7 @@ optimizer = torch.optim.Adam(vae.parameters(), lr=1e-3)
 vae_fit_10_000, losses_df_10_000 = train_vae(vae, optimizer, train_10_000, test_10_000)
 ```
 
-Training and test losses tell us how well the model fits the data—and how well it generalizes. The plots show these losses over training epochs for datasets of size 500, 1,000, and 10,000. A falling training loss indicates the model is learning to reconstruct the data. If test loss follows the same trend, generalization is improving too. If test loss flattens or rises while training loss keeps falling, the model may be overfitting—memorizing rather than learning.
+Training and test losses tell us how well the model fits the data and how well it generalizes. The plots show these losses over training epochs for datasets of size 500, 1,000, and 10,000. A falling training loss indicates the model is learning to reconstruct the data. If test loss follows the same trend, generalization is improving too. If test loss flattens or rises while training loss keeps falling, the model may be overfitting—memorizing rather than learning.
 
 ```{python}
 
@@ -457,7 +457,7 @@ plot_metric_recovery(vae_fit_10_000, test_10_000.dataset)
 
 ```
 
-To evaluate how well the VAE learns the joint structure of the data and not just feature-wise accuracy, we compare the correlation matrices of the reconstructed data. We treat the test set as ground truth and ask: does the VAE, when generating synthetic data, reproduce its dependency structure? For each bootstrap iteration, we sample new data from the trained VAE and compute its correlation matrix. We subtract this from the test set’s correlation matrix, storing the residuals. Averaging across 1,000 samples gives us the expected discrepancy between true and learned structure.
+To evaluate how well the VAE learns the joint structure of the data and not just feature-wise accuracy, we compare the correlation matrices of the reconstructed data. We know the ground truth and ask: does the VAE, when generating synthetic data, reproduce the correct dependency structure? For each bootstrap iteration, we sample new data from the trained VAE and compute its correlation matrix. We subtract this from the true correlation matrix, storing the residuals. Averaging across 1,000 samples gives us the expected discrepancy between true and learned structure.
 
 This bootstrapping approach is key. Any one synthetic sample from the VAE might show idiosyncratic deviations due to randomness in the generative process. By repeating the process many times, we average out this noise and obtain a stable, expected residual. This makes the evaluation fair: it judges the model based on the distribution it has learned, not on any one lucky—or unlucky—draw. A good model will show consistently small residuals, especially along the strongest correlations of the test set.
 
@@ -914,8 +914,17 @@ plot_heatmap(resids)
 
 ```
 
+### Deep Latent Structures
+
+We've seen how these kinds of models handle the estimation of latent correlation structure, but this is only to scratch the surface. Most work on job-satisfaction would suggest that there is a much richer causal structure between the variables in our data set than we recover with simple correlation analysis. Houghton and Jinkerson's initial work on _"Constructive Thought Strategies and Job Satisfaction: A Preliminary Examination"_ suggested that the latent causal structure was compellingly modeled with the following SEM structure
+
+![Houghton and Jinkerson's suggest SEM model of Job Satisfaction](images/SEM_structure.png)
+
+Here they express the idea that the effects of constructive thought strategies are doubly mediated by an individual's dysfunctional thought processes and their sense of subjective well being. We won't here develop the SEM model, but we'll conclude with the suggestion that complex causal processes require transparent and expressive models for their assessment. 
 
 ## Conclusion and Key Takeaways 
+
+Most complex phenomena have a complex data generating process. For the statistical model to retain plausible fidelty with the phenomena we should transparently encode as much complexity as required in our models. This, as we've seen, is not completely trivial. 
 
  - Inductive Bias Shapes Learning: The assumptions built into models ,whether explicit priors or implicit architectures, directly influence what patterns are captured and how well they generalize.
 
