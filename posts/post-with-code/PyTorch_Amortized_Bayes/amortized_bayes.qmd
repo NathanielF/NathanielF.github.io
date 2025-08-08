@@ -8,7 +8,7 @@ draft: false
 execute: 
   enabled: true
 jupyter: pytorch-env
-abstract: "The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Is the cost worth paying?"
+abstract: "The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Imputation of missing data needs to be handled with care to preserve latent structure alongside plausible realisations. We see these considerations play out in the case of Job satisfaction surveys and non-response patterns."
 image: "images/construction_bricks.jpg"
 author:
     - url: https://nathanielf.github.io/
@@ -83,7 +83,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 ## Job Satisfaction Data
 
-Job satisfaction is not one thing. It’s a bundle: how we think, how we feel, how we work. In our simulation, we model this bundle through twelve indicators—grouped into constructive thought strategies (JW1–JW3), dysfunctional patterns (UF1, UF2, FOR), well-being (DA1–DA3), and satisfaction outcomes (EBA, ST, MI). This framing is adapted from the discussion in Vehkalahti and Everitt's _Multivariate Analysis for the Behavioral Sciences_. The Python code generates data by first defining a realistic correlation matrix and scaling it by standard deviations to yield a structured covariance matrix. From this, we draw synthetic observations using a multivariate normal distribution. This allows us to test estimators under controlled complexity.
+Job satisfaction is not one thing. It’s a bundle: how we think, how we feel, how we work. In our simulation, we model this bundle through twelve indicators—grouped into job satisfaction (JW1–JW3), well-being (UF1, UF2, FOR), dysfunctional patterns (DA1–DA3), and constructive thought strategies (EBA, ST, MI). This framing is adapted from the discussion in Vehkalahti and Everitt's _Multivariate Analysis for the Behavioral Sciences_. The Python code generates data by first defining a realistic correlation matrix and scaling it by standard deviations to yield a structured covariance matrix. From this, we draw synthetic observations using a multivariate normal distribution. This allows us to test estimators under controlled complexity.
 
 ```{python}
 # | code-fold: true
