@@ -156,11 +156,11 @@ A stringent test of any model for the job satisfaction process is whether it rec
 #| 
 data = sample_df.corr()
 
-def plot_heatmap(data, title="Correlation Matrix",  vmin=-.2, vmax=.2, ax=None, figsize=(10, 6), colorbar=True):
+def plot_heatmap(data, title="Correlation Matrix",  vmin=-.2, vmax=.2, ax=None, figsize=(10, 6), colorbar=True, cmap='magma'):
     data_matrix = data.values
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
-    im = ax.imshow(data, cmap='magma', vmin=vmin, vmax=vmax)
+    im = ax.imshow(data, cmap=cmap, vmin=vmin, vmax=vmax)
 
     for i in range(data_matrix.shape[0]):
         for j in range(data_matrix.shape[1]):
@@ -179,7 +179,7 @@ def plot_heatmap(data, title="Correlation Matrix",  vmin=-.2, vmax=.2, ax=None, 
     if colorbar:
         plt.colorbar(im)
 
-plot_heatmap(data, vmin=-1, vmax=1)
+plot_heatmap(data, vmin=-1, vmax=1, cmap='coolwarm')
 
 ```
 
