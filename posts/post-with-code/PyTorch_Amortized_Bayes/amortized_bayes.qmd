@@ -20,7 +20,7 @@ citation: true
 ## Transparency and Heuristics in Latent Space
 Principal Components Analysis is used to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias through architectural specification, but of the two, only Bayesian methods do so transparently.
 
-We find (a) a VAE architecture that can recover the latent correlation structure of a multivariate normal outcome if scaled up with enough data and (b) a theoretically superior architecture designed to handle missing data that breaks on the reconstruction task when trying to do so. Both are then compared to the simpler multivariate normal Bayesian model in PyMC which is able to recover the correlation structure much more efficiently. We then draw some lessons about the value of transparent inductive biases in statistical models.
+We find (a) a VAE architecture that can recover the latent correlation structure of a multivariate normal outcome if scaled up with enough data and (b) a theoretically superior architecture designed to handle missing data that breaks on the reconstruction task when trying to do so. Both are then compared to the simpler multivariate normal Bayesian model in PyMC which is able to recover the correlation structure much more efficiently. __These methods are applied to an imputation problem for non-response in job-satisfaction surveys.__ We then draw some lessons about the value of transparent inductive biases in statistical models.
 :::
 
 ## Reconstruction Error and Latent Representations
@@ -52,6 +52,9 @@ This essay explores how different modeling choices impact the ability to re-cons
 - Implicit imputation via the posterior
     - How the Bayesian model naturally fills in missing data, respecting uncertainty.
 
+- Bayesian Structural Equation Models
+    - How the correlation structure can be estimated within a transparent causal structural model
+
 Throughout, we learn that reconstruction alone is not validation, and that model structure matters more than model complexity. Inductive bias isn't a limitation—it’s our strongest tool for generalization.
 
 ```{python}
@@ -69,6 +72,7 @@ from sklearn.model_selection import train_test_split
 from matplotlib import pyplot as plt
 import pymc as pm 
 import arviz as az
+import pytensor.tensor as pt
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -929,13 +933,200 @@ plot_heatmap(resids, title=f"Expected Correlation Residuals  \n on the Posterior
 
 ```
 
-### Deep Latent Structures
+## Deep Latent Structures with SEMs
 
 We've seen how these kinds of models handle the estimation of latent correlation structure, but this is only to scratch the surface. Most work on job-satisfaction would suggest that there is a much richer causal structure between the variables in our data set than we recover with simple correlation analysis. Houghton and Jinkerson's initial work on _"Constructive Thought Strategies and Job Satisfaction: A Preliminary Examination"_ suggested that the latent causal structure was compellingly modeled with the following SEM structure
 
 ![Houghton and Jinkerson's suggest SEM model of Job Satisfaction](images/SEM_structure.png)
 
-Here they express the idea that the effects of constructive thought strategies are doubly mediated by an individual's dysfunctional thought processes and their sense of subjective well being. We won't here develop the SEM model, but we'll conclude with the suggestion that complex causal processes require transparent and expressive models for their assessment. 
+Here they express the idea that the effects of constructive thought strategies are doubly mediated by an individual's dysfunctional thought processes and their sense of subjective well being. We can here develop the SEM model, but the general point is that complex causal processes require transparent and expressive models for their assessment. For background on SEM modelling with PyMC see [here](https://www.pymc.io/projects/examples/en/latest/case_studies/CFA_SEM.html)
+
+
+```{python}
+# | output: false
+# | code-fold: true
+
+
+coords = {
+    "obs": list(range(len(sample_df))),
+    "indicators": FEATURE_COLUMNS,
+    "indicators_1": ["JW1", "JW2",	"JW3"], # job satisfaction
+    "indicators_2": ["UF1", "UF2", "FOR"], # well being
+    "indicators_3": ["DA1", "DA2", "DA3"], # dysfunction
+    "indicators_4": ["EBA", "ST", "MI"], # constructive thought strategies
+    "latent": ["satisfaction", "well being", "dysfunctional", "constructive"],
+    "paths": ["dysfunctional ~ constructive", "well being ~ dysfunctional", "well being ~ constructive", "satisfaction ~ well being", "satisfaction ~ dysfunction" ,  "satisfaction ~ constructive"], 
+    "sd_params": [i + '_sd' for i in FEATURE_COLUMNS],
+    "corr_params": ['UF1 ~~ FOR']
+}
+
+def make_lambda(indicators, name='lambdas1', priors=[1, 10]):
+    """ Takes an argument indicators which is a string in the coords dict"""
+    temp_name = name + '_'
+    lambdas_ = pm.Normal(temp_name, priors[0], priors[1], dims=(indicators))
+    # Force a fixed scale on the factor loadings for factor 1
+    lambdas_1 = pm.Deterministic(
+        name, pt.set_subtensor(lambdas_[0], 1), dims=(indicators)
+    )
+    return lambdas_1
+
+def make_B(priors=[0, 1]):
+    ## Build Regression Components
+    coefs = pm.Normal('betas', priors[0], priors[1], dims='paths')
+    zeros = pt.zeros((4, 4))
+    ## dysfunctional ~ constructive
+    zeros1 = pt.set_subtensor(zeros[3, 2], coefs[0])
+    ## well being ~ dysfunctional
+    zeros2 = pt.set_subtensor(zeros1[2, 1], coefs[1])
+    ## well being ~ constructive
+    zeros2 = pt.set_subtensor(zeros1[3, 1], coefs[2])
+    ## satisfaction ~ well being
+    coefs_ = pt.set_subtensor(zeros2[1, 0], coefs[3])
+    ## satisfaction ~ dysfunction
+    coefs_ = pt.set_subtensor(zeros2[2, 0], coefs[4])
+    ## satisfaction ~ constructive
+    coefs_ = pt.set_subtensor(zeros2[3, 0], coefs[5])
+    return coefs_
+
+def make_Psi(indicators, name='Psi_cov'):
+    """ Takes an argument indicators which is a string in the coords dict"""
+    temp_name = name + '_'
+    n = len(coords[indicators])
+    cov_params = pm.InverseGamma(temp_name, 3, 4, dims='sd_params')
+    r = pt.zeros((n, n))
+    beta_params = pm.Beta(temp_name + 'beta', 1, 1, dims='corr_params')
+    for i in range(len(coords[indicators])):
+        r = pt.set_subtensor(r[i, i], 1)
+    # UF1 ~~ FOR
+    r = pt.set_subtensor(r[3, 5], beta_params[0])
+    s = pt.diag(cov_params)
+    cov = (s @ r) @ pt.transpose(s @ r)
+    r = pm.Deterministic('Psi_corr', r)
+    cov = pm.Deterministic('Psi_cov', cov)
+
+    return cov
+
+obs_idx = list(range(len(sample_df)))
+with pm.Model(coords=coords) as sem_model:
+
+    # Set up Factor Loadings
+    lambdas_1 = make_lambda('indicators_1', 'lambdas1', priors=[1, .5])
+    lambdas_2 = make_lambda('indicators_2', 'lambdas2', priors=[1, .5])
+    lambdas_3 = make_lambda('indicators_3', 'lambdas3', priors=[1, .5])
+    lambdas_4 = make_lambda('indicators_4', 'lambdas4', priors=[1, .5])
+
+    sd_dist = pm.Exponential.dist(1.0, shape=3)
+    chol, _, _ = pm.LKJCholeskyCov("chol_cov", n=4, eta=2, sd_dist=sd_dist, compute_corr=True)
+    ksi = pm.MvNormal("ksi", 0, chol=chol, dims=("obs", "latent"))
+
+    ## Build Regression Components
+    coefs_ = make_B()
+    ksi_hat = pm.Deterministic('endogenous_structural_paths', pm.math.dot(ksi, coefs_))
+
+    # Construct Pseudo Observation vector based on Factor Loadings
+    m1 = ksi[obs_idx, 0] * lambdas_1[0] + ksi_hat[obs_idx, 0] # JS
+    m2 = ksi[obs_idx, 0] * lambdas_1[1] + ksi_hat[obs_idx, 0] # JS
+    m3 = ksi[obs_idx, 0] * lambdas_1[2] + ksi_hat[obs_idx, 0] # JS
+
+    m4 = ksi[obs_idx, 1] * lambdas_2[0] +  ksi_hat[obs_idx, 1] #well being
+    m5 = ksi[obs_idx, 1] * lambdas_2[1] +  ksi_hat[obs_idx, 1] #well being
+    m6 = ksi[obs_idx, 1] * lambdas_2[2] +  ksi_hat[obs_idx, 1] #well being
+
+    m7 = ksi[obs_idx, 2] * lambdas_3[0] + ksi_hat[obs_idx, 2] # dysfunction
+    m8 = ksi[obs_idx, 2] * lambdas_3[1] + ksi_hat[obs_idx, 2]
+    m9 = ksi[obs_idx, 2] * lambdas_3[2] + ksi_hat[obs_idx, 2]
+
+    m10 = ksi[obs_idx, 3] * lambdas_4[0] + ksi_hat[obs_idx, 3] # constructive
+    m11 = ksi[obs_idx, 3] * lambdas_4[1] + ksi_hat[obs_idx, 3]
+    m12 = ksi[obs_idx, 3] * lambdas_4[2] + ksi_hat[obs_idx, 3]
+
+    mu = pm.Deterministic("mu", pm.math.stack([m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12]).T)
+
+    ## Independent Error Terms
+    #Psi = pm.Gamma("Psi", 1, 0.5, dims="indicators")
+    ## Correlated Residuals
+    Psi = make_Psi('indicators')
+
+    # Likelihood
+    _ = pm.MvNormal("likelihood", mu, cov=Psi, 
+    dims=("obs", "indicators"),  observed=sample_df[coords['indicators']].values)
+```
+
+The model structure is now more complicated than the simple multivariate outcomes we've seen before - but this complexity is tied to an expressive structure and deliberately coded relations.
+
+```{python}
+pm.model_to_graphviz(sem_model)
+
+```
+
+In the Lavaan syntax we have something like: 
+
+```{.python}
+# measurement part
+CTS =~ EBA + ST + MI
+DTP =~ DA1 + DA2 + DA3
+SWB =~ UF1 + UF2 + FOR
+JS =~ JW1 + JW2 + JW3
+
+# error covariance
+UF1 ~~ FOR
+
+# structural part
+DTP ~ CTS
+SWB ~ CTS + DTP
+JS  ~ CTS + DTP + SWB 
+
+```
+where we have explicitly coded the indicator variables in our data set as loading onto one of four distinct factors. These factors in their turn are then placed into a regression relationship and we allow that there is a covariance structure among two of our indicator variables. We can now sample from this structure estimate the factor loadings and path coefficients at the same time. 
+
+```{python}
+# | output: false
+
+with sem_model: 
+    idata = pm.sample_prior_predictive()
+    idata.extend(pm.sample(tune=2000, draws=3000, target_accept=.95))
+
+```
+
+We plot the estimates parameters here. We might worry about the parameter identification here, but since we're not using real data the point is a little moot as we haven't properly encoded the regression structure in our simulation data. 
+
+```{python}
+
+ax = az.plot_forest(idata, figsize=(8, 8),
+var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'betas'], combined=True);
+ax[0].set_title("Structural Parameter Estimates from SEM model")
+
+```
+
+and sample the posterior predictive distribution for the multivariate outcome. 
+
+```{python}
+# | output: false
+
+with sem_model:
+    idata.extend(pm.sample_posterior_predictive(idata))
+
+```
+
+Before finally plotting the reconstruction of the correlation structure based on the posterior predictive distribution of the structural equation model. The results are pretty compelling. We've encoded a causal DAG structure in our model specification and were able to recover a plausible reconstruction of the multivariate correlations while estimating structural parameters of interest. 
+
+```{python}
+def sample_ppc_calc_resids(idata, n_samples=300):
+    resid_array = np.zeros((n_samples, 12, 12))
+    for i in range(n_samples):
+        ppc_corr = pd.DataFrame(idata['posterior_predictive']['likelihood'].stack(sample=["chain", "draw"])[:, :, i], columns=FEATURE_COLUMNS).corr()
+        resid = ppc_corr - pd.DataFrame(corr_matrix, columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS)
+        resid_array[i] = resid.values
+
+    average_resids = pd.DataFrame(resid_array.mean(axis=0), columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS)
+    return average_resids
+
+average_resids = sample_ppc_calc_resids(idata)
+srmr = get_srmr(average_resids)
+plot_heatmap(average_resids, title=f"Reconstructed Correlation Structure from SEM model \n SRMR: {srmr.round(2)}")
+
+
+```
 
 ## Conclusion and Key Takeaways 
 
