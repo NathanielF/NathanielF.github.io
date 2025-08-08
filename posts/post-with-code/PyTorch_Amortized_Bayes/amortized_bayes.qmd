@@ -879,7 +879,7 @@ An additional advantage of the Bayesian approach is that the explicit inductive 
 expected_corr = pd.DataFrame(az.summary(idata, var_names=['chol_corr'])['mean'].values.reshape((12, 12)), columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS)
 
 resids = pd.DataFrame(corr_matrix, columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS) - expected_corr
-plot_heatmap(resids)
+plot_heatmap(resids, title="Expected Correlation Residuals  \n on the Posterior Correlation Estimate")
 
 ```
 
@@ -909,7 +909,7 @@ The model structure automatically parses out the observed from missing cells and
 expected_corr = pd.DataFrame(az.summary(idata_missing, var_names=['chol_corr'])['mean'].values.reshape((12, 12)), columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS)
 
 resids = pd.DataFrame(corr_matrix, columns=FEATURE_COLUMNS, index=FEATURE_COLUMNS) - expected_corr
-plot_heatmap(resids)
+plot_heatmap(resids, title="Expected Correlation Residuals  \n on the Posterior Correlation Estimate")
 
 
 ```
