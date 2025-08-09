@@ -8,7 +8,7 @@ draft: false
 execute: 
   enabled: true
 jupyter: pytorch-env
-abstract: "The cost of generating new sample data can be prohibitive. There is a secondary but different cost which attaches to the 'construction' of novel data. Imputation of missing data needs to be handled with care to preserve latent structure alongside plausible realisations. We see these considerations play out in the case of Job satisfaction surveys and non-response patterns."
+abstract: "Missing data imposes two costs: the expense of collecting new observations and the risk of distorting the underlying structure when we construct plausible replacements. In job satisfaction surveys, non-response patterns can conceal meaningful latent relationships. This study compares statistical and machine learning approaches for imputation, focusing on their ability to preserve these latent structures while producing realistic reconstructions."
 image: "images/construction_bricks.jpg"
 author:
     - url: https://nathanielf.github.io/
@@ -20,42 +20,20 @@ citation: true
 ## Transparency and Heuristics in Latent Space
 Principal Components Analysis is used to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias through architectural specification, but of the two, only Bayesian methods do so transparently.
 
-We find (a) a VAE architecture that can recover the latent correlation structure of a multivariate normal outcome if scaled up with enough data and (b) a theoretically superior architecture designed to handle missing data that breaks on the reconstruction task when trying to do so. Both are then compared to the simpler multivariate normal Bayesian model in PyMC which is able to recover the correlation structure much more efficiently. __These methods are applied to an imputation problem for non-response in job-satisfaction surveys.__ We then draw some lessons about the value of transparent inductive biases in statistical models.
+We find (a) a VAE architecture that can recover the latent correlation structure of a multivariate normal outcome if scaled up with enough data and (b) a theoretically superior architecture designed to handle missing data that breaks on the reconstruction task when trying to do so. Both are then compared to the simpler multivariate normal Bayesian model in PyMC which is able to recover the correlation structure much more efficiently. __These methods are applied to an imputation problem for non-response in job-satisfaction surveys.__ We then draw some lessons about the value of transparent inductive biases in encoded in latent factor structures of Structural Equation Models.
 :::
 
 ## Reconstruction Error and Latent Representations
 
-In applied statistical modeling, the hardest problems are often those we can't directly observe. Inferring latent structure from noisy, incomplete data forces us to ask: what do we believe about the world, and how do our models reflect those beliefs? Can they reproduce plausible patterns? What latent representation in the model space determines our predictions?
+In applied statistical modeling, some of the hardest problems are those we can’t observe directly. Inferring latent structure from incomplete data forces us to ask: what do we believe about the world, and how do our models reflect those beliefs? The answer lies in inductive bias—the assumptions built into a model’s architecture—that guide how it reconstructs and fills in the blanks.
 
-This essay explores how different modeling choices impact the ability to re-construct patterns in observed data. Variational auto-encoder models are compared with structured Bayesian inference on how they handle reconstruction, imputation, and inductive bias. Along the way, we confront a central difficulty: in high-dimensional latent spaces, it’s easy to be wrong in convincing ways. Learning to “fill in the blanks” is only half the battle - the real challenge to retain high fidelity between the reconstruction process and the data-generating process. Superficial similarity is not enough. 
+We discuss the idea of reconstruction loss in the context of PCA/SVD before examining two main approaches to this challenge:
 
-**What we cover**:
+- Variational autoencoders (VAEs), both standard and mask-aware, which allow flexible non-linear reconstructions and can be adapted to handle missingness explicitly.
 
-- PCA and SVD
-    Linear Decompositions and reconstruction of complex multivariate data sets.
+- Bayesian multivariate models with explicit priors over covariance structures, which transparently encode inductive bias and naturally impute missing values through the posterior.
 
-- Marginal reconstruction with VAEs
-    - How well do deep generative models recover observed variables when trained on complete data?
-
-- Mask-aware VAEs for missing data
-    - Can we explicitly teach VAEs to ignore the gaps—and does it help?
-
-- Metric vs. structure recovery
-    - Why good marginal fits can still hide deep structural errors.
-
-- Simple strategies, surprising results
-    - When mean imputation and simple architectures outperform smarter models.
-
-- Bayesian inference as structured inductive bias
-    - How priors over covariance structures yield robust estimates even with small samples.
-
-- Implicit imputation via the posterior
-    - How the Bayesian model naturally fills in missing data, respecting uncertainty.
-
-- Bayesian Structural Equation Models
-    - How the correlation structure can be estimated within a transparent causal structural model
-
-Throughout, we learn that reconstruction alone is not validation, and that model structure matters more than model complexity. Inductive bias isn't a limitation—it’s our strongest tool for generalization.
+Each method is applied to non-response in job satisfaction surveys. Our focus is not only on reconstruction accuracy, but on the recovery of latent correlation structures—because superficial similarity is not enough. Good marginal fits can still hide deep structural errors.
 
 ```{python}
 import torch
