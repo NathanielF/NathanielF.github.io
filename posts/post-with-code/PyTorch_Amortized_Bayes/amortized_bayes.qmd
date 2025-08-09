@@ -993,9 +993,18 @@ with pm.Model(coords=coords) as sem_model:
     lambdas_3 = make_lambda('indicators_3', 'lambdas3', priors=[1, .5])
     lambdas_4 = make_lambda('indicators_4', 'lambdas4', priors=[1, .5])
 
+    Lambda = pt.zeros((12, 4))
+    Lambda = pt.set_subtensor(Lambda[0:3, 0], lambdas_1)
+    Lambda = pt.set_subtensor(Lambda[3:6, 1], lambdas_2)
+    Lambda = pt.set_subtensor(Lambda[6:9, 2], lambdas_3)
+    Lambda = pt.set_subtensor(Lambda[9:12, 3], lambdas_4)
+    Lambda = pm.Deterministic('Lambda', Lambda)
+
     sd_dist = pm.Exponential.dist(1.0, shape=3)
     chol, _, _ = pm.LKJCholeskyCov("chol_cov", n=4, eta=2, sd_dist=sd_dist, compute_corr=True)
     ksi = pm.MvNormal("ksi", 0, chol=chol, dims=("obs", "latent"))
+    latent_cov = pm.Deterministic('latent_cov', pt.dot(chol, chol.T))
+    latent_Phi = pm.Deterministic('latent_Phi', Lambda @ latent_cov @ Lambda.T)
 
     ## Build Regression Components
     coefs_ = make_B()
@@ -1024,6 +1033,8 @@ with pm.Model(coords=coords) as sem_model:
     #Psi = pm.Gamma("Psi", 1, 0.5, dims="indicators")
     ## Correlated Residuals
     Psi = make_Psi('indicators')
+    latent_Phi = pm.math.switch(np.array(Psi == 0), latent_Phi, 0)
+    Psi = Psi + latent_Phi
 
     # Likelihood
     _ = pm.MvNormal("likelihood", mu, cov=Psi, 
@@ -1071,8 +1082,8 @@ We plot the estimates parameters here. We might worry about the parameter identi
 ```{python}
 
 ax = az.plot_forest(idata, figsize=(8, 8),
-var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'betas'], combined=True);
-ax[0].set_title("Structural Parameter Estimates from SEM model")
+var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'betas'], combined=True, r_hat=True);
+ax[0].set_title("Structural Parameter Estimates from SEM model");
 
 ```
 
@@ -1124,5 +1135,5 @@ Most complex phenomena have a complex data generating process. For the statistic
 
 Our exploration reveals a fundamental truth in statistical modeling: building models is not just about fitting data, but about embedding assumptions—inductive biases—that shape how we interpret and generalize from incomplete information. Complex models with rich latent spaces can mislead if their structure obscures what they truly learn. Simpler, well-targeted approaches, especially those grounded in principled Bayesian inference, often provide clearer, more reliable insight.
 
-Ultimately, model development is an iterative art of balancing flexibility with structure, complexity with interpretability, and data with prior knowledge. Mastering this balance is key to robust inference, meaningful imputation, and trustworthy prediction in the face of uncertainty.
+Ultimately, model development is an iterative art of balancing flexibility with structure, complexity with interpretability, and data with prior knowledge. There is a notorious empirical trial and test pattern to model development with deep learning models. This can seem opaque and frustrating, but i think this is more profitably seen along side contemporary Bayesian model development as an exploration versus exploitation trade-off - where we systematically assess implications of model specification. Mastering this balance is key to robust inference, meaningful imputation, and trustworthy prediction in the face of uncertainty.
 
