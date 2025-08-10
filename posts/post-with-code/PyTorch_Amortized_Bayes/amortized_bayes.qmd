@@ -952,31 +952,22 @@ def make_lambda(indicators, name='lambdas1', priors=[1, 10]):
     )
     return lambdas_1
 
-def make_B(priors=[0, .5], centred=True):
-    mu = pm.Normal('mu_betas', 0, .5, dims='paths')
-    if not centred:
-        beta_std = pm.Normal("beta_trt_std", 0, .5, dims="paths")
-
-        # non-centered transform
-        raw = pm.Normal("raw_betas", 0, .2, dims="paths")
-        sigma = pm.HalfNormal("beta_sigma", 1.0, dims="paths")
-        coefs = pm.Deterministic("betas", mu + raw * sigma)
-    else: 
-        coefs = mu
+def make_B(priors=[0, .5]):
+    coefs = pm.Normal('mu_betas', [0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1], dims='paths')
 
     zeros = pt.zeros((4, 4))
     ## dysfunctional ~ constructive
-    zeros1 = pt.set_subtensor(zeros[3, 2], coefs[0])
+    zeros = pt.set_subtensor(zeros[3, 2], coefs[0])
     ## well being ~ dysfunctional
-    zeros2 = pt.set_subtensor(zeros1[2, 1], coefs[1])
+    zeros = pt.set_subtensor(zeros[2, 1], coefs[1])
     ## well being ~ constructive
-    zeros2 = pt.set_subtensor(zeros1[3, 1], coefs[2])
+    zeros = pt.set_subtensor(zeros[3, 1], coefs[2])
     ## satisfaction ~ well being
-    coefs_ = pt.set_subtensor(zeros2[1, 0], coefs[3])
+    zeros = pt.set_subtensor(zeros[1, 0], coefs[3])
     ## satisfaction ~ dysfunction
-    coefs_ = pt.set_subtensor(zeros2[2, 0], coefs[4])
+    zeros = pt.set_subtensor(zeros[2, 0], coefs[4])
     ## satisfaction ~ constructive
-    coefs_ = pt.set_subtensor(zeros2[3, 0], coefs[5])
+    coefs_ = pt.set_subtensor(zeros[3, 0], coefs[5])
     return coefs_
 
 def make_Psi(indicators, name='Psi_cov'):
