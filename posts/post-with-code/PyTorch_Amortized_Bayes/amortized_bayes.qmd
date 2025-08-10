@@ -1083,7 +1083,7 @@ with sem_model_clean:
 ```
 
 
-We plot the estimates parameters here. We might worry about the parameter identification here, but since we're not using real data the point is a little moot as we haven't properly encoded the regression structure in our simulation data. But even so, it seems we can recover and expected positive impact of constructive thought strategies on job-satisfaction. 
+We plot the estimates parameters here. We never explicitly encoded the linear relationships in our simulation routine, but even so, it seems we can recover and expected positive impact of constructive thought strategies on job-satisfaction. These estimates align well with the original results reported in Vehkalahti and Everitt's _Multivariate Analysis for the Behavioral sciences_. 
 
 ```{python}
 
@@ -1132,6 +1132,12 @@ plot_heatmap(average_resids, title=f"Reconstructed Correlation Structure from SE
 
 
 ```
+
+::: {.callout-tip}
+## Re-cap and Overview
+
+Let's recall all we've just seen. We started with a specific covariance structure about the relationships between 12 indicator metrics that related to measures of job-satisfaction. We assessed two VAE architectures to determine if their latent structure was rich enough to recover correlation structure of those variables. We found one architecture which could recover the latent and another which broke in a subtle way. These models were compared first to a vanilla multivariate gaussian Bayesian with and without missing data. In both cases we saw that the Bayesian model specification was more efficient at recovering the latent structure. Finally, we asked whether we could further infer the deep structure of the latent correlations using a SEM architecture. __This latent factor structure was able to recover the observed correlation structure and further decompose that matrix into a series of regression relations__. This decomposition offers more insight into the additive effects of constructive thought processes on job satisfaction and well being i.e. that your own well being is the most decisive factor in predicting job-satisfaction, and dysfunctional thought strategies can have a negative effect on job-satisfaction.
+:::
 
 ## Conclusion and Key Takeaways 
 
