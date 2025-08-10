@@ -17,7 +17,7 @@ citation: true
 ---
 
 ::: callout-note
-## Transparency and Heuristics in Latent Space
+## TLDR: Transparency and Heuristics in Latent Space
 Principal Components Analysis is used to optimally reconstruct a complex multivariate data set from a lower level compressed dimensional space. Variational auto-encoders allow us to achieve yet more flexible reconstruction results in non-linear cases. Drawing a new sample from the posterior predictive distribution of Bayesian models similarly supplies us with insight in the variability of realised data. Both methods assume a latent model of the data generating process that aims to leverage a compressed representation of the data. These are different heuristics with different consequences for how we understand the variability in the world. Both encode different degrees of inductive bias through architectural specification, but of the two, only Bayesian methods do so transparently.
 
 We find (a) a VAE architecture that can recover the latent correlation structure of a multivariate normal outcome if scaled up with enough data and (b) a theoretically superior architecture designed to handle missing data that breaks on the reconstruction task when trying to do so. Both are then compared to the simpler multivariate normal Bayesian model in PyMC which is able to recover the correlation structure much more efficiently. __These methods are applied to an imputation problem for non-response in job-satisfaction surveys.__ We then draw some lessons about the value of transparent inductive biases in encoded in latent factor structures of Structural Equation Models.
@@ -63,7 +63,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 ## Job Satisfaction Data
 
-Job satisfaction is not one thing. It’s a bundle: how we think, how we feel, how we work. In our simulation, we model this bundle through twelve indicators—grouped into job satisfaction (JW1–JW3), well-being (UF1, UF2, FOR), dysfunctional patterns (DA1–DA3), and constructive thought strategies (EBA, ST, MI). In particular the focuus is on the relationship of EBA (Evaluating beliefs and assumptions), ST (Self-talk) and MI (Mental imagery formation) have on the other constructs. This framing is adapted from the discussion in Vehkalahti and Everitt's _Multivariate Analysis for the Behavioral Sciences_. The Python code generates data by first defining a realistic correlation matrix and scaling it by standard deviations to yield a structured covariance matrix. The parameterisation is drawn from the original study. From this, we draw synthetic observations using a multivariate normal distribution. This allows us to test estimators under controlled complexity.
+Job satisfaction is not one thing. It’s a bundle: how we think, how we feel, how we work. In our simulation, we model this bundle through twelve indicators—grouped into job satisfaction (JW1–JW3), well-being (UF1, UF2, FOR), dysfunctional patterns (DA1–DA3), and constructive thought strategies (EBA, ST, MI). In particular, the focus is on the relationship of EBA (Evaluating beliefs and assumptions), ST (Self-talk) and MI (Mental imagery formation) have on the other constructs. This framing is adapted from the discussion in Vehkalahti and Everitt's _Multivariate Analysis for the Behavioral Sciences_. The Python code generates data by first defining a realistic correlation matrix and scaling it by standard deviations to yield a structured covariance matrix. The parameterisation is drawn from the original study. From this, we draw synthetic observations using a multivariate normal distribution. This allows us to test estimators under controlled complexity.
 
 ```{python}
 # | code-fold: true
@@ -311,7 +311,7 @@ The KL divergence term acts as a regularizer. It measures how far the encoder’
 
 ### Training VAE models
 
-At the core of training deep learning models is backpropagation—an algorithm that computes gradients of a loss function with respect to each model parameter. `PyTorch` handles this automatically. We seperate the data into batches and compute the loss for each batch, Then calling `loss.backward()` computes these gradients via the chain rule. The optimizer then adjusts the weights with `optimizer.step()`, moving the model parameters in the direction that reduces the loss. Each training iteration refines the model, gradually improving its ability to encode and reconstruct the data. The train_vae function applies this cycle across epochs, using PyTorch’s autograd system to manage the entire computation graph.
+At the core of training deep learning models is backpropagation - an algorithm that computes gradients of a loss function with respect to each model parameter. `PyTorch` handles this automatically. We seperate the data into batches and compute the loss for each batch, Then calling `loss.backward()` computes these gradients via the chain rule. The optimizer then adjusts the weights with `optimizer.step()`, moving the model parameters in the direction that reduces the loss. Each training iteration refines the model, gradually improving its ability to encode and reconstruct the data. The train_vae function applies this cycle across epochs, using PyTorch’s autograd system to manage the entire computation graph.
 
 The `prep_data_vae` function creates simulated data, adds optional missingness, and splits it into training and test sets. Each training set—of size 500, 1,000, or 10,000—is passed to a new VAE instance for fitting. More data provides better coverage of the latent space, allowing the model to generalize more confidently. With small data, the model risks memorizing noise. With large data, KL regularization helps the decoder learn smooth, generalizable mappings from latent codes to input reconstructions. The training runs below test this sensitivity empirically, keeping architecture fixed and varying only the sample size.
 
@@ -987,6 +987,10 @@ def make_Psi(indicators, name='Psi_cov'):
     cov = pm.Deterministic('Psi_cov', cov)
 
     return cov
+```
+
+```{python}
+# | output: false
 
 obs_idx = list(range(len(sample_df)))
 observed_data = sample_df[coords['indicators']].values
@@ -1092,6 +1096,8 @@ var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'mu_betas'], combined
 ax[0].axvline(0, linestyle='--', color='k')
 ax[0].set_title("Structural Parameter Estimates from SEM model");
 
+az.summary(idata, var_names=['lambdas1', 'lambdas2', 'lambdas3', 'lambdas4', 'mu_betas'])
+
 ```
 
 and the chains look to have sampled the parameter space well. 
@@ -1157,5 +1163,5 @@ Most complex phenomena have a complex data generating process. For the statistic
 
 Our exploration reveals a fundamental truth in statistical modeling: building models is not just about fitting data, but about embedding assumptions—inductive biases—that shape how we interpret and generalize from incomplete information. Complex models with rich latent spaces can mislead if their structure obscures what they truly learn. Simpler, well-targeted approaches, especially those grounded in principled Bayesian inference, often provide clearer, more reliable insight.
 
-Ultimately, model development is an iterative art of balancing flexibility with structure, complexity with interpretability, and data with prior knowledge. There is a notorious empirical trial and test pattern to model development with deep learning models. This can seem opaque and frustrating, but i think this is more profitably seen along side contemporary Bayesian model development as an exploration versus exploitation trade-off - where we systematically assess implications of model specification. Mastering this balance is key to robust inference, meaningful imputation, and trustworthy prediction in the face of uncertainty.
+Ultimately, model development is an iterative art of balancing flexibility with structure, complexity with interpretability, and data with prior knowledge. There is a notorious empirical trial and test pattern to model development with deep learning models. This can seem opaque and frustrating, but I think this is more profitably seen along side contemporary Bayesian model development [workflow](https://arxiv.org/abs/2011.01808) as an exploration versus exploitation trade-off - where we systematically assess implications of model specification. Mastering this balance is key to robust inference, meaningful imputation, and trustworthy prediction in the face of uncertainty.
 
