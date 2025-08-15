@@ -1,1 +1,139 @@
-/* css styles */
+/* Compact Hero Section */
+.hero {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: white;
+  padding: 3rem 1rem; /* slightly more vertical space */
+  text-align: center;
+}
+
+/* Hero Headings */
+.hero h1 {
+  font-size: 2rem;
+  margin-top: 0.5rem;
+}
+
+.hero .tagline {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+/* Profile Image in Hero */
+.hero .profile-img {
+  max-width: 150px; /* slightly larger */
+  width: 100%;
+  height: 150px;
+  object-fit: cover; /* ensures image scales without distortion */
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+}
+
+.hero .profile-img:hover {
+  transform: scale(1.05);
+}
+
+/* Hero Graphic */
+.hero .hero-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+  margin-top: 1.5rem; /* spacing on mobile */
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 767px) {
+  .hero .col-md-6 {
+    margin-bottom: 2rem;
+  }
+  .hero .profile-img {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* Buttons in Hero */
+.hero .btn {
+  margin-right: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Highlight cards */
+.highlight-card {
+  transition: all 0.3s ease;
+}
+.highlight-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Fade-in animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-family: 'Montserrat', sans-serif;
+}
+body {
+  font-family: 'Lora', serif;
+}
+
+
+/* Hero Columns */
+.hero .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Left Column (Profile + Text) */
+.hero .col-md-6.text-md-start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .hero .col-md-6.text-md-start {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* Right Column (Hero Graphic) */
+.hero .col-md-6 img.hero-img {
+  max-width: 100%;
+  height: auto;
+  width: 400px; /* fixed width for desktop */
+  margin-top: 0; /* remove top margin to keep inline */
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 767px) {
+  .hero .col-md-6 img.hero-img {
+    width: 100%; /* scales to column width */
+    margin-top: 1.5rem; /* keeps spacing below profile */
+  }
+}
+
+.small-right-img {
+  float: right;       /* pushes image to the right */
+  width: 450px;       /* small size */
+  height: auto;       /* maintain aspect ratio */
+  margin-left: 1rem;  /* space between text and image */
+  margin-bottom: 1rem; /* optional spacing */
+  border-radius: 0.25rem;
+}

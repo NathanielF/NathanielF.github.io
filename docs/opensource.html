@@ -191,7 +191,6 @@ window.Quarto = {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
     <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(16)</span></div><div class="category" data-category="YXV0b3JlZ3Jlc3NpdmU=">autoregressive <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Y2FsaWJyYXRpb24=">calibration <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Y2F1c2FsJTIwaW5mZXJlbmNl">causal inference <span class="quarto-category-count">(6)</span></div><div class="category" data-category="Y2Zh">cfa <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Y29uc3VtZXIlMjBjaG9pY2U=">consumer choice <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZGlzY3JldGUlMjBjaG9pY2U=">discrete choice <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZnJhaWx0eSUyMG1vZGVscw==">frailty models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="aGllcmFyY2hpY2FsX21vZGVscw==">hierarchical_models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="aW1wdXRhdGlvbg==">imputation <span class="quarto-category-count">(1)</span></div><div class="category" data-category="aW5zdHJ1bWVudGFsJTIwdmFyaWFibGVz">instrumental variables <span class="quarto-category-count">(2)</span></div><div class="category" data-category="bGlrZXJ0JTIwc2NhbGVz">likert scales <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bG9uZ2l0dWRpbmFsJTIwbW9kZWxz">longitudinal models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bWlzc2luZ19kYXRh">missing_data <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bm9uJTIwcGFyYW1ldHJpYw==">non parametric <span class="quarto-category-count">(1)</span></div><div class="category" data-category="b3JkaW5hbCUyMHJlZ3Jlc3Npb24=">ordinal regression <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cG9zdC1zdHJhdGlmaWNhdGlvbg==">post-stratification <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHJvYmFiaWxpdHk=">probability <span class="quarto-category-count">(10)</span></div><div class="category" data-category="cHJvcGVuc2l0eQ==">propensity <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHJvcGVuc2l0eSUyMHNjb3Jlcw==">propensity scores <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHltYw==">pymc <span class="quarto-category-count">(10)</span></div><div class="category" data-category="cmVncmVzc2lvbg==">regression <span class="quarto-category-count">(5)</span></div><div class="category" data-category="c2Vt">sem <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3ViamVjdGl2ZSUyMHV0aWxpdHk=">subjective utility <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3VydmV5JTIwZGF0YQ==">survey data <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3Vydml2YWwlMjBtb2RlbHM=">survival models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dGltZS10by1mYWlsdXJl">time-to-failure <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dXRpbGl0eQ==">utility <span class="quarto-category-count">(1)</span></div><div class="category" data-category="d2VpZ2h0aW5n">weighting <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
@@ -883,6 +882,25 @@ Implementing Autoregressive Structural forecasting models in PyMC
 No matching items
 </div>
 </div></main> <!-- /main -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const elements = document.querySelectorAll(".fade-in");
+  
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target); // only animate once
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+  
+    elements.forEach(el => observer.observe(el));
+  });
+  </script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

@@ -39,10 +39,14 @@ website:
 
 format:
   html:
-    theme: [flatly]
-    css:
-      - styles.css
-    toc: true
+    theme: flatly
+    css: styles.css
+    toc: false
+    page-layout: full
+    googlefonts:
+      - Montserrat
+      - Lora
+    include-after-body: script.js
 
 
 exclude:

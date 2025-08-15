@@ -126,33 +126,76 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-  <ul>
-  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">Intro</a>
-  <ul class="collapse">
-  <li><a href="#bio" id="toc-bio" class="nav-link" data-scroll-target="#bio">Bio</a></li>
-  <li><a href="#recent-experience" id="toc-recent-experience" class="nav-link" data-scroll-target="#recent-experience">Recent Experience</a></li>
-  </ul></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
-<div class="quarto-about-solana column-body">
-  <div class="about-entity">
-    <div class="entity-contents">
-      <header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-about-jolla column-page">
+ <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Examined Algorithms</h1>
 <p class="subtitle lead">Nathaniel Forde’s Personal Website</p>
 </div>
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page">
   </div>
-</header> <div class="about-links">
+</header><main class="content column-page" id="quarto-document-content">
+<!-- Compact Hero Section -->
+<div class="hero fade-in">
+  <img src="profile_photo.jpeg" alt="Nathaniel" class="profile-img mb-3">
+  <h1>Hi, I'm Nathaniel 👋</h1>
+  <p class="tagline">Bayesian Statistician · Data Scientist · Still Learning...</p>
+  <div class="mt-3">
+    <a href="./opensource.html" class="btn btn-primary btn-lg">View My Work</a>
+    <a href="./blog.html" class="btn btn-outline-light btn-lg">Read My Blog</a>
+  </div>
+</div>
+<!-- About Me Inline -->
+<div class="container my-5 fade-in">
+  <img src="talks/pycon_ireland_causalpy/images/probable_graphs.png" class="small-right-img">
+  <h2>About Me</h2>
+  <p>
+    I'm an experienced <b>Data-Scientist</b> and <b>Statistician</b> with a passion for <i>Bayesian methods, Causal inference</i>, and helping organisations make better decisions through data. I’ve worked across industry and academia and am a regular speaker at PyCon and PyData events. 
+  </p>
+</div>
+<!-- Recent Highlights Section -->
+<div class="container my-5">
+  <h2 class="mb-4 fade-in">Recent Highlights</h2>
+  <div class="row">
+    <div class="col-md-4 fade-in">
+      <div class="card highlight-card">
+        <div class="card-body">
+          <h5 class="card-title">Variational Auto-Encoders and Latent Structure with PyTorch and PyMC</h5>
+          <p class="card-text"> A comparison of variational auto-encoders and bayesian structural equation models for the task of missing imputation and correlation inference.</p>
+          <a href="./posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.html" class="btn btn-primary">Read More</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 fade-in">
+      <div class="card highlight-card">
+        <div class="card-body">
+          <h5 class="card-title">Podcast Appearance on Learning Bayesian Statistics</h5>
+          <p class="card-text">Talking confirmatory factor analysis &amp; Bayesian methods with Alex Andorra on Learning Bayesian Statistics.</p>
+          <a href="https://www.youtube.com/watch?v=WEb9SnVLTmE&amp;t=3s" class="btn btn-primary">Listen</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 fade-in">
+      <div class="card highlight-card">
+        <div class="card-body">
+          <h5 class="card-title">Nested Logit Models in PyMC Marketing</h5>
+          <p class="card-text">Implementation of the Multinomial and Nested Logit discrete choice models for productn discrimination and analytics in PyMC-Marketing</p>
+          <a href="./oss/pymc_marketing/nested_logit.html" class="btn btn-primary">View Post</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</main> 
+  <hr class="about-sep">
+   <div class="about-links">
   <a href="/blog.html" class="about-link" rel="" target="">
      <span class="about-link-text">Blog</span>
   </a>
@@ -172,41 +215,27 @@ ul.task-list li input[type="checkbox"] {
      <span class="about-link-text">Bluesky</span>
   </a>
 </div>
-      <div class="about-contents"><main class="content" id="quarto-document-content">
-
-<section id="intro" class="level1">
-<h1>Intro</h1>
-<p>Welcome to my site!</p>
-<p>You’ll find a range of writings on data science, philosophy, statistics and inference more generally. I’ll update this site with semi-regular blog entries, and any talks or presentations on these topics.</p>
-<section id="bio" class="level2">
-<h2 data-anchor-id="bio">Bio</h2>
-<p>I’m a data scientist specialising in probabilistic modelling for the study of risk and causal inference. I have experience in model development, deployment, multivariate testing and monitoring.</p>
-<p>I’m interested in questions of inference and measurement in the face of natural variation and confounding.</p>
-<p>My academic background is in mathematical logic and philosophy where I mostly imagined possible worlds and modal logics.</p>
-</section>
-<section id="recent-experience" class="level2">
-<h2 data-anchor-id="recent-experience">Recent Experience</h2>
-<ul>
-<li>Personio | Staff Data Scientist | December 2021 - Present
-<ul>
-<li>Working with Product and Engineering to measure risk and quantify impact. Revenue Ops to forecasts and optimise processes.</li>
-</ul></li>
-<li>PyMC | Open Source Contributor | November 2021 - Present
-<ul>
-<li>Helping to document some of the more esoteric applications of Bayesian modelling in PyMC.</li>
-</ul></li>
-</ul>
-
-
-</section>
-</section>
-</main></div>
-    </div>
-    <img src="profile_photo.jpeg" class="about-image
-  rounded " style="width: 15em;">
-  </div>
 </div>
  <!-- /main -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const elements = document.querySelectorAll(".fade-in");
+  
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target); // only animate once
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+  
+    elements.forEach(el => observer.observe(el));
+  });
+  </script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

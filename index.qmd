@@ -1,9 +1,9 @@
 ---
 title: "Examined Algorithms"
 subtitle: "Nathaniel Forde's Personal Website"
-image: profile_photo.jpeg
+page-layout: full
 about:
-  template: solana
+  template: jolla
   links:
     - text: Blog
       href: blog.qmd 
@@ -21,26 +21,64 @@ about:
 
 ---
 
-# Intro
 
-Welcome to my site! 
-
-You'll find a range of writings on data science, philosophy, statistics and inference more generally. I'll update this site with semi-regular blog entries, and any talks or presentations on these topics. 
-
-## Bio
-
-I'm a data scientist specialising in probabilistic modelling for the study of risk and causal inference. I have experience in model development, deployment, multivariate testing and monitoring. 
-
-I'm interested in questions of inference and measurement in the face of natural variation and confounding. 
-
-My academic background is in mathematical logic and philosophy where I mostly imagined possible worlds and modal logics. 
-
-## Recent Experience
-
-- Personio | Staff Data Scientist | December 2021 - Present 
-  - Working with Product and Engineering to measure risk and quantify impact. Revenue Ops to forecasts and optimise processes.
-
-- PyMC | Open Source Contributor | November 2021 - Present
-  - Helping to document some of the more esoteric applications of Bayesian modelling in PyMC.
+```{=html}
+<!-- Compact Hero Section -->
+<div class="hero fade-in">
+  <img src="profile_photo.jpeg" alt="Nathaniel" class="profile-img mb-3">
+  <h1>Hi, I'm Nathaniel 👋</h1>
+  <p class="tagline">Bayesian Statistician · Data Scientist · Still Learning...</p>
+  <div class="mt-3">
+    <a href="opensource.qmd" class="btn btn-primary btn-lg">View My Work</a>
+    <a href="blog.qmd" class="btn btn-outline-light btn-lg">Read My Blog</a>
+  </div>
+</div>
+```
 
 
+```{=html}
+<!-- About Me Inline -->
+<div class="container my-5 fade-in">
+  <img src="talks/pycon_ireland_causalpy/images/probable_graphs.png" class="small-right-img">
+  <h2>About Me</h2>
+  <p>
+    I'm an experienced <b>Data-Scientist</b> and <b>Statistician</b> with a passion for <i>Bayesian methods, Causal inference</i>, and helping organisations make better decisions through data. I’ve worked across industry and academia and am a regular speaker at PyCon and PyData events. 
+  </p>
+</div>
+```
+
+```{=html}
+<!-- Recent Highlights Section -->
+<div class="container my-5">
+  <h2 class="mb-4 fade-in">Recent Highlights</h2>
+  <div class="row">
+    <div class="col-md-4 fade-in">
+      <div class="card highlight-card">
+        <div class="card-body">
+          <h5 class="card-title">Variational Auto-Encoders and Latent Structure with PyTorch and PyMC</h5>
+          <p class="card-text"> A comparison of variational auto-encoders and bayesian structural equation models for the task of missing imputation and correlation inference.</p>
+          <a href="posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.qmd" class="btn btn-primary">Read More</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 fade-in">
+      <div class="card highlight-card">
+        <div class="card-body">
+          <h5 class="card-title">Podcast Appearance on Learning Bayesian Statistics</h5>
+          <p class="card-text">Talking confirmatory factor analysis & Bayesian methods with Alex Andorra on Learning Bayesian Statistics.</p>
+          <a href="https://www.youtube.com/watch?v=WEb9SnVLTmE&t=3s" class="btn btn-primary">Listen</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 fade-in">
+      <div class="card highlight-card">
+        <div class="card-body">
+          <h5 class="card-title">Nested Logit Models in PyMC Marketing</h5>
+          <p class="card-text">Implementation of the Multinomial and Nested Logit discrete choice models for productn discrimination and analytics in PyMC-Marketing</p>
+          <a href="oss/pymc_marketing/nested_logit.qmd" class="btn btn-primary">View Post</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```

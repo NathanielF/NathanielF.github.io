@@ -191,7 +191,6 @@ window.Quarto = {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
     <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="RGlE">DiD <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VFdGRQ==">TWFE <span class="quarto-category-count">(1)</span></div><div class="category" data-category="YW1vcnRpemVkJTIwYmF5ZXNpYW4lMjBpbmZlcmVuY2U=">amortized bayesian inference <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Y2Zh">cfa <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Z2F1c3NpYW4lMjBwcm9jZXNzZXM=">gaussian processes <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Z2VuZXJhbGlzZWQlMjBhZGRpdGl2ZSUyMG1vZGVscw==">generalised additive models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="aGllcmFyY2hpY2FsJTIwbW9kZWxz">hierarchical models <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bWVhc3VybWVudA==">measurment <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bXVuZGxhaw==">mundlak <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHJvYmFiaWxpdHk=">probability <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHl0b3JjaA==">pytorch <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c2Vt">sem <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dmFyaWF0aW9uYWwlMjBhdXRvLWVuY29kZXJz">variational auto-encoders <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
@@ -388,6 +387,25 @@ Apr 7, 2024
 No matching items
 </div>
 </div></main> <!-- /main -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const elements = document.querySelectorAll(".fade-in");
+  
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target); // only animate once
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+  
+    elements.forEach(el => observer.observe(el));
+  });
+  </script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
