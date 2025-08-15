@@ -27,7 +27,7 @@ about:
 <div class="hero fade-in">
   <img src="profile_photo.jpeg" alt="Nathaniel" class="profile-img mb-3">
   <h1>Hi, I'm Nathaniel 👋</h1>
-  <p class="tagline">Bayesian Statistician · Data Scientist · Still Learning...</p>
+  <p class="tagline">Bayesian Statistics & Causal Inference · Data Science Leadership · Still Learning...</p>
   <div class="mt-3">
     <a href="opensource.qmd" class="btn btn-primary btn-lg">View My Work</a>
     <a href="blog.qmd" class="btn btn-outline-light btn-lg">Read My Blog</a>

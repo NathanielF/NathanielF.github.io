@@ -235,7 +235,7 @@
     "href": "index.html",
     "title": "Examined Algorithms",
     "section": "",
-    "text": "Hi, I'm Nathaniel 👋\n  Bayesian Statistician · Data Scientist · Still Learning...\n  \n    View My Work\n    Read My Blog\n  \n\n\n\n  \n  About Me\n  \n    I'm an experienced Data-Scientist and Statistician with a passion for Bayesian methods, Causal inference, and helping organisations make better decisions through data. I’ve worked across industry and academia and am a regular speaker at PyCon and PyData events. \n  \n\n\n\n  Recent Highlights\n  \n    \n      \n        \n          Variational Auto-Encoders and Latent Structure with PyTorch and PyMC\n           A comparison of variational auto-encoders and bayesian structural equation models for the task of missing imputation and correlation inference.\n          Read More\n        \n      \n    \n    \n      \n        \n          Podcast Appearance on Learning Bayesian Statistics\n          Talking confirmatory factor analysis & Bayesian methods with Alex Andorra on Learning Bayesian Statistics.\n          Listen\n        \n      \n    \n    \n      \n        \n          Nested Logit Models in PyMC Marketing\n          Implementation of the Multinomial and Nested Logit discrete choice models for productn discrimination and analytics in PyMC-Marketing\n          View Post"
+    "text": "Hi, I'm Nathaniel 👋\n  Bayesian Statistics & Causal Inference · Data Science Leadership · Still Learning...\n  \n    View My Work\n    Read My Blog\n  \n\n\n\n  \n  About Me\n  \n    I'm an experienced Data-Scientist and Statistician with a passion for Bayesian methods, Causal inference, and helping organisations make better decisions through data. I’ve worked across industry and academia and am a regular speaker at PyCon and PyData events. \n  \n\n\n\n  Recent Highlights\n  \n    \n      \n        \n          Variational Auto-Encoders and Latent Structure with PyTorch and PyMC\n           A comparison of variational auto-encoders and bayesian structural equation models for the task of missing imputation and correlation inference.\n          Read More\n        \n      \n    \n    \n      \n        \n          Podcast Appearance on Learning Bayesian Statistics\n          Talking confirmatory factor analysis & Bayesian methods with Alex Andorra on Learning Bayesian Statistics.\n          Listen\n        \n      \n    \n    \n      \n        \n          Nested Logit Models in PyMC Marketing\n          Implementation of the Multinomial and Nested Logit discrete choice models for productn discrimination and analytics in PyMC-Marketing\n          View Post"
   },
   {
     "objectID": "notes/Statistics/Introduction - Statistics Topics.html",
@@ -3494,7 +3494,7 @@
     "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#relative-utility-and-marginal-effects",
     "title": "Discrete Choice Models in PyMC-Marketing",
     "section": "Relative Utility and Marginal Effects",
-    "text": "Relative Utility and Marginal Effects\nPaths Diverge\nDo you value the company of others? Do you fear it? What about the average cave dweller?\n\n\n\n\\[ u(\\text{Light shaft + Silence}) - u(\\text{Glowing Fire + Conversational Echoes}) &gt; 0?\\]"
+    "text": "Relative Utility and Marginal Effects\nPaths Diverge\nDo you value the company of others? Do you fear it? What about the average cave dweller?\n\n \\[ u(\\text{Light shaft + Silence}) - u(\\text{Glowing Fire + Conversational Echoes}) &gt; 0?\\]"
   },
   {
     "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#agenda",

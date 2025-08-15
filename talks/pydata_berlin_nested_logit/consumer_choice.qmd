@@ -153,10 +153,6 @@ $$ p(\theta_{w_{i}} | Y) = \dfrac{p(\theta_{w_{i}})p(Y | \theta_{i})}{\sum_{j}^{
 
 :::
 
-## The Path Before Us
-
-![**The Consumer's Dilemma**: What drives us to Choose in the face such vast Possibility?](images/adventure_book.png)
-
 
 ## Revealed Preference
 ### Utility driven Choice
@@ -207,10 +203,10 @@ Where:
 Do you value the company of others? Do you fear it? **What about the average cave dweller?**
 
 :::{.r-stack}
-<img src="images/pathdiverging.jpeg" alt="Choice" width="1000" height="300"/>
+<img src="images/pathdiverging.jpeg" alt="Choice" width="800" height="200"/>
+$$ u(\text{Light shaft + Silence}) - u(\text{Glowing Fire + Conversational Echoes}) > 0?$$
 :::
 
-$$ u(\text{Light shaft + Silence}) - u(\text{Glowing Fire + Conversational Echoes}) > 0?$$
 
 
 
@@ -482,7 +478,18 @@ change_df_1
 
 ## Market Interventions and Implied Worlds
 
+:::: {.columns}
+::: {.column width="60%"}
+
 ![](images/nested_logit_before_after.webp)
+
+:::
+
+::: {.column width="40%"}
+![](images/ranked_worlds.png)
+:::
+
+::::
 
 ## Conclusion: Explore the Branching Worlds {.smaller}
 
