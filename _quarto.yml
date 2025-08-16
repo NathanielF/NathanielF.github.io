@@ -15,7 +15,7 @@ website:
   reader-mode: true
   navbar:
     left:
-      - text: Blog
+      - text: Writing
         href: blog.qmd
       - text: Open Source Projects
         href: opensource.qmd
