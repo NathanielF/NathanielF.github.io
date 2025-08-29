@@ -243,18 +243,17 @@ Nathaniel Forde
 <img data-src="images/QR_CODE.png" class="r-stretch quarto-figure-center"><p class="caption">My Website</p></section>
 <section id="the-pitch-choice-matters" class="slide level2">
 <h2><strong>The Pitch</strong>: <em>Choice Matters</em></h2>
-<p>Consumer choice is everywhere — from cereal to cars to climate systems. Business <strong>success hinges</strong> on understanding these choices: pricing, product design, market segmentation.</p>
-<p>Classic models fall short with unrealistic assumptions and pricing experiments can be costly.</p>
-<p>Use better models with <strong>PyMC-Marketing</strong> and simulate pricing interventions safely.</p>
+<p>Consumer choice is everywhere — from cereal to cars to climate systems. Business <strong>success hinges</strong> on understanding these choices are driven by pricing, product design, market segmentation strategies.</p>
+<p><strong>PyMC-Marketing</strong> allows you to simulate product interventions safely, and learn the expected impact of new product strategies</p>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
 <ul>
-<li>The Choice Setting and Bayesian Background</li>
-<li>Choice Data and PyMC-Marketing</li>
-<li>Mulitnomial Logit and the IIA Problem</li>
-<li>Nested Logit and Market Structure</li>
-<li>Choose your own Adventure</li>
+<li><strong>Bayesian Background</strong>: The Choice Setting</li>
+<li><strong>The Choice Data</strong>: PyMC-Marketing and Consumer Choice</li>
+<li><strong>The Tempting Path</strong>: Mulitnomial Logit and the IIA Problem</li>
+<li><strong>The Branching Path</strong>: Nested Logit and Market Structure</li>
+<li><strong>Your Path</strong>: Choose your own Adventure</li>
 </ul>
 </section>
 <section>
@@ -358,30 +357,43 @@ Nathaniel Forde
 </div></div>
 </div>
 </section>
-<section id="revealed-preference" class="slide level2">
+<section id="preference-over-worlds" class="slide level2 smaller">
+<h2>Preference over Worlds</h2>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p><img data-src="images/ranked_worlds.png"></p>
+</div><div class="column" style="width:30%;">
+<p>Worlds can be ranked in terms of:</p>
+<ul>
+<li><p>probability</p></li>
+<li><p>desirability</p></li>
+</ul>
+<p>Learning the drivers of desirability helps determine the probability of human choice and action.</p>
+</div></div>
+</section>
+<section id="revealed-preference" class="slide level2 smaller">
 <h2>Revealed Preference</h2>
 <h3 id="utility-driven-choice">Utility driven Choice</h3>
 <div class="columns">
 <div class="column" style="width:30%;">
 <p><img src="images/choose_your_path.png" alt="Choice" height="500"></p>
 </div><div class="column" style="width:70%;">
-<h3 id="the-consumers-dilemma">The Consumer’s Dilemma</h3>
-<p><em>“What drives human choice?”</em></p>
+<p><em>“How can we learn what drives human choice?”</em></p>
 <ul>
 <li>Utility maximization</li>
 <li>Rational decision-making</li>
 <li>Expected value calculations</li>
 <li>Impulse and <em>advertising</em>?</li>
 </ul>
-<p><em>Each purchase tells a story of preference…</em></p>
+<p><em>Each path taken tells a story of preference and reveals something about how the attributes of each alternative <strong>tempt or repel</strong> the chooser </em></p>
 </div></div>
 </section>
-<section id="world-state-informs-choice" class="slide level2 smaller">
-<h2>World State Informs Choice</h2>
+<section id="from-observed-choice-to-latent-utility" class="slide level2 smaller">
+<h2>From Observed Choice to Latent Utility</h2>
 <h3 id="the-mathematical-foundation-of-decision">The Mathematical Foundation of Decision</h3>
 <p>The utility function forms the cornerstone of choice modeling:</p>
 <p><span class="math display">\[\color{red}U_{ij} = \color{blue}\alpha_{ij} + \color{blue}\beta_{ij}^{1} \color{black}\cdot X_{ij}^{1} + \color{blue} \beta_{ij}^{2} \color{black}\cdot X_{ij}^{2} \]</span></p>
-<p><span class="math display">\[P_{ij} = \frac{\exp(\color{red}U_{ij})}{\sum_{k=1}^{J} \exp(\color{red}U_{ik})} \]</span></p>
+<p><span class="math display">\[P_{ij} = \frac{\exp(\color{red}U_{ij})}{\sum_{k=1}^{J} \exp(\color{red}U_{ik})} \Rightarrow Y_{ij} \sim \text{Categorical}(P_{ij}) \]</span></p>
 <p>Where:</p>
 <ul>
 <li><span class="math inline">\(U_{ij}\)</span> represents the systematic utility for individual <span class="math inline">\(i\)</span> choosing alternative <span class="math inline">\(j\)</span> at a particular world state <span class="math inline">\(w = \{ \color{blue}\alpha_{ij}, \color{blue}\beta_{ij}^{1}, \color{blue}\beta_{ij}^{2} X_{ij}^{1}, X_{ij}^{2} \}\)</span></li>
@@ -410,6 +422,7 @@ Nathaniel Forde
 </div><div class="column" style="width:50%;">
 <h3 id="bayesian-marketing-analytics">Bayesian Marketing Analytics</h3>
 <ul>
+<li>Media Mix Modelling, Customer Lifetime Value and Consumer Choice.</li>
 <li>Uncertainty-aware decisions: model not just what people choose, but how sure we are.</li>
 <li>Causal inference ready: run interventions, not just predictions.</li>
 <li>Modern Bayesian engine for scalability, flexibility, and transparency.</li>
@@ -421,9 +434,9 @@ Nathaniel Forde
 <h2>Choice Data</h2>
 
 <img data-src="images/choice_data.png" class="r-stretch quarto-figure-center"><p class="caption">Choice Scenarios specified with attributes and choice outcomes for each discrete alternative</p></section>
-<section id="utility-matrix" class="slide level2">
+<section id="utility-matrix" class="slide level2 smaller">
 <h2>Utility Matrix</h2>
-<h3 id="intuitive-formula-specification">Intuitive Formula Specification</h3>
+<h3 id="key-aspects">Key Aspects</h3>
 <div class="columns">
 <div class="column" style="width:60%;">
 <p><span class="math display">\[ \begin{split} \begin{split} \begin{pmatrix}
@@ -444,6 +457,12 @@ hp_{ic} &amp; hp_{oc}  \\
 \end{pmatrix}  \end{split}
 \end{split}
 \]</span></p>
+<ul>
+<li><strong>New Model Class</strong>: <code>MNLogit</code> with Wilkinson-style formula interface</li>
+<li><strong>Alternative-Specific Attributes</strong>: Price, quality, brand effects</li>
+<li><strong>Individual Fixed Attributes</strong>: Income, demographics, preferences</li>
+<li><strong>Causal Inference Ready</strong>: Built-in counterfactual analysis</li>
+</ul>
 </div><div class="column" style="width:40%;">
 <div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a></span>
 <span id="cb1-2"><a></a>utility_formulas <span class="op">=</span> [</span>
@@ -465,15 +484,14 @@ hp_{ic} &amp; hp_{oc}  \\
 </section>
 <section id="multinomial-logit-the-simple-path-forward" class="slide level2 smaller">
 <h2>Multinomial Logit: The Simple Path Forward</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
 <p>The probability of choosing alternative <span class="math inline">\(j\)</span> follows the elegant logistic form:</p>
 <p><span class="math display">\[\frac{\exp(\color{red}U_{ij})}{\sum_{k=1}^{J} \exp(\color{red}U_{ik})} = P_{ij} \Rightarrow s_{j}(\color{blue}\theta_{w})=P(u_{j}&gt;u_{k};\forall_{k̸=j})\]</span></p>
-<h3 id="key-aspects">Key Aspects</h3>
-<ul>
-<li><strong>New Model Class</strong>: MNLogit with Wilkinson-style formula interface</li>
-<li><strong>Alternative-Specific Attributes</strong>: Price, quality, brand effects</li>
-<li><strong>Individual Fixed Attributes</strong>: Income, demographics, preferences</li>
-<li><strong>Causal Inference Ready</strong>: Built-in counterfactual analysis</li>
-</ul>
+<p>A simple model with a compelling interpretation. Too simple?</p>
+</div><div class="column" style="width:40%;">
+<p><img data-src="images/mnl_curves.jpg"></p>
+</div></div>
 </section>
 <section id="pymc-marketing-implementation" class="slide level2 smaller">
 <h2>PyMC-Marketing Implementation</h2>
@@ -567,12 +585,24 @@ hp_{ic} &amp; hp_{oc}  \\
 <div class="columns">
 <div class="column" style="width:60%;">
 <ul>
-<li><p><span class="math inline">\(U = Y + W\)</span></p></li>
+<li><span class="math inline">\(U = Y + W\)</span></li>
+</ul>
+<div class="fragment fade-in">
+<ul>
 <li><p><span class="math inline">\(P(i) \text{ when } i \in Alts\)</span></p></li>
 <li><p><span class="math inline">\(P(\text{choose nest B}) \cdot P(\text{choose i} | \text{ i} \in \text{B})\)</span></p></li>
-<li><p><span class="math inline">\(P(\text{choose nest B}) = \dfrac{e^{W + \lambda_{k}I_{k}}}{\sum_{l=1}^{K} e^{W + \lambda_{l}I_{l}}}\)</span></p></li>
-<li><p><span class="math inline">\(P(\text{choose i} | \text{ i} \in \text{B}) = \dfrac{e^{Y_{i} / \lambda_{k}}}{\sum_{j \in B_{k}} e^{Y_{j} / \lambda_{k}}}\)</span></p></li>
 </ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li><span class="math inline">\(P(\text{choose nest B}) = \dfrac{e^{W + \lambda_{k}I_{k}}}{\sum_{l=1}^{K} e^{W + \lambda_{l}I_{l}}}\)</span></li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li><span class="math inline">\(P(\text{choose i} | \text{ i} \in \text{B}) = \dfrac{e^{Y_{i} / \lambda_{k}}}{\sum_{j \in B_{k}} e^{Y_{j} / \lambda_{k}}}\)</span></li>
+</ul>
+</div>
 </div><div class="column" style="width:40%;">
 <div class="fragment fade-in">
 <p><span class="math inline">\(I_{k} = ln \sum_{j \in B_{k}}  e^{Y_{j} / \lambda_{k}} \\ \text{ and } \lambda_{k} \sim Beta(1, 1)\)</span></p>
@@ -585,7 +615,7 @@ hp_{ic} &amp; hp_{oc}  \\
 </section>
 <section id="nesting-structure-in-pymc-marketing" class="slide level2 smaller">
 <h2>Nesting Structure in PyMC-Marketing</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>utility_formulas <span class="op">=</span> [</span>
+<div class="sourceCode" id="cb4" data-code-line-numbers="|2-6|9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>utility_formulas <span class="op">=</span> [</span>
 <span id="cb4-2"><a></a>    <span class="st">"gc ~ ic_gc + oc_gc | income + rooms "</span>,</span>
 <span id="cb4-3"><a></a>    <span class="st">"ec ~ ic_ec + oc_ec | income + rooms "</span>,</span>
 <span id="cb4-4"><a></a>    <span class="st">"gr ~ ic_gr + oc_gr | income + rooms "</span>,</span>
@@ -627,21 +657,12 @@ hp_{ic} &amp; hp_{oc}  \\
 <span id="cb5-6"><a></a>change_df_1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 <img data-src="images/non_proportional_sub.png" class="r-stretch quarto-figure-center"><p class="caption">Nested Logit allows for patterns of Non-Proportional Substitution under counterfactual settings</p></section>
-<section id="market-interventions-and-implied-worlds" class="slide level2">
+<section id="market-interventions-and-implied-worlds" class="slide level2 smaller">
 <h2>Market Interventions and Implied Worlds</h2>
 <div class="columns">
 <div class="column" style="width:60%;">
 <p><img data-src="images/nested_logit_before_after.webp"></p>
 </div><div class="column" style="width:40%;">
-<p><img data-src="images/ranked_worlds.png"></p>
-</div></div>
-</section>
-<section id="conclusion-explore-the-branching-worlds" class="slide level2 smaller">
-<h2>Conclusion: Explore the Branching Worlds</h2>
-<div class="columns">
-<div class="column" style="width:60%;">
-<p><span class="math display">\[ w = \{ \alpha, \beta^{1}, \beta_{2}, X^{1}, X^{2}  \} \\
-\Rightarrow w^{*} = \{ \alpha, \beta^{*}, \beta_{2}, X^{*}, X^{2}  \} \]</span></p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a><span class="cf">with</span> pm.do(</span>
 <span id="cb6-2"><a></a>    model,</span>
 <span id="cb6-3"><a></a>    {<span class="st">"X1"</span>: np.ones(<span class="bu">len</span>(df)), </span>
@@ -650,7 +671,18 @@ hp_{ic} &amp; hp_{oc}  \\
 <span id="cb6-6"><a></a>) <span class="im">as</span> counterfactual_model:</span>
 <span id="cb6-7"><a></a>    idata_trt <span class="op">=</span> pm.sample_posterior_predictive(idata, </span>
 <span id="cb6-8"><a></a>    var_names<span class="op">=</span>[<span class="st">"like"</span>, <span class="st">"p"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Causal Inference with the Do-Operator modifies world-state and data alike.</p>
+<p>Causal Inference with the Do-Operator modifies world-state and data alike allowing for <span class="blue"><strong>compelling intervention studies about consumer behaviour</strong></span></p>
+<div class="fragment fade-in">
+<p><span class="math display">\[ w = \{ \alpha, \beta^{1}, \beta_{2}, X^{1}, X^{2}  \} \\
+\Rightarrow w^{*} = \{ \alpha, \beta^{*}, \beta_{2}, X^{*}, X^{2}  \} \]</span></p>
+</div>
+</div></div>
+</section>
+<section id="conclusion-explore-the-branching-worlds" class="slide level2 smaller">
+<h2>Conclusion: Explore the Branching Worlds</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/ranked_worlds.png"></p>
 </div><div class="column" style="width:40%;">
 <div class="fragment fade-in">
 <ul>
@@ -669,7 +701,7 @@ hp_{ic} &amp; hp_{oc}  \\
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>Revealing behaviorial insights and unlocking new marketing <em>strategies for your adventure!</em></li>
+<li>They also reveal behaviorial insights of consumers unlocking new marketing <em>strategies for your adventure!</em></li>
 </ul>
 </div>
 </div></div>

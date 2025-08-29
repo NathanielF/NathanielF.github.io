@@ -30,19 +30,17 @@ The worked examples used here can be found [here](https://www.pymc-marketing.io/
 
 ## **The Pitch**: _Choice Matters_
 
-Consumer choice is everywhere — from cereal to cars to climate systems. Business **success hinges** on understanding these choices: pricing, product design, market segmentation.
+Consumer choice is everywhere — from cereal to cars to climate systems. Business **success hinges** on understanding these choices are driven by pricing, product design, market segmentation strategies.
 
-Classic models fall short with unrealistic assumptions and pricing experiments can be costly. 
-
-Use better models with **PyMC-Marketing** and simulate pricing interventions safely. 
+**PyMC-Marketing** allows you to simulate product interventions safely, and learn the expected impact of new product strategies
 
 ## Agenda
 
-- The Choice Setting and Bayesian Background
-- Choice Data and PyMC-Marketing
-- Mulitnomial Logit and the IIA Problem
-- Nested Logit and Market Structure
-- Choose your own Adventure
+- __Bayesian Background__: The Choice Setting
+- __The Choice Data__: PyMC-Marketing and Consumer Choice
+- __The Tempting Path__: Mulitnomial Logit and the IIA Problem
+- __The Branching Path__: Nested Logit and Market Structure
+- __Your Path__: Choose your own Adventure
 
 # The __Choice Setting__ and _Bayesian Background_
 
@@ -153,8 +151,28 @@ $$ p(\theta_{w_{i}} | Y) = \dfrac{p(\theta_{w_{i}})p(Y | \theta_{i})}{\sum_{j}^{
 
 :::
 
+## Preference over Worlds {.smaller}
 
-## Revealed Preference
+:::: {.columns}
+
+::: {.column width="70%"}
+![](images/ranked_worlds.png)
+:::
+
+::: {.column width="30%"}
+Worlds can be ranked in terms of:
+
+- probability
+
+- desirability
+
+Learning the drivers of desirability helps determine the probability of human choice and action. 
+:::
+
+::::
+
+
+## Revealed Preference {.smaller}
 ### Utility driven Choice
 
 :::: {.columns}
@@ -164,29 +182,28 @@ $$ p(\theta_{w_{i}} | Y) = \dfrac{p(\theta_{w_{i}})p(Y | \theta_{i})}{\sum_{j}^{
 :::
 
 ::: {.column width="70%"}
-### The Consumer's Dilemma
-*"What drives human choice?"*
+*"How can we learn what drives human choice?"*
 
 - Utility maximization
 - Rational decision-making
 - Expected value calculations
 - Impulse and *advertising*?
 
-*Each purchase tells a story of preference...*
+*Each path taken tells a story of preference and reveals something about how the attributes of each alternative __tempt or repel__ the chooser *
 :::
 
 ::::
 
 ---
 
-## World State Informs Choice {.smaller}
+## From Observed Choice to Latent Utility {.smaller}
 ### The Mathematical Foundation of Decision
 
 The utility function forms the cornerstone of choice modeling:
 
 $$\color{red}U_{ij} = \color{blue}\alpha_{ij} + \color{blue}\beta_{ij}^{1} \color{black}\cdot X_{ij}^{1} + \color{blue} \beta_{ij}^{2} \color{black}\cdot X_{ij}^{2} $$
 
-$$P_{ij} = \frac{\exp(\color{red}U_{ij})}{\sum_{k=1}^{J} \exp(\color{red}U_{ik})} $$
+$$P_{ij} = \frac{\exp(\color{red}U_{ij})}{\sum_{k=1}^{J} \exp(\color{red}U_{ik})} \Rightarrow Y_{ij} \sim \text{Categorical}(P_{ij}) $$
 
 Where:
 
@@ -225,6 +242,7 @@ $$ u(\text{Light shaft + Silence}) - u(\text{Glowing Fire + Conversational Echoe
 ::: {.column width="50%"}
 ### Bayesian Marketing Analytics
 
+- Media Mix Modelling, Customer Lifetime Value and Consumer Choice.
 - Uncertainty-aware decisions: model not just what people choose, but how sure we are.
 - Causal inference ready: run interventions, not just predictions.
 - Modern Bayesian engine for scalability, flexibility, and transparency.
@@ -237,8 +255,8 @@ $$ u(\text{Light shaft + Silence}) - u(\text{Glowing Fire + Conversational Echoe
 
 ![Choice Scenarios specified with attributes and choice outcomes for each discrete alternative](images/choice_data.png)
 
-## Utility Matrix
-### Intuitive Formula Specification
+## Utility Matrix {.smaller}
+### Key Aspects
 :::: {.columns}
 ::: {.column width="60%"}
 $$ \begin{split} \begin{split} \begin{pmatrix}
@@ -259,6 +277,11 @@ hp_{ic} & hp_{oc}  \\
 \end{pmatrix}  \end{split}
 \end{split}
 $$
+
+- **New Model Class**: `MNLogit` with Wilkinson-style formula interface
+- **Alternative-Specific Attributes**: Price, quality, brand effects
+- **Individual Fixed Attributes**: Income, demographics, preferences
+- **Causal Inference Ready**: Built-in counterfactual analysis
 
 :::
 
@@ -286,16 +309,22 @@ mnl
 
 ## Multinomial Logit: The Simple Path Forward {.smaller}
 
+:::: {.columns}
+::: {.column width="60%"}
 The probability of choosing alternative $j$ follows the elegant logistic form:
 
 $$\frac{\exp(\color{red}U_{ij})}{\sum_{k=1}^{J} \exp(\color{red}U_{ik})} = P_{ij} \Rightarrow s_{j}(\color{blue}\theta_{w})=P(u_{j}>u_{k};\forall_{k̸=j})$$
 
-### Key Aspects
+A simple model with a compelling interpretation. Too simple?
 
-- **New Model Class**: MNLogit with Wilkinson-style formula interface
-- **Alternative-Specific Attributes**: Price, quality, brand effects
-- **Individual Fixed Attributes**: Income, demographics, preferences
-- **Causal Inference Ready**: Built-in counterfactual analysis
+:::
+
+::: {.column width="40%"}
+
+![](images/mnl_curves.jpg)
+:::
+
+::::
 
 ---
 
@@ -396,13 +425,19 @@ change_df
 
 ::: {.column width="60%"}
 - $U = Y + W$ 
+
+::: {.fragment .fade-in}
 - $P(i) \text{ when } i \in Alts$
+
 - $P(\text{choose nest B}) \cdot P(\text{choose i} | \text{ i} \in \text{B})$
-
+:::
+::: {.fragment .fade-in}
 - $P(\text{choose nest B}) = \dfrac{e^{W + \lambda_{k}I_{k}}}{\sum_{l=1}^{K} e^{W + \lambda_{l}I_{l}}}$
-
+:::
+::: {.fragment .fade-in}
 - $P(\text{choose i} | \text{ i} \in \text{B}) = \dfrac{e^{Y_{i} / \lambda_{k}}}{\sum_{j \in B_{k}} e^{Y_{j} / \lambda_{k}}}
 $
+:::
 :::
 
 ::: {.column width="40%"}
@@ -425,7 +460,7 @@ The __log-sum__ component allows for the utility of any alternatives within a ne
 ## Nesting Structure in PyMC-Marketing {.smaller}
 
 
-```{.python}
+```{.python code-line-numbers="|2-6|9"}
 utility_formulas = [
     "gc ~ ic_gc + oc_gc | income + rooms ",
     "ec ~ ic_ec + oc_ec | income + rooms ",
@@ -476,7 +511,7 @@ change_df_1
 ![Nested Logit allows for patterns of Non-Proportional Substitution under counterfactual settings](images/non_proportional_sub.png)
 
 
-## Market Interventions and Implied Worlds
+## Market Interventions and Implied Worlds {.smaller}
 
 :::: {.columns}
 ::: {.column width="60%"}
@@ -486,18 +521,6 @@ change_df_1
 :::
 
 ::: {.column width="40%"}
-![](images/ranked_worlds.png)
-:::
-
-::::
-
-## Conclusion: Explore the Branching Worlds {.smaller}
-
-:::: {.columns}
-
-::: {.column width="60%"}
-$$ w = \{ \alpha, \beta^{1}, \beta_{2}, X^{1}, X^{2}  \} \\
-\Rightarrow w^{*} = \{ \alpha, \beta^{*}, \beta_{2}, X^{*}, X^{2}  \} $$ 
 
 ```{.python}
 with pm.do(
@@ -510,7 +533,26 @@ with pm.do(
     var_names=["like", "p"])
 
 ```
-Causal Inference with the Do-Operator modifies world-state and data alike.
+Causal Inference with the Do-Operator modifies world-state and data alike allowing for [__compelling intervention studies about consumer behaviour__]{.blue}
+
+::: {.fragment .fade-in}
+$$ w = \{ \alpha, \beta^{1}, \beta_{2}, X^{1}, X^{2}  \} \\
+\Rightarrow w^{*} = \{ \alpha, \beta^{*}, \beta_{2}, X^{*}, X^{2}  \} $$ 
+
+:::
+
+:::
+
+::::
+
+## Conclusion: Explore the Branching Worlds {.smaller}
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+![](images/ranked_worlds.png)
+
 :::
 
 ::: {.column width="40%"}
@@ -524,7 +566,7 @@ Causal Inference with the Do-Operator modifies world-state and data alike.
 - Nested Logit models in [__PyMC-Marketing__]{.green} allows us to encode market structures for compelling intervention studies.
 :::
 ::: {.fragment .fade-in}
-- Revealing behaviorial insights and unlocking new marketing _strategies for your adventure!_
+- They also reveal behaviorial insights of consumers unlocking new marketing _strategies for your adventure!_
 :::
 
 :::
