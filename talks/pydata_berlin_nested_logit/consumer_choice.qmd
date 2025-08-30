@@ -167,6 +167,8 @@ Worlds can be ranked in terms of:
 - desirability
 
 Learning the drivers of desirability helps determine the probability of human choice and action. 
+
+Fixing the attributes of different alternatives allows us to __[estimate their desirability]{.blue}__ and course of probable choice.
 :::
 
 ::::
@@ -196,7 +198,7 @@ Learning the drivers of desirability helps determine the probability of human ch
 
 ---
 
-## From Observed Choice to Latent Utility {.smaller}
+## From Latent Utility to Observed Choice {.smaller}
 ### The Mathematical Foundation of Decision
 
 The utility function forms the cornerstone of choice modeling:

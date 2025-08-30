@@ -3718,7 +3718,7 @@
     "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#preference-over-worlds",
     "title": "Discrete Choice Models in PyMC-Marketing",
     "section": "Preference over Worlds",
-    "text": "Preference over Worlds\n\n\n\n\nWorlds can be ranked in terms of:\n\nprobability\ndesirability\n\nLearning the drivers of desirability helps determine the probability of human choice and action."
+    "text": "Preference over Worlds\n\n\n\n\nWorlds can be ranked in terms of:\n\nprobability\ndesirability\n\nLearning the drivers of desirability helps determine the probability of human choice and action.\nFixing the attributes of different alternatives allows us to estimate their desirability and course of probable choice."
   },
   {
     "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#from-observed-choice-to-latent-utility",
@@ -3726,5 +3726,12 @@
     "title": "Discrete Choice Models in PyMC-Marketing",
     "section": "From Observed Choice to Latent Utility",
     "text": "From Observed Choice to Latent Utility\nThe Mathematical Foundation of Decision\nThe utility function forms the cornerstone of choice modeling:\n\\[\\color{red}U_{ij} = \\color{blue}\\alpha_{ij} + \\color{blue}\\beta_{ij}^{1} \\color{black}\\cdot X_{ij}^{1} + \\color{blue} \\beta_{ij}^{2} \\color{black}\\cdot X_{ij}^{2} \\]\n\\[P_{ij} = \\frac{\\exp(\\color{red}U_{ij})}{\\sum_{k=1}^{J} \\exp(\\color{red}U_{ik})} \\Rightarrow Y_{ij} \\sim \\text{Categorical}(P_{ij}) \\]\nWhere:\n\n\\(U_{ij}\\) represents the systematic utility for individual \\(i\\) choosing alternative \\(j\\) at a particular world state \\(w = \\{ \\color{blue}\\alpha_{ij}, \\color{blue}\\beta_{ij}^{1}, \\color{blue}\\beta_{ij}^{2} X_{ij}^{1}, X_{ij}^{2} \\}\\)\n\\(X_{ij}\\) represents observed covariates (product attributes) and \\(\\color{blue}\\theta\\) structural parameters within the world \\(w\\).\nCollectively, the mathematical structure and world-state are combined to make a theory of the data generating process for the world \\(w\\)."
+  },
+  {
+    "objectID": "talks/pydata_berlin_nested_logit/consumer_choice.html#from-latent-utility-to-observed-choice",
+    "href": "talks/pydata_berlin_nested_logit/consumer_choice.html#from-latent-utility-to-observed-choice",
+    "title": "Discrete Choice Models in PyMC-Marketing",
+    "section": "From Latent Utility to Observed Choice",
+    "text": "From Latent Utility to Observed Choice\nThe Mathematical Foundation of Decision\nThe utility function forms the cornerstone of choice modeling:\n\\[\\color{red}U_{ij} = \\color{blue}\\alpha_{ij} + \\color{blue}\\beta_{ij}^{1} \\color{black}\\cdot X_{ij}^{1} + \\color{blue} \\beta_{ij}^{2} \\color{black}\\cdot X_{ij}^{2} \\]\n\\[P_{ij} = \\frac{\\exp(\\color{red}U_{ij})}{\\sum_{k=1}^{J} \\exp(\\color{red}U_{ik})} \\Rightarrow Y_{ij} \\sim \\text{Categorical}(P_{ij}) \\]\nWhere:\n\n\\(U_{ij}\\) represents the systematic utility for individual \\(i\\) choosing alternative \\(j\\) at a particular world state \\(w = \\{ \\color{blue}\\alpha_{ij}, \\color{blue}\\beta_{ij}^{1}, \\color{blue}\\beta_{ij}^{2} X_{ij}^{1}, X_{ij}^{2} \\}\\)\n\\(X_{ij}\\) represents observed covariates (product attributes) and \\(\\color{blue}\\theta\\) structural parameters within the world \\(w\\).\nCollectively, the mathematical structure and world-state are combined to make a theory of the data generating process for the world \\(w\\)."
   }
 ]
