@@ -1,0 +1,20 @@
+---
+title: "Bayesian Workflow with SEMs"
+subtitle: "PyCon Ireland 2025"
+author: 
+    - name: Nathaniel Forde
+      affiliations: 
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+format: 
+    revealjs:
+         theme: [default, clean.scss]
+         logo: images/pycon_ireland.jpeg
+         footer: "Bayesian Workflow for SEMs with PyMC"
+categories: [bayesian, discrete choice]
+image: "images/dublinSkyline.png"
+date: last-modified
+---
+
+
+## Test
