@@ -3774,7 +3774,7 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#agenda",
     "title": "Bayesian Workflow with SEMs",
     "section": "Agenda",
-    "text": "Agenda\n\nThe Idea of a Workflow: Craft versus Checklist\nStructural Equation Models: Expressive Candidate Structure\nBayesian Workflow with SEMs:\n\nConfirmatory Factor Structures\nAdding Structural Relations\nAdding Covariance Structure\nAdding Hierarchical Structure\nParameter Recovery and Model Validation\n\nConclusion"
+    "text": "Agenda\n\nThe Idea of a Workflow: Craft versus Checklist\nStructural Equation Models: Expressive Candidate Structure(s)\nBayesian Workflow with SEMs:\n\nConfirmatory Factor Structures\nAdding Structural Relations\nAdding Covariance Structure\nAdding Hierarchical Structure\nParameter Recovery and Model Validation\n\nConclusion"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#craft-in-modelling",
@@ -3817,5 +3817,40 @@
     "title": "Bayesian Workflow with SEMs",
     "section": "Contemporary Bayesian Workflow",
     "text": "Contemporary Bayesian Workflow\n\n\n\nStart with Theory and Prior Knowledge\nIterate with Checks and Visual Diagnostics\nRefine Structure and Layer Complexity\n\nAssess consistency of Signal\n\nValidate through Sensitivty Analysis\nOwn the Process\n\n\n\n\n\n\n\n\nThe Big Red Book of Bayesian Modelling"
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-confirmatory-factor-structure",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-confirmatory-factor-structure",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "The Confirmatory Factor Structure",
+    "text": "The Confirmatory Factor Structure"
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "The SEM Regression",
+    "text": "The SEM Regression"
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-with-mediation-effects",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-with-mediation-effects",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "The SEM Regression with Mediation Effects",
+    "text": "The SEM Regression with Mediation Effects"
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-with-staggered-mediation-effects",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-with-staggered-mediation-effects",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "The SEM Regression with Staggered Mediation Effects",
+    "text": "The SEM Regression with Staggered Mediation Effects"
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-with-residuals-covariance-structures",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-with-residuals-covariance-structures",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "The SEM Regression with Residuals Covariance Structures",
+    "text": "The SEM Regression with Residuals Covariance Structures"
   }
 ]

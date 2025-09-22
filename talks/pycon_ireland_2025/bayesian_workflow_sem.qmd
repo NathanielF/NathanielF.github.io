@@ -43,7 +43,7 @@ SEM modelling in **PyMC** enables us to automate much of this workflow of model 
 ## Agenda
 
 - __The Idea of a Workflow__: Craft versus Checklist
-- __Structural Equation Models__: Expressive Candidate Structure
+- __Structural Equation Models__: Expressive Candidate Structure(s)
 - __Bayesian Workflow with SEMs__: 
   - Confirmatory Factor Structures
   - Adding Structural Relations
@@ -147,4 +147,25 @@ SEM modelling in **PyMC** enables us to automate much of this workflow of model 
 ::: 
 
 
+# Structural Equation Models
 
+
+## The Confirmatory Factor Structure
+
+![](images/cfa_excalidraw.png)
+
+## The SEM Regression
+
+![](images/sem1_excalidraw.png)
+
+## The SEM Regression with Mediation Effects
+
+![](images/sem2_excalidraw.png)
+
+## The SEM Regression with Staggered Mediation Effects
+
+![](images/sem3_excalidraw.png)
+
+## The SEM Regression with Residuals Covariance Structures
+
+![](images/final_sem_excalidraw.png)
