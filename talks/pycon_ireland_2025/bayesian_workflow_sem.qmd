@@ -148,7 +148,7 @@ SEM modelling in **PyMC** enables us to automate much of this workflow of model 
 
 
 # Structural Equation Models
-
+Richly Parameterised Regressions with Expressive Encodings of Measurement Error and Latent Constructs
 
 ## The Confirmatory Factor Structure
 
@@ -158,14 +158,40 @@ SEM modelling in **PyMC** enables us to automate much of this workflow of model 
 
 ![](images/sem1_excalidraw.png)
 
-## The SEM Regression with Mediation Effects
+## The SEM Regression 
+### with Mediation Effects
 
 ![](images/sem2_excalidraw.png)
 
-## The SEM Regression with Staggered Mediation Effects
+## The SEM Regression 
+### with Staggered Mediation Effects
 
 ![](images/sem3_excalidraw.png)
 
-## The SEM Regression with Residuals Covariance Structures
+## The SEM Regression 
+### with Residuals Covariance Structures
 
 ![](images/final_sem_excalidraw.png)
+
+
+## The SEM workflow {.smaller}
+
+- Start with CFA:
+  - Validate that our measurement model holds.
+  - Ensure latent constructs are reliably represented by observed indicators.
+
+- Layer Structural Paths:
+  - Add theoretically-motivated regressions between constructs.
+  - Test whether hypothesized relationships improve model fit.
+
+- Refine with Residual Covariances:
+  - Account for specific shared variance not captured by factors.
+  - Keep structure transparent while improving realism.
+
+- Iterative Validation:
+  - Each step asks: Does this addition honor theory? Improve fit?
+  - Workflow = constant negotiation between parsimony and fidelity.
+
+- Craft, Not Checklist:
+  - Like a woodworker, we shape the model layer by layer.
+  - Validation is not a single hurdle but a practice of refinement.
