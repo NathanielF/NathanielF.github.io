@@ -16,5 +16,135 @@ image: "images/dublinSkyline.png"
 date: last-modified
 ---
 
+## Preliminaries {.smaller}
 
-## Test
+:::{.callout-warning}
+## Who am I?
+- I'm a __data scientist__ at __[Personio]{.blue}__ 
+    - Bayesian statistician, 
+    - Reformed philosopher and logician. 
+- Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
+:::
+ 
+::: {.callout-tip}
+## Code or it didn't Happen
+The worked examples used here can be found [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html)
+:::
+
+![My Website](images/QR_CODE.png)
+
+
+## **The Pitch**: _Inference done Right_
+
+Structural Equation modelling is [__most compellingly__]{.blue} conducted in a Bayesian Setting. Bayesian inference done right, adheres to transparent workflow. 
+
+SEM modelling in **PyMC** enables us to automate much of this workflow of model evaluation, and parameter recovery even with complex hierarchical SEM models.  
+
+## Agenda
+
+- __The Idea of a Workflow__: Craft versus Checklist
+- __Structural Equation Models__: Expressive Candidate Structure
+- __Bayesian Workflow with SEMs__: 
+  - Confirmatory Factor Structures
+  - Adding Structural Relations
+  - Adding Covariance Structure
+  - Adding Hierarchical Structure
+  - Parameter Recovery and Model Validation
+- __Conclusion__
+
+# The __Idea__ of a _Workflow_
+
+## Craft in Statistical Modelling {.smaller}
+
+:::: {.columns}
+::: {.column}
+- Embraces process, imperfection, and iteration.
+
+::: {.fragment .fade-in}
+- Aims at the acquisition of scientific knowledge
+:::
+
+::: {.fragment .fade-in}
+- Supports generalisable findings and solutions
+:::
+
+::: {.fragment .fade-in}
+- Restore ownership: you shape, test, and refine — the model carries your imprint.
+:::
+
+:::
+::: {.column}
+![](images/craft_v_corporate.png)
+:::
+:::
+
+## Checklists as a Methodological Error {.smaller}
+
+::::  {.columns}
+::: {.column}
+- Reduce inquiry to compliance: ticking boxes replaces genuine understanding.
+
+::: {.fragment .fade-in}
+- Create the illusion of rigor while bypassing uncertainty and context.
+:::
+
+::: {.fragment .fade-in}
+- Confuse progress with throughput: more boxes checked ≠ better science.
+:::
+
+::: {.fragment .fade-in}
+- Strip away ownership: you don’t make something, you just complete a task.
+:::
+
+:::
+::: {.column}
+![](images/metric_blindness.png)
+:::
+::: 
+
+## Job Satisfaction Data {.smaller}
+
+:::: {.rows}
+::: {.row}
+- Constructive Thought Strategies (CTS): Thought patterns that are positive or helpful, such as:
+  - __Self-Talk__ (positive internal dialogue): `ST`
+  - __Mental Imagery__ (visualizing successful performance or outcomes): `MI` 
+  - __Evaluating Beliefs & Assumptions__ (i.e. critically assessing one’s internal assumption: `EBA`
+- Dysfunctional Thought Processes: (`DA1`–`DA3`)
+- Subjective Well Being: (`UF1`, `UF2`, `FOR`)
+- Job Satisfaction: (`JW1`–`JW3`)
+:::
+::: {.row}
+
+![](images/SEM_structure.png)
+:::
+:::
+
+## Contemporary Bayesian Workflow {.smaller}
+
+:::: {.columns}
+::: {.column}
+- Start with Theory and Prior Knowledge
+- Iterate with Checks and Visual Diagnostics
+- Refine Structure and Layer Complexity
+  - Assess consistency of Signal
+- Validate through Sensitivty Analysis
+- Own the Process
+
+::: {.fragment .fade-in}
+![](images/arviz.png)
+:::
+
+:::
+::: {.column}
+![The Big Red Book of Bayesian Modelling](images/bda_image.jpg)
+
+::: {.fragment .fade-in}
+![](images/pymc.jpg)
+:::
+
+:::
+::: 
+
+
+

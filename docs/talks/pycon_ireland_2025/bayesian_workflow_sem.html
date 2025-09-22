@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.6.41">
 
   <meta name="author" content="Nathaniel Forde">
-  <meta name="dcterms.date" content="2025-09-17">
+  <meta name="dcterms.date" content="2025-09-22">
   <title>Examined Algorithms – Bayesian Workflow with SEMs</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -145,13 +145,175 @@ Nathaniel Forde
     </div>
 </div>
 
-  <p class="date">2025-09-17</p>
+  <p class="date">2025-09-22</p>
 </section>
-<section id="test" class="slide level2">
-<h2>Test</h2>
+<section id="preliminaries" class="slide level2 smaller">
+<h2>Preliminaries</h2>
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Who am I?</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>I’m a <strong>data scientist</strong> at <strong><span class="blue">Personio</span></strong>
+<ul>
+<li>Bayesian statistician,</li>
+<li>Reformed philosopher and logician.</li>
+</ul></li>
+<li>Website: <a href="https://nathanielf.github.io/">https://nathanielf.github.io/</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Code or it didn’t Happen</strong></p>
+</div>
+<div class="callout-content">
+<p>The worked examples used here can be found <a href="https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html">here</a></p>
+</div>
+</div>
+</div>
+
+<img data-src="images/QR_CODE.png" class="r-stretch quarto-figure-center"><p class="caption">My Website</p></section>
+<section id="the-pitch-inference-done-right" class="slide level2">
+<h2><strong>The Pitch</strong>: <em>Inference done Right</em></h2>
+<p>Structural Equation modelling is <span class="blue"><strong>most compellingly</strong></span> conducted in a Bayesian Setting. Bayesian inference done right, adheres to transparent workflow.</p>
+<p>SEM modelling in <strong>PyMC</strong> enables us to automate much of this workflow of model evaluation, and parameter recovery even with complex hierarchical SEM models.</p>
+</section>
+<section id="agenda" class="slide level2">
+<h2>Agenda</h2>
+<ul>
+<li><strong>The Idea of a Workflow</strong>: Craft versus Checklist</li>
+<li><strong>Structural Equation Models</strong>: Expressive Candidate Structure</li>
+<li><strong>Bayesian Workflow with SEMs</strong>:
+<ul>
+<li>Confirmatory Factor Structures</li>
+<li>Adding Structural Relations</li>
+<li>Adding Covariance Structure</li>
+<li>Adding Hierarchical Structure</li>
+<li>Parameter Recovery and Model Validation</li>
+</ul></li>
+<li><strong>Conclusion</strong></li>
+</ul>
+</section>
+<section>
+<section id="the-idea-of-a-workflow" class="title-slide slide level1 center">
+<h1>The <strong>Idea</strong> of a <em>Workflow</em></h1>
+
+</section>
+<section id="craft-in-statistical-modelling" class="slide level2 smaller">
+<h2>Craft in Statistical Modelling</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Embraces process, imperfection, and iteration.</li>
+</ul>
+<div class="fragment fade-in">
+<ul>
+<li>Aims at the acquisition of scientific knowledge</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Supports generalisable findings and solutions</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Restore ownership: you shape, test, and refine — the model carries your imprint.</li>
+</ul>
+</div>
+</div><div class="column">
+<p><img data-src="images/craft_v_corporate.png"></p>
+</div></div>
+</section>
+<section id="checklists-as-a-methodological-error" class="slide level2 smaller">
+<h2>Checklists as a Methodological Error</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Reduce inquiry to compliance: ticking boxes replaces genuine understanding.</li>
+</ul>
+<div class="fragment fade-in">
+<ul>
+<li>Create the illusion of rigor while bypassing uncertainty and context.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Confuse progress with throughput: more boxes checked ≠ better science.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Strip away ownership: you don’t make something, you just complete a task.</li>
+</ul>
+</div>
+</div><div class="column">
+<p><img data-src="images/metric_blindness.png"></p>
+</div></div>
+</section>
+<section id="job-satisfaction-data" class="slide level2 smaller">
+<h2>Job Satisfaction Data</h2>
+<div class="rows">
+<div class="row">
+<ul>
+<li>Constructive Thought Strategies (CTS): Thought patterns that are positive or helpful, such as:
+<ul>
+<li><strong>Self-Talk</strong> (positive internal dialogue): <code>ST</code></li>
+<li><strong>Mental Imagery</strong> (visualizing successful performance or outcomes): <code>MI</code></li>
+<li><strong>Evaluating Beliefs &amp; Assumptions</strong> (i.e.&nbsp;critically assessing one’s internal assumption: <code>EBA</code></li>
+</ul></li>
+<li>Dysfunctional Thought Processes: (<code>DA1</code>–<code>DA3</code>)</li>
+<li>Subjective Well Being: (<code>UF1</code>, <code>UF2</code>, <code>FOR</code>)</li>
+<li>Job Satisfaction: (<code>JW1</code>–<code>JW3</code>)</li>
+</ul>
+</div>
+<div class="row">
+<p><img data-src="images/SEM_structure.png"></p>
+</div>
+</div>
+</section>
+<section id="contemporary-bayesian-workflow" class="slide level2 smaller">
+<h2>Contemporary Bayesian Workflow</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Start with Theory and Prior Knowledge</li>
+<li>Iterate with Checks and Visual Diagnostics</li>
+<li>Refine Structure and Layer Complexity
+<ul>
+<li>Assess consistency of Signal</li>
+</ul></li>
+<li>Validate through Sensitivty Analysis</li>
+<li>Own the Process</li>
+</ul>
+<div class="fragment fade-in">
+<p><img data-src="images/arviz.png"></p>
+</div>
+</div><div class="column">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/bda_image.jpg"></p>
+<figcaption>The Big Red Book of Bayesian Modelling</figcaption>
+</figure>
+</div>
+<div class="fragment fade-in">
+<p><img data-src="images/pymc.jpg"></p>
+</div>
+</div></div>
 
 
-</section>
+</section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <p><img src="images/pycon_ireland.jpeg" class="slide-logo"></p>
