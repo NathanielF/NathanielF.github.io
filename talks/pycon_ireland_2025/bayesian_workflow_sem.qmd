@@ -200,3 +200,165 @@ Richly Parameterised Regressions with Expressive Encodings of Measurement Error 
 - Craft, Not Checklist:
   - Like a woodworker, we shape the model layer by layer.
   - Validation is not a single hurdle but a practice of refinement.
+
+
+## Bayesian Workflow with SEMs
+### CFA
+
+:::: {.columns}
+::: {.column width="70%"}
+
+```{.python code-line-numbers="|9-14|18|21|25"}
+with pm.Model(coords=coords) as cfa_model_v1:
+    
+    # --- Factor loadings ---
+    lambdas_1 = make_lambda('indicators_1', 'lambdas1', priors=[1, .5])
+    lambdas_2 = make_lambda('indicators_2', 'lambdas2', priors=[1, .5])
+    lambdas_3 = make_lambda('indicators_3', 'lambdas3', priors=[1, .5])
+    lambdas_4 = make_lambda('indicators_4', 'lambdas4', priors=[1, .5])
+
+    Lambda = pt.zeros((12, 4))
+    Lambda = pt.set_subtensor(Lambda[0:3, 0], lambdas_1)
+    Lambda = pt.set_subtensor(Lambda[3:6, 1], lambdas_2)
+    Lambda = pt.set_subtensor(Lambda[6:9, 2], lambdas_3)
+    Lambda = pt.set_subtensor(Lambda[9:12, 3], lambdas_4)
+    Lambda = pm.Deterministic('Lambda', Lambda)
+
+    sd_dist = pm.Exponential.dist(1.0, shape=4)
+    chol, _, _ = pm.LKJCholeskyCov("chol_cov", n=4, eta=2, sd_dist=sd_dist, compute_corr=True)
+    eta = pm.MvNormal("eta", 0, chol=chol, dims=("obs", "latent"))
+
+    # Construct Pseudo Observation matrix based on Factor Loadings
+    mu = pt.dot(eta, Lambda.T)  # (n_obs, n_indicators)
+
+    ## Error Terms
+    Psi = pm.InverseGamma("Psi", 5, 10, dims="indicators")
+    _ = pm.Normal('likelihood', mu=mu, sigma=Psi, observed=observed_data)
+
+```
+
+:::
+::: {.column width="30%"}
+$$ \eta \sim MvN(0, \Sigma)$$
+$$ \mu = \color{blue}{\Lambda} \eta$$
+$$\mathbf{x} = N(\mu, \Psi)$$
+
+:::
+::: 
+
+## Bayesian Workflow with SEMs
+### CFA Implications
+
+![](images/cfa_model_summary.png)
+
+## Bayesian Workflow with SEMs
+### SEM
+
+:::: {.columns}
+::: {.column width="70%"}
+
+```{.python code-line-numbers="|21-22|24|30"}
+with pm.Model(coords=coords) as sem_model_v3:
+    
+    # --- Factor loadings ---
+    lambdas_1 = make_lambda('indicators_1', 'lambdas1', priors=[1, .5])
+    lambdas_2 = make_lambda('indicators_2', 'lambdas2', priors=[1, .5])
+    lambdas_3 = make_lambda('indicators_3', 'lambdas3', priors=[1, .5])
+    lambdas_4 = make_lambda('indicators_4', 'lambdas4', priors=[1, .5])
+
+    Lambda = pt.zeros((12, 4))
+    Lambda = pt.set_subtensor(Lambda[0:3, 0], lambdas_1)
+    Lambda = pt.set_subtensor(Lambda[3:6, 1], lambdas_2)
+    Lambda = pt.set_subtensor(Lambda[6:9, 2], lambdas_3)
+    Lambda = pt.set_subtensor(Lambda[9:12, 3], lambdas_4)
+    Lambda = pm.Deterministic('Lambda', Lambda)
+
+    latent_dim = len(coords['latent'])
+
+    sd_dist = pm.Exponential.dist(1.0, shape=latent_dim)
+    chol, _, _ = pm.LKJCholeskyCov("chol_cov", n=latent_dim, eta=2, sd_dist=sd_dist, compute_corr=True)
+    gamma = pm.MvNormal("gamma", 0, chol=chol, dims=("obs", "latent"))
+
+    B = make_B()
+    I = pt.eye(latent_dim)
+    eta = pm.Deterministic("eta", pt.slinalg.solve(I - B + 1e-8 * I, gamma.T).T)  
+
+    mu = pt.dot(eta, Lambda.T)
+
+    ## Error Terms
+    Psi = make_Psi('indicators')
+    _ = pm.MvNormal('likelihood', mu=mu, cov=Psi, observed=observed_data)
+
+```
+
+:::
+::: {.column width="30%"}
+$$\zeta \sim MvN(0, \Sigma_{\zeta})$$
+$$\eta = (I-\color{blue}{B})^{-1} \zeta$$
+$$\mu = \Lambda \eta_i$$
+$$ \mathbf{x} \mid \eta \sim MvN(\mu, \Psi)$$
+:::
+::: 
+
+## Bayesian Workflow with SEMs
+### SEM Implications
+
+![](images/sem_model_summary.png)
+
+
+## Bayesian Workflow with SEMs
+### Mean Structures and Marginalising
+
+:::: {.columns}
+::: {.column width="70%"}
+
+```{.python code-line-numbers="|28-31|33|34"}
+with pm.Model(coords=coords) as sem_model_mean_structure:
+  # --- Factor loadings ---
+  lambdas_1 = make_lambda('indicators_1', 'lambdas1', priors=[1, .5])
+  lambdas_2 = make_lambda('indicators_2', 'lambdas2', priors=[1, .5])
+  lambdas_3 = make_lambda('indicators_3', 'lambdas3', priors=[1, .5])
+  lambdas_4 = make_lambda('indicators_4', 'lambdas4', priors=[1, .5])
+
+  Lambda = pt.zeros((12, 4))
+  Lambda = pt.set_subtensor(Lambda[0:3, 0], lambdas_1)
+  Lambda = pt.set_subtensor(Lambda[3:6, 1], lambdas_2)
+  Lambda = pt.set_subtensor(Lambda[6:9, 2], lambdas_3)
+  Lambda = pt.set_subtensor(Lambda[9:12, 3], lambdas_4)
+  Lambda = pm.Deterministic('Lambda', Lambda)
+
+  sd_dist = pm.Exponential.dist(1.0, shape=4)
+  chol, _, _ = pm.LKJCholeskyCov("chol_cov", n=4, eta=2, sd_dist=sd_dist, compute_corr=True)
+  eta = pm.MvNormal("eta", 0, chol=chol, dims=("obs", "latent"))
+
+  Psi_zeta = pm.Deterministic("Psi_zeta", chol.dot(chol.T))
+  Psi = make_Psi('indicators')
+
+  B = make_B()
+  latent_dim = len(coords['latent'])
+  I = pt.eye(latent_dim)
+  lhs = I - B + 1e-8 * pt.eye(latent_dim)  # (latent_dim, latent_dim)
+  inv_lhs = pm.Deterministic('solve_I-B', pt.slinalg.solve(lhs, pt.eye(latent_dim)), dims=('latent', 'latent1'))
+
+  # Mean Structure
+  tau = pm.Normal("tau", mu=0, sigma=0.5, dims="indicators")   # observed intercepts 
+  alpha = pm.Normal("alpha", mu=0, sigma=0.5, dims="latent")       # latent means
+  mu_y = pm.Deterministic("mu_y", tau + pt.dot(Lambda, pt.dot(inv_lhs, alpha)))
+
+  Sigma_y = pm.Deterministic('Sigma_y', Lambda.dot(inv_lhs).dot(Psi_zeta).dot(inv_lhs.T).dot(Lambda.T) + Psi)
+  _ = pm.MvNormal("likelihood", mu=mu_y, cov=Sigma_y, observed=mean_shift_data)
+
+
+```
+:::
+::: {.column width="30%"}
+$$\Sigma_{\mathcal{x}} = \Psi + \\ \Lambda(I - B)^{-1}\Psi_{\gamma}(I - B)^{T}\Lambda^{T} $$
+
+$$ \mathcal{x} \sim MvN(\tau, \Sigma_{x})$$
+:::
+:::
+
+## Bayesian Workflow with SEMs
+### SEM Implications
+
+![](images/sem_model_marginal_summary.png)
