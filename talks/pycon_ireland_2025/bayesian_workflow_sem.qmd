@@ -152,31 +152,31 @@ Richly Parameterised Regressions with Expressive Encodings of Measurement Error 
 
 ## The Confirmatory Factor Structure
 
-![](images/cfa_excalidraw.png)
+![](images/cfa_excalidraw.png){.stretch}
 
 ## The SEM Regression
 
-![](images/sem1_excalidraw.png)
+![](images/sem1_excalidraw.png){.stretch}
 
 ## The SEM Regression 
 ### with Mediation Effects
 
-![](images/sem2_excalidraw.png)
+![](images/sem2_excalidraw.png){.stretch}
 
 ## The SEM Regression 
 ### with Staggered Mediation Effects
 
-![](images/sem3_excalidraw.png)
+![](images/sem3_excalidraw.png){.stretch}
 
 ## The SEM Regression 
 ### with Residuals Covariance Structures
 
-![](images/final_sem_excalidraw.png)
+![](images/final_sem_excalidraw.png){.stretch}
 
 ## The SEM Regression 
 ### with Hierarchical Structure
 
-![](images/hierarchical_excalidraw.png)
+![](images/hierarchical_excalidraw.png){.stretch}
 
 
 ## The SEM workflow {.smaller}
@@ -249,7 +249,7 @@ $$\mathbf{x} = N(\mu, \Psi)$$
 ## Bayesian Workflow with SEMs
 ### CFA Implications
 
-![](images/cfa_model_summary.png)
+![](images/cfa_model_summary.png){.stretch}
 
 ## Bayesian Workflow with SEMs
 ### SEM
@@ -303,7 +303,7 @@ $$ \mathbf{x} \mid \eta \sim MvN(\mu, \Psi)$$
 ## Bayesian Workflow with SEMs
 ### SEM Implications
 
-![](images/sem_model_summary.png)
+![](images/sem_model_summary.png){.stretch}
 
 
 ## Bayesian Workflow with SEMs
@@ -362,9 +362,9 @@ $$ \mathcal{x} \sim MvN(\tau, \Sigma_{x})$$
 ## Bayesian Workflow with SEMs
 ### SEM Implications
 
-![](images/sem_model_marginal_summary.png)
+![](images/sem_model_marginal_summary.png){.stretch}
 
 ## Bayesian Workflow with SEMs
 ### Comparing Model Estimates
 
-![](images/compare_model_parameters.png)
+![](images/compare_model_parameters.png){.stretch}
