@@ -312,7 +312,7 @@ $$ \mathbf{x} \mid \eta \sim MvN(\mu, \Psi)$$
 :::: {.columns}
 ::: {.column width="70%"}
 
-```{.python code-line-numbers="|28-31|33|34"}
+```{.python code-line-numbers="|28-31|32-34"}
 with pm.Model(coords=coords) as sem_model_mean_structure:
   # --- Factor loadings ---
   lambdas_1 = make_lambda('indicators_1', 'lambdas1', priors=[1, .5])
@@ -329,7 +329,6 @@ with pm.Model(coords=coords) as sem_model_mean_structure:
 
   sd_dist = pm.Exponential.dist(1.0, shape=4)
   chol, _, _ = pm.LKJCholeskyCov("chol_cov", n=4, eta=2, sd_dist=sd_dist, compute_corr=True)
-  eta = pm.MvNormal("eta", 0, chol=chol, dims=("obs", "latent"))
 
   Psi_zeta = pm.Deterministic("Psi_zeta", chol.dot(chol.T))
   Psi = make_Psi('indicators')
@@ -346,7 +345,9 @@ with pm.Model(coords=coords) as sem_model_mean_structure:
   mu_y = pm.Deterministic("mu_y", tau + pt.dot(Lambda, pt.dot(inv_lhs, alpha)))
 
   Sigma_y = pm.Deterministic('Sigma_y', Lambda.dot(inv_lhs).dot(Psi_zeta).dot(inv_lhs.T).dot(Lambda.T) + Psi)
-  _ = pm.MvNormal("likelihood", mu=mu_y, cov=Sigma_y, observed=mean_shift_data)
+  M = Psi_zeta @ inv_lhs @ Lambda.T @ pm.math.matrix_inverse(Sigma_y)
+  eta_hat = pm.Deterministic('eta', alpha + (M @ (observed_data - mu_y).T).T, dims=('obs', 'latent')) 
+  _ = pm.MvNormal("likelihood", mu=mu_y, cov=Sigma_y, observed=observed_data)
 
 
 ```
@@ -362,3 +363,8 @@ $$ \mathcal{x} \sim MvN(\tau, \Sigma_{x})$$
 ### SEM Implications
 
 ![](images/sem_model_marginal_summary.png)
+
+## Bayesian Workflow with SEMs
+### Comparing Model Estimates
+
+![](images/compare_model_parameters.png)

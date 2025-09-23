@@ -528,7 +528,7 @@ Nathaniel Forde
 <h3 id="mean-structures-and-marginalising">Mean Structures and Marginalising</h3>
 <div class="columns">
 <div class="column" style="width:70%;">
-<div class="sourceCode" id="cb3" data-code-line-numbers="|28-31|33|34"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> sem_model_mean_structure:</span>
+<div class="sourceCode" id="cb3" data-code-line-numbers="|28-31|32-34"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>coords) <span class="im">as</span> sem_model_mean_structure:</span>
 <span id="cb3-2"><a></a>  <span class="co"># --- Factor loadings ---</span></span>
 <span id="cb3-3"><a></a>  lambdas_1 <span class="op">=</span> make_lambda(<span class="st">'indicators_1'</span>, <span class="st">'lambdas1'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>])</span>
 <span id="cb3-4"><a></a>  lambdas_2 <span class="op">=</span> make_lambda(<span class="st">'indicators_2'</span>, <span class="st">'lambdas2'</span>, priors<span class="op">=</span>[<span class="dv">1</span>, <span class="fl">.5</span>])</span>
@@ -544,25 +544,26 @@ Nathaniel Forde
 <span id="cb3-14"><a></a></span>
 <span id="cb3-15"><a></a>  sd_dist <span class="op">=</span> pm.Exponential.dist(<span class="fl">1.0</span>, shape<span class="op">=</span><span class="dv">4</span>)</span>
 <span id="cb3-16"><a></a>  chol, _, _ <span class="op">=</span> pm.LKJCholeskyCov(<span class="st">"chol_cov"</span>, n<span class="op">=</span><span class="dv">4</span>, eta<span class="op">=</span><span class="dv">2</span>, sd_dist<span class="op">=</span>sd_dist, compute_corr<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb3-17"><a></a>  eta <span class="op">=</span> pm.MvNormal(<span class="st">"eta"</span>, <span class="dv">0</span>, chol<span class="op">=</span>chol, dims<span class="op">=</span>(<span class="st">"obs"</span>, <span class="st">"latent"</span>))</span>
-<span id="cb3-18"><a></a></span>
-<span id="cb3-19"><a></a>  Psi_zeta <span class="op">=</span> pm.Deterministic(<span class="st">"Psi_zeta"</span>, chol.dot(chol.T))</span>
-<span id="cb3-20"><a></a>  Psi <span class="op">=</span> make_Psi(<span class="st">'indicators'</span>)</span>
-<span id="cb3-21"><a></a></span>
-<span id="cb3-22"><a></a>  B <span class="op">=</span> make_B()</span>
-<span id="cb3-23"><a></a>  latent_dim <span class="op">=</span> <span class="bu">len</span>(coords[<span class="st">'latent'</span>])</span>
-<span id="cb3-24"><a></a>  I <span class="op">=</span> pt.eye(latent_dim)</span>
-<span id="cb3-25"><a></a>  lhs <span class="op">=</span> I <span class="op">-</span> B <span class="op">+</span> <span class="fl">1e-8</span> <span class="op">*</span> pt.eye(latent_dim)  <span class="co"># (latent_dim, latent_dim)</span></span>
-<span id="cb3-26"><a></a>  inv_lhs <span class="op">=</span> pm.Deterministic(<span class="st">'solve_I-B'</span>, pt.slinalg.solve(lhs, pt.eye(latent_dim)), dims<span class="op">=</span>(<span class="st">'latent'</span>, <span class="st">'latent1'</span>))</span>
-<span id="cb3-27"><a></a></span>
-<span id="cb3-28"><a></a>  <span class="co"># Mean Structure</span></span>
-<span id="cb3-29"><a></a>  tau <span class="op">=</span> pm.Normal(<span class="st">"tau"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="fl">0.5</span>, dims<span class="op">=</span><span class="st">"indicators"</span>)   <span class="co"># observed intercepts </span></span>
-<span id="cb3-30"><a></a>  alpha <span class="op">=</span> pm.Normal(<span class="st">"alpha"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="fl">0.5</span>, dims<span class="op">=</span><span class="st">"latent"</span>)       <span class="co"># latent means</span></span>
-<span id="cb3-31"><a></a>  mu_y <span class="op">=</span> pm.Deterministic(<span class="st">"mu_y"</span>, tau <span class="op">+</span> pt.dot(Lambda, pt.dot(inv_lhs, alpha)))</span>
-<span id="cb3-32"><a></a></span>
-<span id="cb3-33"><a></a>  Sigma_y <span class="op">=</span> pm.Deterministic(<span class="st">'Sigma_y'</span>, Lambda.dot(inv_lhs).dot(Psi_zeta).dot(inv_lhs.T).dot(Lambda.T) <span class="op">+</span> Psi)</span>
-<span id="cb3-34"><a></a>  _ <span class="op">=</span> pm.MvNormal(<span class="st">"likelihood"</span>, mu<span class="op">=</span>mu_y, cov<span class="op">=</span>Sigma_y, observed<span class="op">=</span>mean_shift_data)</span>
-<span id="cb3-35"><a></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-17"><a></a></span>
+<span id="cb3-18"><a></a>  Psi_zeta <span class="op">=</span> pm.Deterministic(<span class="st">"Psi_zeta"</span>, chol.dot(chol.T))</span>
+<span id="cb3-19"><a></a>  Psi <span class="op">=</span> make_Psi(<span class="st">'indicators'</span>)</span>
+<span id="cb3-20"><a></a></span>
+<span id="cb3-21"><a></a>  B <span class="op">=</span> make_B()</span>
+<span id="cb3-22"><a></a>  latent_dim <span class="op">=</span> <span class="bu">len</span>(coords[<span class="st">'latent'</span>])</span>
+<span id="cb3-23"><a></a>  I <span class="op">=</span> pt.eye(latent_dim)</span>
+<span id="cb3-24"><a></a>  lhs <span class="op">=</span> I <span class="op">-</span> B <span class="op">+</span> <span class="fl">1e-8</span> <span class="op">*</span> pt.eye(latent_dim)  <span class="co"># (latent_dim, latent_dim)</span></span>
+<span id="cb3-25"><a></a>  inv_lhs <span class="op">=</span> pm.Deterministic(<span class="st">'solve_I-B'</span>, pt.slinalg.solve(lhs, pt.eye(latent_dim)), dims<span class="op">=</span>(<span class="st">'latent'</span>, <span class="st">'latent1'</span>))</span>
+<span id="cb3-26"><a></a></span>
+<span id="cb3-27"><a></a>  <span class="co"># Mean Structure</span></span>
+<span id="cb3-28"><a></a>  tau <span class="op">=</span> pm.Normal(<span class="st">"tau"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="fl">0.5</span>, dims<span class="op">=</span><span class="st">"indicators"</span>)   <span class="co"># observed intercepts </span></span>
+<span id="cb3-29"><a></a>  alpha <span class="op">=</span> pm.Normal(<span class="st">"alpha"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="fl">0.5</span>, dims<span class="op">=</span><span class="st">"latent"</span>)       <span class="co"># latent means</span></span>
+<span id="cb3-30"><a></a>  mu_y <span class="op">=</span> pm.Deterministic(<span class="st">"mu_y"</span>, tau <span class="op">+</span> pt.dot(Lambda, pt.dot(inv_lhs, alpha)))</span>
+<span id="cb3-31"><a></a></span>
+<span id="cb3-32"><a></a>  Sigma_y <span class="op">=</span> pm.Deterministic(<span class="st">'Sigma_y'</span>, Lambda.dot(inv_lhs).dot(Psi_zeta).dot(inv_lhs.T).dot(Lambda.T) <span class="op">+</span> Psi)</span>
+<span id="cb3-33"><a></a>  M <span class="op">=</span> Psi_zeta <span class="op">@</span> inv_lhs <span class="op">@</span> Lambda.T <span class="op">@</span> pm.math.matrix_inverse(Sigma_y)</span>
+<span id="cb3-34"><a></a>  eta_hat <span class="op">=</span> pm.Deterministic(<span class="st">'eta'</span>, alpha <span class="op">+</span> (M <span class="op">@</span> (observed_data <span class="op">-</span> mu_y).T).T, dims<span class="op">=</span>(<span class="st">'obs'</span>, <span class="st">'latent'</span>)) </span>
+<span id="cb3-35"><a></a>  _ <span class="op">=</span> pm.MvNormal(<span class="st">"likelihood"</span>, mu<span class="op">=</span>mu_y, cov<span class="op">=</span>Sigma_y, observed<span class="op">=</span>observed_data)</span>
+<span id="cb3-36"><a></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div><div class="column" style="width:30%;">
 <p><span class="math display">\[\Sigma_{\mathcal{x}} = \Psi + \\ \Lambda(I - B)^{-1}\Psi_{\gamma}(I - B)^{T}\Lambda^{T} \]</span></p>
 <p><span class="math display">\[ \mathcal{x} \sim MvN(\tau, \Sigma_{x})\]</span></p>
@@ -572,9 +573,14 @@ Nathaniel Forde
 <h2>Bayesian Workflow with SEMs</h2>
 <h3 id="sem-implications-1">SEM Implications</h3>
 
+<img data-src="images/sem_model_marginal_summary.png" class="r-stretch"></section>
+<section id="bayesian-workflow-with-sems-6" class="slide level2">
+<h2>Bayesian Workflow with SEMs</h2>
+<h3 id="comparing-model-estimates">Comparing Model Estimates</h3>
 
 
-<img data-src="images/sem_model_marginal_summary.png" class="r-stretch"></section></section>
+
+<img data-src="images/compare_model_parameters.png" class="r-stretch"></section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <p><img src="images/pycon_ireland.jpeg" class="slide-logo"></p>
