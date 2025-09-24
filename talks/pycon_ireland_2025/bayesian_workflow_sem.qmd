@@ -11,9 +11,12 @@ format:
          theme: [default, clean.scss]
          logo: images/pycon_ireland.jpeg
          footer: "Bayesian Workflow for SEMs with PyMC"
+         scroll: true
+         fig-width: 6
+         fig-height: 4
 categories: [bayesian, discrete choice]
 image: "images/dublinSkyline.png"
-date: last-modified
+date: "2025-11-16"
 ---
 
 ## Preliminaries {.smaller}
@@ -152,31 +155,32 @@ Richly Parameterised Regressions with Expressive Encodings of Measurement Error 
 
 ## The Confirmatory Factor Structure
 
-![](images/cfa_excalidraw.png){.stretch}
+
+<img src="images/cfa_excalidraw.png"  width="80%" height="80%">
 
 ## The SEM Regression
 
-![](images/sem1_excalidraw.png){.stretch}
+<img src="images/sem1_excalidraw.png"  width="80%" height="80%">
 
 ## The SEM Regression 
 ### with Mediation Effects
 
-![](images/sem2_excalidraw.png){.stretch}
+<img src="images/sem2_excalidraw.png"  width="90%" height="90%">
 
 ## The SEM Regression 
 ### with Staggered Mediation Effects
 
-![](images/sem3_excalidraw.png){.stretch}
+<img src="images/sem3_excalidraw.png"  width="90%" height="90%">
 
 ## The SEM Regression 
 ### with Residuals Covariance Structures
 
-![](images/final_sem_excalidraw.png){.stretch}
+<img src="images/final_sem_excalidraw.png"  width="90%" height="90%">
 
 ## The SEM Regression 
 ### with Hierarchical Structure
 
-![](images/hierarchical_excalidraw.png){.stretch}
+<img src="images/hierarchical_excalidraw.png"  width="90%" height="90%">
 
 
 ## The SEM workflow {.smaller}
@@ -196,10 +200,6 @@ Richly Parameterised Regressions with Expressive Encodings of Measurement Error 
 - Iterative Validation:
   - Each step asks: Does this addition honor theory? Improve fit?
   - Workflow = constant negotiation between parsimony and fidelity.
-
-- Craft, Not Checklist:
-  - Like a woodworker, we shape the model layer by layer.
-  - Validation is not a single hurdle but a practice of refinement.
 
 
 ## Bayesian Workflow with SEMs
@@ -249,7 +249,7 @@ $$\mathbf{x} = N(\mu, \Psi)$$
 ## Bayesian Workflow with SEMs
 ### CFA Implications
 
-![](images/cfa_model_summary.png){.stretch}
+![](images/cfa_model_summary.png){width=70%}
 
 ## Bayesian Workflow with SEMs
 ### SEM
@@ -303,7 +303,15 @@ $$ \mathbf{x} \mid \eta \sim MvN(\mu, \Psi)$$
 ## Bayesian Workflow with SEMs
 ### SEM Implications
 
-![](images/sem_model_summary.png){.stretch}
+:::: {.columns}
+
+::: {.column width="70%"}
+![](images/sem_model_summary.png)
+:::
+::: {.column}
+:::
+:::
+
 
 
 ## Bayesian Workflow with SEMs
@@ -362,9 +370,25 @@ $$ \mathcal{x} \sim MvN(\tau, \Sigma_{x})$$
 ## Bayesian Workflow with SEMs
 ### SEM Implications
 
-![](images/sem_model_marginal_summary.png){.stretch}
+:::: {.columns}
+::: {.column width="70%"}
+![](images/sem_model_marginal_summary.png)
+:::
+::: {.column width="30%"}
+
+
+:::
+::: 
+
 
 ## Bayesian Workflow with SEMs
 ### Comparing Model Estimates
 
-![](images/compare_model_parameters.png){.stretch}
+:::: {.columns}
+::: {.column width="70%"}
+![](images/compare_model_parameters.png)
+:::
+::: {.column}
+:::
+::: 
+
