@@ -469,11 +469,22 @@ Nathaniel Forde
 <p><span class="math display">\[ \eta \sim MvN(0, \Sigma)\]</span> <span class="math display">\[ \mu = \color{blue}{\Lambda} \eta\]</span> <span class="math display">\[\mathbf{x} = N(\mu, \Psi)\]</span></p>
 </div></div>
 </section>
-<section id="bayesian-workflow-with-sems-1" class="slide level2">
+<section id="bayesian-workflow-with-sems-1" class="slide level2 smaller">
 <h2>Bayesian Workflow with SEMs</h2>
 <h3 id="cfa-implications">CFA Implications</h3>
-
-<img data-src="images/cfa_model_summary.png" style="width:70.0%" class="r-stretch"></section>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p><img src="images/cfa_model_summary.png" width="90%" height="90%"></p>
+</div><div class="column" style="width:30%;">
+<ul>
+<li>Estimated Factor Loadings are close to 1</li>
+<li>The indicator(s) are strongly reflective of the latent factor.</li>
+<li>Posterior Predictive Residuals are close to 0</li>
+<li>Latent factors move together in intuitive ways.</li>
+<li>High Satisfaction ~~ High Well Being</li>
+</ul>
+</div></div>
+</section>
 <section id="bayesian-workflow-with-sems-2" class="slide level2">
 <h2>Bayesian Workflow with SEMs</h2>
 <h3 id="sem">SEM</h3>
@@ -513,14 +524,19 @@ Nathaniel Forde
 <p><span class="math display">\[\zeta \sim MvN(0, \Sigma_{\zeta})\]</span> <span class="math display">\[\eta = (I-\color{blue}{B})^{-1} \zeta\]</span> <span class="math display">\[\mu = \Lambda \eta_i\]</span> <span class="math display">\[ \mathbf{x} \mid \eta \sim MvN(\mu, \Psi)\]</span></p>
 </div></div>
 </section>
-<section id="bayesian-workflow-with-sems-3" class="slide level2">
+<section id="bayesian-workflow-with-sems-3" class="slide level2 smaller">
 <h2>Bayesian Workflow with SEMs</h2>
 <h3 id="sem-implications">SEM Implications</h3>
 <div class="columns">
 <div class="column" style="width:70%;">
 <p><img data-src="images/sem_model_summary.png"></p>
-</div><div class="column">
-
+</div><div class="column" style="width:30%;">
+<ul>
+<li>The Beta coefficients encode the directional effects of the latent constructs on one another</li>
+<li>High Dysfunction -&gt; Negative Impact on Satisfaction</li>
+<li>Factor loadings remain close to 1</li>
+<li>Posterior Predictive of the Residuals have Improved</li>
+</ul>
 </div></div>
 </section>
 <section id="bayesian-workflow-with-sems-4" class="slide level2">
@@ -565,35 +581,48 @@ Nathaniel Forde
 <span id="cb3-35"><a></a>  _ <span class="op">=</span> pm.MvNormal(<span class="st">"likelihood"</span>, mu<span class="op">=</span>mu_y, cov<span class="op">=</span>Sigma_y, observed<span class="op">=</span>observed_data)</span>
 <span id="cb3-36"><a></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div><div class="column" style="width:30%;">
-<p><span class="math display">\[\Sigma_{\mathcal{x}} = \Psi + \\ \Lambda(I - B)^{-1}\Psi_{\gamma}(I - B)^{T}\Lambda^{T} \]</span></p>
+<p><span class="math display">\[\color{blue}{\Sigma_{\mathcal{x}}} = \Psi + \\ \Lambda(I - B)^{-1}\Psi_{\gamma}(I - B)^{T}\Lambda^{T} \]</span></p>
 <p><span class="math display">\[ \mathcal{x} \sim MvN(\tau, \Sigma_{x})\]</span></p>
 </div></div>
 </section>
-<section id="bayesian-workflow-with-sems-5" class="slide level2">
+<section id="bayesian-workflow-with-sems-5" class="slide level2 smaller">
 <h2>Bayesian Workflow with SEMs</h2>
-<h3 id="sem-implications-1">SEM Implications</h3>
+<h3 id="mean-structure-implications">Mean Structure Implications</h3>
 <div class="columns">
 <div class="column" style="width:70%;">
 <p><img data-src="images/sem_model_marginal_summary.png"></p>
 </div><div class="column" style="width:30%;">
-
+<ul>
+<li>Mean Structure Parameters <span class="math inline">\(\tau\)</span> show poor identification</li>
+<li>Beta coefficients and Factor Loading Estimates consistent with prior models</li>
+<li>Posterior Predictive check on Residuals provide evidence of a good fit.</li>
+</ul>
 </div></div>
 </section>
-<section id="bayesian-workflow-with-sems-6" class="slide level2">
+<section id="bayesian-workflow-with-sems-6" class="slide level2 smaller">
 <h2>Bayesian Workflow with SEMs</h2>
 <h3 id="comparing-model-estimates">Comparing Model Estimates</h3>
 <div class="columns">
 <div class="column" style="width:70%;">
 <p><img data-src="images/compare_model_parameters.png"></p>
-</div><div class="column">
-
+</div><div class="column" style="width:30%;">
+<ul>
+<li>The measurement model is stable: adding the structural paths did not disrupt how the latent variables are measured.</li>
+<li>SEM is not introducing distortions into the factor structure.</li>
+<li>The hypothesized regression paths are consistent with the observed covariance patterns.</li>
+</ul>
 </div></div>
+</section>
+<section id="bayesian-workflow-with-sems-7" class="slide level2">
+<h2>Bayesian Workflow with SEMs</h2>
+<h3 id="comparing-measures-of-global-fit">Comparing Measures of Global Fit</h3>
 
 
-</section></section>
+
+<img data-src="images/comparison_table.png" class="r-stretch"></section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
-<p><img src="images/pycon_ireland.jpeg" class="slide-logo"></p>
+<p><img src="images/dublinSkyline.png" class="slide-logo"></p>
 <div class="footer footer-default">
 <p>Bayesian Workflow for SEMs with PyMC</p>
 </div>

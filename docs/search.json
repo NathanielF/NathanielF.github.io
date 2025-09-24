@@ -3900,7 +3900,7 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-1",
     "title": "Bayesian Workflow with SEMs",
     "section": "Bayesian Workflow with SEMs",
-    "text": "Bayesian Workflow with SEMs\nCFA Implications"
+    "text": "Bayesian Workflow with SEMs\nCFA Implications\n\n\n\n\n\nEstimated Factor Loadings are close to 1\nThe indicator(s) are strongly reflective of the latent factor.\nPosterior Predictive Residuals are close to 0\nLatent factors move together in intuitive ways.\nHigh Satisfaction ~~ High Well Being"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-2",
@@ -3914,14 +3914,14 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-3",
     "title": "Bayesian Workflow with SEMs",
     "section": "Bayesian Workflow with SEMs",
-    "text": "Bayesian Workflow with SEMs\nSEM Implications"
+    "text": "Bayesian Workflow with SEMs\nSEM Implications\n\n\n\n\n\nThe Beta coefficients encode the directional effects of the latent constructs on one another\nHigh Dysfunction -&gt; Negative Impact on Satisfaction\nFactor loadings remain close to 1\nPosterior Predictive of the Residuals have Improved"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-4",
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-4",
     "title": "Bayesian Workflow with SEMs",
     "section": "Bayesian Workflow with SEMs",
-    "text": "Bayesian Workflow with SEMs\nMean Structures and Marginalising\n\n\nwith pm.Model(coords=coords) as sem_model_mean_structure:\n  # --- Factor loadings ---\n  lambdas_1 = make_lambda('indicators_1', 'lambdas1', priors=[1, .5])\n  lambdas_2 = make_lambda('indicators_2', 'lambdas2', priors=[1, .5])\n  lambdas_3 = make_lambda('indicators_3', 'lambdas3', priors=[1, .5])\n  lambdas_4 = make_lambda('indicators_4', 'lambdas4', priors=[1, .5])\n\n  Lambda = pt.zeros((12, 4))\n  Lambda = pt.set_subtensor(Lambda[0:3, 0], lambdas_1)\n  Lambda = pt.set_subtensor(Lambda[3:6, 1], lambdas_2)\n  Lambda = pt.set_subtensor(Lambda[6:9, 2], lambdas_3)\n  Lambda = pt.set_subtensor(Lambda[9:12, 3], lambdas_4)\n  Lambda = pm.Deterministic('Lambda', Lambda)\n\n  sd_dist = pm.Exponential.dist(1.0, shape=4)\n  chol, _, _ = pm.LKJCholeskyCov(\"chol_cov\", n=4, eta=2, sd_dist=sd_dist, compute_corr=True)\n\n  Psi_zeta = pm.Deterministic(\"Psi_zeta\", chol.dot(chol.T))\n  Psi = make_Psi('indicators')\n\n  B = make_B()\n  latent_dim = len(coords['latent'])\n  I = pt.eye(latent_dim)\n  lhs = I - B + 1e-8 * pt.eye(latent_dim)  # (latent_dim, latent_dim)\n  inv_lhs = pm.Deterministic('solve_I-B', pt.slinalg.solve(lhs, pt.eye(latent_dim)), dims=('latent', 'latent1'))\n\n  # Mean Structure\n  tau = pm.Normal(\"tau\", mu=0, sigma=0.5, dims=\"indicators\")   # observed intercepts \n  alpha = pm.Normal(\"alpha\", mu=0, sigma=0.5, dims=\"latent\")       # latent means\n  mu_y = pm.Deterministic(\"mu_y\", tau + pt.dot(Lambda, pt.dot(inv_lhs, alpha)))\n\n  Sigma_y = pm.Deterministic('Sigma_y', Lambda.dot(inv_lhs).dot(Psi_zeta).dot(inv_lhs.T).dot(Lambda.T) + Psi)\n  M = Psi_zeta @ inv_lhs @ Lambda.T @ pm.math.matrix_inverse(Sigma_y)\n  eta_hat = pm.Deterministic('eta', alpha + (M @ (observed_data - mu_y).T).T, dims=('obs', 'latent')) \n  _ = pm.MvNormal(\"likelihood\", mu=mu_y, cov=Sigma_y, observed=observed_data)\n\n\n\\[\\Sigma_{\\mathcal{x}} = \\Psi + \\\\ \\Lambda(I - B)^{-1}\\Psi_{\\gamma}(I - B)^{T}\\Lambda^{T} \\]\n\\[ \\mathcal{x} \\sim MvN(\\tau, \\Sigma_{x})\\]"
+    "text": "Bayesian Workflow with SEMs\nMean Structures and Marginalising\n\n\nwith pm.Model(coords=coords) as sem_model_mean_structure:\n  # --- Factor loadings ---\n  lambdas_1 = make_lambda('indicators_1', 'lambdas1', priors=[1, .5])\n  lambdas_2 = make_lambda('indicators_2', 'lambdas2', priors=[1, .5])\n  lambdas_3 = make_lambda('indicators_3', 'lambdas3', priors=[1, .5])\n  lambdas_4 = make_lambda('indicators_4', 'lambdas4', priors=[1, .5])\n\n  Lambda = pt.zeros((12, 4))\n  Lambda = pt.set_subtensor(Lambda[0:3, 0], lambdas_1)\n  Lambda = pt.set_subtensor(Lambda[3:6, 1], lambdas_2)\n  Lambda = pt.set_subtensor(Lambda[6:9, 2], lambdas_3)\n  Lambda = pt.set_subtensor(Lambda[9:12, 3], lambdas_4)\n  Lambda = pm.Deterministic('Lambda', Lambda)\n\n  sd_dist = pm.Exponential.dist(1.0, shape=4)\n  chol, _, _ = pm.LKJCholeskyCov(\"chol_cov\", n=4, eta=2, sd_dist=sd_dist, compute_corr=True)\n\n  Psi_zeta = pm.Deterministic(\"Psi_zeta\", chol.dot(chol.T))\n  Psi = make_Psi('indicators')\n\n  B = make_B()\n  latent_dim = len(coords['latent'])\n  I = pt.eye(latent_dim)\n  lhs = I - B + 1e-8 * pt.eye(latent_dim)  # (latent_dim, latent_dim)\n  inv_lhs = pm.Deterministic('solve_I-B', pt.slinalg.solve(lhs, pt.eye(latent_dim)), dims=('latent', 'latent1'))\n\n  # Mean Structure\n  tau = pm.Normal(\"tau\", mu=0, sigma=0.5, dims=\"indicators\")   # observed intercepts \n  alpha = pm.Normal(\"alpha\", mu=0, sigma=0.5, dims=\"latent\")       # latent means\n  mu_y = pm.Deterministic(\"mu_y\", tau + pt.dot(Lambda, pt.dot(inv_lhs, alpha)))\n\n  Sigma_y = pm.Deterministic('Sigma_y', Lambda.dot(inv_lhs).dot(Psi_zeta).dot(inv_lhs.T).dot(Lambda.T) + Psi)\n  M = Psi_zeta @ inv_lhs @ Lambda.T @ pm.math.matrix_inverse(Sigma_y)\n  eta_hat = pm.Deterministic('eta', alpha + (M @ (observed_data - mu_y).T).T, dims=('obs', 'latent')) \n  _ = pm.MvNormal(\"likelihood\", mu=mu_y, cov=Sigma_y, observed=observed_data)\n\n\n\\[\\color{blue}{\\Sigma_{\\mathcal{x}}} = \\Psi + \\\\ \\Lambda(I - B)^{-1}\\Psi_{\\gamma}(I - B)^{T}\\Lambda^{T} \\]\n\\[ \\mathcal{x} \\sim MvN(\\tau, \\Sigma_{x})\\]"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#mean-structures-and-marginalising",
@@ -3935,13 +3935,27 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-5",
     "title": "Bayesian Workflow with SEMs",
     "section": "Bayesian Workflow with SEMs",
-    "text": "Bayesian Workflow with SEMs\nSEM Implications"
+    "text": "Bayesian Workflow with SEMs\nMean Structure Implications\n\n\n\n\n\nMean Structure Parameters \\(\\tau\\) show poor identification\nBeta coefficients and Factor Loading Estimates consistent with prior models\nPosterior Predictive check on Residuals provide evidence of a good fit."
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-6",
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-6",
     "title": "Bayesian Workflow with SEMs",
     "section": "Bayesian Workflow with SEMs",
-    "text": "Bayesian Workflow with SEMs\nComparing Model Estimates"
+    "text": "Bayesian Workflow with SEMs\nComparing Model Estimates\n\n\n\n\n\nThe measurement model is stable: adding the structural paths did not disrupt how the latent variables are measured.\nSEM is not introducing distortions into the factor structure.\nThe hypothesized regression paths are consistent with the observed covariance patterns."
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#ba",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#ba",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "Ba",
+    "text": "Ba"
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-7",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-7",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "Bayesian Workflow with SEMs",
+    "text": "Bayesian Workflow with SEMs\nComparing Measures of Global Fit"
   }
 ]
