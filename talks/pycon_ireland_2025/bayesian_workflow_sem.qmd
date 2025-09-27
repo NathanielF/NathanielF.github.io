@@ -45,14 +45,21 @@ SEM modelling in **PyMC** enables us to automate much of this workflow of model 
 
 ## Agenda
 
-- __The Idea of a Workflow__: Craft versus Checklist
+- __The Idea of a Workflow__: 
+  - Craft versus Checklist
+  - Job Satisfaction
 - __Bayesian Workflow with SEMs__: 
   - Confirmatory Factor Structures
   - Adding Structural Relations
   - Adding Covariance Structure
+- __Conclusion__
+  - Craft and Statistical Workflow
+
+::: {.fragment .fade-in}
+- __Technical Appendix__  
   - Adding Hierarchical Structure
   - Parameter Recovery and Model Validation
-- __Conclusion__
+:::
 
 # The __Idea__ of a _Workflow_
 
@@ -80,7 +87,7 @@ SEM modelling in **PyMC** enables us to automate much of this workflow of model 
 :::
 :::
 
-## Checklists as a Methodological Error {.smaller}
+## Checklists in Statistical Modelling {.smaller}
 
 ::::  {.columns}
 ::: {.column}
@@ -154,13 +161,13 @@ Richly Parameterised Regressions with Expressive Encodings of Measurement Error 
 
 ## The SEM workflow {.smaller}
 
-- Start with CFA:
+- Start with Confirmatory Factor Analysis (CFA):
   - Validate that our measurement model holds.
   - Ensure latent constructs are reliably represented by observed indicators.
 
 - Layer Structural Paths:
   - Add theoretically-motivated regressions between constructs.
-  - Test whether hypothesized relationships improve model fit.
+  - Assess whether hypothesized relationships improve model fit.
 
 - Refine with Residual Covariances:
   - Account for specific shared variance not captured by factors.
@@ -258,6 +265,7 @@ sample_df.head().style.set_properties(**{'background-color': 'skyblue'}, subset=
 
 ```
 
+The Data for SEM modelling is a multivariate data structure with natural theor-driven categories of variables which reflect some mis-measured latent factor. 
 
 ## The Confirmatory Factor Structure
 
@@ -538,15 +546,33 @@ $$ \mathcal{y} \sim MvN(\mu, \Sigma_{y})$$
 
 :::: {.columns}
 ::: {.column}
+> " [T]he goal is to represent the systematic relationships between the variables and between the variables and the parameters ... Discrepancies between the model and data can be used __to learn about the ways in which the model is inadequate for the scientific purposes at hand, and thus to motivate expansions and changes to the model__ ... __[a model is a story of how the data could have been generated]{.blue}__; the fitted model should therefore be able to generate synthetic data that look like the real data; failures to do so in important ways indicate faults in the model." - Gelman & Shalizi in _Philosophy and the practice of Bayesian statistics_
 :::
 ::: {.column}
+
+<img src="images/sisyphus.png"  width="30%" height="20%">
+
+::: {.fragment .fade-in}
+- Building statistical models is inherently iterative and expansionary
+:::
+::: {.fragment .fade-in}
+- Assumptions are encoded transparently and their implications are assessed for cogency
+:::
+::: {.fragment .fade-in}
+- Where our assumptions fail, they are revised or rejected. Building confidence and clarity.
+:::
+::: {.fragment .fade-in}
+- The process yields compelling, justifiable conclusions __worthy of your work and effort.__
+:::
+
 :::
 ::: 
 
+## Conclusion: Workflow as Craft
 
 
 
-# __Variations__ on the Theme
+# Appendix: __Variations__ on the Theme
 
 ## The SEM Regression 
 ### with Hierarchical Structure
@@ -625,7 +651,7 @@ $$ \mathcal{y} \sim MvN(\mu_{g}, \Sigma_{y}^{g})$$
 :::
 
 
-## The Do-Operator and Parameter Recovery
+## The Do-Operator, Forward Simulation and Backwards Inference
 
 ```{.python code-line-numbers="|20-23|24-26"}
 
@@ -657,3 +683,7 @@ with pm.observe(sem_model_hierarchical2, {"likelihood": synthetic_y}) as inferen
 
 
 ```
+
+## Parameter Recovery
+
+![](images/parameter_recovery_hierarchical.png)
