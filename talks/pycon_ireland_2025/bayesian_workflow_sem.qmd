@@ -484,27 +484,69 @@ $$ \mathcal{y} \sim MvN(\mu, \Sigma_{y})$$
 :::
 ::: 
 
+## Bayesian Workflow with SEMs
+### Assessing the Indirect Effects
+
+![](images/direct_indirect.png)
+
 
 ## Bayesian Workflow with SEMs {.smaller}
 ### Comparing Model Estimates
 
 :::: {.columns}
-::: {.column width="70%"}
+::: {.column width="60%"}
 ![](images/compare_model_parameters.png)
 :::
-::: {.column width="30%"}
+::: {.column width="40%"}
 - The measurement model is stable: adding the structural paths did not disrupt how the latent variables are measured.
 - SEM is not introducing distortions into the factor structure.
 - The hypothesized regression paths are consistent with the observed covariance patterns.
+- __Constructive thought processes: [self-talk, visualisation and evaluation of beliefs]{.blue} improve job satisfaction.__
 :::
 ::: 
 
 
-## Bayesian Workflow with SEMs 
-### Comparing Measures of Global Fit
+# Workflow and Craft
 
-![](images/comparison_table.png)
+## Craft as Discovery {.smaller}
 
+:::: {.columns}
+
+::: {.column}
+> "Abandon the idea of predetermination, the shaping force of your intentions...__rely less on the priority of your intentions and more on the immediacy of writing__... You'll see that some of your sentences are still conjectural... start noticing the thoughts and implications surrounding them." - Verlyn Klinkenborg in _Several Short Sentences about Writing_"
+
+::: {.fragment .fade-in}
+- Modeling, like writing, is an act of exploration.
+:::
+
+::: {.fragment .fade-in}
+- Expect surprises and anomalies—they teach more than preconceptions.
+:::
+
+::: {.fragment .fade-in}
+- Embrace uncertainty; allow the data to guide the process.
+:::
+
+:::
+::: {.column}
+
+<img src="images/several_short.png"  width="90%" height="60%">
+:::
+::: 
+
+## Craft as Discipline {.smaller}
+
+:::: {.columns}
+::: {.column}
+:::
+::: {.column}
+:::
+::: 
+
+
+
+
+# __Variations__ on the Theme
 
 ## The SEM Regression 
 ### with Hierarchical Structure
@@ -585,7 +627,7 @@ $$ \mathcal{y} \sim MvN(\mu_{g}, \Sigma_{y}^{g})$$
 
 ## The Do-Operator and Parameter Recovery
 
-```{.python code-line-numbers="|20-23|"}
+```{.python code-line-numbers="|20-23|24-26"}
 
 # Generating data from model by fixing parameters
 fixed_parameters = {
@@ -609,7 +651,9 @@ with pm.do(sem_model_hierarchical2, fixed_parameters) as synthetic_model:
    idata = pm.sample_prior_predictive(random_seed=1000) # Sample from prior predictive distribution.
    synthetic_y = idata['prior']['likelihood'].sel(draw=0, chain=0)
 
-
+# Infer parameters conditioned on observed data
+with pm.observe(sem_model_hierarchical2, {"likelihood": synthetic_y}) as inference_model:
+   idata = pm.sample(random_seed=100, nuts_sampler='numpyro', chains=4, draws=500)
 
 
 ```

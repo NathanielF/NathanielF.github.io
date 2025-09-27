@@ -3942,7 +3942,7 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-6",
     "title": "Bayesian Workflow with SEMs",
     "section": "Bayesian Workflow with SEMs",
-    "text": "Bayesian Workflow with SEMs\nComparing Model Estimates\n\n\n\n\n\nThe measurement model is stable: adding the structural paths did not disrupt how the latent variables are measured.\nSEM is not introducing distortions into the factor structure.\nThe hypothesized regression paths are consistent with the observed covariance patterns."
+    "text": "Bayesian Workflow with SEMs\nAssessing the Indirect Effects"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#ba",
@@ -3956,14 +3956,14 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems-7",
     "title": "Bayesian Workflow with SEMs",
     "section": "Bayesian Workflow with SEMs",
-    "text": "Bayesian Workflow with SEMs\nComparing Measures of Global Fit"
+    "text": "Bayesian Workflow with SEMs\nComparing Model Estimates\n\n\n\n\n\nThe measurement model is stable: adding the structural paths did not disrupt how the latent variables are measured.\nSEM is not introducing distortions into the factor structure.\nThe hypothesized regression paths are consistent with the observed covariance patterns.\nConstructive thought processes: self-talk, visualisation and evaluation of beliefs improve job satisfaction."
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#job-satisfaction-data-1",
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#job-satisfaction-data-1",
     "title": "Bayesian Workflow with SEMs",
     "section": "Job Satisfaction Data",
-    "text": "Job Satisfaction Data\n\n\n\n\n\n\n\n \nJW1\nJW2\nJW3\nUF1\nUF2\nFOR\nDA1\nDA2\nDA3\nEBA\nST\nMI\n\n\n\n\n0\n0.739164\n-0.880703\n-0.298989\n-0.363326\n-0.678357\n-0.607128\n0.493305\n0.586236\n-0.022410\n0.653452\n-0.157086\n-0.418620\n\n\n1\n1.073238\n0.637792\n1.138974\n0.771828\n-0.214279\n0.048772\n0.194876\n0.193497\n-0.759438\n0.596481\n0.501809\n-0.447471\n\n\n2\n1.264122\n0.877404\n0.694912\n0.199064\n0.611979\n0.296011\n0.367017\n-0.445449\n-0.327798\n-0.138648\n0.316389\n-0.471969\n\n\n3\n0.413406\n1.148206\n1.281457\n-0.630949\n-0.584020\n-0.928754\n0.761273\n0.621217\n-0.039791\n-0.012986\n-0.100536\n-1.473979\n\n\n4\n0.933746\n0.270141\n1.510089\n-0.187485\n-0.231416\n0.551728\n0.543811\n0.154486\n0.299905\n0.752655\n-0.586890\n0.549612"
+    "text": "Job Satisfaction Data\n\n\n\n\n\n\n\n \nJW1\nJW2\nJW3\nUF1\nUF2\nFOR\nDA1\nDA2\nDA3\nEBA\nST\nMI\n\n\n\n\n0\n-1.607454\n-1.336184\n0.006397\n-0.481973\n0.214438\n0.272072\n0.306372\n0.751803\n1.452504\n-0.100060\n-1.024562\n-1.426406\n\n\n1\n-0.089699\n1.326618\n1.559532\n0.916772\n0.345391\n0.582992\n-0.165172\n0.069316\n0.122767\n-1.106729\n-2.082297\n-0.823571\n\n\n2\n-0.886738\n-0.938570\n-1.313594\n-0.213811\n-0.898784\n-0.621501\n1.250846\n0.847932\n2.128688\n0.116518\n-0.406308\n1.064965\n\n\n3\n-0.242781\n0.934898\n0.005541\n0.284663\n0.242489\n0.255530\n1.048890\n0.348104\n0.814504\n0.599678\n1.845672\n0.197166\n\n\n4\n1.162043\n1.239711\n1.559148\n-0.488014\n-0.137976\n-0.052747\n-0.223910\n-0.355240\n0.490123\n-0.014769\n1.168586\n-0.772922"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-5",
@@ -3977,6 +3977,27 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-do-operator-and-parameter-recovery",
     "title": "Bayesian Workflow with SEMs",
     "section": "The Do-Operator and Parameter Recovery",
-    "text": "The Do-Operator and Parameter Recovery\n\n# Generating data from model by fixing parameters\nfixed_parameters = {\n \"mu_betas_man\": [0.1, 0.5, 2.3, 0.9, 0.6, 0.8],\n \"mu_betas_woman\": [0.3, 0.2, 0.7, 0.8, 0.6, 1.2], \n \"tau\": [[-0.822,  1.917, -0.743, -0.585, -1.095,  2.207, -0.898, -0.99 ,\n        1.872, -0.044, -0.035, -0.085], [-0.882,  1.816, -0.828, -1.319,\n        0.202,  1.267, -1.784, -2.112,  3.705, -0.769,  2.048, -1.064]],\n \"lambdas1_\": [1, .8, .9],\n \"lambdas2_\": [1, .9, 1.2],\n \"lambdas3_\": [1, .95, .8],\n \"lambdas4_\": [1, 1.4, 1.1],\n \"alpha\": [[ 0.869,  0.242,  0.314, -0.175], [0.962,  1.036,  0.436,  0.166]], \n \"chol_cov\": [0.696, -0.096,  0.23 , -0.3  , -0.385,  0.398, -0.004,  0.043,\n       -0.037,  0.422], \n\"Psi_cov_\": [0.559, 0.603, 0.666, 0.483, 0.53 , 0.402, 0.35 , 0.28 , 0.498,\n       0.494, 0.976, 0.742], \n\"Psi_cov_beta\": [0.029]\n}\nwith pm.do(sem_model_hierarchical2, fixed_parameters) as synthetic_model:\n   idata = pm.sample_prior_predictive(random_seed=1000) # Sample from prior predictive distribution.\n   synthetic_y = idata['prior']['likelihood'].sel(draw=0, chain=0)"
+    "text": "The Do-Operator and Parameter Recovery\n\n# Generating data from model by fixing parameters\nfixed_parameters = {\n \"mu_betas_man\": [0.1, 0.5, 2.3, 0.9, 0.6, 0.8],\n \"mu_betas_woman\": [0.3, 0.2, 0.7, 0.8, 0.6, 1.2], \n \"tau\": [[-0.822,  1.917, -0.743, -0.585, -1.095,  2.207, -0.898, -0.99 ,\n        1.872, -0.044, -0.035, -0.085], [-0.882,  1.816, -0.828, -1.319,\n        0.202,  1.267, -1.784, -2.112,  3.705, -0.769,  2.048, -1.064]],\n \"lambdas1_\": [1, .8, .9],\n \"lambdas2_\": [1, .9, 1.2],\n \"lambdas3_\": [1, .95, .8],\n \"lambdas4_\": [1, 1.4, 1.1],\n \"alpha\": [[ 0.869,  0.242,  0.314, -0.175], [0.962,  1.036,  0.436,  0.166]], \n \"chol_cov\": [0.696, -0.096,  0.23 , -0.3  , -0.385,  0.398, -0.004,  0.043,\n       -0.037,  0.422], \n\"Psi_cov_\": [0.559, 0.603, 0.666, 0.483, 0.53 , 0.402, 0.35 , 0.28 , 0.498,\n       0.494, 0.976, 0.742], \n\"Psi_cov_beta\": [0.029]\n}\nwith pm.do(sem_model_hierarchical2, fixed_parameters) as synthetic_model:\n   idata = pm.sample_prior_predictive(random_seed=1000) # Sample from prior predictive distribution.\n   synthetic_y = idata['prior']['likelihood'].sel(draw=0, chain=0)\n\n# Infer parameters conditioned on observed data\nwith pm.observe(sem_model_hierarchical2, {\"likelihood\": synthetic_y}) as inference_model:\n   idata = pm.sample(random_seed=100, nuts_sampler='numpyro', chains=4, draws=500)"
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#conclusion",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#conclusion",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "Conclusion",
+    "text": "Conclusion\n\n\n\n“Abandon the idea of predetermination, the shaping force of your intentions…rely less on the priority of your intentions and more on the immediacy of writing… You’ll see that some of your sentences are still conjectural… start noticing the thoughts and implications surrounding them.” - Verlyn Klinkenborg in Several Short Sentences about Writing”"
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#craft-as-discovery",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#craft-as-discovery",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "Craft as Discovery",
+    "text": "Craft as Discovery\n\n\n\n“Abandon the idea of predetermination, the shaping force of your intentions…rely less on the priority of your intentions and more on the immediacy of writing… You’ll see that some of your sentences are still conjectural… start noticing the thoughts and implications surrounding them.” - Verlyn Klinkenborg in Several Short Sentences about Writing”\n\n\n\nModeling, like writing, is an act of exploration.\n\n\n\n\nExpect surprises and anomalies—they teach more than preconceptions.\n\n\n\n\nEmbrace uncertainty; allow the data to guide the process."
+  },
+  {
+    "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#craft-as-discipline",
+    "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#craft-as-discipline",
+    "title": "Bayesian Workflow with SEMs",
+    "section": "Craft as Discipline",
+    "text": "Craft as Discipline"
   }
 ]
