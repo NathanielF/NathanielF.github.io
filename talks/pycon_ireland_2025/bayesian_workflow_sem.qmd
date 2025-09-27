@@ -43,7 +43,7 @@ Structural Equation modelling is [__most compellingly__]{.blue} conducted in a B
 
 SEM modelling in **PyMC** enables us to automate much of this workflow of model evaluation, and parameter recovery even with complex hierarchical SEM models.  
 
-## Agenda
+## Agenda {.smaller}
 
 - __The Idea of a Workflow__: 
   - Craft versus Checklist
@@ -138,7 +138,7 @@ SEM modelling in **PyMC** enables us to automate much of this workflow of model 
 - Refine Structure and Layer Complexity
   - Assess consistency of Signal
 - Validate through Sensitivty Analysis
-- Own the Process
+- [Own the Process](https://arxiv.org/abs/2011.01808)
 
 ::: {.fragment .fade-in}
 ![](images/arviz.png)
