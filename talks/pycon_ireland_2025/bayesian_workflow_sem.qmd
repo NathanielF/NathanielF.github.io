@@ -310,7 +310,7 @@ with pm.Model(coords=coords) as cfa_model_v1:
 ::: {.column width="30%"}
 $$ \eta \sim MvN(0, \Sigma)$$
 $$ \mu = \color{blue}{\Lambda} \eta$$
-$$\mathbf{x} = N(\mu, \Psi)$$
+$$\mathbf{y} = N(\mu, \Psi)$$
 
 :::
 ::: 
@@ -399,7 +399,7 @@ with pm.Model(coords=coords) as sem_model_v3:
 $$\zeta \sim MvN(0, \Sigma_{\zeta})$$
 $$\eta = (I-\color{blue}{B})^{-1} \zeta$$
 $$\mu = \Lambda \eta_i$$
-$$ \mathbf{x} \mid \eta \sim MvN(\mu, \Psi)$$
+$$ \mathbf{y} \mid \eta \sim MvN(\mu, \Psi)$$
 :::
 ::: 
 
@@ -562,13 +562,44 @@ $$ \mathcal{y} \sim MvN(\mu, \Sigma_{y})$$
 - Where our assumptions fail, they are revised or rejected. Building confidence and clarity.
 :::
 ::: {.fragment .fade-in}
-- The process yields compelling, justifiable conclusions __worthy of your work and effort.__
+- The process yields compelling, justifiable conclusions __worthy of your work.__
 :::
 
 :::
 ::: 
 
-## Conclusion: Workflow as Craft
+## Conclusion: Workflow as Craft {.smaller}
+
+:::: {.columns}
+::: {.column}
+> "Here, in short, is what i want to tell you. __Know what each sentence says, What it doesn't say, And what it implies.__ Of these, the hardest is know what each sentence actually says" - V. Klinkenborg
+
+![](images/marx_manuscript.jpg)
+:::
+::: {.column}
+
+::: {.fragment .fade-in}
+- In modelling, as in writing, clarity emerges through revision. 
+:::
+
+::: {.fragment .fade-in}
+- The Bayesian workflow with PyMC teaches us to listen to our models — to *read them aloud* through simulation, recovery, and critique. 
+:::
+
+::: {.fragment .fade-in}
+- Each iteration reveals what the model truly says, what it hides, and what it implies.  
+:::
+
+::: {.fragment .fade-in}
+- Craft lies in that attention — in resisting automation, and choosing understanding over throughput.  
+:::
+
+::: {.fragment .fade-in}
+- Through this care, our models become not only more compelling, but more **robust** — resilient to noise, misfit, and misuse. 
+:::
+
+:::
+:::
 
 
 
