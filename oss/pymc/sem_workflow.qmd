@@ -1,0 +1,17 @@
+---
+title: "Bayesian Workflow with Structural Equation Models"
+author: "Nathaniel Forde"
+date: "2025-10-27"
+categories: ["probability", "pymc", "structural equation models", "causal inference" ]
+image: "dcm_sem.webp"
+abstract: "Structural Equation Models with PyMC"
+---
+
+# Bayesian Workflow
+
+In this project I demonstrated how to fit an escalating series of structural equation models. Emphasising the iterative and expansionary method of model fit and assessment as recommended in the contemporary Bayesian workflow. 
+
+The project culminated in a publication to the official PyMC documentation that can be found online [here](https://www.pymc.io/projects/examples/en/latest/case_studies/bayesian_sem_workflow.html#bayesian-workflow-with-sems) or downloaded as notebook [here](bayesian_sem_workflow.html)
+
+
+![Structural Equation Models with Discrete Choice](dcm_sem.webp)
