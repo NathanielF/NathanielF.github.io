@@ -2307,7 +2307,7 @@
     "href": "oss/causalpy/inv_prop_weights.html",
     "title": "Inverse Propensity Score Weighting in CausalPy",
     "section": "",
-    "text": "Inverse Propensity Score Weighting\nIn this project I sought to add the functionality for bayesian inverse propensity weighting functionality to the CausalPy package. I adapted earlier work with PyMC to contribute the base classes to the package and demonstrated how these classes can be used to esitmate various treatment effect estimands. The demonstration can be seen here or downloaded as a notebook here"
+    "text": "Inverse Propensity Score Weighting\nIn this project I sought to add the functionality for bayesian inverse propensity weighting functionality to the CausalPy package. I adapted earlier work with PyMC to contribute the base classes to the package and demonstrated how these classes can be used to esitmate various treatment effect estimands. The demonstration can be seen here"
   },
   {
     "objectID": "posts/post-with-code/GAMs_and_GPs/gams_and_gps.html#bayesian-penalised-splines-smoothing-priors",
@@ -3641,7 +3641,7 @@
     "href": "oss/causalpy/paradox_propensity.html",
     "title": "Design and Analysis: Paradox of Bayesian Propensity Scores",
     "section": "",
-    "text": "The Paradox of Bayesian Propensity\nIn this project I sought to outline the process of justifying the use of propensity scores in bayesian outcome regressions in CausalPy. We emphasised the role of propensity scores in Bayesian inference. The focus was on the manner in which the estimation of a causal treatment effects using propensity scores require a two-stage strategy to avoid biasing the propensity score distribution. The demonstration can be seen here.\n\n\n\nComparison with OLS"
+    "text": "The Paradox of Bayesian Propensity\nIn this project I sought to outline the process of justifying the use of propensity scores in bayesian outcome regressions in CausalPy. We emphasised the role of propensity scores in Bayesian inference. The focus was on the manner in which the estimation of a causal treatment effects using propensity scores require a two-stage strategy to avoid biasing the propensity score distribution. The demonstration can be seen here or downloaded as a notebook here\n\n\n\nComparison with OLS"
   },
   {
     "objectID": "posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.html",
