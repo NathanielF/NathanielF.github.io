@@ -9,6 +9,6 @@ abstract: "Propensity Weighting Adjustment for Causal Inference"
 
 # Inverse Propensity Score Weighting
 
-In this project I sought to add the functionality for bayesian inverse propensity weighting functionality to the [CausalPy](https://causalpy.readthedocs.io/en/latest/) package. I adapted earlier work with [PyMC](https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html) to contribute the base classes to the package and demonstrated how these classes can be used to esitmate various treatment effect estimands. The demonstration can be seen [here](https://causalpy.readthedocs.io/en/latest/notebooks/inv_prop_pymc.html) or downloaded as a notebook [here](inv_prop_latent.html)
+In this project I sought to add the functionality for bayesian inverse propensity weighting functionality to the [CausalPy](https://causalpy.readthedocs.io/en/latest/) package. I adapted earlier work with [PyMC](https://www.pymc.io/projects/examples/en/latest/causal_inference/bayesian_nonparametric_causal.html) to contribute the base classes to the package and demonstrated how these classes can be used to esitmate various treatment effect estimands. The demonstration can be seen [here](https://causalpy.readthedocs.io/en/latest/notebooks/inv_prop_pymc.html)
 
 ![](weights.png)

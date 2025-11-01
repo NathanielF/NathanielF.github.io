@@ -9,7 +9,7 @@ abstract: "Paradox of Bayesian Propensity Estimation"
 
 # The Paradox of Bayesian Propensity
 
-In this project I sought to outline the process of justifying the use of propensity scores in bayesian outcome regressions in [CausalPy](https://causalpy.readthedocs.io/en/latest/). We emphasised the role of propensity scores in Bayesian inference. The focus was on the manner in which the estimation of a causal treatment effects using propensity scores require a two-stage strategy to avoid biasing the propensity score distribution.  The demonstration can be seen [here](https://causalpy.readthedocs.io/en/latest/notebooks/inv_prop_latent.html). 
+In this project I sought to outline the process of justifying the use of propensity scores in bayesian outcome regressions in [CausalPy](https://causalpy.readthedocs.io/en/latest/). We emphasised the role of propensity scores in Bayesian inference. The focus was on the manner in which the estimation of a causal treatment effects using propensity scores require a two-stage strategy to avoid biasing the propensity score distribution.  The demonstration can be seen [here](https://causalpy.readthedocs.io/en/latest/notebooks/inv_prop_latent.html) or downloaded as a notebook [here](inv_prop_latent.html)
 
 
 ![Comparison with OLS](joint_model.svg)
