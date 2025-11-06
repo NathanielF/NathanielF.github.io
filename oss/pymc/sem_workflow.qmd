@@ -16,7 +16,7 @@ The project culminated in a publication to the official PyMC documentation that 
 
 ![Structural Equation Models with Discrete Choice](dcm_sem.webp)
 
-The central argument posits that statistical modeling should be approached as a craft—a deliberate, iterative, and transparent process aimed at deep understanding—rather than a game of optimizing performance metrics. The Bayesian workflow, with its cycle of hypothesis, simulation, checking, and expansion, provides the ideal framework for this craft-based approach, a philosophy independently supported by the staggered model development strategies within the SEM literature.
+The central argument posits that statistical modeling should be approached as a craft — a deliberate, iterative, and transparent process aimed at deep understanding — rather than a game of optimizing performance metrics. The Bayesian workflow, with its cycle of hypothesis, simulation, checking, and expansion, provides the ideal framework for this craft-based approach, a philosophy independently supported by the staggered model development strategies within the SEM literature.
 
 The analysis demonstrates this synthesis through a job satisfaction model, progressively layering complexity from a basic Confirmatory Factor Analysis (CFA) to a full SEM. A key technical finding emerges from comparing different model formulations: the Marginal Formulation, which integrates out latent variables, proved more computationally robust and resolved sampler issues encountered with the more direct Conditional Formulation.
 
