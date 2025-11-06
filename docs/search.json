@@ -3963,7 +3963,7 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#job-satisfaction-data-1",
     "title": "Bayesian Workflow with SEMs",
     "section": "Job Satisfaction Data",
-    "text": "Job Satisfaction Data\n\n\n\n\n\n\n\n \nJW1\nJW2\nJW3\nUF1\nUF2\nFOR\nDA1\nDA2\nDA3\nEBA\nST\nMI\n\n\n\n\n0\n0.408018\n0.982078\n-0.559647\n0.309961\n0.726077\n-0.269698\n0.519526\n0.118668\n0.711506\n0.506194\n1.299012\n2.344932\n\n\n1\n0.739683\n-0.394695\n0.714011\n1.037531\n1.335342\n0.660240\n-0.000499\n-0.586042\n-0.666466\n0.450341\n0.035950\n0.300847\n\n\n2\n1.023640\n-0.203654\n-0.581216\n0.056894\n-0.218879\n-0.556692\n-0.195359\n0.103219\n0.063942\n0.168114\n0.840217\n0.559323\n\n\n3\n-0.359921\n0.407661\n0.654100\n0.056685\n0.691301\n0.143275\n-0.782522\n-0.757767\n-0.567343\n-0.555767\n-0.765120\n-1.039703\n\n\n4\n0.511713\n1.358582\n0.822422\n0.867443\n1.502183\n0.411975\n-0.867828\n-0.781587\n-1.625427\n0.561906\n-1.162101\n0.898448\n\n\n\n\n\nThe Data for SEM modelling is a multivariate data structure with natural theor-driven categories of variables which reflect some mis-measured latent factor."
+    "text": "Job Satisfaction Data\n\n\n\n\n\n\n\n \nJW1\nJW2\nJW3\nUF1\nUF2\nFOR\nDA1\nDA2\nDA3\nEBA\nST\nMI\n\n\n\n\n0\n1.726498\n1.134872\n0.861271\n0.198787\n-0.233520\n-0.108457\n0.311945\n-0.929669\n-0.571682\n-0.652816\n-1.299059\n0.260356\n\n\n1\n1.094679\n-0.667201\n0.286661\n0.475438\n0.464273\n0.313745\n0.248906\n0.633607\n-0.326258\n0.024035\n-0.462007\n1.258358\n\n\n2\n0.074471\n0.253955\n1.021649\n-0.094293\n1.200192\n0.724157\n0.483023\n0.513501\n0.733295\n0.004943\n1.379676\n1.241037\n\n\n3\n-0.958127\n-0.891312\n-1.315678\n1.109261\n1.221479\n0.494330\n-0.235224\n-0.291703\n-0.291691\n0.772175\n-0.281782\n-0.410441\n\n\n4\n0.228966\n-0.166994\n-0.265392\n0.892445\n-0.040303\n-0.204233\n0.891667\n0.518064\n0.156550\n-0.099977\n-1.438526\n0.160865\n\n\n\n\n\nThe Data for SEM modelling is a multivariate data structure with natural theor-driven categories of variables which reflect some mis-measured latent factor."
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-5",
@@ -4005,7 +4005,7 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#checklists-in-statistical-modelling",
     "title": "Bayesian Workflow with SEMs",
     "section": "Checklists in Statistical Modelling",
-    "text": "Checklists in Statistical Modelling\n\n\n\nReduce inquiry to compliance: ticking boxes replaces genuine understanding.\n\n\n\nCreate the illusion of rigor while bypassing uncertainty and context.\n\n\n\n\nConfuse progress with throughput: more boxes checked ≠ better science.\n\n\n\n\nPromotes shallow levels of engagement, infantalises the management class.\n\n\n\n\nStrips away ownership: you don’t make something, you just complete a task."
+    "text": "Checklists in Statistical Modelling\n\n\n\nReduce inquiry to compliance: ticking boxes replaces genuine understanding.\n\n\n\nCreate the illusion of rigor while bypassing uncertainty and context.\n\n\n\n\nConfuse progress with throughput: more boxes checked ≠ better science.\n\n\n\n\nPromotes shallow levels of engagement, infantalises the management class. Hinders effective decision making.\n\n\n\n\nStrips away ownership: you don’t make something, you just complete a task."
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-do-operator-and-parameter-recovery-1",
