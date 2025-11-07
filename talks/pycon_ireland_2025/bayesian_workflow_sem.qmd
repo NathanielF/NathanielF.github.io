@@ -37,11 +37,16 @@ The worked examples used here can be found [here](https://www.pymc-marketing.io/
 ![My Website](images/QR_CODE.png)
 
 
-## **The Pitch**: _Inference done Right_
+## **The Pitch**
 
-Structural Equation modelling is [__most compellingly__]{.blue} conducted in a Bayesian Setting. Bayesian inference done right, adheres to transparent workflow. 
+[__Structuring Your Work with Structural Equation Models__]{.blue}
 
-SEM modelling in **PyMC** enables us to automate much of this workflow of model evaluation, and parameter recovery even with complex hierarchical SEM models.  
+Probabilistic programming languages (PPLs) are structures for articulating assumptions and relationships, and a scaffold for exploring uncertainty.
+
+Structural Equation models (SEMs) formalize scientific theory as a system of statistical relationships.
+
+The Bayesian workflow __binds these together into a compelling practice__: an iterative conversation between theory and data that rewards curiosity, coherence, and care.
+
 
 ## Agenda {.smaller}
 
