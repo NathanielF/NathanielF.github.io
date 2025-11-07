@@ -31,7 +31,7 @@ date: "2025-11-16"
  
 ::: {.callout-tip}
 ## Code or it didn't Happen
-The worked examples used here can be found [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html)
+The worked examples used here can be found [here](https://www.pymc.io/projects/examples/en/latest/case_studies/bayesian_sem_workflow.html#bayesian-workflow-with-sems)
 :::
 
 ![My Website](images/QR_CODE.png)
