@@ -13,3 +13,7 @@ In this project I sought to outline the process of justifying the use of propens
 
 
 ![Comparison with OLS](joint_model.svg)
+
+Propensity scores are celebrated as a cornerstone of causal inference, offering elegant solutions to selection bias through inverse weighting and covariate balancing. Yet a provocative paradox emerges in Bayesian analysis: when you already condition on all relevant covariates, propensity scores should theoretically contain no additional information—they mathematically cancel out. So why do sophisticated Bayesian practitioners still rely on them? 
+
+We see a striking pattern: joint Bayesian models consistently misestimate treatment effects compared to two-stage approaches __when using propensity score adjustments in the outcome model__. The culprit is a violation of causal ordering: when you model propensity scores and outcomes simultaneously, information flows backwards in time, allowing observed outcomes to reshape your understanding of treatment assignment. By forcing a modular, two-stage approach, propensity scores can be retained and useful. The modular approach enforcse the temporal precedence of treatment assignment over outcomes reflecting the data generating process better. 
