@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nathaniel Forde">
-<meta name="dcterms.date" content="2023-06-01">
+<meta name="dcterms.date" content="2025-11-12">
 
-<title>Ordinal Regression Models in PyMC – Examined Algorithms</title>
+<title>Structural Causal Models – Examined Algorithms</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -138,12 +138,11 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Ordinal Regression Models in PyMC</h1>
+<h1 class="title">Structural Causal Models</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">probability</div>
-    <div class="quarto-category">pymc</div>
-    <div class="quarto-category">ordinal regression</div>
-    <div class="quarto-category">likert scales</div>
+    <div class="quarto-category">causal inference</div>
+    <div class="quarto-category">SCM</div>
+    <div class="quarto-category">CausalPy</div>
   </div>
   </div>
 
@@ -161,7 +160,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 1, 2023</p>
+      <p class="date">November 12, 2025</p>
     </div>
   </div>
   
@@ -171,7 +170,7 @@ ul.task-list li input[type="checkbox"] {
 <div>
   <div class="abstract">
     <div class="block-title">Abstract</div>
-    Ordinal Regression for analysing Survey Response data
+    Introduction to Structural Causal Models in CausalPy
   </div>
 </div>
 
@@ -179,17 +178,22 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="ordinal-models-of-regression" class="level1">
-<h1>Ordinal Models of Regression</h1>
-<p>In this project I outline the strategy of latent variable ordinal regression Bayesian models to evaluate the categorical choice on Likert like scales. The main theme of the work is to try and articulate the modelling approach to survey data, comparing the risk of model misspecification to the assumed metric based analysis of ordinal response variables.</p>
-<p>The project culminated in a publication to the official PyMC documentation that can be found online <a href="https://www.pymc.io/projects/examples/en/latest/generalized_linear_models/GLM-ordinal-regression.html">here</a> and downloaded <a href="GLM-ordinal-regression.html">here</a></p>
-<p>The notebook demonstates these techniques applied to simulated manager engagement evaluations and applied to rotten tomatoes movie ratings data. In particular we show how a latent variable formulate can help characterise the manner in which different factors such as working from home, salary can influence an individual’s ordinal rating response and why it’s important to understand the sources of variation in such responses.</p>
+<section id="structural-causal-models-and-variable-selection-priors" class="level1">
+<h1>Structural Causal Models and Variable Selection Priors</h1>
+<p>This project outlines how <a href="https://causalpy.readthedocs.io/en/latest/knowledgebase/structural_causal_models.html">CausalPy</a> introduces <strong>Structural Causal Models (SCMs)</strong> as the foundation of modern causal inference. SCMs extend beyond correlational analysis by explicitly encoding causal mechanisms through equations and graphical structures. They provide a language to reason about interventions, confounding, and counterfactuals — the key ideas that unify Pearl’s <em>do-calculus</em> with practical modeling. You can download the notebook <a href="structural_causal_models.html">here</a></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="Latent_ordinal_scales.png" class="img-fluid figure-img"></p>
-<figcaption>Latent and Explicit Ratings</figcaption>
+<p><img src="potential_outcomes.png" class="img-fluid figure-img"></p>
+<figcaption>Causal Graph</figcaption>
 </figure>
 </div>
+<p>CausalPy’s knowledge base emphasizes that SCMs combine two critical components:</p>
+<ul>
+<li><p><strong>Graphical structure</strong> a Directed Acyclic Graph (DAG) showing which variables cause which.</p></li>
+<li><p><strong>Structural equations</strong> explicit functional relationships with independent noise terms.</p></li>
+<li><p><strong>CATE Estimation</strong> using BART models and interaction effects on linear structural models.</p></li>
+</ul>
+<p>Together, these define how interventions propagate through a system and how causal effects differ from mere associations. The page links SCMs to related concepts like <em>instrumental variables</em>, and <em>difference-in-differences</em>, showing how all fit under the SCM umbrella. Additionally we show how to use variable selection priors to try and automate the discovery of instruments in the joint modelling. These techniques are applied to the NHEFs smoking cessation study.</p>
 
 
 </section>

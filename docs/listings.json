@@ -32,6 +32,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/causalpy/variable_selection_joint_models.html",
       "/oss/pymc/sem_workflow.html",
       "/oss/causalpy/paradox_propensity.html",
       "/oss/pymc_marketing/nested_logit.html",

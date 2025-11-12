@@ -1,0 +1,24 @@
+---
+title: "Structural Causal Models"
+author: "Nathaniel Forde"
+date: "2025-11-12"
+categories: ["causal inference", "SCM", "CausalPy"]
+image: "probabilistic_intervention_fix.png"
+abstract: "Introduction to Structural Causal Models in CausalPy"
+---
+
+# Structural Causal Models and Variable Selection Priors
+
+This project outlines how [CausalPy](https://causalpy.readthedocs.io/en/latest/knowledgebase/structural_causal_models.html) introduces **Structural Causal Models (SCMs)** as the foundation of modern causal inference. SCMs extend beyond correlational analysis by explicitly encoding causal mechanisms through equations and graphical structures. They provide a language to reason about interventions, confounding, and counterfactuals — the key ideas that unify Pearl’s *do-calculus* with practical modeling. You can download the notebook [here](structural_causal_models.html)
+
+![Causal Graph](potential_outcomes.png)
+
+CausalPy’s knowledge base emphasizes that SCMs combine two critical components:  
+
+- **Graphical structure** a Directed Acyclic Graph (DAG) showing which variables cause which.  
+
+- **Structural equations** explicit functional relationships with independent noise terms.
+
+- **CATE Estimation** using BART models and interaction effects on linear structural models.
+
+Together, these define how interventions propagate through a system and how causal effects differ from mere associations. The page links SCMs to related concepts like *instrumental variables*, and *difference-in-differences*, showing how all fit under the SCM umbrella. Additionally we show how to use variable selection priors to try and automate the discovery of instruments in the joint modelling. These techniques are applied to the NHEFs smoking cessation study. 
