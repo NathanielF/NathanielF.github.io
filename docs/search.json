@@ -3858,21 +3858,21 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-1",
     "title": "Bayesian Workflow with SEMs",
     "section": "The SEM Regression",
-    "text": "The SEM Regression\nwith Mediation Effects"
+    "text": "The SEM Regression\nThe Structural Matrix\n\\[ \\mathbf{\\gamma} = \\begin{bmatrix} \\overbrace{0.5}^{sat} & \\overbrace{0.2}^{well being} & \\overbrace{-0.3}^{dys}  & \\overbrace{0.7}^{con} \\\\ ... & ... & ... & ..\n\\\\ ... & ... & ... & ..  \\\\ ... & ... \\\\ 0.4 & ...\\end{bmatrix},\\mathbf{B}  = \\begin{bmatrix} \\overbrace{0}^{sat} & 0 & 0 & \\overbrace{0}^{con}\n\\\\ \\beta_{21} & 0 & 0 & 0\n\\\\ \\beta_{31} & \\beta_{32} & 0 & 0\n\\\\ \\beta_{41} & \\beta_{42} & \\beta_{43} & 0\n\\end{bmatrix} \\]"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-2",
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-2",
     "title": "Bayesian Workflow with SEMs",
     "section": "The SEM Regression",
-    "text": "The SEM Regression\nwith Staggered Mediation Effects"
+    "text": "The SEM Regression\nThe Structural Matrix\n\\[ \\eta = solve(I - \\mathbf{B}, \\mathbf{\\gamma})\\]\n\\[ \\mathbf{\\eta} = \\begin{bmatrix} \\overbrace{3.2}^{sat} & \\overbrace{1.3}^{well being} & \\overbrace{2.1}^{dys}  & \\overbrace{4.9}^{con} \\\\ ... & ... & ... & ..\n\\\\ ... & ... & ... & ..  \\\\ ... & ... \\\\ 5.0 & ...\\end{bmatrix}\n\\]"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-3",
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-3",
     "title": "Bayesian Workflow with SEMs",
     "section": "The SEM Regression",
-    "text": "The SEM Regression\nwith Residuals Covariance Structures"
+    "text": "The SEM Regression\nwith Mediation Effects"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-workflow",
@@ -3886,7 +3886,7 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-4",
     "title": "Bayesian Workflow with SEMs",
     "section": "The SEM Regression",
-    "text": "The SEM Regression\nThe Structural Matrix\n\\[ \\mathbf{\\gamma} = \\begin{bmatrix} \\overbrace{0.5}^{sat} & \\overbrace{0.2}^{well being} & \\overbrace{-0.3}^{dys}  & \\overbrace{0.7}^{con} \\\\ ... & ... & ... & ..\n\\\\ ... & ... & ... & ..  \\\\ ... & ... \\\\ 0.4 & ...\\end{bmatrix},\\mathbf{B}  = \\begin{bmatrix} \\overbrace{0}^{sat} & 0 & 0 & \\overbrace{0}^{con}\n\\\\ \\beta_{21} & 0 & 0 & 0\n\\\\ \\beta_{31} & \\beta_{32} & 0 & 0\n\\\\ \\beta_{41} & \\beta_{42} & \\beta_{43} & 0\n\\end{bmatrix} \\]"
+    "text": "The SEM Regression\nwith Staggered Mediation Effects"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#bayesian-workflow-with-sems",
@@ -3963,14 +3963,14 @@
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#job-satisfaction-data-1",
     "title": "Bayesian Workflow with SEMs",
     "section": "Job Satisfaction Data",
-    "text": "Job Satisfaction Data\n\n\n\n\n\n\n\n \nJW1\nJW2\nJW3\nUF1\nUF2\nFOR\nDA1\nDA2\nDA3\nEBA\nST\nMI\n\n\n\n\n0\n2.445787\n1.965244\n0.642748\n-0.261892\n-1.025867\n0.108101\n-1.465148\n-0.662086\n-1.421679\n-0.520152\n-0.718347\n-0.513234\n\n\n1\n-1.278851\n-0.960714\n-0.067187\n-0.617097\n-0.974320\n-0.106260\n0.271090\n-0.141599\n-0.337251\n0.746619\n-1.514541\n-0.694166\n\n\n2\n-1.710042\n-1.415398\n-1.234486\n-0.287105\n-0.333415\n-0.440412\n-0.915271\n-0.149454\n-1.203729\n0.651919\n-0.178972\n1.432799\n\n\n3\n1.018928\n0.441148\n0.654000\n0.633959\n1.938959\n0.627544\n-0.306272\n-0.220035\n-1.311098\n0.199039\n-0.113764\n-0.556123\n\n\n4\n0.725482\n0.710310\n0.391206\n0.783723\n0.880148\n0.819222\n-0.091925\n-0.267808\n-1.589765\n-1.327634\n-1.318294\n-1.775553\n\n\n\n\n\nThe Data for SEM modelling is a multivariate data structure with natural theory-driven categories of variables which reflect some mis-measured latent factor."
+    "text": "Job Satisfaction Data\n\n\n\n\n\n\n\n \nJW1\nJW2\nJW3\nUF1\nUF2\nFOR\nDA1\nDA2\nDA3\nEBA\nST\nMI\n\n\n\n\n0\n-1.046719\n-1.472334\n-1.649844\n-0.740886\n-0.573890\n-0.992347\n1.269461\n1.805128\n1.230402\n-0.039732\n1.618562\n-0.169659\n\n\n1\n-1.649857\n-1.908889\n-1.841327\n0.120929\n-0.939917\n0.401440\n0.177058\n0.126041\n-0.004604\n-0.806541\n0.930899\n-0.438887\n\n\n2\n0.429099\n1.826533\n0.341107\n1.033988\n1.287623\n0.490457\n-0.627370\n-0.717461\n-0.246633\n0.261212\n0.913639\n0.496846\n\n\n3\n0.257582\n-0.315831\n1.258474\n0.241065\n-0.548987\n-0.247273\n0.858847\n0.964730\n1.233870\n-0.251100\n0.466743\n0.169622\n\n\n4\n-0.875969\n-0.263046\n-0.947966\n-0.231731\n-0.850588\n0.860900\n0.989963\n0.671778\n0.438236\n-0.129382\n2.266723\n-0.951899\n\n\n\n\n\nThe Data for SEM modelling is a multivariate data structure with natural theory-driven categories of variables which reflect some mis-measured latent factor."
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-5",
     "href": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-sem-regression-5",
     "title": "Bayesian Workflow with SEMs",
     "section": "The SEM Regression",
-    "text": "The SEM Regression\nThe Structural Matrix\n\\[ \\eta = solve(I - \\mathbf{B}, \\mathbf{\\gamma})\\]\n\\[ \\mathbf{\\eta} = \\begin{bmatrix} \\overbrace{3.2}^{sat} & \\overbrace{1.3}^{well being} & \\overbrace{2.1}^{dys}  & \\overbrace{4.9}^{con} \\\\ ... & ... & ... & ..\n\\\\ ... & ... & ... & ..  \\\\ ... & ... \\\\ 5.0 & ...\\end{bmatrix}\n\\]"
+    "text": "The SEM Regression\nwith Residuals Covariance Structures"
   },
   {
     "objectID": "talks/pycon_ireland_2025/bayesian_workflow_sem.html#the-do-operator-and-parameter-recovery",

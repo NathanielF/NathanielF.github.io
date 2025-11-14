@@ -354,21 +354,6 @@ $$\mathbf{y} = N(\mu, \Psi)$$
 <img src="images/sem1_excalidraw.png"  width="80%" height="80%">
 
 
-## The SEM Regression 
-### with Mediation Effects
-
-<img src="images/sem2_excalidraw.png"  width="90%" height="90%">
-
-## The SEM Regression 
-### with Staggered Mediation Effects
-
-<img src="images/sem3_excalidraw.png"  width="90%" height="90%">
-
-## The SEM Regression 
-### with Residuals Covariance Structures
-
-<img src="images/final_sem_excalidraw.png"  width="90%" height="90%">
-
 ## The SEM Regression
 ### The Structural Matrix {.smaller}
 
@@ -387,6 +372,22 @@ $$ \eta = solve(I - \mathbf{B}, \mathbf{\gamma})$$
 $$ \mathbf{\eta} = \begin{bmatrix} \overbrace{3.2}^{sat} & \overbrace{1.3}^{well being} & \overbrace{2.1}^{dys}  & \overbrace{4.9}^{con} \\ ... & ... & ... & ..
 \\ ... & ... & ... & ..  \\ ... & ... \\ 5.0 & ...\end{bmatrix}
 $$
+
+## The SEM Regression 
+### with Mediation Effects
+
+<img src="images/sem2_excalidraw.png"  width="90%" height="90%">
+
+## The SEM Regression 
+### with Staggered Mediation Effects
+
+<img src="images/sem3_excalidraw.png"  width="90%" height="90%">
+
+## The SEM Regression 
+### with Residuals Covariance Structures
+
+<img src="images/final_sem_excalidraw.png"  width="90%" height="90%">
+
 
 
 ## Bayesian Workflow with SEMs
