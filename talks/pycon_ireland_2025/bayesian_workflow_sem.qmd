@@ -37,7 +37,7 @@ The worked examples used here can be found [here](https://www.pymc.io/projects/e
 ![My Website](images/QR_CODE.png)
 
 
-## **The Pitch**
+# The Pitch {.smaller}
 
 [__Structuring Your Work with Structural Equation Models__]{.blue}
 
@@ -168,21 +168,29 @@ Richly Parameterised Regressions with Expressive Encodings of Measurement Error 
 
 ## The SEM workflow {.smaller}
 
+::: {.fragment .fade-in}
 - Start with Confirmatory Factor Analysis (CFA):
   - Validate that our measurement model holds.
   - Ensure latent constructs are reliably represented by observed indicators.
+:::
 
+::: {.fragment .fade-in}
 - Layer Structural Paths:
   - Add theoretically-motivated regressions between constructs.
   - Assess whether hypothesized relationships improve model fit.
+:::
 
+::: {.fragment .fade-in}
 - Refine with Residual Covariances:
   - Account for specific shared variance not captured by factors.
   - Keep structure transparent while improving realism.
+:::
 
+::: {.fragment .fade-in}
 - Iterative Validation:
   - Each step asks: Does this addition honor theory? Improve fit?
   - Workflow = constant negotiation between parsimony and fidelity.
+:::
 
 ## Job Satisfaction Data {.smaller}
 
@@ -272,7 +280,7 @@ sample_df.head().style.set_properties(**{'background-color': 'skyblue'}, subset=
 
 ```
 
-The Data for SEM modelling is a multivariate data structure with natural theor-driven categories of variables which reflect some mis-measured latent factor. 
+The Data for SEM modelling is a multivariate data structure with natural theory-driven categories of variables which reflect some mis-measured latent factor. 
 
 ## The Confirmatory Factor Structure
 
@@ -655,11 +663,11 @@ with pm.observe(sem_model_hierarchical2, {"likelihood": synthetic_y}) as inferen
 
 ```
 
-## Parameter Recovery
+## Parameter Recovery {.smaller}
 
 ![](images/parameter_recovery_hierarchical.png)
 
-Complex models require proper validation methods. Parameter recovery methods are the best way to test the model's ability to identify the correct effects.
+Complex models require proper validation methods. Parameter recovery methods are the best way to test the model's ability to identify the correct effects. 
 
 
 # Workflow and Craft
@@ -739,7 +747,7 @@ Complex models require proper validation methods. Parameter recovery methods are
 :::
 
 ::: {.fragment .fade-in}
-- Craft lies in that attention — in resisting a flattening automation, and choosing understanding over throughput.  
+- Craft lies in that attention — in resisting flattening automation, and choosing understanding over throughput.  
 :::
 
 ::: {.fragment .fade-in}
