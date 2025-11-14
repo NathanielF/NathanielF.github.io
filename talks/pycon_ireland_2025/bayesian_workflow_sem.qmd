@@ -361,13 +361,33 @@ $$\mathbf{y} = N(\mu, \Psi)$$
 
 <img src="images/final_sem_excalidraw.png"  width="90%" height="90%">
 
+## The SEM Regression
+### The Structural Matrix {.smaller}
+
+$$ \mathbf{\gamma} = \begin{bmatrix} \overbrace{0.5}^{sat} & \overbrace{0.2}^{well being} & \overbrace{-0.3}^{dys}  & \overbrace{0.7}^{con} \\ ... & ... & ... & ..
+\\ ... & ... & ... & ..  \\ ... & ... \\ 0.4 & ...\end{bmatrix},\mathbf{B}  = \begin{bmatrix} \overbrace{0}^{sat} & 0 & 0 & \overbrace{0}^{con}
+\\ \beta_{21} & 0 & 0 & 0 
+\\ \beta_{31} & \beta_{32} & 0 & 0
+\\ \beta_{41} & \beta_{42} & \beta_{43} & 0
+\end{bmatrix} $$
+
+## The SEM Regression
+### The Structural Matrix {.smaller}
+
+$$ \eta = solve(I - \mathbf{B}, \mathbf{\gamma})$$
+
+$$ \mathbf{\eta} = \begin{bmatrix} \overbrace{3.2}^{sat} & \overbrace{1.3}^{well being} & \overbrace{2.1}^{dys}  & \overbrace{4.9}^{con} \\ ... & ... & ... & ..
+\\ ... & ... & ... & ..  \\ ... & ... \\ 5.0 & ...\end{bmatrix}
+$$
+
+
 ## Bayesian Workflow with SEMs
 ### SEM
 
 :::: {.columns}
 ::: {.column width="70%"}
 
-```{.python code-line-numbers="|21-22|24|30"}
+```{.python code-line-numbers="|21-22|24|26|30"}
 with pm.Model(coords=coords) as sem_model_v3:
     
     # --- Factor loadings ---
@@ -403,8 +423,8 @@ with pm.Model(coords=coords) as sem_model_v3:
 
 :::
 ::: {.column width="30%"}
-$$\zeta \sim MvN(0, \Sigma_{\zeta})$$
-$$\eta = (I-\color{blue}{B})^{-1} \zeta$$
+$$\gamma \sim MvN(0, \Sigma_{\zeta})$$
+$$\eta = (I-\color{blue}{B})^{-1} \gamma$$
 $$\mu = \Lambda \eta_i$$
 $$ \mathbf{y} \mid \eta \sim MvN(\mu, \Psi)$$
 :::
@@ -502,12 +522,6 @@ $$ \mathcal{y} \sim MvN(\mu, \Sigma_{y})$$
 # _Sensitivity_ Analysis
 __Knowing what your Model Implies__
 
-## Bayesian Workflow with SEMs
-### Assessing the Indirect Effects
-
-![](images/direct_indirect.png)
-
-
 ## Bayesian Workflow with SEMs {.smaller}
 ### Comparing Model Estimates
 
@@ -523,6 +537,11 @@ __Knowing what your Model Implies__
 - Effects are achieved directly and indirectly through overall well being.
 :::
 ::: 
+
+## Bayesian Workflow with SEMs
+### Assessing the Indirect Effects
+
+![](images/direct_indirect.png)
 
 
 ## Variations on theme
@@ -675,7 +694,7 @@ Complex models require proper validation methods. Parameter recovery methods are
 
 :::: {.columns}
 ::: {.column}
-> " [T]he goal is to represent the systematic relationships between the variables and between the variables and the parameters ... Discrepancies between the model and data can be used __to learn about the ways in which the model is inadequate for the scientific purposes at hand, and thus to motivate expansions and changes to the model__ ... __[a model is a story of how the data could have been generated]{.blue}__; the fitted model should therefore be able to generate synthetic data that look like the real data; failures to do so in important ways indicate faults in the model." - Gelman & Shalizi in _Philosophy and the practice of Bayesian statistics_
+> " [T]he goal is to represent the systematic relationships between the variables and between the variables and the parameters ... Discrepancies between the model and data can be used __to learn about the ways in which the model is inadequate for the scientific purposes at hand, and thus to motivate expansions and changes to the model__ ... a model is a story of how the data could have been generated; __the fitted model should therefore be able to generate synthetic data that look like the real data; [failures to do so in important ways indicate faults in the model.]{.blue}__" - Gelman & Shalizi in _Philosophy and the practice of Bayesian statistics_
 :::
 ::: {.column}
 
