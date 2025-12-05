@@ -2,6 +2,7 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/scm_with_vs_priors/scm_causalpy.html",
       "/talks/pycon_ireland_2025/bayesian_workflow_sem.html",
       "/talks/pydata_berlin_nested_logit/consumer_choice.html",
       "/talks/mister_p/mister_p.html",

@@ -1,0 +1,212 @@
+---
+title: "Bayesian Structural Causal Inference"
+subtitle: "Modelling the Fish and the Tank"
+author: "Based on CausalPy Documentation"
+format: 
+  revealjs:
+    theme: [default, clean.scss]
+    transition: fade
+    slide-number: true
+    preview-links: auto
+    width: 1200
+    height: 750
+---
+
+# The Metaphor
+
+---
+
+## The Pet Shop Problem
+
+Imagine a causal analyst as a pet-shop owner introducing a new fish to one of their many aquariums.
+
+::: {.incremental}
+* We ask: *"Does this new fish survive?"*
+* We usually focus on the **fish**:
+    * Is it healthy?
+    * Is it a hardy species?
+    * What are its intrinsic properties?
+:::
+
+---
+
+## The Systemic View
+
+But the fish's survival depends less on its intrinsic properties than on the **tank**.
+
+::: {.incremental}
+* The pH balance.
+* The predators.
+* The temperature.
+* The hidden currents.
+:::
+
+<br>
+**The Insight:** When we ask "What is the causal effect?", we are not asking about an isolated variable. We are asking: **"In which world are we operating?"**
+
+---
+
+# Methodological Philosophies
+
+---
+
+## Two Schools of Thought
+
+::: columns
+::: {.column width="50%"}
+### Minimalism
+*(Design-Based)*
+
+* **Goal:** Isolate the effect by minimizing assumptions.
+* **Tools:** RCTs, Instrumental Variables, Diff-in-Diff.
+* **The Vibe:** "Don't model the tank; just find a clean experiment within it."
+:::
+
+::: {.column width="50%"}
+### Maximalism
+*(Structural)*
+
+* **Goal:** Explicitly parameterize the system.
+* **Tools:** Bayesian Structural Models (SCMs).
+* **The Vibe:** "Model the physics of the tank to understand how the fish survives."
+:::
+:::
+
+---
+
+## The Great Trade-Off
+
+Why choose Structural Maximalism?
+
+**The Cost:**
+Risk of **Misspecification**. If you get the physics of the tank wrong, your answers will be wrong.
+
+**The Reward:**
+**Transparency**.
+Every assumption becomes an explicit, testable component rather than an implicit background condition. We trade robustness for a map of the mechanisms.
+
+---
+
+# The Bayesian Workflow
+
+---
+
+## Step 1: Inference (Backwards)
+
+First, we must understand the "physics" of the aquarium.
+
+We infer the most plausible state of the world ($w$) conditioned on the observable data ($X, T, O$).
+
+$$P(w | X, T, O)$$
+
+We are asking: *Given the data we see, what must the causal graph look like?*
+
+---
+
+## Step 2: Prediction (Forwards)
+
+Once the "world" is defined by our posterior distribution, we move forwards.
+
+We simulate **Counterfactual Worlds**.
+
+$$P(Y^* | w, do(T))$$
+
+We are asking: *In a world defined by these physics, what happens if we intervene?*
+
+---
+
+# Identification & Structure
+
+---
+
+## The Problem of Endogeneity
+
+In the real world, the propensity to take a treatment is often predicted by the same factors that determine the outcome.
+
+* **The Bias:** The model attributes outcome variation from unobserved factors ($U$) to the treatment ($T$).
+* **The Result:** We confuse the "currents" of the water with the "movement" of the fish.
+
+---
+
+## Priors as Structure
+
+How do we solve this without a Randomized Controlled Trial?
+
+We use **Information** to constrain the **Structure**.
+
+By placing **tight priors** on the correlation parameters (e.g., $\rho$), we "regularize" the latent correlation. We effectively limit how much endogeneity is *allowed* to distort the inference.
+
+*We use our prior knowledge of the tank to constrain our estimates of the fish.*
+
+---
+
+# Variable Selection in Joint Models
+
+---
+
+## Beyond Prediction
+
+In standard regression, variable selection (Lasso, Ridge) is a **Predictive** tool.
+* *Goal:* Prune the noise to prevent overfitting.
+
+In Joint Structural Models, variable selection becomes a **Structural** tool.
+* *Goal:* Discover the architecture of the causal graph.
+
+---
+
+## Causal Discovery via Shrinkage
+
+When we apply "sparsity priors" (like Horseshoe or Spike-and-Slab) to a system of equations, the model can discriminate between:
+
+1.  **Instruments:** Variables that drive Treatment ($T$) but *not* Outcome ($Y$).
+2.  **Confounders:** Variables that drive both.
+
+The model effectively "learns" exclusion restrictions. It separates the levers that move the treatment from the confounders that muddy the waters.
+
+---
+
+# Non-Parametric Approaches
+
+---
+
+## When Parameters Fail
+
+Sometimes, the shape of the "tank" is too complex for linear equations.
+
+If we force a linear line on a non-linear world, our structural parameter ($\alpha$) collapses.
+
+**The Solution:** Bayesian Additive Regression Trees (BART).
+
+---
+
+## Flexible Imputation
+
+With BART, we replace rigid parameters with flexible function approximation.
+
+1.  Fit a flexible model for $E[Y | X, T]$.
+2.  **Impute $Y(1)$:** Set everyone to treated, predict outcomes.
+3.  **Impute $Y(0)$:** Set everyone to control, predict outcomes.
+
+Even if the "coefficient" is uninterpretable, if the model learns the shape of the tank, the **imputed difference** recovers the causal effect.
+
+---
+
+# Conclusion
+
+---
+
+## Epistemic Modesty
+
+> "Every causal model, like every fish tank, is a 'small world' whose regularities we can nurture but never universalize."
+
+Bayesian structural causal inference unites **epistemic modesty** with **computational rigor**.
+
+Each model is not a final map of the world. It is a **provisional machine** for generating causal understanding.
+
+---
+
+## Final Thought
+
+Our task is not to master the ocean.
+
+Our task is to build clear tanks, understand their physics, and know when to change the water.
