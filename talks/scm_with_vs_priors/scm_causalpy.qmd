@@ -1,7 +1,11 @@
 ---
 title: "Bayesian Structural Causal Inference"
-subtitle: "Modelling the Fish and the Tank"
-author: "Based on CausalPy Documentation"
+subtitle: "Finding Structure, Testing Robustness"
+author: "Nathaniel Forde"
+institute: |
+  Data Science @ Personio  
+  Open Source Contributor @ PyMC
+image: "images/probabilistic_intervention_fix.webp"
 format: 
   revealjs:
     theme: [default, clean.scss]
@@ -14,199 +18,208 @@ format:
 
 # The Metaphor
 
----
+![](images/probabilistic_intervention_fix.webp)
+
 
 ## The Pet Shop Problem
 
-Imagine a causal analyst as a pet-shop owner introducing a new fish to one of their many aquariums.
+:::: {.columns}
+::: {.column width="60%"}
+A causal analyst is like a pet-shop owner introducing a new fish to an aquarium.
 
-::: {.incremental}
-* We ask: *"Does this new fish survive?"*
-* We usually focus on the **fish**:
-    * Is it healthy?
-    * Is it a hardy species?
-    * What are its intrinsic properties?
+**The Question:** "Does this fish survive?"
+
+**Wrong Focus:** The fish's intrinsic properties (the "Treatment" in isolation).
+
+**Right Focus:** The physics of the tank—pH, predators, currents (the "Structural" environment).
 :::
 
----
+::: {.column width="40%"}
+::: {.callout-important}
+## The Insight
+"What is the causal effect?" really asks:
 
-## The Systemic View
-
-But the fish's survival depends less on its intrinsic properties than on the **tank**.
-
-::: {.incremental}
-* The pH balance.
-* The predators.
-* The temperature.
-* The hidden currents.
+**"In which world are we operating?"**
 :::
+:::
+::::
 
-<br>
-**The Insight:** When we ask "What is the causal effect?", we are not asking about an isolated variable. We are asking: **"In which world are we operating?"**
 
----
+## Two Philosophies of the Tank
 
-# Methodological Philosophies
-
----
-
-## Two Schools of Thought
-
-::: columns
+:::: {.columns}
 ::: {.column width="50%"}
-### Minimalism
-*(Design-Based)*
+### Design-Based Minimalism
+**Philosophy:** Find a "clean" corner of the tank (Natural Experiments).
 
-* **Goal:** Isolate the effect by minimizing assumptions.
-* **Tools:** RCTs, Instrumental Variables, Diff-in-Diff.
-* **The Vibe:** "Don't model the tank; just find a clean experiment within it."
+**Strength:** Robust to local errors.  
+**Limitation:** If the whole tank is cloudy, you're blind.
 :::
 
 ::: {.column width="50%"}
-### Maximalism
-*(Structural)*
+### Structural Maximalism
+**Philosophy:** Model the pumps, filters, and chemistry explicitly.
 
-* **Goal:** Explicitly parameterize the system.
-* **Tools:** Bayesian Structural Models (SCMs).
-* **The Vibe:** "Model the physics of the tank to understand how the fish survives."
+**Strength:** Explains *why* the fish survives.  
+**Limitation:** If the physics model is wrong, the prediction fails.
+:::
+::::
+
+. . .
+
+> **The Bayesian Commitment:** We don't know the exact physics. We use data to eliminate impossible tank setups and explore the plausible ones.
+
+## Joint Structural Modelling
+
+![](images/complex_structure.svg)
+
+# The Mechanics of "The Tank"
+
+## The Two Movements of Inference
+:::: {.columns}
+::: {.column width="50%"}
+Causal inference in a structural framework is a two-step dance:
+
+1.  **Backwards (Inference):** Use observed Treatment ($T$) and Outcome ($Y$) to infer the hidden state of the world ($w$).
+2.  **Forwards (Counterfactual):** Use that world state to simulate what *would* happen if we changed $T$.
+:::
+
+::: {.column width="50%"}
+![](images/forwards_backwards.webp)
 :::
 :::
 
----
+## The Invisible Threat: Hidden Correlation
 
-## The Great Trade-Off
+The confounding isn't just in what we *measure*—it's in the covariance of the errors:
 
-Why choose Structural Maximalism?
+$$
+\begin{pmatrix} U \\ V \end{pmatrix} \sim N\left(0, \begin{bmatrix} \sigma_U^2 & \rho\sigma_U\sigma_V \\ \rho\sigma_U\sigma_V & \sigma_V^2 \end{bmatrix}\right)
+$$
 
-**The Cost:**
-Risk of **Misspecification**. If you get the physics of the tank wrong, your answers will be wrong.
+. . .
 
-**The Reward:**
-**Transparency**.
-Every assumption becomes an explicit, testable component rather than an implicit background condition. We trade robustness for a map of the mechanisms.
+* **$\rho = 0$:** The OLS assumption. $T$ is "as-if" random.
+* **$\rho \neq 0$:** The Structural reality. Selection bias is modeled as a parameter.
 
----
+## The Bias is Real: OLS Drift
 
-# The Bayesian Workflow
+![OLS estimates drift as ρ varies](images/ols_bias.webp){fig-align="center" width="70%"}
 
----
+If we ignore $\rho$, our estimate of the effect ($\alpha$) is a ghost. It's not just "noisy"—it's fundamentally misplaced because we've ignored the unobserved "currents" in the tank.
 
-## Step 1: Inference (Backwards)
+# Finding Structure (Pruning)
 
-First, we must understand the "physics" of the aquarium.
+## Discovering Structure as World Elimination
 
-We infer the most plausible state of the world ($w$) conditioned on the observable data ($X, T, O$).
+How do we find the "right" tank physics? We use **Variable Selection Priors** to collapse the multiverse.
 
-$$P(w | X, T, O)$$
+:::: {.columns}
+::: {.column width="50%"}
+### Spike-and-Slab
+**The Sieve:** It forces coefficients to be exactly zero or significantly non-zero. 
 
-We are asking: *Given the data we see, what must the causal graph look like?*
+**Result:** Eliminates worlds where irrelevant variables act as noise.
+:::
 
----
+::: {.column width="50%"}
+### Horseshoe
+**The Funnel:** It provides global and local shrinkage.
 
-## Step 2: Prediction (Forwards)
+**Result:** Progressively prunes weak "paths" in the causal graph until only the strongest structural links remain.
+:::
+::::
 
-Once the "world" is defined by our posterior distribution, we move forwards.
+## Variable Selection Priors and Instrument Discovery
+:::: {.columns}
+::: {.column width="60%"}
+![](images/variable_selection.webp)
+:::
 
-We simulate **Counterfactual Worlds**.
+::: {.column width="40%"}
+![](images/JOINT_DAG.webp)
+:::
+::::
 
-$$P(Y^* | w, do(T))$$
 
-We are asking: *In a world defined by these physics, what happens if we intervene?*
+## Wrong turns in the Multiverse
 
----
+::: {.callout-caution}
+## The BART Pitfall
+Using "Infinite Flexibility" (BART/GPs) in the **Outcome** equation is dangerous.
+:::
 
-# Identification & Structure
+**Why?** If the model can explain $Y$ through any arbitrary "wiggle," it will "soak up" the causal signal. 
 
----
+* **Outcome Flexibility:** The model hides the effect of $T$ inside the flexibility of the curve. $\alpha$ becomes unidentifiable.
+* **Treatment Flexibility:** Safe. It helps us model the "selection" process more accurately without obscuring the causal link.
 
-## The Problem of Endogeneity
 
-In the real world, the propensity to take a treatment is often predicted by the same factors that determine the outcome.
+## Identification Denied
 
-* **The Bias:** The model attributes outcome variation from unobserved factors ($U$) to the treatment ($T$).
-* **The Result:** We confuse the "currents" of the water with the "movement" of the fish.
+![](images/bart_comparison.webp)
 
----
+# Navigating the Multiverse (Exploration)
 
-## Priors as Structure
+## Mapping the Multiverse
 
-How do we solve this without a Randomized Controlled Trial?
+We don't estimate a point; we map a territory.
 
-We use **Information** to constrain the **Structure**.
+:::: {.columns}
+::: {.column width="70%"}
+![](images/sensitivity_rho.webp)
+:::
 
-By placing **tight priors** on the correlation parameters (e.g., $\rho$), we "regularize" the latent correlation. We effectively limit how much endogeneity is *allowed* to distort the inference.
+::: {.column width="30%"}
+```python
+# We explore different 'Universes' of confounding
+priors = {
+  "Exogenous": pm.DiracDelta(0),
+  "Moderate": pm.Normal(0, 0.2),
+  "Deep Selection": pm.TruncatedNormal(0.5, 0.1, lower=0)
+  ...
+```
+:::
+::::
 
-*We use our prior knowledge of the tank to constrain our estimates of the fish.*
 
----
+## Causal Inference and Counterfactual Worlds
 
-# Variable Selection in Joint Models
+![](images/potential_outcomes.webp)
 
----
+## Case Study: Smoking and Weight
 
-## Beyond Prediction
+| World | $\hat{\alpha}$ (Effect) | Interpretation |
+|-------|-----------|----------------|
+| **OLS (Naive)** | 3.3 | Ignores the physics of selection. |
+| **Bayesian ($\rho=0$)** | 5.1 | Models structural links, assumes no hidden bias. |
+| **Bayesian ($\rho \approx -0.3$)** | 6.2 | Accounts for the "unobserved" drivers of quitting. |
 
-In standard regression, variable selection (Lasso, Ridge) is a **Predictive** tool.
-* *Goal:* Prune the noise to prevent overfitting.
+. . .
 
-In Joint Structural Models, variable selection becomes a **Structural** tool.
-* *Goal:* Discover the architecture of the causal graph.
+::: {.callout-important}
+## The "Bias Gap"
+The difference between 3.3 and 6.2 is the "Cost of Ignorance." By assuming we knew the world, we missed nearly half the effect.
+:::
 
----
+## Testing Robustness 
 
-## Causal Discovery via Shrinkage
+![](images/nhefs.webp)
 
-When we apply "sparsity priors" (like Horseshoe or Spike-and-Slab) to a system of equations, the model can discriminate between:
-
-1.  **Instruments:** Variables that drive Treatment ($T$) but *not* Outcome ($Y$).
-2.  **Confounders:** Variables that drive both.
-
-The model effectively "learns" exclusion restrictions. It separates the levers that move the treatment from the confounders that muddy the waters.
-
----
-
-# Non-Parametric Approaches
-
----
-
-## When Parameters Fail
-
-Sometimes, the shape of the "tank" is too complex for linear equations.
-
-If we force a linear line on a non-linear world, our structural parameter ($\alpha$) collapses.
-
-**The Solution:** Bayesian Additive Regression Trees (BART).
-
----
-
-## Flexible Imputation
-
-With BART, we replace rigid parameters with flexible function approximation.
-
-1.  Fit a flexible model for $E[Y | X, T]$.
-2.  **Impute $Y(1)$:** Set everyone to treated, predict outcomes.
-3.  **Impute $Y(0)$:** Set everyone to control, predict outcomes.
-
-Even if the "coefficient" is uninterpretable, if the model learns the shape of the tank, the **imputed difference** recovers the causal effect.
-
----
+The OLS benchmark assumes conditional ignorability. The various joint models allow for latent confounding i.e. that the covariate profile used in the study is not sufficiently exhaustive to block all confounding. 
 
 # Conclusion
 
----
+## The Bayesian Causal Workflow
 
-## Epistemic Modesty
+1.  **Backwards Movement:** Use the joint model to infer the likely world state ($w, \rho$).
+2.  **Elimination:** Use Spike-and-Slab/Horsehoe to prune implausible causal architectures.
+3.  **Exploration:** Map treatment effects across the "Multiverse" of plausible $\rho$ values.
 
-> "Every causal model, like every fish tank, is a 'small world' whose regularities we can nurture but never universalize."
+. . .
 
-Bayesian structural causal inference unites **epistemic modesty** with **computational rigor**.
+1.  **"Which worlds did you eliminate?"** (Variable selection/DAG pruning)
+2.  **"Which worlds did you explore?"** (Sensitivity analysis across $\rho$)
+3.  **"Where did you put the flexibility?"** (Did you ensure identifiability?)
 
-Each model is not a final map of the world. It is a **provisional machine** for generating causal understanding.
 
----
-
-## Final Thought
-
-Our task is not to master the ocean.
-
-Our task is to build clear tanks, understand their physics, and know when to change the water.

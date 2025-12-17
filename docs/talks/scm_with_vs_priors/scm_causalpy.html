@@ -9,7 +9,7 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.6.41">
 
-  <meta name="author" content="Based on CausalPy Documentation">
+  <meta name="author" content="Nathaniel Forde">
   <title>Examined Algorithms – Bayesian Structural Causal Inference</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -28,6 +28,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-3ade86377462f3e3e46542412d572591.css">
   <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -128,14 +193,17 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Bayesian Structural Causal Inference</h1>
-  <p class="subtitle">Modelling the Fish and the Tank</p>
+  <p class="subtitle">Finding Structure, Testing Robustness</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-Based on CausalPy Documentation 
+Nathaniel Forde 
 </div>
-</div>
+        <p class="quarto-title-affiliation">
+            </p><p>Data Science @ Personio Open Source Contributor @ PyMC</p>
+          <p></p>
+    </div>
 </div>
 
 </section>
@@ -143,184 +211,251 @@ Based on CausalPy Documentation
 <section id="the-metaphor" class="title-slide slide level1 center">
 <h1>The Metaphor</h1>
 
-</section>
+<img data-src="images/probabilistic_intervention_fix.webp" class="r-stretch"></section>
 <section id="the-pet-shop-problem" class="slide level2">
 <h2>The Pet Shop Problem</h2>
-<p>Imagine a causal analyst as a pet-shop owner introducing a new fish to one of their many aquariums.</p>
-<div>
-<ul>
-<li class="fragment">We ask: <em>“Does this new fish survive?”</em></li>
-<li class="fragment">We usually focus on the <strong>fish</strong>:
-<ul>
-<li class="fragment">Is it healthy?</li>
-<li class="fragment">Is it a hardy species?</li>
-<li class="fragment">What are its intrinsic properties?</li>
-</ul></li>
-</ul>
-</div>
-</section>
-<section id="the-systemic-view" class="slide level2">
-<h2>The Systemic View</h2>
-<p>But the fish’s survival depends less on its intrinsic properties than on the <strong>tank</strong>.</p>
-<div>
-<ul>
-<li class="fragment">The pH balance.</li>
-<li class="fragment">The predators.</li>
-<li class="fragment">The temperature.</li>
-<li class="fragment">The hidden currents.</li>
-</ul>
-</div>
-<p><br> <strong>The Insight:</strong> When we ask “What is the causal effect?”, we are not asking about an isolated variable. We are asking: <strong>“In which world are we operating?”</strong></p>
-</section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="methodological-philosophies" class="title-slide slide level1 center">
-<h1>Methodological Philosophies</h1>
-
-</section>
-<section id="two-schools-of-thought" class="slide level2">
-<h2>Two Schools of Thought</h2>
 <div class="columns">
-<div class="column" style="width:50%;">
-<h3 id="minimalism">Minimalism</h3>
-<p><em>(Design-Based)</em></p>
-<ul>
-<li><strong>Goal:</strong> Isolate the effect by minimizing assumptions.</li>
-<li><strong>Tools:</strong> RCTs, Instrumental Variables, Diff-in-Diff.</li>
-<li><strong>The Vibe:</strong> “Don’t model the tank; just find a clean experiment within it.”</li>
-</ul>
-</div><div class="column" style="width:50%;">
-<h3 id="maximalism">Maximalism</h3>
-<p><em>(Structural)</em></p>
-<ul>
-<li><strong>Goal:</strong> Explicitly parameterize the system.</li>
-<li><strong>Tools:</strong> Bayesian Structural Models (SCMs).</li>
-<li><strong>The Vibe:</strong> “Model the physics of the tank to understand how the fish survives.”</li>
-</ul>
+<div class="column" style="width:60%;">
+<p>A causal analyst is like a pet-shop owner introducing a new fish to an aquarium.</p>
+<p><strong>The Question:</strong> “Does this fish survive?”</p>
+<p><strong>Wrong Focus:</strong> The fish’s intrinsic properties (the “Treatment” in isolation).</p>
+<p><strong>Right Focus:</strong> The physics of the tank—pH, predators, currents (the “Structural” environment).</p>
+</div><div class="column" style="width:40%;">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Insight</strong></p>
+</div>
+<div class="callout-content">
+<p>“What is the causal effect?” really asks:</p>
+<p><strong>“In which world are we operating?”</strong></p>
+</div>
+</div>
+</div>
 </div></div>
 </section>
-<section id="the-great-trade-off" class="slide level2">
-<h2>The Great Trade-Off</h2>
-<p>Why choose Structural Maximalism?</p>
-<p><strong>The Cost:</strong> Risk of <strong>Misspecification</strong>. If you get the physics of the tank wrong, your answers will be wrong.</p>
-<p><strong>The Reward:</strong> <strong>Transparency</strong>. Every assumption becomes an explicit, testable component rather than an implicit background condition. We trade robustness for a map of the mechanisms.</p>
+<section id="two-philosophies-of-the-tank" class="slide level2">
+<h2>Two Philosophies of the Tank</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<h3 id="design-based-minimalism">Design-Based Minimalism</h3>
+<p><strong>Philosophy:</strong> Find a “clean” corner of the tank (Natural Experiments).</p>
+<p><strong>Strength:</strong> Robust to local errors.<br>
+<strong>Limitation:</strong> If the whole tank is cloudy, you’re blind.</p>
+</div><div class="column" style="width:50%;">
+<h3 id="structural-maximalism">Structural Maximalism</h3>
+<p><strong>Philosophy:</strong> Model the pumps, filters, and chemistry explicitly.</p>
+<p><strong>Strength:</strong> Explains <em>why</em> the fish survives.<br>
+<strong>Limitation:</strong> If the physics model is wrong, the prediction fails.</p>
+</div></div>
+<div class="fragment">
+<blockquote>
+<p><strong>The Bayesian Commitment:</strong> We don’t know the exact physics. We use data to eliminate impossible tank setups and explore the plausible ones.</p>
+</blockquote>
+</div>
 </section>
-<section class="slide level2">
+<section id="joint-structural-modelling" class="slide level2">
+<h2>Joint Structural Modelling</h2>
 
-</section></section>
+<img data-src="images/complex_structure.svg" class="r-stretch"></section></section>
 <section>
-<section id="the-bayesian-workflow" class="title-slide slide level1 center">
-<h1>The Bayesian Workflow</h1>
+<section id="the-mechanics-of-the-tank" class="title-slide slide level1 center">
+<h1>The Mechanics of “The Tank”</h1>
 
 </section>
-<section id="step-1-inference-backwards" class="slide level2">
-<h2>Step 1: Inference (Backwards)</h2>
-<p>First, we must understand the “physics” of the aquarium.</p>
-<p>We infer the most plausible state of the world (<span class="math inline">\(w\)</span>) conditioned on the observable data (<span class="math inline">\(X, T, O\)</span>).</p>
-<p><span class="math display">\[P(w | X, T, O)\]</span></p>
-<p>We are asking: <em>Given the data we see, what must the causal graph look like?</em></p>
+<section id="the-two-movements-of-inference" class="slide level2">
+<h2>The Two Movements of Inference</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Causal inference in a structural framework is a two-step dance:</p>
+<ol type="1">
+<li><strong>Backwards (Inference):</strong> Use observed Treatment (<span class="math inline">\(T\)</span>) and Outcome (<span class="math inline">\(Y\)</span>) to infer the hidden state of the world (<span class="math inline">\(w\)</span>).</li>
+<li><strong>Forwards (Counterfactual):</strong> Use that world state to simulate what <em>would</em> happen if we changed <span class="math inline">\(T\)</span>.</li>
+</ol>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/forwards_backwards.webp"></p>
+</div></div>
 </section>
-<section id="step-2-prediction-forwards" class="slide level2">
-<h2>Step 2: Prediction (Forwards)</h2>
-<p>Once the “world” is defined by our posterior distribution, we move forwards.</p>
-<p>We simulate <strong>Counterfactual Worlds</strong>.</p>
-<p><span class="math display">\[P(Y^* | w, do(T))\]</span></p>
-<p>We are asking: <em>In a world defined by these physics, what happens if we intervene?</em></p>
-</section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="identification-structure" class="title-slide slide level1 center">
-<h1>Identification &amp; Structure</h1>
-
-</section>
-<section id="the-problem-of-endogeneity" class="slide level2">
-<h2>The Problem of Endogeneity</h2>
-<p>In the real world, the propensity to take a treatment is often predicted by the same factors that determine the outcome.</p>
+<section id="the-invisible-threat-hidden-correlation" class="slide level2">
+<h2>The Invisible Threat: Hidden Correlation</h2>
+<p>The confounding isn’t just in what we <em>measure</em>—it’s in the covariance of the errors:</p>
+<p><span class="math display">\[
+\begin{pmatrix} U \\ V \end{pmatrix} \sim N\left(0, \begin{bmatrix} \sigma_U^2 &amp; \rho\sigma_U\sigma_V \\ \rho\sigma_U\sigma_V &amp; \sigma_V^2 \end{bmatrix}\right)
+\]</span></p>
+<div class="fragment">
 <ul>
-<li><strong>The Bias:</strong> The model attributes outcome variation from unobserved factors (<span class="math inline">\(U\)</span>) to the treatment (<span class="math inline">\(T\)</span>).</li>
-<li><strong>The Result:</strong> We confuse the “currents” of the water with the “movement” of the fish.</li>
+<li><strong><span class="math inline">\(\rho = 0\)</span>:</strong> The OLS assumption. <span class="math inline">\(T\)</span> is “as-if” random.</li>
+<li><strong><span class="math inline">\(\rho \neq 0\)</span>:</strong> The Structural reality. Selection bias is modeled as a parameter.</li>
+</ul>
+</div>
+</section>
+<section id="the-bias-is-real-ols-drift" class="slide level2">
+<h2>The Bias is Real: OLS Drift</h2>
+
+<img data-src="images/ols_bias.webp" style="width:70.0%" class="r-stretch quarto-figure-center"><p class="caption">OLS estimates drift as ρ varies</p><p>If we ignore <span class="math inline">\(\rho\)</span>, our estimate of the effect (<span class="math inline">\(\alpha\)</span>) is a ghost. It’s not just “noisy”—it’s fundamentally misplaced because we’ve ignored the unobserved “currents” in the tank.</p>
+</section></section>
+<section>
+<section id="finding-structure-pruning" class="title-slide slide level1 center">
+<h1>Finding Structure (Pruning)</h1>
+
+</section>
+<section id="discovering-structure-as-world-elimination" class="slide level2">
+<h2>Discovering Structure as World Elimination</h2>
+<p>How do we find the “right” tank physics? We use <strong>Variable Selection Priors</strong> to collapse the multiverse.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<h3 id="spike-and-slab">Spike-and-Slab</h3>
+<p><strong>The Sieve:</strong> It forces coefficients to be exactly zero or significantly non-zero.</p>
+<p><strong>Result:</strong> Eliminates worlds where irrelevant variables act as noise.</p>
+</div><div class="column" style="width:50%;">
+<h3 id="horseshoe">Horseshoe</h3>
+<p><strong>The Funnel:</strong> It provides global and local shrinkage.</p>
+<p><strong>Result:</strong> Progressively prunes weak “paths” in the causal graph until only the strongest structural links remain.</p>
+</div></div>
+</section>
+<section id="variable-selection-priors-and-instrument-discovery" class="slide level2">
+<h2>Variable Selection Priors and Instrument Discovery</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/variable_selection.webp"></p>
+</div><div class="column" style="width:40%;">
+<p><img data-src="images/JOINT_DAG.webp"></p>
+</div></div>
+</section>
+<section id="wrong-turns-in-the-multiverse" class="slide level2">
+<h2>Wrong turns in the Multiverse</h2>
+<div class="callout callout-caution callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The BART Pitfall</strong></p>
+</div>
+<div class="callout-content">
+<p>Using “Infinite Flexibility” (BART/GPs) in the <strong>Outcome</strong> equation is dangerous.</p>
+</div>
+</div>
+</div>
+<p><strong>Why?</strong> If the model can explain <span class="math inline">\(Y\)</span> through any arbitrary “wiggle,” it will “soak up” the causal signal.</p>
+<ul>
+<li><strong>Outcome Flexibility:</strong> The model hides the effect of <span class="math inline">\(T\)</span> inside the flexibility of the curve. <span class="math inline">\(\alpha\)</span> becomes unidentifiable.</li>
+<li><strong>Treatment Flexibility:</strong> Safe. It helps us model the “selection” process more accurately without obscuring the causal link.</li>
 </ul>
 </section>
-<section id="priors-as-structure" class="slide level2">
-<h2>Priors as Structure</h2>
-<p>How do we solve this without a Randomized Controlled Trial?</p>
-<p>We use <strong>Information</strong> to constrain the <strong>Structure</strong>.</p>
-<p>By placing <strong>tight priors</strong> on the correlation parameters (e.g., <span class="math inline">\(\rho\)</span>), we “regularize” the latent correlation. We effectively limit how much endogeneity is <em>allowed</em> to distort the inference.</p>
-<p><em>We use our prior knowledge of the tank to constrain our estimates of the fish.</em></p>
-</section>
-<section class="slide level2">
+<section id="identification-denied" class="slide level2">
+<h2>Identification Denied</h2>
 
-</section></section>
+<img data-src="images/bart_comparison.webp" class="r-stretch"></section></section>
 <section>
-<section id="variable-selection-in-joint-models" class="title-slide slide level1 center">
-<h1>Variable Selection in Joint Models</h1>
+<section id="navigating-the-multiverse-exploration" class="title-slide slide level1 center">
+<h1>Navigating the Multiverse (Exploration)</h1>
 
 </section>
-<section id="beyond-prediction" class="slide level2">
-<h2>Beyond Prediction</h2>
-<p>In standard regression, variable selection (Lasso, Ridge) is a <strong>Predictive</strong> tool. * <em>Goal:</em> Prune the noise to prevent overfitting.</p>
-<p>In Joint Structural Models, variable selection becomes a <strong>Structural</strong> tool. * <em>Goal:</em> Discover the architecture of the causal graph.</p>
+<section id="mapping-the-multiverse" class="slide level2">
+<h2>Mapping the Multiverse</h2>
+<p>We don’t estimate a point; we map a territory.</p>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p><img data-src="images/sensitivity_rho.webp"></p>
+</div><div class="column" style="width:30%;">
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="co"># We explore different 'Universes' of confounding</span></span>
+<span id="cb1-2"><a></a>priors <span class="op">=</span> {</span>
+<span id="cb1-3"><a></a>  <span class="st">"Exogenous"</span>: pm.DiracDelta(<span class="dv">0</span>),</span>
+<span id="cb1-4"><a></a>  <span class="st">"Moderate"</span>: pm.Normal(<span class="dv">0</span>, <span class="fl">0.2</span>),</span>
+<span id="cb1-5"><a></a>  <span class="st">"Deep Selection"</span>: pm.TruncatedNormal(<span class="fl">0.5</span>, <span class="fl">0.1</span>, lower<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-6"><a></a>  ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div>
 </section>
-<section id="causal-discovery-via-shrinkage" class="slide level2">
-<h2>Causal Discovery via Shrinkage</h2>
-<p>When we apply “sparsity priors” (like Horseshoe or Spike-and-Slab) to a system of equations, the model can discriminate between:</p>
-<ol type="1">
-<li><strong>Instruments:</strong> Variables that drive Treatment (<span class="math inline">\(T\)</span>) but <em>not</em> Outcome (<span class="math inline">\(Y\)</span>).</li>
-<li><strong>Confounders:</strong> Variables that drive both.</li>
-</ol>
-<p>The model effectively “learns” exclusion restrictions. It separates the levers that move the treatment from the confounders that muddy the waters.</p>
-</section>
-<section class="slide level2">
+<section id="causal-inference-and-counterfactual-worlds" class="slide level2">
+<h2>Causal Inference and Counterfactual Worlds</h2>
 
-</section></section>
-<section>
-<section id="non-parametric-approaches" class="title-slide slide level1 center">
-<h1>Non-Parametric Approaches</h1>
+<img data-src="images/potential_outcomes.webp" class="r-stretch"></section>
+<section id="case-study-smoking-and-weight" class="slide level2">
+<h2>Case Study: Smoking and Weight</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 32%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>World</th>
+<th><span class="math inline">\(\hat{\alpha}\)</span> (Effect)</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>OLS (Naive)</strong></td>
+<td>3.3</td>
+<td>Ignores the physics of selection.</td>
+</tr>
+<tr class="even">
+<td><strong>Bayesian (<span class="math inline">\(\rho=0\)</span>)</strong></td>
+<td>5.1</td>
+<td>Models structural links, assumes no hidden bias.</td>
+</tr>
+<tr class="odd">
+<td><strong>Bayesian (<span class="math inline">\(\rho \approx -0.3\)</span>)</strong></td>
+<td>6.2</td>
+<td>Accounts for the “unobserved” drivers of quitting.</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The “Bias Gap”</strong></p>
+</div>
+<div class="callout-content">
+<p>The difference between 3.3 and 6.2 is the “Cost of Ignorance.” By assuming we knew the world, we missed nearly half the effect.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="testing-robustness" class="slide level2">
+<h2>Testing Robustness</h2>
 
-</section>
-<section id="when-parameters-fail" class="slide level2">
-<h2>When Parameters Fail</h2>
-<p>Sometimes, the shape of the “tank” is too complex for linear equations.</p>
-<p>If we force a linear line on a non-linear world, our structural parameter (<span class="math inline">\(\alpha\)</span>) collapses.</p>
-<p><strong>The Solution:</strong> Bayesian Additive Regression Trees (BART).</p>
-</section>
-<section id="flexible-imputation" class="slide level2">
-<h2>Flexible Imputation</h2>
-<p>With BART, we replace rigid parameters with flexible function approximation.</p>
-<ol type="1">
-<li>Fit a flexible model for <span class="math inline">\(E[Y | X, T]\)</span>.</li>
-<li><strong>Impute <span class="math inline">\(Y(1)\)</span>:</strong> Set everyone to treated, predict outcomes.</li>
-<li><strong>Impute <span class="math inline">\(Y(0)\)</span>:</strong> Set everyone to control, predict outcomes.</li>
-</ol>
-<p>Even if the “coefficient” is uninterpretable, if the model learns the shape of the tank, the <strong>imputed difference</strong> recovers the causal effect.</p>
-</section>
-<section class="slide level2">
-
+<img data-src="images/nhefs.webp" class="r-stretch"><p>The OLS benchmark assumes conditional ignorability. The various joint models allow for latent confounding i.e.&nbsp;that the covariate profile used in the study is not sufficiently exhaustive to block all confounding.</p>
 </section></section>
 <section>
 <section id="conclusion" class="title-slide slide level1 center">
 <h1>Conclusion</h1>
 
 </section>
-<section id="epistemic-modesty" class="slide level2">
-<h2>Epistemic Modesty</h2>
-<blockquote>
-<p>“Every causal model, like every fish tank, is a ‘small world’ whose regularities we can nurture but never universalize.”</p>
-</blockquote>
-<p>Bayesian structural causal inference unites <strong>epistemic modesty</strong> with <strong>computational rigor</strong>.</p>
-<p>Each model is not a final map of the world. It is a <strong>provisional machine</strong> for generating causal understanding.</p>
+<section id="the-bayesian-causal-workflow" class="slide level2">
+<h2>The Bayesian Causal Workflow</h2>
+<ol type="1">
+<li><strong>Backwards Movement:</strong> Use the joint model to infer the likely world state (<span class="math inline">\(w, \rho\)</span>).</li>
+<li><strong>Elimination:</strong> Use Spike-and-Slab/Horsehoe to prune implausible causal architectures.</li>
+<li><strong>Exploration:</strong> Map treatment effects across the “Multiverse” of plausible <span class="math inline">\(\rho\)</span> values.</li>
+</ol>
+<div class="fragment">
+<ol type="1">
+<li><strong>“Which worlds did you eliminate?”</strong> (Variable selection/DAG pruning)</li>
+<li><strong>“Which worlds did you explore?”</strong> (Sensitivity analysis across <span class="math inline">\(\rho\)</span>)</li>
+<li><strong>“Where did you put the flexibility?”</strong> (Did you ensure identifiability?)</li>
+</ol>
+</div>
 </section>
-<section id="final-thought" class="slide level2">
-<h2>Final Thought</h2>
-<p>Our task is not to master the ocean.</p>
-<p>Our task is to build clear tanks, understand their physics, and know when to change the water.</p>
-
+<section class="slide level2">
 
 </section></section>
+<section id="thank-you" class="title-slide slide level1 center">
+<h1>Thank You</h1>
+
+
+</section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
