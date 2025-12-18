@@ -193,7 +193,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Bayesian Structural Causal Inference</h1>
-  <p class="subtitle">Finding Structure, Testing Robustness</p>
+  <p class="subtitle">Exploring Space, Finding Structure, Testing Robustness</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -206,6 +206,58 @@ Nathaniel Forde
     </div>
 </div>
 
+</section>
+<section id="preliminaries" class="slide level2 smaller">
+<h2>Preliminaries</h2>
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Who am I?</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>I’m a <strong>data scientist</strong> at <strong><span class="blue">Personio</span></strong>
+<ul>
+<li>Bayesian statistician,</li>
+<li>Reformed philosopher and logician.</li>
+</ul></li>
+<li>Website: <a href="https://nathanielf.github.io/">https://nathanielf.github.io/</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Code or it didn’t Happen</strong></p>
+</div>
+<div class="callout-content">
+<p>The worked examples used here can be found <a href="https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html">here</a></p>
+</div>
+</div>
+</div>
+
+<img data-src="images/QR_CODE.png" class="r-stretch quarto-figure-center"><p class="caption">My Website</p></section>
+<section id="the-pitch-world-building-matters" class="slide level2">
+<h2>The Pitch: World-Building Matters</h2>
+<p>Scientific success hinges on understanding that <strong>outcomes are driven by hidden structures, unobserved correlations, and selection mechanisms.</strong></p>
+<p>Structural causal modelling allows you to simulate system interventions safely, mapping the multiverse of potential outcomes to find the one world where your strategy actually works, and quantify where it might.</p>
+</section>
+<section id="agenda" class="slide level2">
+<h2>Agenda</h2>
+<ul>
+<li>The Metaphor: The Physics of the Fish Tank</li>
+<li>The Invisible Threat: Hidden Confounding and <span class="math inline">\(\rho\)</span></li>
+<li>The Pruning: Variable Selection as World Elimination</li>
+<li>The Pitfalls: Why Total Flexibility Destroys Identification</li>
+<li>The Navigation: Mapping the Multiverse of Results</li>
+</ul>
 </section>
 <section>
 <section id="the-metaphor" class="title-slide slide level1 center">
@@ -349,7 +401,8 @@ Nathaniel Forde
 <section id="identification-denied" class="slide level2">
 <h2>Identification Denied</h2>
 
-<img data-src="images/bart_comparison.webp" class="r-stretch"></section></section>
+<img data-src="images/bart_comparison.webp" class="r-stretch"><p>BART outcome model absorbs the structural distinction between treatment and other covariates, rendering the treatment effect surplus to purpose. The signal is swallowed by the noise-handler.</p>
+</section></section>
 <section>
 <section id="navigating-the-multiverse-exploration" class="title-slide slide level1 center">
 <h1>Navigating the Multiverse (Exploration)</h1>
@@ -417,7 +470,7 @@ Nathaniel Forde
 <p><strong>The “Bias Gap”</strong></p>
 </div>
 <div class="callout-content">
-<p>The difference between 3.3 and 6.2 is the “Cost of Ignorance.” By assuming we knew the world, we missed nearly half the effect.</p>
+<p>The difference between 3.3 and 6.2 is the “Cost of Ignorance.” The OLS benchmark assumes conditional ignorability. The various joint models allow for latent confounding i.e.&nbsp;that the covariate profile used in the study is not sufficiently exhaustive to block all confounding.</p>
 </div>
 </div>
 </div>
@@ -426,7 +479,7 @@ Nathaniel Forde
 <section id="testing-robustness" class="slide level2">
 <h2>Testing Robustness</h2>
 
-<img data-src="images/nhefs.webp" class="r-stretch"><p>The OLS benchmark assumes conditional ignorability. The various joint models allow for latent confounding i.e.&nbsp;that the covariate profile used in the study is not sufficiently exhaustive to block all confounding.</p>
+<img data-src="images/nhefs.webp" class="r-stretch"><p>We assess the range of treatment effects under a variety of model specifications including a BART treatment equation.</p>
 </section></section>
 <section>
 <section id="conclusion" class="title-slide slide level1 center">
@@ -446,16 +499,10 @@ Nathaniel Forde
 <li><strong>“Which worlds did you explore?”</strong> (Sensitivity analysis across <span class="math inline">\(\rho\)</span>)</li>
 <li><strong>“Where did you put the flexibility?”</strong> (Did you ensure identifiability?)</li>
 </ol>
+
+
 </div>
-</section>
-<section class="slide level2">
-
 </section></section>
-<section id="thank-you" class="title-slide slide level1 center">
-<h1>Thank You</h1>
-
-
-</section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">

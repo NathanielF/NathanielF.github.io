@@ -1,6 +1,6 @@
 ---
 title: "Bayesian Structural Causal Inference"
-subtitle: "Finding Structure, Testing Robustness"
+subtitle: "Exploring Space, Finding Structure, Testing Robustness"
 author: "Nathaniel Forde"
 institute: |
   Data Science @ Personio  
@@ -15,6 +15,37 @@ format:
     width: 1200
     height: 750
 ---
+
+## Preliminaries {.smaller}
+
+:::{.callout-warning}
+## Who am I?
+- I'm a __data scientist__ at __[Personio]{.blue}__ 
+    - Bayesian statistician, 
+    - Reformed philosopher and logician. 
+- Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
+:::
+ 
+::: {.callout-tip}
+## Code or it didn't Happen
+The worked examples used here can be found [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/nested_logit.html)
+:::
+
+![My Website](images/QR_CODE.png)
+
+
+## The Pitch: World-Building Matters
+
+Scientific success hinges on understanding that __outcomes are driven by hidden structures, unobserved correlations, and selection mechanisms.__ 
+
+Structural causal modelling allows you to simulate system interventions safely, mapping the multiverse of potential outcomes to find the one world where your strategy actually works, and quantify where it might.
+
+## Agenda
+  - The Metaphor: The Physics of the Fish Tank
+  - The Invisible Threat: Hidden Confounding and $\rho$
+  - The Pruning: Variable Selection as World Elimination
+  - The Pitfalls: Why Total Flexibility Destroys Identification
+  - The Navigation: Mapping the Multiverse of Results
 
 # The Metaphor
 
@@ -159,6 +190,8 @@ Using "Infinite Flexibility" (BART/GPs) in the **Outcome** equation is dangerous
 
 ![](images/bart_comparison.webp)
 
+BART outcome model absorbs the structural distinction between treatment and other covariates, rendering the treatment effect surplus to purpose. The signal is swallowed by the noise-handler.
+
 # Navigating the Multiverse (Exploration)
 
 ## Mapping the Multiverse
@@ -199,14 +232,15 @@ priors = {
 
 ::: {.callout-important}
 ## The "Bias Gap"
-The difference between 3.3 and 6.2 is the "Cost of Ignorance." By assuming we knew the world, we missed nearly half the effect.
+The difference between 3.3 and 6.2 is the "Cost of Ignorance." The OLS benchmark assumes conditional ignorability. The various joint models allow for latent confounding i.e. that the covariate profile used in the study is not sufficiently exhaustive to block all confounding. 
 :::
 
 ## Testing Robustness 
 
 ![](images/nhefs.webp)
 
-The OLS benchmark assumes conditional ignorability. The various joint models allow for latent confounding i.e. that the covariate profile used in the study is not sufficiently exhaustive to block all confounding. 
+We assess the range of treatment effects under a variety of model specifications including a BART treatment equation. 
+
 
 # Conclusion
 
