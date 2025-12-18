@@ -33,6 +33,31 @@ The worked examples used here can be found [here](https://www.pymc-marketing.io/
 
 ![My Website](images/QR_CODE.png)
 
+## Who Should Care About This?
+
+:::: {.columns}
+::: {.column width="50%"}
+### You're in the right place if you're asking:
+- "Did our intervention **actually work**, or did selection bias fool us?"
+- "How sensitive are our conclusions to **unobserved confounding**?"
+- "Can we **simulate** policy changes before deploying them?"
+- "Which variables **truly matter** for our causal story?"
+:::
+
+::: {.column width="50%"}
+### You'll need familiarity with:
+- Basic causal inference (treatment effects, confounding)
+- Regression modeling (OLS, interpreting coefficients)
+- Bayesian thinking (priors, posteriors, uncertainty)
+- Some Python/PyMC (though concepts transfer)
+:::
+::::
+
+::: {.callout-note}
+## The Promise
+By the end, you'll understand how to **systematically explore** causal uncertainty rather than just hoping your assumptions hold.
+:::
+
 
 ## The Pitch: World-Building Matters
 
@@ -120,6 +145,41 @@ Causal inference in a structural framework is a two-step dance:
 :::
 :::
 
+## The Core Structural Model {.smaller}
+
+Instead of treating treatment as exogenous, we model the **joint data-generating process**:
+
+:::: {.columns}
+::: {.column width="50%"}
+### Outcome Equation:
+$$Y_i = \alpha T_i + \beta' X_i + U_i$$
+
+- $\alpha$ = **causal effect** (what we want)
+- $X_i$ = observed covariates
+- $U_i$ = unobserved factors affecting outcome
+
+### Treatment Equation:
+$$T_i = \gamma' Z_i + V_i$$
+
+- $Z_i$ = variables predicting treatment selection
+- $V_i$ = unobserved factors affecting treatment choice
+:::
+
+::: {.column width="50%"}
+### The Key Question:
+**Are $U_i$ and $V_i$ correlated?**
+
+$$\text{Cov}(U_i, V_i) = \rho \sigma_U \sigma_V$$
+
+- **If $\rho = 0$:** Traditional methods work fine
+- **If $\rho \neq 0$:** We have **hidden confounding**
+
+::: {.callout-important}
+This is what OLS assumes away. We're going to **estimate** it instead.
+:::
+:::
+::::
+
 ## The Invisible Threat: Hidden Correlation
 
 The confounding isn't just in what we *measure*—it's in the covariance of the errors:
@@ -173,6 +233,8 @@ How do we find the "right" tank physics? We use **Variable Selection Priors** to
 ::::
 
 # Navigating the Multiverse (Exploration)
+
+
 
 ## Wrong turns in the Multiverse
 
@@ -229,6 +291,12 @@ with pm.observe(
 
 ![](images/parameter_recovery_achieved.webp)
 
+::: {.callout-important}
+## Core Principle
+**Flexibility** (capturing complex patterns) and **Identification** (isolating causal effects) are in tension. Structure the role flexible models well in causal inference.
+:::
+
+
 
 ## Mapping the Multiverse
 
@@ -275,7 +343,15 @@ The difference between 3.3 and 6.2 is the "Cost of Ignorance." The OLS benchmark
 
 ![](images/nhefs.webp)
 
-We assess the range of treatment effects under a variety of model specifications including a BART treatment equation. 
+We assess the range of treatment effects under a variety of model specifications including a BART treatment equation. Results suggest some unmeasured confounding distorts the OLS estimate.
+
+::: {.callout-warning}
+## The Hard Truth
+We can't **prove** $\alpha > 3.3$ But we can:
+(1) Show it's **plausible** given domain knowledge
+(2) Map the **range** of effects across ρ values
+(3) Make **robust decisions** that work across scenarios
+:::
 
 
 # Conclusion

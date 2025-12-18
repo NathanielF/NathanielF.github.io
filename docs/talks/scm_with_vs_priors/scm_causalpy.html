@@ -244,6 +244,40 @@ Nathaniel Forde
 </div>
 
 <img data-src="images/QR_CODE.png" class="r-stretch quarto-figure-center"><p class="caption">My Website</p></section>
+<section id="who-should-care-about-this" class="slide level2">
+<h2>Who Should Care About This?</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<h3 id="youre-in-the-right-place-if-youre-asking">You’re in the right place if you’re asking:</h3>
+<ul>
+<li>“Did our intervention <strong>actually work</strong>, or did selection bias fool us?”</li>
+<li>“How sensitive are our conclusions to <strong>unobserved confounding</strong>?”</li>
+<li>“Can we <strong>simulate</strong> policy changes before deploying them?”</li>
+<li>“Which variables <strong>truly matter</strong> for our causal story?”</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<h3 id="youll-need-familiarity-with">You’ll need familiarity with:</h3>
+<ul>
+<li>Basic causal inference (treatment effects, confounding)</li>
+<li>Regression modeling (OLS, interpreting coefficients)</li>
+<li>Bayesian thinking (priors, posteriors, uncertainty)</li>
+<li>Some Python/PyMC (though concepts transfer)</li>
+</ul>
+</div></div>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Promise</strong></p>
+</div>
+<div class="callout-content">
+<p>By the end, you’ll understand how to <strong>systematically explore</strong> causal uncertainty rather than just hoping your assumptions hold.</p>
+</div>
+</div>
+</div>
+</section>
 <section id="the-pitch-world-building-matters" class="slide level2">
 <h2>The Pitch: World-Building Matters</h2>
 <p>Scientific success hinges on understanding that <strong>outcomes are driven by hidden structures, unobserved correlations, and selection mechanisms.</strong></p>
@@ -329,6 +363,47 @@ Nathaniel Forde
 </ol>
 </div><div class="column" style="width:50%;">
 <p><img data-src="images/forwards_backwards.webp"></p>
+</div></div>
+</section>
+<section id="the-core-structural-model" class="slide level2 smaller">
+<h2>The Core Structural Model</h2>
+<p>Instead of treating treatment as exogenous, we model the <strong>joint data-generating process</strong>:</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<h3 id="outcome-equation">Outcome Equation:</h3>
+<p><span class="math display">\[Y_i = \alpha T_i + \beta' X_i + U_i\]</span></p>
+<ul>
+<li><span class="math inline">\(\alpha\)</span> = <strong>causal effect</strong> (what we want)</li>
+<li><span class="math inline">\(X_i\)</span> = observed covariates</li>
+<li><span class="math inline">\(U_i\)</span> = unobserved factors affecting outcome</li>
+</ul>
+<h3 id="treatment-equation">Treatment Equation:</h3>
+<p><span class="math display">\[T_i = \gamma' Z_i + V_i\]</span></p>
+<ul>
+<li><span class="math inline">\(Z_i\)</span> = variables predicting treatment selection</li>
+<li><span class="math inline">\(V_i\)</span> = unobserved factors affecting treatment choice</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<h3 id="the-key-question">The Key Question:</h3>
+<p><strong>Are <span class="math inline">\(U_i\)</span> and <span class="math inline">\(V_i\)</span> correlated?</strong></p>
+<p><span class="math display">\[\text{Cov}(U_i, V_i) = \rho \sigma_U \sigma_V\]</span></p>
+<ul>
+<li><strong>If <span class="math inline">\(\rho = 0\)</span>:</strong> Traditional methods work fine</li>
+<li><strong>If <span class="math inline">\(\rho \neq 0\)</span>:</strong> We have <strong>hidden confounding</strong></li>
+</ul>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>This is what OLS assumes away. We’re going to <strong>estimate</strong> it instead.</p>
+</div>
+</div>
+</div>
 </div></div>
 </section>
 <section id="the-invisible-threat-hidden-correlation" class="slide level2">
@@ -438,7 +513,20 @@ Nathaniel Forde
 <section id="identification-achieved" class="slide level2">
 <h2>Identification Achieved</h2>
 
-<img data-src="images/parameter_recovery_achieved.webp" class="r-stretch"></section>
+<img data-src="images/parameter_recovery_achieved.webp" class="r-stretch"><div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Core Principle</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Flexibility</strong> (capturing complex patterns) and <strong>Identification</strong> (isolating causal effects) are in tension. Structure the role flexible models well in causal inference.</p>
+</div>
+</div>
+</div>
+</section>
 <section id="mapping-the-multiverse" class="slide level2">
 <h2>Mapping the Multiverse</h2>
 <p>We don’t estimate a point; we map a territory.</p>
@@ -510,7 +598,20 @@ Nathaniel Forde
 <section id="testing-robustness" class="slide level2">
 <h2>Testing Robustness</h2>
 
-<img data-src="images/nhefs.webp" class="r-stretch"><p>We assess the range of treatment effects under a variety of model specifications including a BART treatment equation.</p>
+<img data-src="images/nhefs.webp" class="r-stretch"><p>We assess the range of treatment effects under a variety of model specifications including a BART treatment equation. Results suggest some unmeasured confounding is distorts the OLS estimate.</p>
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Hard Truth</strong></p>
+</div>
+<div class="callout-content">
+<p>We can’t <strong>prove</strong> <span class="math inline">\(\alpha &gt; 3.3\)</span> But we can: (1) Show it’s <strong>plausible</strong> given domain knowledge (2) Map the <strong>range</strong> of effects across ρ values (3) Make <strong>robust decisions</strong> that work across scenarios</p>
+</div>
+</div>
+</div>
 </section></section>
 <section>
 <section id="conclusion" class="title-slide slide level1 center">
