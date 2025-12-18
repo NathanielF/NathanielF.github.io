@@ -402,7 +402,38 @@ Nathaniel Forde
 <h2>Identification Denied</h2>
 
 <img data-src="images/bart_comparison.webp" class="r-stretch"><p>BART outcome model absorbs the structural distinction between treatment and other covariates, rendering the treatment effect surplus to purpose. The signal is swallowed by the noise-handler.</p>
-</section></section>
+</section>
+<section id="parameter-recovery" class="slide level2">
+<h2>Parameter Recovery</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="images/parameter_recovery.svg"></p>
+</div><div class="column" style="width:60%;">
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a>fixed_parameters <span class="op">=</span> {</span>
+<span id="cb1-2"><a></a>    <span class="st">"rho"</span>: <span class="fl">0.6</span>,</span>
+<span id="cb1-3"><a></a>    <span class="st">"alpha"</span>: <span class="dv">3</span>,</span>
+<span id="cb1-4"><a></a>    <span class="st">"beta_O"</span>: [<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>, <span class="fl">0.8</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">0</span>],</span>
+<span id="cb1-5"><a></a>    <span class="st">"beta_T"</span>: [<span class="dv">1</span>, <span class="fl">1.3</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.7</span>, <span class="fl">1.6</span>, <span class="dv">0</span>, <span class="fl">0.4</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
+<span id="cb1-6"><a></a>}</span>
+<span id="cb1-7"><a></a><span class="cf">with</span> pm.do(nhefs_binary_model, fixed_parameters) <span class="im">as</span> synthetic_model:</span>
+<span id="cb1-8"><a></a>    idata <span class="op">=</span> pm.sample_prior_predictive(</span>
+<span id="cb1-9"><a></a>        random_seed<span class="op">=</span><span class="dv">1000</span></span>
+<span id="cb1-10"><a></a>    )  <span class="co"># Sample from prior predictive distribution.</span></span>
+<span id="cb1-11"><a></a>    synthetic_y <span class="op">=</span> idata[<span class="st">"prior"</span>][<span class="st">"likelihood_outcome"</span>].sel(draw<span class="op">=</span><span class="dv">0</span>, chain<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-12"><a></a>    synthetic_t <span class="op">=</span> idata[<span class="st">"prior"</span>][<span class="st">"likelihood_treatment"</span>].sel(draw<span class="op">=</span><span class="dv">0</span>, chain<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-13"><a></a><span class="co"># Infer parameters conditioned on observed data</span></span>
+<span id="cb1-14"><a></a><span class="cf">with</span> pm.observe(</span>
+<span id="cb1-15"><a></a>    nhefs_binary_model,</span>
+<span id="cb1-16"><a></a>    {<span class="st">"likelihood_outcome"</span>: synthetic_y, <span class="st">"likelihood_treatment"</span>: synthetic_t},</span>
+<span id="cb1-17"><a></a>) <span class="im">as</span> inference_model:</span>
+<span id="cb1-18"><a></a>    idata_sim <span class="op">=</span> pm.sample_prior_predictive()</span>
+<span id="cb1-19"><a></a>    idata_sim.extend(pm.sample(random_seed<span class="op">=</span><span class="dv">100</span>, chains<span class="op">=</span><span class="dv">4</span>, tune<span class="op">=</span><span class="dv">2000</span>, draws<span class="op">=</span><span class="dv">500</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div>
+</section>
+<section id="identification-achieved" class="slide level2">
+<h2>Identification Achieved</h2>
+
+<img data-src="images/parameter_recovery_achieved.webp" class="r-stretch"></section></section>
 <section>
 <section id="navigating-the-multiverse-exploration" class="title-slide slide level1 center">
 <h1>Navigating the Multiverse (Exploration)</h1>
@@ -415,12 +446,12 @@ Nathaniel Forde
 <div class="column" style="width:70%;">
 <p><img data-src="images/sensitivity_rho.webp"></p>
 </div><div class="column" style="width:30%;">
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="co"># We explore different 'Universes' of confounding</span></span>
-<span id="cb1-2"><a></a>priors <span class="op">=</span> {</span>
-<span id="cb1-3"><a></a>  <span class="st">"Exogenous"</span>: pm.DiracDelta(<span class="dv">0</span>),</span>
-<span id="cb1-4"><a></a>  <span class="st">"Moderate"</span>: pm.Normal(<span class="dv">0</span>, <span class="fl">0.2</span>),</span>
-<span id="cb1-5"><a></a>  <span class="st">"Deep Selection"</span>: pm.TruncatedNormal(<span class="fl">0.5</span>, <span class="fl">0.1</span>, lower<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb1-6"><a></a>  ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="co"># We explore different 'Universes' of confounding</span></span>
+<span id="cb2-2"><a></a>priors <span class="op">=</span> {</span>
+<span id="cb2-3"><a></a>  <span class="st">"Exogenous"</span>: pm.DiracDelta(<span class="dv">0</span>),</span>
+<span id="cb2-4"><a></a>  <span class="st">"Moderate"</span>: pm.Normal(<span class="dv">0</span>, <span class="fl">0.2</span>),</span>
+<span id="cb2-5"><a></a>  <span class="st">"Deep Selection"</span>: pm.TruncatedNormal(<span class="fl">0.5</span>, <span class="fl">0.1</span>, lower<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb2-6"><a></a>  ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div>
 </section>
 <section id="causal-inference-and-counterfactual-worlds" class="slide level2">

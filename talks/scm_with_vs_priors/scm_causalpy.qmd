@@ -192,6 +192,43 @@ Using "Infinite Flexibility" (BART/GPs) in the **Outcome** equation is dangerous
 
 BART outcome model absorbs the structural distinction between treatment and other covariates, rendering the treatment effect surplus to purpose. The signal is swallowed by the noise-handler.
 
+## Parameter Recovery
+:::: {.columns}
+::: {.column width="40%"}
+![](images/parameter_recovery.svg)
+:::
+
+::: {.column width="60%"}
+```{.python}
+fixed_parameters = {
+    "rho": 0.6,
+    "alpha": 3,
+    "beta_O": [0, 1, 0.4, 0.3, 0.1, 0.8, 0, 0, 0, 0, 0, 0, 3, 0],
+    "beta_T": [1, 1.3, 0.5, 0.3, 0.7, 1.6, 0, 0.4, 0, 0, 0, 0, 0, 0],
+}
+with pm.do(nhefs_binary_model, fixed_parameters) as synthetic_model:
+    idata = pm.sample_prior_predictive(
+        random_seed=1000
+    )  # Sample from prior predictive distribution.
+    synthetic_y = idata["prior"]["likelihood_outcome"].sel(draw=0, chain=0)
+    synthetic_t = idata["prior"]["likelihood_treatment"].sel(draw=0, chain=0)
+# Infer parameters conditioned on observed data
+with pm.observe(
+    nhefs_binary_model,
+    {"likelihood_outcome": synthetic_y, "likelihood_treatment": synthetic_t},
+) as inference_model:
+    idata_sim = pm.sample_prior_predictive()
+    idata_sim.extend(pm.sample(random_seed=100, chains=4, tune=2000, draws=500))
+
+```
+:::
+::::
+
+## Identification Achieved
+
+![](images/parameter_recovery_achieved.webp)
+
+
 # Navigating the Multiverse (Exploration)
 
 ## Mapping the Multiverse
