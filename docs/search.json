@@ -4754,7 +4754,7 @@
     "href": "talks/scm_with_vs_priors/scm_causalpy.html#testing-robustness",
     "title": "Bayesian Structural Causal Inference",
     "section": "Testing Robustness",
-    "text": "Testing Robustness\n\nWe assess the range of treatment effects under a variety of model specifications including a BART treatment equation. Results suggest some unmeasured confounding is distorts the OLS estimate.\n\n\n\n\n\n\nThe Hard Truth\n\n\nWe can’t prove \\(\\alpha &gt; 3.3\\) But we can: (1) Show it’s plausible given domain knowledge (2) Map the range of effects across ρ values (3) Make robust decisions that work across scenarios"
+    "text": "Testing Robustness\n\nWe assess the range of treatment effects under a variety of model specifications including a BART treatment equation. Results suggest some unmeasured confounding distorts the OLS estimate.\n\n\n\n\n\n\nThe Hard Truth\n\n\nWe can’t prove \\(\\alpha &gt; 3.3\\) But we can: (1) Show it’s plausible given domain knowledge (2) Map the range of effects across ρ values (3) Make robust decisions that work across scenarios"
   },
   {
     "objectID": "talks/scm_with_vs_priors/scm_causalpy.html#preliminaries",
