@@ -172,6 +172,7 @@ How do we find the "right" tank physics? We use **Variable Selection Priors** to
 :::
 ::::
 
+# Navigating the Multiverse (Exploration)
 
 ## Wrong turns in the Multiverse
 
@@ -228,8 +229,6 @@ with pm.observe(
 
 ![](images/parameter_recovery_achieved.webp)
 
-
-# Navigating the Multiverse (Exploration)
 
 ## Mapping the Multiverse
 
