@@ -30,6 +30,9 @@ from scipy.interpolate import BSpline
 
 ```
 
+If you look to Odysseus on the morning the gates of Troy fell, he is well set up for a happy journey home. He is the architect of victory, his ships are loaded with spoils, and the wind is at his back. Yet, an odyssey can't be completed in a single day and conclusions drawn on the outset rarely survive journey's end. 
+
+When we rely on static snapshots, like a single blood draw or a particular sales campaign, we are essentially watching Odysseus board his ship and guessing how the story ends. We ignore the __consequences emerging in time.__
 
 
 ```{python}
@@ -220,13 +223,6 @@ def prepare_aalen_dpa_data(
     # 5. Assemble output
     # -------------------------------------------------
     data = {
-        "N": N,
-        "Y": Y,
-        "dt": df["dt"].values,
-        "bin_idx": bin_idx,
-        "x": x,
-        "m_lag": m_lag,
-        "n_bins": n_bins,
         "bins": bins,     # useful for plotting
         "df_long": df     # optional: debugging / inspection
     }
@@ -239,36 +235,13 @@ def prepare_aalen_dpa_data(
 
 
 ```{python}
-
 data = prepare_aalen_dpa_data(df)
 df_long = data['df_long']
 df_long[['subject', 'x', 'dose', 'M', 'event', 'dt', 'bin_idx']].head(14)
 ```
 
-```{python}
-N       = data["N"]
-Y       = data["Y"]
-dt      = data["dt"]
-bin_idx = data["bin_idx"]
-x       = data["x"]
-m_lag   = data["m_lag"]
-n_bins  = data["n_bins"]
-bins    = data["bins"]
-df_long = data["df_long"]
-
-dt_bins = bins["stop"].values - bins["start"].values
-m = df_long["m_c"].values
-b = bin_idx
-
-
-```
-
-
-
 
 ```{python}
-
-from scipy.interpolate import BSpline
 
 def create_bspline_basis(n_bins, n_knots=10, degree=3):
     """
@@ -318,6 +291,7 @@ def create_bspline_basis(n_bins, n_knots=10, degree=3):
     return basis
 
 n_knots = 10
+n_bins = data['bins'].shape[0]
 basis = create_bspline_basis(n_bins, n_knots=n_knots, degree=3)
 n_cols = basis.shape[1]
 basis_df = pd.DataFrame(basis, columns=[f'feature_{i}' for i in range(n_cols)])
@@ -328,161 +302,225 @@ basis_df.head(10)
 
 
 ```{python}
-n_basis = basis.shape[1]
-n_obs = data['df_long'].shape[0]
-time_bins = data['bins']['bin_idx'].values
+# | output: false
 
-observed_mediator = df_long["m_c"].values
-observed_events = df_long['event'].astype(int).values
-observed_treatment = df_long['x'].astype(int).values
-observed_mediator_lag = df_long['m_lag'].values
+def make_model(data, basis, sample=True, observed=True): 
+    df_long = data['df_long'].copy()
+    n_basis = basis.shape[1]
+    n_obs = data['df_long'].shape[0]
+    time_bins = data['bins']['bin_idx'].values
+    b = df_long['bin_idx']
 
+    observed_mediator = df_long["m_c"].values
+    observed_events = df_long['event'].astype(int).values
+    observed_treatment = df_long['x'].astype(int).values
+    observed_mediator_lag = df_long['m_lag'].values
 
-coords = {'tv': ['intercept', 'direct', 'mediator'], 
-          'splines': ['spline_f_{i}' for i in range(n_basis)], 
-          'obs': range(n_obs), 
-          'time_bins': time_bins}
+    coords = {'tv': ['intercept', 'direct', 'mediator'], 
+            'splines': ['spline_f_{i}' for i in range(n_basis)], 
+            'obs': range(n_obs), 
+            'time_bins': time_bins}
 
-with pm.Model(coords=coords) as aalen_dpa_model:
+    with pm.Model(coords=coords) as aalen_dpa_model:
 
-    trt = pm.Data("trt", observed_treatment, dims="obs")
-    med = pm.Data("mediator", observed_mediator, dims="obs")
-    med_lag = pm.Data("mediator_lag", observed_mediator_lag, dims="obs")
-    events = pm.Data("events", observed_events, dims="obs")
-    I_low  = pm.Data("I_low",  df_long["I_low"].values,  dims="obs")
-    I_high = pm.Data("I_high", df_long["I_high"].values, dims="obs")
-    dt = pm.Data("duration", df_long['dt'].values, dims='obs')
-    ## because our long data format has a cell per obs
-    at_risk = pm.Data("at_risk", np.ones(len(observed_events)), dims="obs")
-    basis_ = pm.Data("basis", basis_df.values, dims=('time_bins', 'splines') )
+        trt = pm.Data("trt", observed_treatment, dims="obs")
+        med = pm.Data("mediator", observed_mediator, dims="obs")
+        med_lag = pm.Data("mediator_lag", observed_mediator_lag, dims="obs")
+        events = pm.Data("events", observed_events, dims="obs")
+        I_low  = pm.Data("I_low",  df_long["I_low"].values,  dims="obs")
+        I_high = pm.Data("I_high", df_long["I_high"].values, dims="obs")
+        dt = pm.Data("duration", df_long['dt'].values, dims='obs')
+        ## because our long data format has a cell per obs
+        at_risk = pm.Data("at_risk", np.ones(len(observed_events)), dims="obs")
+        basis_ = pm.Data("basis", basis, dims=('time_bins', 'splines') )
 
-    # -------------------------------------------------
-    # 1. B-spline coefficients for HAZARD model
-    # -------------------------------------------------
-    # Prior on spline coefficients
-    # Smaller sigma = less wiggliness
-    # Random Walk 1 (RW1) Prior for coefficients
-    # This is the Bayesian version of the smoothing penalty in R's 'mgcv' or 'timereg'
-    sigma_smooth = pm.Exponential("sigma_smooth", [1, 1, 1], dims='tv')
-    beta_raw = pm.Normal("beta_raw", 0, 1, dims=('splines', 'tv'))
+        # -------------------------------------------------
+        # 1. B-spline coefficients for HAZARD model
+        # -------------------------------------------------
+        # Prior on spline coefficients
+        # Smaller sigma = less wiggliness
+        # Random Walk 1 (RW1) Prior for coefficients
+        # This is the Bayesian version of the smoothing penalty in R's 'mgcv' or 'timereg'
+        sigma_smooth = pm.Exponential("sigma_smooth", [1, 1, 1], dims='tv')
+        beta_raw = pm.Normal("beta_raw", 0, 1, dims=('splines', 'tv'))
 
-    # Cumulative sum makes it a Random Walk
-    # This ensures coefficients evolve smoothly over time
-    coef_alpha = pm.Deterministic("coef_alpha", pt.cumsum(beta_raw * sigma_smooth, axis=0), dims=('splines', 'tv'))
+        # Cumulative sum makes it a Random Walk
+        # This ensures coefficients evolve smoothly over time
+        coef_alpha = pm.Deterministic("coef_alpha", pt.cumsum(beta_raw * sigma_smooth, axis=0), dims=('splines', 'tv'))
 
-    # Construct smooth time-varying functions
-    alpha_0_t = pt.dot(basis_, coef_alpha[:, 0])
-    alpha_1_t = pt.dot(basis_, coef_alpha[:, 1])
-    alpha_2_t = pt.dot(basis_, coef_alpha[:, 2])
+        # Construct smooth time-varying functions
+        alpha_0_t = pt.dot(basis_, coef_alpha[:, 0])
+        alpha_1_t = pt.dot(basis_, coef_alpha[:, 1])
+        alpha_2_t = pt.dot(basis_, coef_alpha[:, 2])
+        
+        # -------------------------------------------------
+        # 2. B-spline coefficients for MEDIATOR model
+        # -------------------------------------------------
+        sigma_beta_smooth = pm.Exponential("sigma_beta_smooth", 0.1)
+        beta_raw = pm.Normal("beta_raw_m", 0, 1, dims=('splines'))
+        coef_beta = pt.cumsum(beta_raw * sigma_beta_smooth)
+        
+        beta_t = pt.dot(basis_, coef_beta)
+
+        # -------------------------------------------------
+        # 3. Mediator model (A path: x → M)
+        # -------------------------------------------------
+        sigma_m = pm.HalfNormal("sigma_m", 1.0)
+        
+        # Autoregressive component
+        rho = pm.Beta("rho", 2, 2)
+        
+        mu_m = beta_t[b] * trt + rho * med_lag
+
+        pm.Normal(
+            "obs_m",
+            mu=mu_m,
+            sigma=sigma_m,
+            observed=med,
+            dims='obs'
+        )
+
+        # -------------------------------------------------
+        # 4. Hazard model (direct + B path)
+        # -------------------------------------------------
+        beta_low  = pm.Normal("beta_low",  0, 0.1)
+        beta_high = pm.Normal("beta_high", 0, 0.1)
+        # Log-additive hazard
+        log_lambda_t = (alpha_0_t[b] 
+                        + alpha_1_t[b] * trt # direct effect
+                        + alpha_2_t[b] * med  # mediator effect
+                        + beta_low  * I_low
+                        + beta_high * I_high
+        )
+        
+        # Expected number of events
+        time_at_risk = at_risk * dt
+        Lambda = time_at_risk * pm.math.log1pexp(log_lambda_t)
+
+        if observed:
+            pm.Poisson(
+                "obs_event",
+                mu=Lambda,
+                observed=events, 
+                dims='obs'
+            )
+        else: 
+            pm.Poisson(
+                "obs_event",
+                mu=Lambda,
+                dims='obs'
+            )
+
+        # -------------------------------------------------
+        # 5. Causal path effects
+        # -------------------------------------------------
+        # Store time-varying coefficients
+        pm.Deterministic("alpha_0_t", alpha_0_t, dims='time_bins')
+        pm.Deterministic("alpha_1_t", alpha_1_t, dims='time_bins')  # direct effect
+        pm.Deterministic("alpha_2_t", alpha_2_t, dims='time_bins')  # B path
+        pm.Deterministic("beta_t", beta_t, dims='time_bins')        # A path
+        
+        # Cumulative direct effect
+        cum_de = pm.Deterministic(
+            "tv_direct_effect",
+            alpha_1_t, 
+            dims='time_bins'
+        )
+
+        # Cumulative indirect effect (product of paths)
+        cum_ie = pm.Deterministic(
+            "tv_indirect_effect",
+            beta_t * alpha_2_t, 
+            dims='time_bins'
+        )
+
+        # Total effect
+        cum_te = pm.Deterministic(
+            "tv_total_effect",
+            cum_de + cum_ie,
+            dims='time_bins'
+        )
+
+        pm.Deterministic('tv_baseline_hazard', pm.math.log1pexp(alpha_0_t), 
+            dims='time_bins')
+
+        pm.Deterministic('tv_hazard_with_exposure', pm.math.log1pexp(alpha_0_t + alpha_1_t), 
+            dims='time_bins')
+
+        pm.Deterministic(
+        "tv_RR",
+        pm.math.log1pexp(alpha_0_t + alpha_1_t) /
+        pm.math.log1pexp(alpha_0_t),
+        dims="time_bins"
+        )
+
+        # -------------------------------------------------
+        # 6. Sample
+        # -------------------------------------------------
+        if sample:
+            idata = pm.sample_prior_predictive()
+            idata.extend(pm.sample(
+                draws=2000,
+                tune=2000,
+                target_accept=0.95,
+                chains=4,
+                nuts_sampler="numpyro",
+                random_seed=42,
+                init="adapt_diag", 
+                idata_kwargs={"log_likelihood": True}
+            ))
+            idata.extend(pm.sample_posterior_predictive(idata))
     
-    # -------------------------------------------------
-    # 2. B-spline coefficients for MEDIATOR model
-    # -------------------------------------------------
-    sigma_beta_smooth = pm.Exponential("sigma_beta_smooth", 0.1)
-    beta_raw = pm.Normal("beta_raw_m", 0, 1, dims=('splines'))
-    coef_beta = pt.cumsum(beta_raw * sigma_beta_smooth)
-    
-    beta_t = pt.dot(basis_, coef_beta)
+    return aalen_dpa_model, idata
 
-    # -------------------------------------------------
-    # 3. Mediator model (A path: x → M)
-    # -------------------------------------------------
-    sigma_m = pm.HalfNormal("sigma_m", 1.0)
-    
-    # Autoregressive component
-    rho = pm.Beta("rho", 2, 2)
-    
-    mu_m = beta_t[b] * trt + rho * med_lag
-
-    pm.Normal(
-        "obs_m",
-        mu=mu_m,
-        sigma=sigma_m,
-        observed=med,
-        dims='obs'
-    )
-
-    # -------------------------------------------------
-    # 4. Hazard model (direct + B path)
-    # -------------------------------------------------
-    beta_low  = pm.Normal("beta_low",  0, 0.1)
-    beta_high = pm.Normal("beta_high", 0, 0.1)
-    # Log-additive hazard
-    log_lambda_t = (alpha_0_t[b] 
-                    + alpha_1_t[b] * trt # direct effect
-                    + alpha_2_t[b] * med  # mediator effect
-                    + beta_low  * I_low
-                    + beta_high * I_high
-    )
-    
-    # Expected number of events
-    time_at_risk = at_risk * dt
-    Lambda = time_at_risk * pm.math.log1pexp(log_lambda_t)
-
-    pm.Poisson(
-        "obs_event",
-        mu=Lambda,
-        observed=events, 
-        dims='obs'
-    )
-
-    # -------------------------------------------------
-    # 5. Causal path effects
-    # -------------------------------------------------
-    # Store time-varying coefficients
-    pm.Deterministic("alpha_0_t", alpha_0_t, dims='time_bins')
-    pm.Deterministic("alpha_1_t", alpha_1_t, dims='time_bins')  # direct effect
-    pm.Deterministic("alpha_2_t", alpha_2_t, dims='time_bins')  # B path
-    pm.Deterministic("beta_t", beta_t, dims='time_bins')        # A path
-    
-    # Cumulative direct effect
-    cum_de = pm.Deterministic(
-        "tv_direct_effect",
-        alpha_1_t, 
-        dims='time_bins'
-    )
-
-    # Cumulative indirect effect (product of paths)
-    cum_ie = pm.Deterministic(
-        "tv_indirect_effect",
-        beta_t * alpha_2_t, 
-        dims='time_bins'
-    )
-
-    # Total effect
-    cum_te = pm.Deterministic(
-        "tv_total_effect",
-        cum_de + cum_ie,
-        dims='time_bins'
-    )
-
-    # -------------------------------------------------
-    # 6. Sample
-    # -------------------------------------------------
-    trace_additive = pm.sample(
-        draws=2000,
-        tune=2000,
-        target_accept=0.95,
-        chains=4,
-        nuts_sampler="numpyro",
-        random_seed=42,
-        init="adapt_diag"
-    )
+basis = create_bspline_basis(n_bins, n_knots=12, degree=3)
+aalen_dpa_model, idata_aalen =  make_model(data, basis)
 
 ```
-
-
 
 ```{python}
 
 pm.model_to_graphviz(aalen_dpa_model)
 
-
 ```
 
 ```{python}
 
-az.plot_trace(trace_additive, var_names=['tv_direct_effect', 'tv_indirect_effect', 'tv_total_effect', 'beta_high', 'beta_low']);
+#| eval: false
+
+models = {}
+idatas = {}
+for i in range(4, 15, 2):
+    basis = create_bspline_basis(n_bins, n_knots=i, degree=3)
+    aalen_dpa_model, idata = make_model(data, basis)
+    models[i] = aalen_dpa_model
+    idatas[f"splines_{i}"] = idata
+
+compare_df = az.compare(idatas, var_name='obs_event')
+az.plot_compare(compare_df, figsize=(8, 6), plot_ic_diff=True)
+
+```
+
+![](spline_loo_comparison.png)
+
+
+```{python}
+# | eval: false
+
+ax = az.plot_forest([idatas[k] for k in idatas.keys()], combined=True, var_names=['tv_direct_effect'], model_names=idatas.keys(), coords={'time_bins': [180, 182, 182, 183, 184, 185, 186, 187, 188]}, 
+figsize=(12, 10),  r_hat=True)
+ax[0].set_title("Time Vary Direct Effects \n Comparing Models on Final Time Intervals", fontsize=15)
+ax[0].set_ylabel("Nth Time Interval", fontsize=15)
+fig = ax[0].figure
+fig.savefig('forest_plot_comparing_tv_direct.png')
+```
+
+![](forest_plot_comparing_tv_direct.png)
+
+
+```{python}
+
+az.plot_trace(idata_aalen, var_names=['tv_direct_effect', 'tv_indirect_effect', 'tv_total_effect', 'beta_high', 'beta_low'], divergences=False);
 plt.tight_layout()
 
 
@@ -495,31 +533,45 @@ plt.tight_layout()
 vars_to_plot = ['tv_direct_effect', 'tv_indirect_effect', 'tv_total_effect']
 labels = ['Time varying Direct Effect', 'Time varying Indirect Effect', 'Time varying Total Effect']
 
-fig, axs = plt.subplots(1, 3, figsize=(20, 6))
+def plot_effects(idata, vars_to_plot, labels, scale="Log Hazard Ratio Scale"):
+    fig, axs = plt.subplots(1, 3, figsize=(20, 10))
+    color='teal'
+    if scale != "Log Hazard Ratio Scale":
+        color='darkred'
 
-for i, var in enumerate(vars_to_plot):
-    # 1. Extract the posterior samples for this variable
-    # Shape will be (chain * draw, time)
-    post_samples = az.extract(trace_additive, var_names=[var]).values.T
-    
-    # 2. Calculate the mean and the 94% HDI across the chains/draws
-    mean_val = post_samples.mean(axis=0)
-    hdi_val = az.hdi(post_samples, hdi_prob=0.94) # Returns [time, 2] array
-    
-    # 3. Plot the Mean line
-    x_axis = np.arange(len(mean_val))
-    axs[i].plot(x_axis, mean_val, label=labels[i], color='teal', lw=2)
-    
-    # 4. Plot the Shaded HDI region
-    axs[i].fill_between(x_axis, hdi_val[:, 0], hdi_val[:, 1], color='teal', alpha=0.2, label='94% HDI')
-    
-    # Formatting
-    axs[i].set_title(labels[i])
-    axs[i].legend()
-    axs[i].grid(alpha=0.3)
-    # If you have a time vector (e.g., days), replace x_axis with your time values
+    for i, var in enumerate(vars_to_plot):
+        # 1. Extract the posterior samples for this variable
+        # Shape will be (chain * draw, time)
+        post_samples = az.extract(idata, var_names=[var]).values.T
+        
+        # 2. Calculate the mean and the 94% HDI across the chains/draws
+        mean_val = post_samples.mean(axis=0)
+        hdi_val = az.hdi(post_samples, hdi_prob=0.94) # Returns [time, 2] array
+        
+        # 3. Plot the Mean line
+        x_axis = np.arange(len(mean_val))
+        axs[i].plot(x_axis, mean_val, label=labels[i], color=color, lw=2)
+        
+        # 4. Plot the Shaded HDI region
+        axs[i].fill_between(x_axis, hdi_val[:, 0], hdi_val[:, 1], color=color, alpha=0.2, label='94% HDI')
+        
+        # Formatting
+        axs[i].set_title(labels[i])
+        axs[i].legend()
+        axs[i].grid(alpha=0.3)
+        axs[i].set_ylabel(scale)
+    plt.tight_layout()
+    return fig
 
-plt.tight_layout()
-plt.show()
+plot_effects(idata_aalen, vars_to_plot, labels);
 
 ```
+
+```{python}
+
+vars_to_plot = ['tv_baseline_hazard', 'tv_hazard_with_exposure', 'tv_RR']
+labels = ['Time varying Baseline Hazard', 'Time varying Hazard + Exposure', 'Time varying RR']
+plot_effects(idata_aalen, vars_to_plot, labels, scale='Hazard Scale');
+```
+
+
