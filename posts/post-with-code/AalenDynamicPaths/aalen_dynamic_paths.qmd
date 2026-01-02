@@ -9,6 +9,7 @@ toc: true
 execute: 
   freeze: auto 
   execute: true
+  eval: false
 jupyter: applied-bayesian-regression-modeling-env
 image: 'forking_paths.jpg'
 author:
@@ -32,8 +33,128 @@ from scipy.interpolate import BSpline
 
 If you look to Odysseus on the morning the gates of Troy fell, he is well set up for a happy journey home. He is the architect of victory, his ships are loaded with spoils, and the wind is at his back. Yet, an odyssey can't be completed in a single day and conclusions drawn on the outset rarely survive journey's end. 
 
-When we rely on static snapshots, like a single blood draw or a particular sales campaign, we are essentially watching Odysseus board his ship and guessing how the story ends. We ignore the __consequences emerging in time.__
+When we rely on static snapshots, like a single blood draw or a particular sales campaign, we are essentially watching Odysseus board his ship and guessing how the story ends. We ignore the __consequences emerging in time.__ This is an apt observation with which to begin the year. Will your new year's resolutions, survive the January? This is the kind of question we'll assess here. 
 
+## Interventions and Attenuated Effects
+
+To track how intention precedes and predicts evolving outcomes we need a statistical framework that doesn't just record the departure but tracks the entire voyage. Enter **Aalen’s Additive Model**, formulated as a **Dynamic Path Model**. The question is when will we achieve our goals? When will Odysseus get home? How does the risk of attaining our goal vary over time?
+
+While traditional models, like the Cox Proportional Hazards or Accelerated Failure time models, often assume that an intervention’s effect is a constant "multiplier" throughout the study period, Aalen’s approach treats effects as a living process. It allows the impact of a policy or treatment to wax, wane, or even reverse as the narrative unfolds. 
+
+### The Machinery of Change
+
+In a dynamic path system, we decompose the total risk into a series of additive "layers." If we are interested in how an intervention ($X$) works through a mediator ($M$), we model the instantaneous hazard $\lambda(t)$ as:
+
+$$\lambda(t | X, M) = \alpha_0(t) + \alpha_1(t)X + \alpha_2(t)M$$
+
+Where:
+
+- $\alpha_0(t)$** is the **Baseline Hazard**, representing the background "tension" of the story.
+- **$\alpha_1(t)$** is the **Time-Varying Direct Effect**, showing how the intervention influences risk at every specific moment.
+- **$\alpha_2(t)$** is the **Time-Varying Mediator Effect**, capturing how the intermediate variable (the "storm" or the "detour") contributes to the outcome.
+
+All three components are modelled as time-varying functions that distil the effects over time. 
+
+### Visualizing the Evolving DAG
+
+Standard causal inference often relies on a static Directed Acyclic Graph (DAG) to represent the "rules" of the system. But in a survival context, the DAG itself is dynamic. We can think of the model as a sequence of DAGs—one for each "scene" in our odyssey—where the causal arrows between $X$, $M$, and the Hazard ($\lambda$) strengthen or weaken over time.
+
+
+We can visualize this "filmstrip" of causality using `networkx`. We have a series of dynamic causal DAGs representing our assumptions of the relationships:
+
+```{python}
+# | code-fold: true
+import matplotlib.pyplot as plt
+import networkx as nx
+
+def plot_temporal_dag(stages=[0.1, 0.5, 0.9], labels=["Act I", "Act II", "Act III"]):
+    fig, axs = plt.subplots(1, 3, figsize=(18, 5))
+    
+    # Define nodes: Exposure, Mediator, Hazard
+    nodes = {'X': (0, 1), 'M': (1, 2), 'H': (2, 1)}
+    
+    for i, (stage, label) in enumerate(zip(stages, labels)):
+        G = nx.DiGraph()
+        G.add_nodes_from(nodes.keys())
+        
+        # We vary the weights to represent alpha_1(t) and alpha_2(t)
+        # Act I: Direct effect strong, Mediator weak
+        # Act III: Mediator dominates or effects attenuate
+        direct_w = 4 * (1 - stage) 
+        indirect_w = 6 * stage
+        
+        edges = [('X', 'H', direct_w), ('X', 'M', 3), ('M', 'H', indirect_w)]
+        
+        for u, v, w in edges:
+            G.add_edge(u, v, weight=w)
+            
+        pos = nodes
+        nx.draw_networkx_nodes(G, pos, ax=axs[i], node_color='maroon', node_size=2000)
+        nx.draw_networkx_labels(G, pos, ax=axs[i], font_color='white', font_weight='bold')
+        
+        # Draw edges with widths corresponding to causal strength
+        weights = [G[u][v]['weight'] for u, v in G.edges()]
+        nx.draw_networkx_edges(G, pos, ax=axs[i], width=weights, 
+                               edge_color='gray', arrowsize=30, connectionstyle="arc3,rad=0.1")
+        
+        axs[i].set_title(f"{label}\n(Time-varying Causal Strengths)", fontsize=14)
+        axs[i].axis('off')
+
+    plt.tight_layout()
+    return fig
+
+fig = plot_temporal_dag()
+fig.savefig("evolving_dag.png")
+```
+
+![](evolving_dag.png)
+
+Seeing it this way makes it clearer that we are estimating a system of equations over time. To truly capture the journey, we cannot look at these variables in isolation. In our Odyssey, the "storm" ($M$) is not an independent accident; it is a consequence of the path Odysseus ($X$) chose to take. To model this, we must treat the intervention and the outcome as a **system of simultaneous equations**.
+
+By solving these equations in tandem, we ensure that the mediator is not just another covariate, but a character with its own backstory, influenced by the intervention even as it influences the final risk.
+
+#### 1. The Mediator Equation (The Will of Poseidon)
+Before we can calculate the risk of shipwreck, we must determine how the intervention has altered the environment. We model the mediator as a function of the exposure:
+
+$$M_i = \beta_0 + \beta_{1}(t)X_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma^2)$$
+
+Where $\beta_{1}(t)$ tells us how effectively the intervention "recruits" or "triggers" the mediator.
+
+#### 2. The Hazard Equation (The Risk of Shipwreck)
+The instantaneous risk at time $t$ is then a combination of the background noise, the direct path from $X$, and the indirect path from the now-defined $M$:
+
+$$\lambda(t | X, M) = g\left( \alpha_0(t) + \alpha_1(t)X_i + \alpha_2(t)M_i \right)$$
+
+where $g$ is a linking function to translate the covariates into a hazard scale. Taken together these observations should make it clear why this modelling strategy is known as _dynamic path analysis_. We essentially have a structural equation model (SEM) with specific path coefficients that trace out the influence between variables. But we also require that we capture the time evolution of these relationships. It's not enough to say of Odysseus that he had good intentions, it all ended well. We lose something if we don't understand the journey.
+
+### Causal Inference and Additive Effects
+
+Aalen's main concern was how to represent mechanisms that unfold in time without forcing them into a proportional straitjacket as in Cox style regressions. In many applied settings, an intervention does not exert a constant relative effect. Instead we act, with effects accumulating, and sometimes attenuated or disappearing over time.
+
+By modeling covariate effects as _increments to risk_, the coefficients themselves become causal estimands. A time-varying coefficient $\alpha_{1}(t)$ answers a concrete question: what is the instantaneous risk attributable to the exposure at time $t$? Once effects are additive, they can be decomposed and recombined. Direct, indirect, and total effects become sums of paths traced through time. The model reads naturally as a time-indexed causal graph with estimable path strengths.
+
+> "We have a sequence of dynamic path models, one for each time t when we collect information. The estimation of each dynamic path model is done by recursive least squares regression as usual in path analysis" - Fosen et al in _"Dynamic path analysis – a new approach to
+analyzing time-dependent covariates"_
+
+The central objects in dynamic path analysis are the time-varying regression functions that link treatment, mediator, and survival. In the canonical `dpasurv` formulation, these are the functions $\beta_1(t), \alpha_2(t)$ and $\alpha_1(t)$, which parameterize the direct path from treatment to the mediator, the effect of mediator on the hazard, and the effect of the treatment on the hazard, respectively.
+
+#### Cumulative Effects in `dpasurv`
+
+Dynamic path analysis is concerned not with isolated coefficients, but with how these functions evolve over time. They form the building blocks from which direct, indirect, and total effects are constructed.
+
+Because effects act continuously, interpretation is naturally expressed in cumulative terms. A cumulative coefficient is like a running total of a covariate’s effect on risk — it sums up, over time, how much that treatment or mediator has nudged the chance of an event happening. The **cumulative direct effect** up to time $t$ is defined as
+
+$$\text{cumdir}(t) = \int_0^t \beta_1(s)\, ds,$$
+
+representing the accumulated contribution of the treatment along the direct path to the hazard. In an additive hazards framework like Aalen’s model, we are directly estimating the cumulative coefficient function — the total accumulated effect up to time t, rather than first estimating the instantaneous effect $\beta_{1}(t)$ and then summing or integrating it. Similarly, the **cumulative indirect effect** is defined as
+
+$$\text{cumind}(t) = \int_0^t \alpha_1(s)\, \beta_2(s)\, ds,$$
+
+which aggregates the mediated influence of treatment on survival. At each instant, the indirect effect is obtained by multiplying the strength of the treatment–mediator link with the strength of the mediator–hazard link, mirroring the logic of path analysis. A defining feature of dynamic path analysis is that these quantities satisfy an exact analytical decomposition:
+
+$$\text{cumtot}(t) = \text{cumdir}(t) + \text{cumind}(t).$$
+
+This identity holds because the model is additive. The `dpasurv` package demonstrates these decomposition with the following data. 
 
 ```{python}
 
@@ -44,86 +165,184 @@ df.head()
 ```
 
 
+The data is an "long format" which is multiple rows per individual `subject` with running values for the state of the treatment indicator `x` and the mediator `M`, and crucially the `even` flag which denotes whether or not the terminal event occured. This is simulated data from the `dpasurv` r package, but the abstract names serve to illustrate the ubiquity of the mediator relationship! 
+
+### Replicating the `dpasurv` Benchmark
+
+The figure belwo shows the cumulative direct, indirect, and total effects estimated by dpasurv from our simulated dataset. The direct effect (left panel) traces the immediate influence of the treatment on the outcome, while the indirect effect (middle panel) captures the pathway mediated through $M$. The total effect (right panel) is simply the sum of the two.
+
+![](dpasurv_benchmark.png)
+
+Notice the jumpy, step-like patterns in all three panels. This is characteristic of the `dpasurv` estimator, which produces cumulative coefficients by summing contributions at discrete event time intervals. Each step corresponds to a unique event time, with the height of the step reflecting the combined contribution of all events that occurred at that time. The gray lines indicate the approximate bootstrap confidence intervals, which widen as events become sparse, reflecting increasing uncertainty over time.
+
+The main pattern we're seeing here is that the direct effect of `x` in the first panel. The curve begins to dip below zero almost immediately and maintains a consistent downward slope, meaning the negative cumulative effect indicates that the intervention itself is actively __reducing the hazard.__. This is good, but contrast it with slight emerging effect in central panel. For the first 100 days, the mediator is a bystander. It is either not being triggered by the intervention or has no impact on survival. Around Day 100, the curve "breaks" and spikes upward. This represents a __positive contribution to the hazard.__ The combination of the total effects reflects this too. The total effect become less negative (closer to zero) after Day 100. This tells us that while the intervention is still helpful overall, its net benefit is being attenuated by the mediator.
+
+
+These are the patterns we will try and replicate in our Bayesian dynamic path model. But first we'll look a bit more into the data. 
+
+## Exploring the Data
+
 ```{python}
 df.groupby(['x', 'dose'])[['event', 'M']].agg(['mean', 'sum'])
 ```
 
+
+
 ```{python}
 
 # | code-fold: true
+# | output: false
+# | echo: false
 
 import matplotlib.pyplot as plt
-import pandas as pd
+from matplotlib.lines import Line2D
 
-# Derive subject-level info for ordering
+# -----------------------
+# Color palette (muted & clean)
+# -----------------------
+COLOR_X0 = "#6B7280"    # muted slate gray
+COLOR_X1 = "#2563EB"    # soft rich blue
+EVENT_COLOR = "#991B1B" # deep muted red
+
+# -----------------------
+# Split subject ordering by treatment group
+# -----------------------
 subject_info = (
     df.groupby('subject')
       .agg(
           x=('x', 'first'),
           max_stop=('stop', 'max')
       )
-      .sort_values(['x', 'max_stop'])
 )
 
-subjects = subject_info.index.tolist()
-subject_to_y = {s: i for i, s in enumerate(subjects)}
+subject_info_0 = (
+    subject_info[subject_info['x'] == 0]
+    .sort_values('max_stop')
+)
 
-fig, ax = plt.subplots(figsize=(8, 0.1 * len(subjects)))
+subject_info_1 = (
+    subject_info[subject_info['x'] == 1]
+    .sort_values('max_stop')
+)
 
-for _, row in df.iterrows():
-    y = subject_to_y[row['subject']]
-    
-    color = 'tab:blue' if row['x'] == 1 else 'tab:orange'
-    
-    ax.hlines(
+subjects_0 = subject_info_0.index.tolist()
+subjects_1 = subject_info_1.index.tolist()
+
+subject_to_y_0 = {s: i for i, s in enumerate(subjects_0)}
+subject_to_y_1 = {s: i for i, s in enumerate(subjects_1)}
+
+# -----------------------
+# Create side-by-side plots
+# -----------------------
+fig, axes = plt.subplots(
+    ncols=2,
+    figsize=(12, 0.1 * max(len(subjects_0), len(subjects_1))),
+    sharex=True
+)
+
+ax0, ax1 = axes
+
+# -----------------------
+# Plot x = 0 group
+# -----------------------
+for _, row in df[df['x'] == 0].iterrows():
+    y = subject_to_y_0[row['subject']]
+
+    ax0.hlines(
         y=y,
         xmin=row['start'],
         xmax=row['stop'],
-        color=color,
-        linewidth=3
+        color=COLOR_X0,
+        linewidth=2.5
     )
-    
+
     if row['event'] == 1:
-        ax.plot(
+        ax0.plot(
             row['stop'],
             y,
             marker='o',
-            color='red',
+            color=EVENT_COLOR,
             markersize=6,
             zorder=3
         )
 
-# Axis formatting
-ax.set_yticks(range(len(subjects)))
-ax.set_yticklabels(subjects)
-ax.set_xlabel("Time")
-ax.set_ylabel("Subject")
+ax0.set_yticks(range(len(subjects_0)))
+ax0.set_yticklabels(subjects_0)
+ax0.set_title("x = 0")
+ax0.set_ylabel("Subject")
 
-# Visual separation between treatment groups
-x0_count = (subject_info['x'] == 0).sum()
-ax.axhline(x0_count - 0.5, color='black', linestyle='--', linewidth=1)
+# -----------------------
+# Plot x = 1 group
+# -----------------------
+for _, row in df[df['x'] == 1].iterrows():
+    y = subject_to_y_1[row['subject']]
 
+    ax1.hlines(
+        y=y,
+        xmin=row['start'],
+        xmax=row['stop'],
+        color=COLOR_X1,
+        linewidth=2.5
+    )
+
+    if row['event'] == 1:
+        ax1.plot(
+            row['stop'],
+            y,
+            marker='o',
+            color=EVENT_COLOR,
+            markersize=6,
+            zorder=3
+        )
+
+ax1.set_yticks(range(len(subjects_1)))
+ax1.set_yticklabels(subjects_1)
+ax1.set_title("x = 1")
+
+# -----------------------
+# Shared formatting & polish
+# -----------------------
+for ax in axes:
+    ax.set_xlabel("Time")
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.grid(False)
+
+# -----------------------
 # Legend
-from matplotlib.lines import Line2D
-
+# -----------------------
 legend_elements = [
-    Line2D([0], [0], color='tab:blue', lw=3, label='x = 1'),
-    Line2D([0], [0], color='tab:orange', lw=3, label='x = 0'),
-    Line2D([0], [0], marker='o', color='red', lw=0, label='Event', markersize=6)
+    Line2D([0], [0], color=COLOR_X1, lw=2.5, label='x = 1'),
+    Line2D([0], [0], color=COLOR_X0, lw=2.5, label='x = 0'),
+    Line2D([0], [0], marker='o', color=EVENT_COLOR,
+           lw=0, label='Event', markersize=6),
 ]
 
-ax.legend(handles=legend_elements, loc='upper right')
+ax0.tick_params(axis='y', labelsize=8)
+ax1.tick_params(axis='y', labelsize=8)
 
-ax.set_title("Subject Timelines Ordered by Treatment Level")
+fig.legend(
+    handles=legend_elements,
+    loc='upper center',
+    ncol=3,
+    frameon=False,
+    bbox_to_anchor=(0.5, 0.98)
+)
 
-plt.tight_layout()
-plt.show()
+fig.suptitle(
+    "Subject Timelines by Treatment Group",
+    y=1.08
+)
 
+plt.tight_layout(rect=[0, 0, 1, 0.95])
+
+fig.savefig("timelines_plot.png")
 
 ```
 
+![](timelines_plot.png)
 
-## Data Preparation
+### Data Preparation
 
 ```{python}
 
@@ -573,5 +792,8 @@ vars_to_plot = ['tv_baseline_hazard', 'tv_hazard_with_exposure', 'tv_RR']
 labels = ['Time varying Baseline Hazard', 'Time varying Hazard + Exposure', 'Time varying RR']
 plot_effects(idata_aalen, vars_to_plot, labels, scale='Hazard Scale');
 ```
+
+
+
 
 
