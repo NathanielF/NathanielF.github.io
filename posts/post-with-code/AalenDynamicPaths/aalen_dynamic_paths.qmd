@@ -1100,14 +1100,14 @@ with aalen_dpa_model:
 ```
 
 ```{python}
-# ~.73
-rr_imputed = idata_trt1['posterior_predictive']['obs_event'].mean() / idata_trt0['posterior_predictive']['obs_event'].mean()
+## Clipping at one in case Poisson prediction exceeds 1. Event is binary.
+rr_imputed = idata_trt1['posterior_predictive']['obs_event'].clip(max=1).mean() / idata_trt0['posterior_predictive']['obs_event'].clip(max=1).mean()
 print(f"Imputed Relative of {np.round(rr_imputed.item(), 3)}")
 print(f"Imputed Percent Risk Reduction of {1- np.round(rr_imputed.item(), 3)}")
 ```
 
 
-The marginal risk ratio (~0.73) tells us treatment reduces events by ~27% on average across all time periods. This single number, however, conceals the rich temporal story: the treatment is consistently protective (direct effect), but partially undermined by a harmful mediated pathway emerging around Day 100. The dynamic path model gives you both the summary *and* the mechanistic decomposition over time. Additionally, this imputation mechanism can be extended to compute alternative causal estimands under different counterfactual dosages.
+The marginal risk ratio tells us treatment reduces events by ~22% on average across all time periods. This single number, however, conceals the rich temporal story: the treatment is consistently protective (direct effect), but partially undermined by a harmful mediated pathway emerging around Day 100. The dynamic path model gives you both the summary *and* the mechanistic decomposition over time. Additionally, this imputation mechanism can be extended to compute alternative causal estimands under different counterfactual dosages.
 
 ## Conclusion: The Journey Is the Model
 When Odysseus finally reached Ithaca, his journey home had taken ten years—not because the distance was far, but because the voyage itself transformed him and his circumstances. This is the fundamental insight of dynamic path analysis: outcomes are not destinations; they are cumulative consequences of time-varying processes.
