@@ -643,13 +643,18 @@ Where:
 It may seem odd to approximate binary events with a "counting" distribution, but viewed at a distance binary events are just counts capped at 1. 
 
 #### From Ordering to Intensities
-Pseudo-likelihoods primarily care about the ordering of events rather than the absolute scale of time. They effectively discard the actual duration of time between events in favour of focusing on who failed before whom. By parameterizing time via a discrete index, we move from mere rankings to **intensities**. We model the actual "velocity" of risk in every interval, which allows us to place **Bayesian priors** on the baseline hazard itself (such as Random Walks or Splines). This enforces a "temporal smoothness" that prevents the background risk from jumping erratically.
+Pseudo-likelihoods primarily care about the ordering of events rather than the absolute scale of time. They effectively discard the actual duration of time between events in favour of focusing on who failed before whom. By parameterizing time via a discrete index, we move from mere rankings to **intensities**. We model the actual "velocity" of risk in every interval, which allows us to place **Bayesian priors** on the baseline hazard itself (such as Random Walks or Splines). This enforces a "temporal smoothness" that prevents the background risk from jumping erratically. This is the requirement for narrative coherence in Odysseus' journey. 
 
-In frequentist survival analysis, the Cox model utilizes a **partial likelihood** to estimate effects without specifying the baseline hazard. This approach employs Maximum Likelihood Estimation (MLE) on the function:
+It is common in survival analysis to estimate covariate effects using a **partial likelihood**, which identifies regression coefficients without specifying the baseline hazard. In its canonical form, this likelihood depends only on the ordering of event times,
 
-$$L_p(\beta) = \prod_{i:d_i=1} \frac{\exp(X_i \beta)}{\sum_{j \in R(t_i)} \exp(X_j \beta)}$$
+$$
+L_p(\beta) = \prod_{i:d_i=1} 
+\frac{\exp(X_i \beta)}{\sum_{j \in R(t_i)} \exp(X_j \beta)},
+$$
 
-This is technically a profile likelihood rather than a full probability distribution of the observed survival times. Any derivation of the hazard is "backed-out" afterward, but  because it only models the relative ranking of events and discards the absolute temporal intervals between them, it is not a generative density. This makes it unamenable to a rigorous Bayesian framework, as one cannot define a valid posterior $P(\beta | \text{Data}) \propto P(\text{Data} | \beta)P(\beta)$ without a likelihood that describes the complete data-generating process, including the "nuisance" baseline.
+and does not define a joint probability model for the observed survival times themselves. As a result, the hazard function and cumulative risk must be reconstructed after estimation rather than arising from a generative model of time-to-event data.
+
+For the purposes of dynamic path analysis, this is limiting. The approach developed here requires a likelihood that generates event times, accommodates time-varying effects, and allows direct simulation of hazards and counterfactual trajectories. We therefore adopt a full likelihood representation, which makes these quantities explicit and enables coherent Bayesian inference.
 
 The Poisson likelihood specification solves this by reframing survival as a counting process over discretized time bins. By mapping the survival hazard to the mean of a Poisson distribution, we transition from an incomplete pseudo-likelihood to a full, generative likelihood:
 
@@ -716,7 +721,7 @@ fig.savefig("poisson_approximation.png")
 ![](poisson_approximation.png)
 
 
-The Poisson bridge treats time as an **explicit covariate** rather than a nuisance to be conditioned away. By mapping the hazard to a discrete index, we gain a "universal currency" of probability. This allows the baseline risk, the treatment effects, and the mediated paths to all live in the same mathematical space, estimated simultaneously through a single likelihood formulation.
+The Poisson bridge treats time as an **explicit covariate** rather than a nuisance to be conditioned away. By mapping the hazard to a discrete index, we gain a "universal currency" of probability. This allows the baseline risk, the treatment effects, and the mediated paths to all live in the same mathematical space, estimated simultaneously through a single likelihood formulation. The Poisson formulation matters causally because it lets us specify a full data-generating process consistent with the DAG.
 
 ```{python}
 # | output: false
@@ -911,7 +916,7 @@ In the context of this survival model, it serves as a smooth link function that 
 :::
 
 ### Implementation Summary
-We used our splines and random walk parameterisation to represent time-varying hazard intensities and then preserved the additive structure by using he softplus link. Strictly speaking, this is no longer an identity-link Aalen model; it is a smooth, monotone transformation chosen for computational stability. The causal interpretation relies on monotonicity, not exact linearity. By defining `Lambda = time_at_risk * pm.math.log1pexp(log_lambda_t)`, we have created a generative model where the total hazard is the sum of time-varying intensities. This allows for a clean decomposition of causal paths:
+We used our splines and random walk parameterisation to represent time-varying hazard intensities and then preserved the additive structure by using the softplus link. Strictly speaking, this is no longer an identity-link Aalen model; it is a smooth, monotone transformation chosen for computational stability. The causal interpretation relies on monotonicity, not exact linearity. By defining `Lambda = time_at_risk * pm.math.log1pexp(log_lambda_t)`, we have created a generative model where the total hazard is the sum of time-varying intensities. This allows for a clean decomposition of causal paths:
 
 * **Direct Intensity:** $\alpha_{1}(t)$ (the time-varying coefficient for treatment)
 * **Indirect Intensity:** $\beta_{1}(t) \cdot \alpha_{2}(t)$ (the product of the $A$ and $B$ paths)
@@ -1074,6 +1079,35 @@ plot_effects(idata_aalen, vars_to_plot, labels, scale='Hazard Scale');
 ```
 
 This effectively "normalizes" the protective direct effects and harmful indirect effects, allowing us to visualize the net impact on the risk profile in a format familiar to survival analysis, regardless of the underlying link function or scaling required for MCMC sampling. A horizontal line at $1$ would imply a neutral treatment with no more or less protective effects. Instead, the slope indicates that the treatment becomes more protective over time. The risk for the exposed group drops by roughly $30\%$ ($RR \approx 0.7$) by the end of the observation period.
+
+## From Time-Varying to Marginal Effects: G-Computation
+
+The time-varying plots reveal *how* treatment effects evolve, but applied work often requires a single summary: **what is the average treatment effect?** Using g-computation, we simulate two counterfactual worlds—one where everyone is treated, one where no one is—and compare outcomes:
+
+```{python}
+trt_values = np.ones(len(df_long)).astype(int)
+with aalen_dpa_model: 
+    pm.set_data({'trt': trt_values})
+    idata_trt1 = pm.sample_posterior_predictive(idata_aalen, 
+        predictions=False, return_inferencedata=True)
+
+trt_values = np.zeros(len(df_long)).astype(int)
+with aalen_dpa_model: 
+    pm.set_data({'trt': trt_values})
+    idata_trt0 = pm.sample_posterior_predictive(idata_aalen, 
+        predictions=False, return_inferencedata=True)
+
+```
+
+```{python}
+# ~.73
+rr_imputed = idata_trt1['posterior_predictive']['obs_event'].mean() / idata_trt0['posterior_predictive']['obs_event'].mean()
+print(f"Imputed Relative of {np.round(rr_imputed.item(), 3)}")
+print(f"Imputed Percent Risk Reduction of {1- np.round(rr_imputed.item(), 3)}")
+```
+
+
+The marginal risk ratio (~0.73) tells us treatment reduces events by ~27% on average across all time periods. This single number, however, conceals the rich temporal story: the treatment is consistently protective (direct effect), but partially undermined by a harmful mediated pathway emerging around Day 100. The dynamic path model gives you both the summary *and* the mechanistic decomposition over time. Additionally, this imputation mechanism can be extended to compute alternative causal estimands under different counterfactual dosages.
 
 ## Conclusion: The Journey Is the Model
 When Odysseus finally reached Ithaca, his journey home had taken ten years—not because the distance was far, but because the voyage itself transformed him and his circumstances. This is the fundamental insight of dynamic path analysis: outcomes are not destinations; they are cumulative consequences of time-varying processes.
