@@ -1,24 +1,22 @@
 ---
-title: "Aalen's Dynamic Path Model"
-subtitle: "Causal Inference with Time Varying Effects in PyMC"
+title: "The Journey Is the Model: Dynamic Path Analysis in PyMC"
+subtitle: "Causal Inference with Time-Varying Effects"
 categories: ["path-models", "sem", "causal inference"]
 keep-ipynb: true
 self-contained: true
-draft: true
+draft: false
 toc: true
 execute: 
   freeze: auto 
   execute: true
-  eval: false
+  eval: true
 jupyter: applied-bayesian-regression-modeling-env
-image: 'forking_paths.jpg'
+image: 'evolving_dag.png'
 author:
     - url: https://nathanielf.github.io/
     - affiliation: PyMC dev
 citation: true
 ---
-
-hello world
 
 
 ```{python}
@@ -28,14 +26,40 @@ import pandas as pd
 import arviz as az
 import pytensor.tensor as pt
 from scipy.interpolate import BSpline
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+import warnings
+
+# Suppress all FutureWarnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 ```
 
 If you look to Odysseus on the morning the gates of Troy fell, he is well set up for a happy journey home. He is the architect of victory, his ships are loaded with spoils, and the wind is at his back. Yet, an odyssey can't be completed in a single day and conclusions drawn on the outset rarely survive journey's end. 
 
-When we rely on static snapshots, like a single blood draw or a particular sales campaign, we are essentially watching Odysseus board his ship and guessing how the story ends. We ignore the __consequences emerging in time.__ This is an apt observation with which to begin the year. Will your new year's resolutions, survive the January? This is the kind of question we'll assess here. 
+When we rely on static snapshots, like a single blood draw or a particular sales campaign, we are watching Odysseus board his ship and guessing how the story ends. We ignore the __consequences emerging in time.__ This is an apt observation with which to begin the year. Will your new year's resolutions, survive the January? This is the kind of question we'll assess here. 
 
-## Interventions and Attenuated Effects
+::: {.callout-note icon=false}
+### What You'll Learn in This Post
+This tutorial demonstrates how to implement Aalen's Dynamic Path Model in PyMC to decompose time-varying causal effects in survival analysis. You'll learn:
+
+- The Theory: Why static snapshots miss the story and how interventions evolve over time.
+- The Challenge: Moving from proportional hazards to additive models that allow effects to wax, wane, or reverse
+- The Solution: Using B-splines and the "Poisson Bridge" to create a fully Bayesian dynamic path model
+- The Application: Replicating the dpasurv R package benchmark and revealing masked mediation effects
+
+**Key Technical Components**:
+
+- Time discretization and B-spline basis construction
+- Simultaneous equation systems for mediator and hazard models
+- The Softplus link for maintaining positive hazards
+- Direct, indirect, and total effect decomposition over time
+
+By the end, you'll be able to track how a New Year's resolution (or any intervention) doesn't just succeed or fail—it transforms through distinct phases, with different mechanisms dominating at different times.
+:::
+
+## Interventions and Attenuated Effects: The Theory
 
 To track how intention precedes and predicts evolving outcomes we need a statistical framework that doesn't just record the departure but tracks the entire voyage. Enter **Aalen’s Additive Model**, formulated as a **Dynamic Path Model**. The question is when will we achieve our goals? When will Odysseus get home? How does the risk of attaining our goal vary over time?
 
@@ -43,19 +67,19 @@ While traditional models, like the Cox Proportional Hazards or Accelerated Failu
 
 ### The Machinery of Change
 
-In a dynamic path system, we decompose the total risk into a series of additive "layers." If we are interested in how an intervention ($X$) works through a mediator ($M$), we model the instantaneous hazard $\lambda(t)$ as:
+In a dynamic path system, we decompose the total risk into a series of additive "layers." If we are interested in how an intervention ($X$) works through a mediator ($M$), we model the hazard $\lambda(t)$ as:
 
 $$\lambda(t | X, M) = \alpha_0(t) + \alpha_1(t)X + \alpha_2(t)M$$
 
 Where:
 
-- $\alpha_0(t)$** is the **Baseline Hazard**, representing the background "tension" of the story.
-- **$\alpha_1(t)$** is the **Time-Varying Direct Effect**, showing how the intervention influences risk at every specific moment.
-- **$\alpha_2(t)$** is the **Time-Varying Mediator Effect**, capturing how the intermediate variable (the "storm" or the "detour") contributes to the outcome.
+- $\alpha_0(t)$ is the **Baseline Hazard**, representing the background "tension" of the story.
+- $\alpha_1(t)$ is the **Time-Varying Direct Effect**, showing how the intervention influences risk at every specific moment.
+- $\alpha_2(t)$ is the **Time-Varying Mediator Effect**, capturing how the intermediate variable (the "storm" or the "detour") contributes to the outcome.
 
 All three components are modelled as time-varying functions that distil the effects over time. 
 
-### Visualizing the Evolving DAG
+### From Static to Dynamic: A Sequence of DAGs
 
 Standard causal inference often relies on a static Directed Acyclic Graph (DAG) to represent the "rules" of the system. But in a survival context, the DAG itself is dynamic. We can think of the model as a sequence of DAGs—one for each "scene" in our odyssey—where the causal arrows between $X$, $M$, and the Hazard ($\lambda$) strengthen or weaken over time.
 
@@ -64,6 +88,7 @@ We can visualize this "filmstrip" of causality using `networkx`. We have a serie
 
 ```{python}
 # | code-fold: true
+# | output: false
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -111,9 +136,20 @@ fig.savefig("evolving_dag.png")
 
 Seeing it this way makes it clearer that we are estimating a system of equations over time. To truly capture the journey, we cannot look at these variables in isolation. In our Odyssey, the "storm" ($M$) is not an independent accident; it is a consequence of the path Odysseus ($X$) chose to take. To model this, we must treat the intervention and the outcome as a **system of simultaneous equations**.
 
+::: {.callout-important}
+
+## Dynamic Path Analysis and Causal Interpretation
+
+Dynamic path analysis admits a causal interpretation only under __sequential unconfoundedness__, implied by the assumed temporal DAG. At each time point, conditional on the observed history, there are no unmeasured common causes of the treatment, the mediator process, and the event intensity.
+
+Under this assumption, the time-varying coefficients in the additive hazard model can be interpreted causally: effects of treatment on the mediator, effects of the mediator on the hazard, and their product as a dynamic indirect effect. The path decomposition follows directly from the graph.
+
+If relevant confounders are omitted, or if feedback from the event process into the mediator is not properly lagged, the decomposition remains algebraically valid but loses its causal meaning. The model estimates paths; the DAG and sequential unconfoundedness justify interpreting them as causal.
+:::
+
 By solving these equations in tandem, we ensure that the mediator is not just another covariate, but a character with its own backstory, influenced by the intervention even as it influences the final risk.
 
-#### 1. The Mediator Equation (The Will of Poseidon)
+#### The Mediator Equation (The Will of Poseidon)
 Before we can calculate the risk of shipwreck, we must determine how the intervention has altered the environment. We model the mediator as a function of the exposure:
 
 $$M_i = \beta_0 + \beta_{1}(t)X_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma^2)$$
@@ -121,17 +157,17 @@ $$M_i = \beta_0 + \beta_{1}(t)X_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N
 Where $\beta_{1}(t)$ tells us how effectively the intervention "recruits" or "triggers" the mediator.
 
 #### 2. The Hazard Equation (The Risk of Shipwreck)
-The instantaneous risk at time $t$ is then a combination of the background noise, the direct path from $X$, and the indirect path from the now-defined $M$:
+The risk at time $t$ is then a combination of the background noise, the direct path from $X$, and the indirect path from the now-defined $M$:
 
 $$\lambda(t | X, M) = g\left( \alpha_0(t) + \alpha_1(t)X_i + \alpha_2(t)M_i \right)$$
 
-where $g$ is a linking function to translate the covariates into a hazard scale. Taken together these observations should make it clear why this modelling strategy is known as _dynamic path analysis_. We essentially have a structural equation model (SEM) with specific path coefficients that trace out the influence between variables. But we also require that we capture the time evolution of these relationships. It's not enough to say of Odysseus that he had good intentions, it all ended well. We lose something if we don't understand the journey.
+where $g$ is a linking function to translate the covariates into a hazard scale. Taken together these observations should make it clear why this modelling strategy is known as _dynamic path analysis_. We essentially have a structural equation model (SEM) with specific path coefficients that trace out the influence between variables. This means we are no longer ‘controlling for M’ but explicitly modeling how X creates M and how M creates risk. So we also require that we capture the time evolution of these relationships. It's not enough to say of Odysseus that he had good intentions, it all ended well. We lose something if we don't understand the journey.
 
 ### Causal Inference and Additive Effects
 
 Aalen's main concern was how to represent mechanisms that unfold in time without forcing them into a proportional straitjacket as in Cox style regressions. In many applied settings, an intervention does not exert a constant relative effect. Instead we act, with effects accumulating, and sometimes attenuated or disappearing over time.
 
-By modeling covariate effects as _increments to risk_, the coefficients themselves become causal estimands. A time-varying coefficient $\alpha_{1}(t)$ answers a concrete question: what is the instantaneous risk attributable to the exposure at time $t$? Once effects are additive, they can be decomposed and recombined. Direct, indirect, and total effects become sums of paths traced through time. The model reads naturally as a time-indexed causal graph with estimable path strengths.
+By modeling covariate effects as _increments to risk_, the coefficients themselves become causal estimands. A time-varying coefficient $\alpha_{1}(t)$ answers a concrete question: what is the level of risk attributable to the exposure at time $t$? Once effects are additive, they can be decomposed and recombined. Direct, indirect, and total effects become sums of paths traced through time. The model reads naturally as a time-indexed causal graph with estimable path strengths.
 
 > "We have a sequence of dynamic path models, one for each time t when we collect information. The estimation of each dynamic path model is done by recursive least squares regression as usual in path analysis" - Fosen et al in _"Dynamic path analysis – a new approach to
 analyzing time-dependent covariates"_
@@ -146,7 +182,7 @@ Because effects act continuously, interpretation is naturally expressed in cumul
 
 $$\text{cumdir}(t) = \int_0^t \beta_1(s)\, ds,$$
 
-representing the accumulated contribution of the treatment along the direct path to the hazard. In an additive hazards framework like Aalen’s model, we are directly estimating the cumulative coefficient function — the total accumulated effect up to time t, rather than first estimating the instantaneous effect $\beta_{1}(t)$ and then summing or integrating it. Similarly, the **cumulative indirect effect** is defined as
+representing the accumulated contribution of the treatment along the direct path to the hazard. In an additive hazards framework like Aalen’s model, we are directly estimating the cumulative coefficient function — the total accumulated effect up to time t, rather than first estimating the instaneous effect $\beta_{1}(t_{i})$ and then summing or integrating it over the index. Similarly, the **cumulative indirect effect** is defined as
 
 $$\text{cumind}(t) = \int_0^t \alpha_1(s)\, \beta_2(s)\, ds,$$
 
@@ -165,11 +201,11 @@ df.head()
 ```
 
 
-The data is an "long format" which is multiple rows per individual `subject` with running values for the state of the treatment indicator `x` and the mediator `M`, and crucially the `even` flag which denotes whether or not the terminal event occured. This is simulated data from the `dpasurv` r package, but the abstract names serve to illustrate the ubiquity of the mediator relationship! 
+The data is an "long format" which is multiple rows per individual `subject` with running values for the state of the treatment indicator `x` and the mediator `M`, and crucially the `even` flag which denotes whether or not the terminal event occured. This is simulated data from the `dpasurv` r package, but the abstract names serve to illustrate the ubiquity of the mediator relationship! Even if you're not Odysseus, it's common knowledge that the Gods laugh when men make plans. Mediator structures are everywhere, and we will show how to handle them with dynamic path analysis.
 
 ### Replicating the `dpasurv` Benchmark
 
-The figure belwo shows the cumulative direct, indirect, and total effects estimated by dpasurv from our simulated dataset. The direct effect (left panel) traces the immediate influence of the treatment on the outcome, while the indirect effect (middle panel) captures the pathway mediated through $M$. The total effect (right panel) is simply the sum of the two.
+The figure below shows the cumulative direct, indirect, and total effects estimated by dpasurv from our simulated dataset. The direct effect (left panel) traces the immediate influence of the treatment on the outcome, while the indirect effect (middle panel) captures the pathway mediated through $M$. The total effect (right panel) is simply the sum of the two.
 
 ![](dpasurv_benchmark.png)
 
@@ -178,15 +214,18 @@ Notice the jumpy, step-like patterns in all three panels. This is characteristic
 The main pattern we're seeing here is that the direct effect of `x` in the first panel. The curve begins to dip below zero almost immediately and maintains a consistent downward slope, meaning the negative cumulative effect indicates that the intervention itself is actively __reducing the hazard.__. This is good, but contrast it with slight emerging effect in central panel. For the first 100 days, the mediator is a bystander. It is either not being triggered by the intervention or has no impact on survival. Around Day 100, the curve "breaks" and spikes upward. This represents a __positive contribution to the hazard.__ The combination of the total effects reflects this too. The total effect become less negative (closer to zero) after Day 100. This tells us that while the intervention is still helpful overall, its net benefit is being attenuated by the mediator.
 
 
-These are the patterns we will try and replicate in our Bayesian dynamic path model. But first we'll look a bit more into the data. 
+The `dpasurv` data is simulated to capture precisely this delayed impact, and these the patterns we will try and replicate in our Bayesian dynamic path model. Having established the theoretical architecture above, we now face the practical challenge of implementation. The elegance of Aalen's additive model conceals three technical hurdles: discretizing continuous time, parameterizing smooth effects, and ensuring positive hazards. We'll tackle each in turn
 
-## Exploring the Data
+
+## Exploring the Data:
+
+Let's begin by looking at a simple cross-cut. 
 
 ```{python}
 df.groupby(['x', 'dose'])[['event', 'M']].agg(['mean', 'sum'])
 ```
 
-
+which shows a higher incidence of the event in the control group than the treatment group, but even within the treatment it seems a higher dosage is linked to lower incident rate. The size of the groups for each treatment level are approximately equal, but ignoring the dosage we see more people in the treatment group than the control.
 
 ```{python}
 
@@ -342,7 +381,42 @@ fig.savefig("timelines_plot.png")
 
 ![](timelines_plot.png)
 
-### Data Preparation
+The plot shows the timelines and the occurence of incidents for each treatment group. In most cases we see the terminal event occurs for each subject. Next we'll try and pull out the differences due to dosage.
+
+```{python}
+# | output: false
+# | code-fold: true
+
+mean_levels = df.groupby('subject')[['M', 'event', 'x', 'dose']].agg({'event': 'sum', 'M': 'mean', 'x': 'count', 'dose': 'first'}).rename({'M':'Mean_Subject_Mediator', 'x': 'Observation Periods', 'event': 'Terminal Event Y/N'}, axis=1)
+mean_levels
+
+# Assuming your dataframe is named 'df'
+plt.figure(figsize=(15, 6))
+
+
+g = sns.FacetGrid(mean_levels, col="dose", hue="Terminal Event Y/N", palette='viridis', height=5)
+g.map(sns.scatterplot, "Observation Periods", "Mean_Subject_Mediator", alpha=0.7)
+g.add_legend()
+
+plt.xlabel('Observation Duration (Periods)')
+plt.ylabel('Mean Subject Mediator')
+plt.legend(title='Terminal Event (1=Yes, 0=No)')
+plt.grid(True, linestyle='--', alpha=0.6)
+fig = plt.gcf()
+fig.savefig("Crosscut_MeanMediator.png")
+```
+
+![](Crosscut_MeanMediator.png)
+
+This plot shows in a crude way how time is the primary driver of the outcome with most terminal events clustering to the right longer treatment durations. There is also some visual evidence that higher mediator values have more terminal outcomes on the right hand side of the plot. But also, that higher dosage appears to have more surviving cases. But to really partial out these effects we need a more disciplined modelling approach. 
+
+With these exploratory insights in hand, we now turn to the technical implementation.
+
+### Data Preparation: Discretising time 
+
+This function restructures the original start–stop survival data into a finite set of time bins, where each bin corresponds to a unique (start, stop) interval observed in the data representation. By assigning every subject–interval to a discrete time index, we obtain a representation in which all time-varying quantities are constant within bins but allowed to vary across bins.
+
+This discretisation step is central to our approach. Rather than treating regression coefficients as fully continuous functions of time, we work with piecewise constant approximations indexed by these bins. Conceptually, this mirrors the classical Aalen estimator, where coefficient paths only change at observed event times and remain flat in between.
 
 ```{python}
 
@@ -442,8 +516,8 @@ def prepare_aalen_dpa_data(
     # 5. Assemble output
     # -------------------------------------------------
     data = {
-        "bins": bins,     # useful for plotting
-        "df_long": df     # optional: debugging / inspection
+        "bins": bins,     # required discretisation
+        "df_long": df     # feature set for time-varying features
     }
 
     return data
@@ -451,14 +525,19 @@ def prepare_aalen_dpa_data(
 
 ```
 
-
+In addition to defining the time bins, the function constructs predictable covariates—most notably a lagged mediator within subject—and performs the centering required for additive hazard models.
 
 ```{python}
 data = prepare_aalen_dpa_data(df)
 df_long = data['df_long']
-df_long[['subject', 'x', 'dose', 'M', 'event', 'dt', 'bin_idx']].head(14)
+df_long[['subject', 'x', 'dose', 'm_c', 'm_lag', 'event', 'dt', 'bin_idx']].head(14)
 ```
 
+Once time has been discretised into bins, the remaining challenge is how to allow effects to evolve smoothly across those bins. Rather than treating each interval as completely unrelated to its neighbours, we introduce a spline-based representation that ties adjacent time bins together. 
+
+### Spline Functions in Time
+
+This code lets us approximate continuously varying coefficient functions using a flexible but structured set of basis functions defined over the discretised time axis. 
 
 ```{python}
 
@@ -518,7 +597,126 @@ basis_df.head(10)
 
 ```
 
+In Aalen’s additive model, the primary objects of interest are _cumulative regression coefficients_: time-indexed functions that accumulate the effect of a covariate on the hazard as time progresses. Empirically, these functions are only identified at a discrete set of time points and are typically visualised as step functions that jump at event times.
 
+Our discretisation of time into bins provides a natural scaffold for working with these cumulative effects. Rather than estimating an unconstrained step height for every bin, we approximate each cumulative coefficient path as a smooth function of the bin index, represented as a linear combination of B-spline basis functions.
+
+```{python}
+# | output: false
+fig, ax = plt.subplots()
+ax.set_title("Random Spline Functions over Time")
+for i in range(5):
+    betas_spline = np.random.normal(0, 3, 12)
+    np.dot(basis_df, betas_spline)
+    ax.plot(np.dot(basis_df, betas_spline))
+
+fig.savefig("random_splines.png")
+
+```
+
+![](random_splines.png)
+
+The figure above illustrates this idea. Each curve corresponds to a different random draw of spline coefficients, combined with the same underlying basis. Although these curves are generated without reference to the data, they all resemble plausible cumulative coefficient paths: continuous, gradually evolving over time, and free of the abrupt jumps that arise when coefficients are estimated independently at each event time.
+
+This perspective is important conceptually. Rather than viewing cumulative coefficients as the result of summing many instantaneous effects, we treat them as primary objects to be estimated directly, with smoothness acting as a regularising assumption. In the next section, we will show how this spline-based representation is embedded into a full probabilistic model.
+
+## Survival Models and their Likelihood
+
+In contemporary survival analysis, the adoption of the **Poisson bridge** is a strategic move to resolve the fundamental incompatibility between Bayesian inference and the "pseudo-likelihoods" that dominate frequentist survival models. 
+
+### Explicit Parameterization via the Discrete Index
+
+The most significant advantage of this approach is that it **replaces the "nuisance" of the baseline hazard with an explicit parameterization of time.** By discretizing the timeline into a finite index of bins, we transform a nebulous, continuous survival function into a structured set of parameters that a Bayesian sampler can navigate.
+
+In our discrete-time framework, the baseline hazard is no longer hidden background noise. Instead, it is parameterized via the discrete index $t$, allowing the model to "see" exactly how the background risk changes from the start of the study to its conclusion. This clear mapping provides a well-defined probability distribution for every observed data point:
+
+$$d_{it} \sim \text{Poisson}(\lambda(t))$$
+$$\lambda(t) = Y_{it} \cdot \Delta t \cdot \lambda_{it}$$
+
+Where:
+
+- $d_{it}$ is the event indicator (0 or 1).
+- $Y_{it}$ is the "at-risk" indicator.
+- $\Delta t$ is the duration of the time bin.
+- $\lambda_{it}$ is the cumulative hazard.
+
+It may seem odd to approximate binary events with a "counting" distribution, but viewed at a distance binary events are just counts capped at 1. 
+
+#### From Ordering to Intensities
+Pseudo-likelihoods primarily care about the ordering of events rather than the absolute scale of time. They effectively discard the actual duration of time between events in favour of focusing on who failed before whom. By parameterizing time via a discrete index, we move from mere rankings to **intensities**. We model the actual "velocity" of risk in every interval, which allows us to place **Bayesian priors** on the baseline hazard itself (such as Random Walks or Splines). This enforces a "temporal smoothness" that prevents the background risk from jumping erratically.
+
+In frequentist survival analysis, the Cox model utilizes a **partial likelihood** to estimate effects without specifying the baseline hazard. This approach employs Maximum Likelihood Estimation (MLE) on the function:
+
+$$L_p(\beta) = \prod_{i:d_i=1} \frac{\exp(X_i \beta)}{\sum_{j \in R(t_i)} \exp(X_j \beta)}$$
+
+This is technically a profile likelihood rather than a full probability distribution of the observed survival times. Any derivation of the hazard is "backed-out" afterward, but  because it only models the relative ranking of events and discards the absolute temporal intervals between them, it is not a generative density. This makes it unamenable to a rigorous Bayesian framework, as one cannot define a valid posterior $P(\beta | \text{Data}) \propto P(\text{Data} | \beta)P(\beta)$ without a likelihood that describes the complete data-generating process, including the "nuisance" baseline.
+
+The Poisson likelihood specification solves this by reframing survival as a counting process over discretized time bins. By mapping the survival hazard to the mean of a Poisson distribution, we transition from an incomplete pseudo-likelihood to a full, generative likelihood:
+
+$$d_{it} \sim \text{Poisson}(\lambda(t)), \quad \text{where} \quad \lambda(t) = Y_{it} \cdot \Delta t \cdot \lambda_{it}$$
+
+This transformation turns the baseline hazard into an explicit, time-indexed parameter rather than a nuisance to be factored out. This structure is perfectly suited for Bayesian modeling; it provides a differentiable likelihood that allows the baseline and time-varying effects to be estimated simultaneously via MCMC, while enabling posterior predictive simulations that the partial likelihood approach cannot natively support.
+
+```{python}
+# | code-fold: true
+# | output: false
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Setup data
+time_bins = np.arange(1, 11)
+baseline_hazard = 0.1 * np.exp(0.2 * time_bins) + 0.5 * np.sin(0.8 * time_bins)
+event_times = [2.2, 4.8, 8.5]
+event_ranks = [1, 2, 3]
+
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
+plt.subplots_adjust(hspace=0.3)
+
+# --- Panel 1: Partial Likelihood (Ordering) ---
+ax1.set_title("Partial Likelihood: Event Ordering", fontsize=14, fontweight='bold')
+ax1.hlines([1, 2, 3], 0, 10, colors='gray', linestyles='--', alpha=0.3)
+for i, et in enumerate(event_times):
+    ax1.annotate('', xy=(et, i+1), xytext=(et, 3.5),
+                 arrowprops=dict(facecolor='red', shrink=0.05, width=2))
+    ax1.text(et, i+0.7, f"Rank {event_ranks[i]}", color='red', ha='center', fontweight='bold')
+
+ax1.set_ylabel("Subject Index")
+ax1.set_ylim(0.5, 4)
+ax1.set_yticklabels([])
+ax1.text(5, 3.5, "Focus: Who fails before whom?\nAbsolute time and hazard shape are 'nuisance'.", 
+         bbox=dict(facecolor='white', alpha=0.8), ha='center')
+
+# --- Panel 2: Poisson Intensity (Explicit Parameterization) ---
+ax2.set_title("Poisson Likelihood: Intensity Estimation (Discrete Bins)", fontsize=14, fontweight='bold')
+
+# Draw the bins
+for b in time_bins:
+    ax2.axvline(b, color='black', alpha=0.1, linestyle='-')
+    ax2.bar(b-0.5, baseline_hazard[b-1], width=0.9, alpha=0.3, color='blue', label='Bin Intensity' if b==1 else "")
+
+# Smooth hazard curve (the "Explicit Parameter")
+x_smooth = np.linspace(0.5, 9.5, 100)
+y_smooth = 0.1 * np.exp(0.2 * x_smooth) + 0.5 * np.sin(0.8 * x_smooth)
+ax2.plot(x_smooth, y_smooth, color='blue', linewidth=3, label=r'Estimated $\lambda(t)$')
+
+ax2.set_xlabel("Time (Discrete Index)")
+ax2.set_ylabel(r"Hazard Intensity $\lambda$")
+ax2.legend()
+ax2.text(5, 1.5, "Focus: Risk intensity in each bin.\nTime is an explicit parameter (t).", 
+         bbox=dict(facecolor='white', alpha=0.8), ha='center')
+
+plt.tight_layout()
+
+fig.savefig("poisson_approximation.png")
+
+
+```
+
+![](poisson_approximation.png)
+
+
+The Poisson bridge treats time as an **explicit covariate** rather than a nuisance to be conditioned away. By mapping the hazard to a discrete index, we gain a "universal currency" of probability. This allows the baseline risk, the treatment effects, and the mediated paths to all live in the same mathematical space, estimated simultaneously through a single likelihood formulation.
 
 ```{python}
 # | output: false
@@ -697,11 +895,39 @@ aalen_dpa_model, idata_aalen =  make_model(data, basis)
 
 ```
 
+### The Softplus Link: Preserving Aalen's Additivity
+
+In our `PyMC` implementation, the core challenge of an **Additive Hazards** model is ensuring that the hazard intensity $\lambda(t)$ remains strictly positive, as a negative risk is physically impossible. While Aalen's original formulation often struggled with this constraint (sometimes requiring hard clipping at zero), our model utilizes the **Softplus link** (`pm.math.log1pexp`) to provide a robust, differentiable solution.
+
+::: {.callout-note}
+### The Softplus Link
+
+The Softplus function, implemented via `pm.math.log1pexp(x)`, is defined as:
+
+$$f(x) = \ln(1 + \exp(x))$$
+
+In the context of this survival model, it serves as a smooth link function that transforms the linear combination of effects into a strictly positive hazard intensity. Unlike a hard truncation at zero, which creates non-differentiable "corners" that hinder NUTS sampling, the Softplus function provides a continuous manifold. It allows the additive components—the baseline $\alpha_0(t)$, the direct effect $\alpha_1(t)$, and the mediator effect $\alpha_2(t)$—to fluctuate freely while ensuring the resulting Poisson mean $\lambda(t)$ is always physically plausible ($> 0$).
+
+:::
+
+### Implementation Summary
+We used our splines and random walk parameterisation to represent time-varying hazard intensities and then preserved the additive structure by using he softplus link. Strictly speaking, this is no longer an identity-link Aalen model; it is a smooth, monotone transformation chosen for computational stability. The causal interpretation relies on monotonicity, not exact linearity. By defining `Lambda = time_at_risk * pm.math.log1pexp(log_lambda_t)`, we have created a generative model where the total hazard is the sum of time-varying intensities. This allows for a clean decomposition of causal paths:
+
+* **Direct Intensity:** $\alpha_{1}(t)$ (the time-varying coefficient for treatment)
+* **Indirect Intensity:** $\beta_{1}(t) \cdot \alpha_{2}(t)$ (the product of the $A$ and $B$ paths)
+
+This structure is perfectly suited for Bayesian modeling, providing a "well-behaved" likelihood that handles the Aalen additivity while remaining amenable to MCMC. We can see the model structure illustrated in the `PyMC` graph. 
+
 ```{python}
 
 pm.model_to_graphviz(aalen_dpa_model)
 
 ```
+
+## Evaluating the Dynamic Paths Analysis
+
+The use of B-splines to model time-varying effects introduces a critical hyperparameter: the number of knots. The knots determine the "wiggliness" or flexibility of the recovered hazard paths. To ensure the causal conclusions are not artifacts of an underfit or overfit baseline, we perform a sensitivity analysis by varying the knot density and comparing the models using Leave-One-Out Cross-Validation (LOO).
+
 
 ```{python}
 
@@ -720,8 +946,18 @@ az.plot_compare(compare_df, figsize=(8, 6), plot_ic_diff=True)
 
 ```
 
+**Why Spline Sensitivity Matters**
+Evaluating the model across a range of spline dimensions (from 4 to 14 knots) is essential for several reasons:
+
+- Bias-Variance Trade-off: Too few knots (e.g., 4) may over-smooth the hazard, potentially masking sudden changes in treatment effects or surges in the baseline risk. Conversely, too many knots (e.g., 14) can lead to "overfitting the noise," where the model interprets random fluctuations in the Poisson counting process as meaningful temporal trends.
+
+- Structural Stability of Causal Paths: The goal is to identify a "plateau" where adding more knots no longer significantly improves the expected log pointwise predictive density (ELPD). If the decomposition of direct and indirect effects remains consistent across this plateau, we gain high confidence that the dynamic mediation we are observing is a robust feature of the data.
+
+- Predictive Performance: Using `az.compare`, we can formally rank the models. The LOO comparison identifies the optimal degree of complexity that maximizes predictive accuracy for out-of-sample data, ensuring that our "Poisson Bridge" provides a reliable generative representation of the survival process.
+
 ![](spline_loo_comparison.png)
 
+In the above plot we seen the model fits ranked by the number of splines. Suggesting that 12 is the optimal of the tested splines. The stability of the implied direct effects can be seen in the below plot. 
 
 ```{python}
 # | eval: false
@@ -736,21 +972,47 @@ fig.savefig('forest_plot_comparing_tv_direct.png')
 
 ![](forest_plot_comparing_tv_direct.png)
 
+The stability of the direct effects across the 10-14 knot range confirms our causal conclusions aren't artifacts of oversmoothing or overfitting."
+
+More diagnostically, we can see how the sampler behaves well for our model too. The trace plots show that each chain properly explores the parameter space. 
 
 ```{python}
 
 az.plot_trace(idata_aalen, var_names=['tv_direct_effect', 'tv_indirect_effect', 'tv_total_effect', 'beta_high', 'beta_low'], divergences=False);
 plt.tight_layout()
 
-
-
 ```
 
 
-```{python}
+#### Posterior Predictive Checks (PPC)
+The PPC is the model's primary diagnostic tool for assessing "goodness-of-fit." By simulating new data from the posterior and comparing it to the actual observations, we ensure the model has accurately captured the data-generating process. 
 
-vars_to_plot = ['tv_direct_effect', 'tv_indirect_effect', 'tv_total_effect']
-labels = ['Time varying Direct Effect', 'Time varying Indirect Effect', 'Time varying Total Effect']
+The first plot on the left shows the **Mediator Outcome**. The good fit validates the autoregressive B-spline component ($X \to M$). A strong overlap indicates that the Gaussian path is correctly specified and the B-splines are capturing the mediator's temporal trend.
+
+The second plot on the right panel confirms the "Poisson Bridge" is functioning. It checks if the simulated event counts per time bin match the observed frequency. A tight fit here confirms that your hazard intensity is neither over-smoothed nor tracking random noise.
+
+```{python}
+#| output: false
+ax = az.plot_ppc(idata_aalen);
+ax[0].set_title("Posterior Predictive Checks \n Mediator Outcome")
+ax[1].set_title("Posterior Predictive Checks \n Event Outcome")
+fig = ax[0].figure
+fig.savefig("Posterior_Predictive_checks.png")
+```
+
+![](Posterior_Predictive_checks.png)
+
+The model checks appear healthy, but have we actually replicated the dpasurv analysis?
+
+#### Time-Varying Causal Effects (Log-Additive Scale)
+The next plots aim to recreate the `dpasurv` analysis. They represent the **additive decomposition** of the treatment's impact within the linear predictor. Because these are plotted on the scale of the $\alpha$ coefficients, they show the "raw" causal pressure before the Softplus transformation.
+
+* **Time-Varying Direct Effect ($\alpha_{1,t}$):** This path shows a steady downward trend into negative territory, indicating that the treatment has a progressively **protective direct effect** on the hazard. If analyzed in isolation, this would suggest the treatment is successfully reducing risk over time.
+* **Time-Varying Indirect Effect ($\beta_t \cdot \alpha_{2,t}$):** In contrast, the indirect path shows a stable, materializing **harmful effect** mediated through $M$. As the study progresses, the mediator offsets the treatment's benefits, introducing a source of risk that grows in certainty (narrowing HDI).
+* **Time-Varying Total Effect:** The sum of these two opposing forces. Because the harmful indirect effect partially "cancels out" the protective direct effect, the total effect appears significantly more modest—or even neutral. This reveals a **masked harmful effect**: without this decomposition, the treatment might be judged as ineffective, when in reality, it is highly effective but being undermined by the specific biological or behavioral pathway of the mediator.
+
+```{python}
+# | code-fold: true
 
 def plot_effects(idata, vars_to_plot, labels, scale="Log Hazard Ratio Scale"):
     fig, axs = plt.subplots(1, 3, figsize=(20, 10))
@@ -782,9 +1044,27 @@ def plot_effects(idata, vars_to_plot, labels, scale="Log Hazard Ratio Scale"):
     plt.tight_layout()
     return fig
 
+
+```
+
+```{python}
+vars_to_plot = ['tv_direct_effect', 'tv_indirect_effect', 'tv_total_effect']
+labels = ['Time varying Direct Effect', 'Time varying Indirect Effect', 'Time varying Total Effect']
+
 plot_effects(idata_aalen, vars_to_plot, labels);
 
 ```
+
+
+::: {.callout-tip}
+### Relationship to Aalen's Additive `dpasurv`
+
+The structure of the recovered effects in our Bayesian model closely replicates the trends seen in the frequentist `dpasurv` implementation. However, there is a notable difference in the **scale of the y-axis** and the magnitude of the trajectories. 
+
+This divergence is expected and stems from our use of the **Softplus link function** ($f(x) = \ln(1 + \exp(x))$). While `dpasurv` typically operates on a strictly linear identity scale (which can result in negative hazards if not carefully constrained), our Bayesian model operates on a transformed scale to ensure sampling stability and physical plausibility. The Softplus scaling "squashes" values as they approach zero, meaning that while the *directional* causal story (protective direct effect vs. harmful indirect effect) remains identical, the absolute units of the cumulative effect are scaled differently to accommodate the non-linear map to the Poisson intensity.
+:::
+
+Given that the previous causal decomposition occurs on the transformed scale of the linear predictor, interpreting the raw magnitudes of the $\alpha$ coefficients can be challenging when comparing against traditional identity-scale models like `dpasurv`. To move from these internal model dynamics to a more universally interpretable metric, we calculate the Time-Varying Relative Risk (RR). By taking the ratio of the hazard with exposure and compare it with the baseline hazard.
 
 ```{python}
 
@@ -793,7 +1073,21 @@ labels = ['Time varying Baseline Hazard', 'Time varying Hazard + Exposure', 'Tim
 plot_effects(idata_aalen, vars_to_plot, labels, scale='Hazard Scale');
 ```
 
+This effectively "normalizes" the protective direct effects and harmful indirect effects, allowing us to visualize the net impact on the risk profile in a format familiar to survival analysis, regardless of the underlying link function or scaling required for MCMC sampling. A horizontal line at $1$ would imply a neutral treatment with no more or less protective effects. Instead, the slope indicates that the treatment becomes more protective over time. The risk for the exposed group drops by roughly $30\%$ ($RR \approx 0.7$) by the end of the observation period.
 
+## Conclusion: The Journey Is the Model
+When Odysseus finally reached Ithaca, his journey home had taken ten years—not because the distance was far, but because the voyage itself transformed him and his circumstances. This is the fundamental insight of dynamic path analysis: outcomes are not destinations; they are cumulative consequences of time-varying processes.
 
+In this post, we've built a complete Bayesian implementation of Aalen's Dynamic Path Model that moves beyond the proportional hazards paradigm. Rather than assuming a treatment has a constant multiplicative effect throughout a study, we've allowed direct, indirect, and total effects to evolve as smooth functions of time using B-spline basis expansions. This shift from multiplicative to additive models is more than technical—it's conceptual. Effects become **increments to risk** rather than multipliers, making them naturally interpretable as causal estimands. Time-varying coefficients directly answer: "What is the cumulative risk attributable to this exposure *right now*?" And crucially, direct and indirect effects become **sums of paths traced through time**.
 
+By adopting the "Poisson Bridge," we've established a fully generative model where both baseline hazards and time-varying effects are explicit parameters. This additivity, combined with the Softplus link function (log1pexp), gives us a model that is both theoretically grounded in causal inference and practically stable for MCMC sampling. 
+
+The payoff is substantial: the analysis revealed that while the treatment has a strong protective direct effect (reducing risk by ~30%), this benefit is partially offset by a harmful indirect pathway through the mediator. Without temporal decomposition, the treatment might appear only modestly effective—or even neutral. Our Bayesian model successfully replicates the directional trends from the `dpasurv` R package, while providing richer uncertainty quantification through full posterior distributions rather than bootstrap confidence intervals.
+Dynamic path analysis is particularly valuable when effects attenuate or strengthen over time—drug effectiveness that fades, policies with delayed impacts, interventions with "honeymoon periods"—or when the mechanism through which treatment works changes as the study progresses. When proportional hazards are implausible or you need full Bayesian uncertainty quantification, this approach provides a principled framework.
+
+Odysseus's journey reminds us that understanding how we arrive at outcomes is often more valuable than simply knowing whether we arrived. In causal inference, this means moving beyond static treatment effects to models that capture the full temporal dynamics of intervention, mediation, and risk. The tools presented here—B-splines for smooth time-varying effects, the Poisson Bridge for Bayesian inference, and dynamic path decomposition for causal interpretation—provide a principled way to track these journeys. Whether you're evaluating a New Year's resolution, a clinical trial, or a policy intervention, this framework lets you see not just the destination, but the evolving forces that shaped the voyage.
+
+#### Further Reading
+
+This implementation builds on Fosen et al.'s 2006 paper "Dynamic path analysis—a new approach to analyzing time-dependent covariates" (*Lifetime Data Analysis*) and Aalen's foundational 1989 work on additive regression models for survival data (*Statistics in Medicine*) and the discussion of causal inference in Brostrom's _Event History Analysis with R_. We aim to replicate, as close as feasible, the results reported in [`dpasurv`](https://opensource.nibr.com/dpasurv/articles/dpa.html#dynamic-path-analysis-1)
 
