@@ -622,7 +622,7 @@ This perspective is important conceptually. Rather than viewing cumulative coeff
 
 ## Survival Models and their Likelihood
 
-In contemporary survival analysis, the adoption of the **Poisson bridge** is a strategic move to resolve the fundamental incompatibility between Bayesian inference and the "pseudo-likelihoods" that dominate frequentist survival models. 
+In contemporary survival analysis, the adoption of the **Poisson bridge** is a strategic move to resolve an incompatibility between Bayesian inference and the "pseudo-likelihoods" that are often used in survival modelling. 
 
 ### Explicit Parameterization via the Discrete Index
 
