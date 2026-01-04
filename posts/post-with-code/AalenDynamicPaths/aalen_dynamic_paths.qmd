@@ -1116,7 +1116,66 @@ print(f"Imputed Mean Relative Risk {np.round(rr_mean.item(), 3)} and 50% HDI {[r
 print(f"Imputed Percent Risk Reduction of {1- np.round(rr_mean.item(), 3)}")
 ```
 
-The marginal risk ratio tells us treatment reduces events by ~17% by the end of study period. This single number, however, conceals the rich temporal story: the treatment is consistently protective (direct effect), but partially undermined by a harmful mediated pathway emerging around Day 100. The dynamic path model gives you both the summary *and* the mechanistic decomposition over time. Yet, the imputation mechanism is not merely for bookkeeping and statistical summaries. It can be extended to compute alternative causal estimands under different counterfactual dosages. The imputaton tooling is an invitation to explore possible worlds and trace the consequences of counterfactual decisions. 
+The marginal risk ratio tells us treatment reduces events by ~17% by the end of study period. This single number, however, conceals the rich temporal story: the treatment is consistently protective (direct effect), but partially undermined by a harmful mediated pathway emerging around Day 100. The dynamic path model gives you both the summary *and* the mechanistic decomposition over time. Yet, the imputation mechanism is not merely for bookkeeping and statistical summaries. It can be extended to compute alternative causal estimands under different counterfactual settings to identify other causal estimands like the non-parametric natural direct effect. 
+
+```{python}
+
+# 1. Access the posterior components
+post = idata_aalen.posterior
+# Get the 'Natural' mediator under X=0 from your existing trt0 idata
+m_nat = az.extract(idata_trt0.posterior_predictive['obs_m']) 
+
+# 2. Extract time-varying coefficients
+# (b is the bin index for each observation in df_long)
+b = df_long['bin_idx'].values
+a0 = az.extract(post['alpha_0_t'].sel(time_bins=b))
+a1 = az.extract(post['alpha_1_t'].sel(time_bins=b))
+a2 = az.extract(post['alpha_2_t'].sel(time_bins=b))
+
+eta_ndes = []
+N = 500
+for i in range(N):
+    eta_nde = a0['alpha_0_t'][:, i].values + (a1['alpha_1_t'][:, i].values * 1) + (a2['alpha_2_t'][:, i].values * m_nat['obs_m'][:, i].values)
+    eta_ndes.append(eta_nde)
+eta_ndes = np.asarray(eta_ndes)
+
+
+dt = df_long['dt'].values
+hazard_nde = dt * np.log1p(np.exp(eta_ndes))
+nde_events = np.asarray([np.random.poisson(hazard_nde[i, :], size=len(dt)) for i in range(N)])
+
+ctrl_events = az.extract(idata_trt0.posterior_predictive['obs_event'])
+ctrl_events = np.asarray([ctrl_events['obs_event'][:, i].values for i in range(N)])
+
+nde_rr = np.mean(nde_events[:, last_obs.index], axis=1) / np.mean(ctrl_events[:, last_obs.index], axis=1)
+
+# 0.75
+mean_rr = np.mean(nde_rr)
+print(f"Expected Natural Direct Effect as Relative Risk: {mean_rr}")
+print(f"Expected Natural Direct Effect as %Risk Reduction: {1 - mean_rr}")
+```
+
+In the Potential Outcomes framework, the NDE is the contrast between the outcome under treatment and the outcome under control, while holding the mediator constant at its natural value under control. By nesting the $M(0)$ potential outcome within the $Y(1)$ potential outcome, we create a "pure" experimental condition that does not exist in nature. This allows us to measure the intervention's potency while surgically removing its ability to act through the mediator. In our time-varying model, this ensures that the Direct Effect we report is the "unmediated" pressure of the treatment, isolated from the evolving dynamics of the secondary causal path.
+
+```{python}
+#| output: false
+#| code-fold: false
+fig, axs = plt.subplots(1, 2, figsize=(12, 4))
+axs[0].hist(nde_rr, ec='black', alpha=0.5, color='slateblue')
+axs[0].axvline(mean_rr, color='k', label='mean relative risk')
+axs[0].legend();
+axs[0].set_title("Non Parametric Estimate of Natural Direct Effect \n Expessed as Relative Risk")
+axs[1].hist(1-nde_rr, ec='black', alpha=0.5, color='teal')
+axs[1].axvline(1-mean_rr, color='k', label='mean percentage risk reduction')
+axs[1].legend();
+axs[1].set_title("Non Parametric Estimate of Natural Direct Effect \n Expessed as Percentage of Risk Reduction");
+fig.savefig("NonparametricEstimateNDE.png");
+
+```
+
+![](NonparametricEstimateNDE.png)
+
+The imputaton tooling is an invitation to explore possible worlds and trace the consequences of counterfactual decisions. 
 
 ## Conclusion: The Journey Is the Model
 When Odysseus finally reached Ithaca, his journey home had taken ten years—not because the distance was far, but because the voyage itself transformed him and his circumstances. This is the fundamental insight of dynamic path analysis: outcomes are not destinations; they are cumulative consequences of time-varying processes.
