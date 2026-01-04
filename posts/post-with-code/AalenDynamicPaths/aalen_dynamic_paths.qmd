@@ -93,7 +93,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 def plot_temporal_dag(stages=[0.1, 0.5, 0.9], labels=["Act I", "Act II", "Act III"]):
-    fig, axs = plt.subplots(1, 3, figsize=(18, 5))
+    fig, axs = plt.subplots(1, 3, figsize=(18, 10))
     
     # Define nodes: Exposure, Mediator, Hazard
     nodes = {'X': (0, 1), 'M': (1, 2), 'H': (2, 1)}
@@ -391,10 +391,7 @@ mean_levels = df.groupby('subject')[['M', 'event', 'x', 'dose']].agg({'event': '
 mean_levels
 
 # Assuming your dataframe is named 'df'
-plt.figure(figsize=(15, 8))
-
-
-g = sns.FacetGrid(mean_levels, col="dose", hue="Terminal Event Y/N", palette='viridis', height=5)
+g = sns.FacetGrid(mean_levels, row="dose", hue="Terminal Event Y/N", palette='viridis', height=5)
 g.map(sns.scatterplot, "Observation Periods", "Mean_Subject_Mediator", alpha=0.7)
 g.add_legend()
 
@@ -416,7 +413,7 @@ With these exploratory insights in hand, we now turn to the technical implementa
 
 This function restructures the original start–stop survival data into a finite set of time bins, where each bin corresponds to a unique (start, stop) interval observed in the data representation. By assigning every subject–interval to a discrete time index, we obtain a representation in which all time-varying quantities are constant within bins but allowed to vary across bins.
 
-We discretise time in to sequential blocks of an evolving narrative. Rather than treating regression coefficients as fully continuous functions of time, we work with piecewise constant approximations indexed by these bins. Conceptually, this mirrors the classical Aalen estimator, where coefficient paths only change at observed event times and remain flat in between.
+We discretise time in to sequential blocks of an evolving narrative. Rather than treating regression coefficients as fully continuous functions of time, we work with piecewise constant approximations indexed by these bins. Conceptually, this mirrors the classical Aalen estimator, where coefficient paths only change at observed event times and remain flat in between. A sequence of chapters in our odyssey. 
 
 ```{python}
 
@@ -599,7 +596,7 @@ basis_df.head(10)
 
 In Aalen’s additive model, the primary objects of interest are _cumulative regression coefficients_: time-indexed functions that accumulate the effect of a covariate on the hazard as time progresses. Empirically, these functions are only identified at a discrete set of time points and are typically visualised as step functions that jump at event times.
 
-Our discretisation of time into bins provides a natural scaffold for working with these cumulative effects. Instead of letting each time bin jump independently—which produces those jagged dpasurv plots—we smooth the path with splines
+Our discretisation of time into bins provides a natural scaffold for working with these cumulative effects. Instead of letting each time bin jump independently (which produces those jagged `dpasurv` plots) we smooth the path with splines. Weaving a thread through the jagged sequence. 
 
 ```{python}
 # | output: false
@@ -898,7 +895,7 @@ aalen_dpa_model, idata_aalen =  make_model(data, basis)
 
 ### The Softplus Link: Preserving Aalen's Additivity
 
-In our `PyMC` implementation, the core challenge of an **Additive Hazards** model is ensuring that the hazard intensity $\lambda(t)$ remains strictly positive, as a negative risk is physically impossible. While Aalen's original formulation often struggled with this constraint (sometimes requiring hard clipping at zero), our model utilizes the **Softplus link** (`pm.math.log1pexp`) to provide a robust, differentiable solution.
+In our `PyMC` implementation, the core challenge of an **Additive Hazards** model is ensuring that the hazard intensity $\lambda(t)$ remains strictly positive. While Aalen's original formulation often struggled with this constraint (sometimes requiring hard clipping at zero), our model utilizes the **Softplus link** (`pm.math.log1pexp`) to provide a robust, differentiable solution.
 
 ::: {.callout-note}
 ### The Softplus Link
@@ -927,7 +924,7 @@ pm.model_to_graphviz(aalen_dpa_model)
 
 ## Evaluating the Dynamic Paths Analysis
 
-The use of B-splines to model time-varying effects introduces a critical hyperparameter: the number of knots. The knots determine the "wiggliness" or flexibility of the recovered hazard paths. To ensure the causal conclusions are not artifacts of an underfit or overfit baseline, we perform a sensitivity analysis by varying the knot density and comparing the models using Leave-One-Out Cross-Validation (LOO).
+The use of B-splines to model time-varying effects introduces a critical hyperparameter: the number of knots. The knots determine the "wiggliness" or flexibility of the recovered hazard paths. To ensure the causal conclusions are not artifacts of an underfit or overfit baseline, we perform a sensitivity analysis by varying the knot density and comparing the models using Leave-One-Out Cross-Validation (LOO). This will help us choose how to chart Odysseus' path. How smooth the journey.
 
 
 ```{python}
