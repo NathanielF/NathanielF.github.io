@@ -1173,14 +1173,17 @@ fig.savefig("NonparametricEstimateNDE.png");
 
 The imputaton tooling is an invitation to explore possible worlds and trace the consequences of counterfactual decisions. 
 
-## Conclusion: The Journey Is the Model
+### How we got here
+
 When Odysseus finally reached Ithaca, his journey home had taken ten years—not because the distance was far, but because the voyage itself transformed him and his circumstances. This is the fundamental insight of dynamic path analysis: outcomes are not destinations; they are cumulative consequences of time-varying processes.
 
 In this post, we've built a complete Bayesian implementation of Aalen's Dynamic Path Model that moves beyond the proportional hazards paradigm. Rather than assuming a treatment has a constant multiplicative effect throughout a study, we've allowed direct, indirect, and total effects to evolve as smooth functions of time using B-spline basis expansions. This shift from multiplicative to additive models is more than technical—it's conceptual. Effects become **increments to risk** rather than multipliers, making them naturally interpretable as causal estimands. Time-varying coefficients directly answer: "What is the cumulative risk attributable to this exposure *right now*?" And crucially, direct and indirect effects become **sums of paths traced through time**.
 
 By adopting the "Poisson Bridge," we've established a fully generative model where both baseline hazards and time-varying effects are explicit parameters. This additivity, combined with the Softplus link function (log1pexp), gives us a model that is both theoretically grounded in causal inference and practically stable for MCMC sampling. 
 
-The payoff is substantial: Dynamic path analysis shows its value when effects attenuate or strengthen over time e.g. drug effectiveness that fades, policies with delayed impacts, interventions with "honeymoon periods". Without temporal decomposition, the treatment might appear only modestly effective—or even neutral. Our Bayesian model successfully replicates the directional trends from the `dpasurv` R package, while providing richer uncertainty quantification through full posterior distributions rather than bootstrap confidence intervals.
+## Conclusion: The Journey Is the Model
+
+The payoff is substantial: most causal inference treats time as a container in which effects happen. Dynamic path analysis treats time as the medium through which causation propagates. When effects accumulate additively over time, direct and indirect paths become visible as distinct trajectories. It shows its value when effects attenuate or strengthen over time e.g. drug effectiveness that fades, policies with delayed impacts, interventions with "honeymoon periods". This reveals a category of causal phenomena invisible to endpoint analysis: treatments that work but are undermined, treatments that fail early but succeed late, and mediators that flip from protective to harmful as the process unfolds. The cost of ignoring temporal dynamics is not just statistical inefficiency—it's misdiagnosis of mechanism, which means intervening on the wrong target at the wrong time.
 
 Odysseus's journey reminds us that understanding how we arrive at outcomes is often more valuable than simply knowing whether we arrived. In causal inference, this means moving beyond static treatment effects to models that capture the full temporal dynamics of intervention, mediation, and risk. The tools presented here—B-splines for smooth time-varying effects, the Poisson Bridge for Bayesian inference, and dynamic path decomposition for causal interpretation—provide a principled way to track these journeys. Whether you're evaluating a New Year's resolution, a clinical trial, or a policy intervention, this framework lets you see not just the destination, but the evolving forces that shaped the voyage.
 
