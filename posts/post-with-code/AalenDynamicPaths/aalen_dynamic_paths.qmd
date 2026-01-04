@@ -391,7 +391,7 @@ mean_levels = df.groupby('subject')[['M', 'event', 'x', 'dose']].agg({'event': '
 mean_levels
 
 # Assuming your dataframe is named 'df'
-plt.figure(figsize=(15, 6))
+plt.figure(figsize=(15, 8))
 
 
 g = sns.FacetGrid(mean_levels, col="dose", hue="Terminal Event Y/N", palette='viridis', height=5)
@@ -1102,8 +1102,12 @@ with aalen_dpa_model:
 We summarise the imputed posterior distribution by describing range of probable RR scores. We clip the maximim posterior predictive distribution at 1 as scores above 1 are an artefact the Poisson likelihood, not a meaningful contribution to the rate. 
 
 ```{python}
+## Get last imputed observation per subject
+last_obs = df_long.loc[df_long.groupby('subject')['bin_idx'].idxmax()]
+post1 = idata_trt1['posterior_predictive']['obs_event'].sel(obs = last_obs.index)
+post0 = idata_trt0['posterior_predictive']['obs_event'].sel(obs = last_obs.index)
 ## Clipping at one in case Poisson prediction exceeds 1. Event is binary.
-rr_imputed = idata_trt1['posterior_predictive']['obs_event'].clip(max=1).mean(dim='obs') / idata_trt0['posterior_predictive']['obs_event'].clip(max=1).mean(dim='obs')
+rr_imputed = post1.clip(max=1).mean(dim='obs') / post0.clip(max=1).mean(dim='obs')
 
 rr_mean = rr_imputed.mean()
 rr_hdi = az.hdi(rr_imputed, hdi_prob=.5)
@@ -1112,7 +1116,7 @@ print(f"Imputed Mean Relative Risk {np.round(rr_mean.item(), 3)} and 50% HDI {[r
 print(f"Imputed Percent Risk Reduction of {1- np.round(rr_mean.item(), 3)}")
 ```
 
-The marginal risk ratio tells us treatment reduces events by ~20% on average across all time periods. This single number, however, conceals the rich temporal story: the treatment is consistently protective (direct effect), but partially undermined by a harmful mediated pathway emerging around Day 100. The dynamic path model gives you both the summary *and* the mechanistic decomposition over time. Yet, the imputation mechanism is not merely for bookkeeping and statistical summaries. It can be extended to compute alternative causal estimands under different counterfactual dosages. The imputaton tooling is an invitation to explore possible worlds and trace the consequences of counterfactual decisions. 
+The marginal risk ratio tells us treatment reduces events by ~17% by the end of study period. This single number, however, conceals the rich temporal story: the treatment is consistently protective (direct effect), but partially undermined by a harmful mediated pathway emerging around Day 100. The dynamic path model gives you both the summary *and* the mechanistic decomposition over time. Yet, the imputation mechanism is not merely for bookkeeping and statistical summaries. It can be extended to compute alternative causal estimands under different counterfactual dosages. The imputaton tooling is an invitation to explore possible worlds and trace the consequences of counterfactual decisions. 
 
 ## Conclusion: The Journey Is the Model
 When Odysseus finally reached Ithaca, his journey home had taken ten years—not because the distance was far, but because the voyage itself transformed him and his circumstances. This is the fundamental insight of dynamic path analysis: outcomes are not destinations; they are cumulative consequences of time-varying processes.
