@@ -38,25 +38,18 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 If you look to Odysseus on the morning the gates of Troy fell, he is well set up for a happy journey home. He is the architect of victory, his ships are loaded with spoils, and the wind is at his back. Yet, an odyssey can't be completed in a single day and conclusions drawn on the outset rarely survive journey's end. 
 
-When we rely on static snapshots, like a single blood draw or a particular sales campaign, we are watching Odysseus board his ship and guessing how the story ends. We ignore the __consequences emerging in time.__ This is an apt observation with which to begin the year. Will your new year's resolutions, survive the January? This is the kind of question we'll assess here. 
+When we rely on static snapshots, like a single blood draw or a particular sales campaign, we are watching Odysseus board his ship and guessing how the story ends. We ignore the __consequences emerging in time.__ We often begin the year with concerns for outcomes, but will your new year's resolutions survive the January? This is the kind of question we'll assess here!
 
 ::: {.callout-note icon=false}
-### What You'll Learn in This Post
-This tutorial demonstrates how to implement Aalen's Dynamic Path Model in PyMC to decompose time-varying causal effects in survival analysis. You'll learn:
+### Where are we going?
+This tutorial shows you how to track causation as it unfolds. We'll demonstrate how to implement Aalen's Dynamic Path Model in PyMC to decompose time-varying causal effects in survival analysis. We'll cover:
 
-- The Theory: Why static snapshots miss the story and how interventions evolve over time.
+- The Problem: Merely static snapshots miss the story of how interventions: (a) evolve over time and (b) can be decomposed.
 - The Challenge: Moving from proportional hazards to additive models that allow effects to wax, wane, or reverse
 - The Solution: Using B-splines and the "Poisson Bridge" to create a fully Bayesian dynamic path model
-- The Application: Replicating the dpasurv R package benchmark and revealing masked mediation effects
+- The Application: Replicating the `dpasurv` R package benchmark and revealing masked mediation effects
 
-**Key Technical Components**:
-
-- Time discretization and B-spline basis construction
-- Simultaneous equation systems for mediator and hazard models
-- The Softplus link for maintaining positive hazards
-- Direct, indirect, and total effect decomposition over time
-
-By the end, you'll be able to track how a New Year's resolution (or any intervention) doesn't just succeed or fail—it transforms through distinct phases, with different mechanisms dominating at different times.
+By the end, you'll see that a New Year's resolution (or any intervention) doesn't simply succeed or fail. It transforms through phases, with different mechanisms dominating at different times. Understanding how such commitments move us lets us steer toward better outcomes.
 :::
 
 ## Interventions and Attenuated Effects: The Theory
@@ -82,7 +75,6 @@ All three components are modelled as time-varying functions that distil the effe
 ### From Static to Dynamic: A Sequence of DAGs
 
 Standard causal inference often relies on a static Directed Acyclic Graph (DAG) to represent the "rules" of the system. But in a survival context, the DAG itself is dynamic. We can think of the model as a sequence of DAGs—one for each "scene" in our odyssey—where the causal arrows between $X$, $M$, and the Hazard ($\lambda$) strengthen or weaken over time.
-
 
 We can visualize this "filmstrip" of causality using `networkx`. We have a series of dynamic causal DAGs representing our assumptions of the relationships:
 
