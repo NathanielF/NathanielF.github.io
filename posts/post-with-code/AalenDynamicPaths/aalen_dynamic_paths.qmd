@@ -134,7 +134,7 @@ fig.savefig("evolving_dag.png")
 
 ![](evolving_dag.png)
 
-Seeing it this way makes it clearer that we are estimating a system of equations over time. To truly capture the journey, we cannot look at these variables in isolation. In our Odyssey, the "storm" ($M$) is not an independent accident; it is a consequence of the path Odysseus ($X$) chose to take. To model this, we must treat the intervention and the outcome as a **system of simultaneous equations**.
+To truly capture the journey, we cannot look at these variables in isolation. The "storm" ($M$) is not independent—it's a consequence of the path Odysseus chose. We must treat intervention and outcome as a system of simultaneous equations,
 
 ::: {.callout-important}
 
@@ -209,7 +209,7 @@ The figure below shows the cumulative direct, indirect, and total effects estima
 
 ![](dpasurv_benchmark.png)
 
-Notice the jumpy, step-like patterns in all three panels. This is characteristic of the `dpasurv` estimator, which produces cumulative coefficients by summing contributions at discrete event time intervals. Each step corresponds to a unique event time, with the height of the step reflecting the combined contribution of all events that occurred at that time. The gray lines indicate the approximate bootstrap confidence intervals, which widen as events become sparse, reflecting increasing uncertainty over time.
+Notice the step-like patterns—characteristic of `dpasurv`, which sums contributions at discrete event times. As events become sparse, confidence intervals widen.
 
 The main pattern we're seeing here is that the direct effect of `x` in the first panel. The curve begins to dip below zero almost immediately and maintains a consistent downward slope, meaning the negative cumulative effect indicates that the intervention itself is actively __reducing the hazard.__. This is good, but contrast it with slight emerging effect in central panel. For the first 100 days, the mediator is a bystander. It is either not being triggered by the intervention or has no impact on survival. Around Day 100, the curve "breaks" and spikes upward. This represents a __positive contribution to the hazard.__ The combination of the total effects reflects this too. The total effect become less negative (closer to zero) after Day 100. This tells us that while the intervention is still helpful overall, its net benefit is being attenuated by the mediator.
 
@@ -416,7 +416,7 @@ With these exploratory insights in hand, we now turn to the technical implementa
 
 This function restructures the original start–stop survival data into a finite set of time bins, where each bin corresponds to a unique (start, stop) interval observed in the data representation. By assigning every subject–interval to a discrete time index, we obtain a representation in which all time-varying quantities are constant within bins but allowed to vary across bins.
 
-This discretisation step is central to our approach. Rather than treating regression coefficients as fully continuous functions of time, we work with piecewise constant approximations indexed by these bins. Conceptually, this mirrors the classical Aalen estimator, where coefficient paths only change at observed event times and remain flat in between.
+We discretise time in to sequential blocks of an evolving narrative. Rather than treating regression coefficients as fully continuous functions of time, we work with piecewise constant approximations indexed by these bins. Conceptually, this mirrors the classical Aalen estimator, where coefficient paths only change at observed event times and remain flat in between.
 
 ```{python}
 
@@ -599,7 +599,7 @@ basis_df.head(10)
 
 In Aalen’s additive model, the primary objects of interest are _cumulative regression coefficients_: time-indexed functions that accumulate the effect of a covariate on the hazard as time progresses. Empirically, these functions are only identified at a discrete set of time points and are typically visualised as step functions that jump at event times.
 
-Our discretisation of time into bins provides a natural scaffold for working with these cumulative effects. Rather than estimating an unconstrained step height for every bin, we approximate each cumulative coefficient path as a smooth function of the bin index, represented as a linear combination of B-spline basis functions.
+Our discretisation of time into bins provides a natural scaffold for working with these cumulative effects. Instead of letting each time bin jump independently—which produces those jagged dpasurv plots—we smooth the path with splines
 
 ```{python}
 # | output: false
@@ -622,11 +622,7 @@ This perspective is important conceptually. Rather than viewing cumulative coeff
 
 ## Survival Models and their Likelihood
 
-In contemporary survival analysis, the adoption of the **Poisson bridge** is a strategic move to resolve an incompatibility between Bayesian inference and the "pseudo-likelihoods" that are often used in survival modelling. 
-
-### Explicit Parameterization via the Discrete Index
-
-The most significant advantage of this approach is that it **replaces the "nuisance" of the baseline hazard with an explicit parameterization of time.** By discretizing the timeline into a finite index of bins, we transform a nebulous, continuous survival function into a structured set of parameters that a Bayesian sampler can navigate.
+We will adapt a Poisson likelihood to estimate survival times. The most significant advantage of this approach over pseudo-likelihood schemes is that it **replaces the "nuisance" of the baseline hazard with an explicit parameterization of time.** By discretizing the timeline into a finite index of bins, we transform a nebulous, continuous survival function into a structured set of parameters that a Bayesian sampler can navigate.
 
 In our discrete-time framework, the baseline hazard is no longer hidden background noise. Instead, it is parameterized via the discrete index $t$, allowing the model to "see" exactly how the background risk changes from the start of the study to its conclusion. This clear mapping provides a well-defined probability distribution for every observed data point:
 
@@ -1082,7 +1078,7 @@ This effectively "normalizes" the protective direct effects and harmful indirect
 
 ## From Time-Varying to Marginal Effects: G-Computation
 
-The time-varying plots reveal *how* treatment effects evolve, but applied work often requires a single summary: **what is the average treatment effect?** Using g-computation, we simulate two counterfactual worlds—one where everyone is treated, one where no one is—and compare outcomes. We're exploring different journey trajectories.
+Using g-computation, we simulate two counterfactual worlds—everyone treated vs. no one treated—and compare outcomes. Different journey trajectories.
 
 ```{python}
 # | output: false
@@ -1155,11 +1151,11 @@ print(f"Expected Natural Direct Effect as Relative Risk: {mean_rr}")
 print(f"Expected Natural Direct Effect as %Risk Reduction: {1 - mean_rr}")
 ```
 
-In the Potential Outcomes framework, the NDE is the contrast between the outcome under treatment and the outcome under control, while holding the mediator constant at its natural value under control. By nesting the $M(0)$ potential outcome within the $Y(1)$ potential outcome, we create a "pure" experimental condition that does not exist in nature. This allows us to measure the intervention's potency while surgically removing its ability to act through the mediator. In our time-varying model, this ensures that the Direct Effect we report is the "unmediated" pressure of the treatment, isolated from the evolving dynamics of the secondary causal path.
+The NDE is the contrast between the outcome under treatment and the outcome under control, while holding the mediator constant at its natural value under control. By nesting the $M(0)$ potential outcome within the $Y(1)$ potential outcome, we create a "pure" experimental condition that does not exist in nature. This allows us to measure the intervention's potency while surgically removing its ability to act through the mediator. In our time-varying model, this ensures that the Direct Effect we report is the "unmediated" pressure of the treatment, isolated from the evolving dynamics of the secondary causal path.
 
 ```{python}
 #| output: false
-#| code-fold: false
+#| code-fold: true
 fig, axs = plt.subplots(1, 2, figsize=(12, 4))
 axs[0].hist(nde_rr, ec='black', alpha=0.5, color='slateblue')
 axs[0].axvline(mean_rr, color='k', label='mean relative risk')
@@ -1184,8 +1180,7 @@ In this post, we've built a complete Bayesian implementation of Aalen's Dynamic 
 
 By adopting the "Poisson Bridge," we've established a fully generative model where both baseline hazards and time-varying effects are explicit parameters. This additivity, combined with the Softplus link function (log1pexp), gives us a model that is both theoretically grounded in causal inference and practically stable for MCMC sampling. 
 
-The payoff is substantial: the analysis revealed that while the treatment has a strong protective direct effect (reducing risk by ~30%), this benefit is partially offset by a harmful indirect pathway through the mediator. Without temporal decomposition, the treatment might appear only modestly effective—or even neutral. Our Bayesian model successfully replicates the directional trends from the `dpasurv` R package, while providing richer uncertainty quantification through full posterior distributions rather than bootstrap confidence intervals.
-Dynamic path analysis is particularly valuable when effects attenuate or strengthen over time—drug effectiveness that fades, policies with delayed impacts, interventions with "honeymoon periods"—or when the mechanism through which treatment works changes as the study progresses. When proportional hazards are implausible or you need full Bayesian uncertainty quantification, this approach provides a principled framework.
+The payoff is substantial: Dynamic path analysis shows its value when effects attenuate or strengthen over time e.g. drug effectiveness that fades, policies with delayed impacts, interventions with "honeymoon periods". Without temporal decomposition, the treatment might appear only modestly effective—or even neutral. Our Bayesian model successfully replicates the directional trends from the `dpasurv` R package, while providing richer uncertainty quantification through full posterior distributions rather than bootstrap confidence intervals.
 
 Odysseus's journey reminds us that understanding how we arrive at outcomes is often more valuable than simply knowing whether we arrived. In causal inference, this means moving beyond static treatment effects to models that capture the full temporal dynamics of intervention, mediation, and risk. The tools presented here—B-splines for smooth time-varying effects, the Poisson Bridge for Bayesian inference, and dynamic path decomposition for causal interpretation—provide a principled way to track these journeys. Whether you're evaluating a New Year's resolution, a clinical trial, or a policy intervention, this framework lets you see not just the destination, but the evolving forces that shaped the voyage.
 
