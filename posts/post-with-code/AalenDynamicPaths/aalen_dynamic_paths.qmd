@@ -85,7 +85,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 def plot_temporal_dag(stages=[0.1, 0.5, 0.9], labels=["Act I", "Act II", "Act III"]):
-    fig, axs = plt.subplots(1, 3, figsize=(18, 10))
+    fig, axs = plt.subplots(1, 3, figsize=(13, 7))
     
     # Define nodes: Exposure, Mediator, Hazard
     nodes = {'X': (0, 1), 'M': (1, 2), 'H': (2, 1)}
@@ -999,7 +999,7 @@ The next plots aim to recreate the `dpasurv` analysis. They represent the **addi
 
 * **Time-Varying Direct Effect ($\alpha_{1,t}$):** This path shows a steady downward trend into negative territory, indicating that the treatment has a progressively **protective direct effect** on the hazard. If analyzed in isolation, this would suggest the treatment is successfully reducing risk over time.
 * **Time-Varying Indirect Effect ($\beta_t \cdot \alpha_{2,t}$):** In contrast, the indirect path shows a stable, materializing **harmful effect** mediated through $M$. As the study progresses, the mediator offsets the treatment's benefits, introducing a source of risk that grows in certainty (narrowing HDI).
-* **Time-Varying Total Effect:** The sum of these two opposing forces. Because the harmful indirect effect partially "cancels out" the protective direct effect, the total effect appears significantly more modest—or even neutral. This reveals a **masked harmful effect**: without this decomposition, the treatment might be judged as ineffective, when in reality, it is highly effective but being undermined by the specific biological or behavioral pathway of the mediator.
+* **Time-Varying Total Effect:** The sum of these two opposing forces. The harmful indirect effect partially "cancels out" the protective direct effect, so the total effect appears slightly reduced. This reveals a **masked harmful effect**: without this decomposition, we would not have seen the mediating harm. Overall it is highly effective but being undermined by the specific biological or behavioral pathway of the mediator.
 
 ```{python}
 # | code-fold: true
