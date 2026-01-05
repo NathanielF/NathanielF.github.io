@@ -193,7 +193,7 @@ df.head()
 ```
 
 
-The data is an "long format" which is multiple rows per individual `subject` with running values for the state of the treatment indicator `x` and the mediator `M`, and crucially the `even` flag which denotes whether or not the terminal event occured. This is simulated data from the `dpasurv` r package, but the abstract names serve to illustrate the ubiquity of the mediator relationship! Even if you're not Odysseus, it's common knowledge that the Gods laugh when men make plans. Mediator structures are everywhere, and we will show how to handle them with dynamic path analysis.
+The data is an "long format" which is multiple rows per individual `subject` with running values for the state of the treatment indicator `x` and the mediator `M`, and crucially the `event` flag which denotes whether or not the terminal event occured. This is simulated data from the `dpasurv` r package, but the abstract names serve to illustrate the ubiquity of the mediator relationship! Even if you're not Odysseus, it's common knowledge that the Gods laugh when men make plans. Mediator structures are everywhere, and we will show how to handle them with dynamic path analysis.
 
 ### Replicating the `dpasurv` Benchmark
 
