@@ -802,7 +802,7 @@ def make_model(data, basis, sample=True, observed=True):
         
         # Expected number of events
         time_at_risk = at_risk * dt
-        Lambda = time_at_risk * pm.math.log1pexp(log_lambda_t)
+        Lambda = pm.Deterministic('Lambda', time_at_risk * pm.math.log1pexp(log_lambda_t))
 
         if observed:
             pm.Poisson(
@@ -1075,12 +1075,12 @@ Using g-computation, we simulate two counterfactual worlds—everyone treated vs
 trt_values = np.ones(len(df_long)).astype(int)
 with aalen_dpa_model: 
     pm.set_data({'trt': trt_values})
-    idata_trt1 = pm.sample_posterior_predictive(idata_aalen, return_inferencedata=True)
+    idata_trt1 = pm.sample_posterior_predictive(idata_aalen, return_inferencedata=True, var_names =['Lambda', 'obs_m', 'obs_event'])
 
 trt_values = np.zeros(len(df_long)).astype(int)
 with aalen_dpa_model: 
     pm.set_data({'trt': trt_values})
-    idata_trt0 = pm.sample_posterior_predictive(idata_aalen, return_inferencedata=True)
+    idata_trt0 = pm.sample_posterior_predictive(idata_aalen, return_inferencedata=True, var_names=['Lambda', 'obs_m', 'obs_event'])
 
 ```
 
@@ -1161,6 +1161,120 @@ fig.savefig("NonparametricEstimateNDE.png");
 ![](NonparametricEstimateNDE.png)
 
 The imputaton tooling is an invitation to explore possible worlds and trace the consequences of counterfactual decisions. 
+
+#### G-computation for Survival Curves
+
+While Aalen's additive hazards model provides us with time-varying hazard functions, interpreting these on the hazard scale can be unintuitive. What we really want to understand is: *how does treatment affect survival probability over time?* Moving from the hazard scale to the survival scale requires care, particularly because the transformation is nonlinear.
+
+The relationship between cumulative hazard $\Lambda(t)$ and survival $S(t)$ is given by $S(t) = \exp(-\Lambda(t))$. This exponential transformation creates a crucial problem: we cannot simply plug in average covariate values or average hazards and expect to get the average survival probability. This is Jensen's inequality in action—the expected value of a nonlinear function is not the function of the expected value.
+
+In our dynamic path analysis setting, this issue is compounded. Each individual has their own trajectory through time with evolving mediator values $M_t$ that depend on their treatment assignment and history. The hazard at each time point $t$ for individual $i$ is:
+
+$$\lambda_i(t) = \alpha_0(t) + \alpha_1(t) \cdot X_i + \alpha_2(t) \cdot M_{i,t} + \text{covariates}$$
+
+To obtain a valid _population-averaged_ survival curve, we must:
+
+1. **Compute individual-specific cumulative hazards** by integrating each person's hazard over their observed trajectory: $\Lambda_i(t) = \sum_{s \leq t} \lambda_i(s) \cdot \Delta s$
+
+2. **Transform to individual survival curves**: $S_i(t) = \exp(-\Lambda_i(t))$ for each person
+
+3. **Average the survival probabilities**: $\bar{S}(t) = \frac{1}{n}\sum_{i=1}^n S_i(t)$
+
+This approach respects the nonlinearity and properly accounts for individual heterogeneity in both baseline characteristics and time-varying mediator dynamics.
+
+```{python}
+
+def get_marginal_survival(idata_pp, df_long, n_bins):
+    """This function implements a population-averaged counterfactual (G-formula). By projecting every individual across the entire time horizon, we avoid  the 'sawtooth' bias caused by a shifting risk set (non-random attrition)."""
+    lambda_ds = idata_pp.posterior_predictive["Lambda"]
+    stacked_lambda = lambda_ds.stack(sample=("chain", "draw")).values # (obs, samples)
+    n_samples = stacked_lambda.shape[1]
+    
+    subjects = df_long['subject'].unique()
+    n_subs = len(subjects)
+    
+    # Initialize dense hazard matrix: (n_samples, n_subs, n_bins)
+    full_hazard_matrix = np.zeros((n_samples, n_subs, n_bins))
+    
+    for i, sub_id in enumerate(subjects):
+        sub_mask = (df_long['subject'] == sub_id).values
+        sub_bins = df_long.loc[sub_mask, 'bin_idx'].values
+        # Assign hazards: transpose to get (samples, time_points)
+        # Projects each individual across all time points
+        full_hazard_matrix[:, i, sub_bins] = stacked_lambda[sub_mask, :].T
+        # For bins where the subject is no longer observed (censored/event), 
+        # The hazard is implicitly 'projected' based on the spline-level intensity for those bins, ensuring a continuous survival trajectory.
+        # It prevents survivor bias: without this, the curve would only reflect the 'healthiest' individuals who survived long enough to be observed.
+    
+    # Cumulative Sum and Survival Transformation
+    cum_haz = np.cumsum(full_hazard_matrix, axis=2)
+    surv_curves = np.exp(-cum_haz)
+    
+    # Average across individuals to get population-level samples
+    # Resulting shape: (n_samples, n_bins)
+    marginal_samples = surv_curves.mean(axis=1) 
+    
+    return {
+        'samples': marginal_samples,
+        'mean': marginal_samples.mean(axis=0),
+        'hdi': az.hdi(marginal_samples, hdi_prob=0.94)
+    }
+
+# Usage
+surv_trt1 = get_marginal_survival(idata_trt1, df_long, n_bins)
+surv_trt0 = get_marginal_survival(idata_trt0, df_long, n_bins)
+
+
+```
+
+This calculation is considerably more natural in the Bayesian setting than with traditional Aalen estimators. With posterior samples from our PyMC model, we have full access to the joint posterior distribution of all time-varying coefficients $\{\alpha_0(t), \alpha_1(t), \alpha_2(t), \beta(t)\}$. For each posterior draw, we can:
+
+- Simulate each individual's complete trajectory through time under intervention
+- Compute their hazard `Lambda` accounting for parameter uncertainty
+- Transform to survival and average across individuals
+- Repeat across posterior samples to quantify uncertainty
+
+```{python}
+
+#| code-fold: true
+
+def plot_survival_comparison(surv_trt1, surv_trt0, time_points):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 7))
+    
+    # --- Panel 1: Survival Curves ---
+    ax1.plot(time_points, surv_trt1['mean'], color='teal', label='Treated (X=1)', lw=2.5)
+    ax1.fill_between(time_points, surv_trt1['hdi'][:, 0], surv_trt1['hdi'][:, 1], color='teal', alpha=0.15)
+    
+    ax1.plot(time_points, surv_trt0['mean'], color='darkorange', label='Control (X=0)', lw=2.5)
+    ax1.fill_between(time_points, surv_trt0['hdi'][:, 0], surv_trt0['hdi'][:, 1], color='darkorange', alpha=0.15)
+    
+    # --- Panel 2: Difference (Corrected Mean) ---
+    # Ensure this subtraction happens on the (samples, bins) arrays
+    diff_samples = surv_trt1['samples'] - surv_trt0['samples']
+    
+    # Calculating mean across the 'sample' axis (axis=0)
+    diff_mean = diff_samples.mean(axis=0) 
+    diff_hdi = az.hdi(diff_samples, hdi_prob=0.94)
+
+    ax2.plot(time_points, diff_mean, color='black', lw=2, label=r'$\Delta$ Survival')
+    ax2.fill_between(time_points, diff_hdi[:, 0], diff_hdi[:, 1], color='gray', alpha=0.3)
+    ax2.axhline(0, color='red', linestyle='--', alpha=0.6)
+    
+    # Formatting
+    ax1.set_title("Marginal Survival Curves"), ax1.set_ylim(0, 1.05)
+    ax2.set_title("Absolute Survival Difference (Treated - Control)")
+    ax1.legend(), ax1.grid(alpha=0.2), ax2.grid(alpha=0.2)
+    
+    return fig
+
+# Generate the plot
+fig_survival = plot_survival_comparison(surv_trt1, surv_trt0, np.arange(n_bins))
+plt.show();
+
+```
+
+The Bayesian approach naturally propagates uncertainty through the entire calculation, from model parameters through individual trajectories to population-averaged survival curves. This principled approach allows us to finally answer the key causal question: how does treatment affect survival probability over time, accounting for its indirect effect through the time-varying mediator? We have now compared $\bar{S}_{\text{treated}}(t)$ versus $\bar{S}_{\text{control}}(t)$ on an interpretable scale, with full uncertainty quantification.
+
 
 ### How we got here
 
