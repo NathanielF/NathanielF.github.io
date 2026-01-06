@@ -1284,7 +1284,9 @@ plt.show();
 
 ```
 
-The Bayesian approach naturally propagates uncertainty through the entire calculation, from model parameters through individual trajectories to population-averaged survival curves. This principled approach allows us to finally answer the key causal question: how does treatment affect survival probability over time, accounting for its indirect effect through the time-varying mediator? We have now compared $\bar{S}_{\text{treated}}(t)$ versus $\bar{S}_{\text{control}}(t)$ on an interpretable scale, with full uncertainty quantification.
+The Bayesian approach naturally propagates uncertainty through the entire calculation, from model parameters through individual trajectories to population-averaged survival curves. This principled approach allows us to finally answer the key causal question: how does treatment affect survival probability over time, accounting for its indirect effect through the time-varying mediator? We have now compared $\bar{S}_{\text{treated}}(t)$ versus $\bar{S}_{\text{control}}(t)$ on an interpretable scale, with full uncertainty quantification. 
+
+It's very important to understand that this counterfactual contrast aims at symmetry. Our focus is the causal estimand and we want to distill the effect of the treatment on the population. By "carrying forward" the last observed hazard for censored individuals or those who experienced an event, we maintained a stable population denominator and avoided immortal time bias. We know that most people eventually suffer the terminal event, and this g-computation approach ensures we compare the same people against themselves.
 
 
 ### How we got here
