@@ -25,6 +25,7 @@ import numpy as np
 import pymc as pm
 import matplotlib.pyplot as plt
 import arviz as az
+import seaborn as sns
 
 ```
 
@@ -43,27 +44,49 @@ np.random.seed(42)
 n_cases = 50  # number of cases
 n_jurors = 15  # number of jurors
 
-# True states (1 = guilty, 0 = not guilty)
-true_states = np.random.binomial(1, 0.5, n_cases)
+def make_ground_truth(n_cases, n_jurors, blocks=False):
+    # True states (1 = guilty, 0 = not guilty)
+    true_states = np.random.binomial(1, 0.5, n_cases)
 
-# Individual juror competencies (for simulation)
-true_p = 0.7  # average competence
-true_discrimination = 0.15  # how much competencies vary (sd in logit space)
+    # Individual juror competencies (for simulation)
+    true_p = 0.7  # average competence
+    true_discrimination = 0.5  # how much competencies vary (sd in logit space)
 
-# Simulate heterogeneous competencies
-logit_p_jurors = np.random.normal(np.log(true_p / (1 - true_p)), 
-                                   true_discrimination, 
-                                   n_jurors)
-p_jurors = 1 / (1 + np.exp(-logit_p_jurors))
+    # Simulate heterogeneous competencies
+    logit_p_jurors = np.random.normal(np.log(true_p / (1 - true_p)), 
+                                    true_discrimination, 
+                                    n_jurors)
+    
+    if blocks:
+        block_id = np.array([
+            0, 0, 0, 0, 0,
+            1, 1, 1, 1, 1, 1,
+            2, 2, 2, 2
+        ])
+        n_blocks = len(np.unique(block_id))
 
-# Simulate votes
-votes = np.zeros((n_cases, n_jurors))
-for i in range(n_cases):
-    for j in range(n_jurors):
-        if true_states[i] == 1:
-            votes[i, j] = np.random.binomial(1, p_jurors[j])
-        else:
-            votes[i, j] = np.random.binomial(1, 1 - p_jurors[j])
+        true_sigma_block = 1.2
+        block_effect = np.random.normal(
+            0.0,
+            true_sigma_block,
+            n_blocks
+        )
+        logit_p_jurors = (logit_p_jurors + block_effect[block_id])
+
+    p_jurors = 1 / (1 + np.exp(-logit_p_jurors))
+
+    # Simulate votes
+    votes = np.zeros((n_cases, n_jurors))
+    for i in range(n_cases):
+        for j in range(n_jurors):
+            if true_states[i] == 1:
+                votes[i, j] = np.random.binomial(1, p_jurors[j])
+            else:
+                votes[i, j] = np.random.binomial(1, 1 - p_jurors[j])
+
+    return votes, p_jurors, true_states
+
+votes, p_jurors, true_states = make_ground_truth(n_cases, n_jurors)
 
 print(f"Data simulated: {n_cases} cases, {n_jurors} jurors")
 print(f"True average competence: {p_jurors.mean():.3f}")
@@ -87,6 +110,8 @@ prior_specs = {
 
 
 ```{python}
+
+# | output: false
     
 def fit_condorcet_base_model(votes, spec):
 
@@ -99,11 +124,11 @@ def fit_condorcet_base_model(votes, spec):
         true_state = pm.Bernoulli('true_state', p=0.5, shape=n_cases)
         
         # Likelihood
-        vote_prob = pm.math.switch(
+        vote_prob = pm.Deterministic('vote_prob', pm.math.switch(
             pm.math.eq(true_state[:, None], 1),
             p,
             1 - p
-        )
+        ))
         
         likelihood = pm.Bernoulli('votes', p=vote_prob, observed=votes)
         
@@ -135,6 +160,7 @@ for prior_name, spec in prior_specs.items():
 
 
 ```
+
 
 ```{python}
 
@@ -200,141 +226,6 @@ axs[1].set_title("Posterior Estimates for Majority Accuracy");
 ```
 
 
-```{python}
-
-
-fig1 = plt.figure(figsize=(16, 10))
-fig1.suptitle('MODEL 1: Prior Sensitivity Analysis (Homogeneous Competence)', 
-              fontsize=14, fontweight='bold', y=0.995)
-
-# Panel 1: Prior predictive - what do priors imply about competence?
-ax1 = plt.subplot(2, 3, 1)
-colors_m1 = {'weakly_informative': 'steelblue', 
-             'strong_competence': 'forestgreen', 
-             'barely_competent': 'purple',
-             'incompetent': 'crimson'}
-
-for prior_name, spec in prior_specs.items():
-    prior_samples = prior_predictive_m1[prior_name].prior['p'].values.flatten()
-    ax1.hist(prior_samples, bins=30, alpha=0.4, label=spec['desc'], 
-             density=True, color=colors_m1[prior_name])
-
-ax1.axvline(0.5, color='black', linestyle=':', linewidth=2, label='Chance', alpha=0.5)
-ax1.axvline(true_p, color='red', linestyle='--', linewidth=2, label='True value')
-ax1.set_xlabel('Competence (p)', fontsize=11)
-ax1.set_ylabel('Density', fontsize=11)
-ax1.set_title('PRIOR Distributions', fontsize=12, fontweight='bold')
-ax1.legend(fontsize=8, loc='upper left')
-ax1.grid(True, alpha=0.3)
-
-
-# Panel 2: Prior predictive - implied majority accuracy
-ax2 = plt.subplot(2, 3, 2)
-jury_size = 15
-for prior_name, spec in prior_specs.items():
-    p_samples = prior_predictive_m1[prior_name].prior['p'].values.flatten()
-    # For each p, compute P(majority correct)
-    majority_prob = []
-    for p in p_samples[::10]:  # subsample
-        votes = np.random.binomial(jury_size, p, 100)
-        majority_prob.append((votes > jury_size/2).mean())
-    
-    ax2.hist(majority_prob, bins=30, alpha=0.4, label=spec['desc'], 
-             density=True, color=colors_m1[prior_name])
-
-ax2.axvline(0.5, color='black', linestyle=':', linewidth=2, label='Chance')
-ax2.set_xlabel('P(Majority Correct | n=15)', fontsize=11)
-ax2.set_ylabel('Density', fontsize=11)
-ax2.set_title('PRIOR Predictive: Jury Performance', fontsize=12, fontweight='bold')
-ax2.legend(fontsize=8)
-ax2.grid(True, alpha=0.3)
-
-# Panel 3: Posteriors (for comparison)
-ax3 = plt.subplot(2, 3, 3)
-for prior_name, spec in prior_specs.items():
-    p_samples = traces[prior_name].posterior['p'].values.flatten()
-    ax3.hist(p_samples, bins=30, alpha=0.35, label=spec['desc'], 
-             density=True, color=colors_m1[prior_name])
-
-ax3.axvline(true_p, color='red', linestyle='--', linewidth=2, label='True value')
-ax3.set_xlabel('Competence (p)', fontsize=11)
-ax3.set_ylabel('Density', fontsize=11)
-ax3.set_title('POSTERIOR Distributions', fontsize=12, fontweight='bold')
-ax3.legend(fontsize=8, loc='upper left')
-ax3.grid(True, alpha=0.3)
-
-# Panel 4: Prior vs Posterior comparison (weakly informative)
-ax4 = plt.subplot(2, 3, 4)
-prior_name = 'weakly_informative'
-spec = prior_specs[prior_name]
-prior_p = prior_predictive_m1[prior_name].prior['p'].values.flatten()
-post_p = traces[prior_name].posterior['p'].values.flatten()
-
-ax4.hist(prior_p, bins=30, alpha=0.3, label='Prior', density=True, 
-         color='gray', edgecolor='black', linewidth=1.5)
-ax4.hist(post_p, bins=30, alpha=0.6, label='Posterior', density=True, 
-         color=colors_m1[prior_name])
-ax4.axvline(true_p, color='red', linestyle='--', linewidth=2, label='True')
-ax4.set_xlabel('Competence (p)', fontsize=11)
-ax4.set_ylabel('Density', fontsize=11)
-ax4.set_title(f'Prior → Posterior\n({spec["desc"]})', fontsize=12, fontweight='bold')
-ax4.legend(fontsize=9)
-ax4.grid(True, alpha=0.3)
-
-# Panel 5: Prior vs Posterior comparison (incompetent)
-ax5 = plt.subplot(2, 3, 5)
-prior_name = 'incompetent'
-spec = prior_specs[prior_name]
-prior_p = prior_predictive_m1[prior_name].prior['p'].values.flatten()
-post_p = traces[prior_name].posterior['p'].values.flatten()
-
-ax5.hist(prior_p, bins=30, alpha=0.3, label='Prior', density=True, 
-         color='gray', edgecolor='black', linewidth=1.5)
-ax5.hist(post_p, bins=30, alpha=0.6, label='Posterior', density=True, 
-         color=colors_m1[prior_name])
-ax5.axvline(true_p, color='red', linestyle='--', linewidth=2, label='True')
-ax5.set_xlabel('Competence (p)', fontsize=11)
-ax5.set_ylabel('Density', fontsize=11)
-ax5.set_title(f'Prior → Posterior\n({spec["desc"]})', fontsize=12, fontweight='bold')
-ax5.legend(fontsize=9)
-ax5.grid(True, alpha=0.3)
-
-# Panel 6: Summary text
-ax6 = plt.subplot(2, 3, 6)
-ax6.axis('off')
-summary_text = """
-PRIOR PREDICTIVE INSIGHTS:
-
-Before seeing data, priors encode 
-different beliefs about:
-• Juror competence level
-• Probability of correct verdicts
-
-The 'incompetent' prior expects 
-majority to be WRONG most of the time.
-
-KEY PROBLEM:
-✗ Posteriors strongly influenced by priors
-✗ Expectation of Prior and posterior barely move apart
-  (see bottom panels) in Incompetent case
-"""
-ax6.text(0.05, 0.5, summary_text, fontsize=10, verticalalignment='center',
-         family='monospace',
-         bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.3))
-
-plt.tight_layout()
-plt.savefig('condorcet_model1_sensitivity.png', dpi=300, bbox_inches='tight')
-print("\nModel 1 plot saved as 'condorcet_model1_sensitivity.png'")
-plt.show()
-
-
-
-
-
-```
-
-
-
 
 ```{python}
 
@@ -398,6 +289,15 @@ for prior_name, spec in discrimination_priors.items():
     traces_discrimination[prior_name] = idata
     traces_discrimination[prior_name + '_model'] = model
     
+
+```
+
+
+
+```{python}
+
+az.summary(idata)
+
 
 ```
 
@@ -486,8 +386,10 @@ def majority_accuracy_for_size(votes, truth, jury_size):
 # 4. Run posterior predictive simulations
 # ------------------------------------------------------------
 
-def run_post_fit_ppc(p_juror_samples, n_cases, truth=None):
+def run_post_fit_ppc(p_juror_samples, n_cases, truth=None, jury_sizes=[3, 5, 7, 10, 15]):
     # Storage
+    n_samples = p_juror_samples.shape[1]
+    n_jurors = p_juror_samples.shape[0]
     ppc_results = {
         "majority_accuracy_15": np.zeros(n_samples),
         "unanimity_rate_15": np.zeros(n_samples),
@@ -497,7 +399,6 @@ def run_post_fit_ppc(p_juror_samples, n_cases, truth=None):
             k: np.zeros(n_samples) for k in jury_sizes
         }
     }
-
     for s in range(n_samples):
         truth_s, votes_s = simulate_votes(
             p_juror_samples[:, s],
@@ -591,7 +492,7 @@ def summarise_post_fit_ppc(ppc_results):
 def compare_prior_posterior(idata):
     p_juror_samples_prior = (idata.prior["p_juror"].stack(sample=("chain", "draw")).values)  
     p_juror_samples_posterior = (idata.posterior["p_juror"].stack(sample=("chain", "draw")).values)  
-    n_jurors, n_samples = p_juror_samples.shape
+    n_jurors, n_samples = p_juror_samples_posterior.shape
     ppc_result_prior = run_post_fit_ppc(p_juror_samples_prior, n_cases, true_states)
     ppc_result_posterior = run_post_fit_ppc(p_juror_samples_posterior, n_cases, true_states)
     summaries_prior = summarise_post_fit_ppc(ppc_result_prior)
@@ -668,7 +569,7 @@ def plot_error_corr_heatmap(ppc_results, title="Error correlation"):
 
 
 ```{python}
-summaries_weak_discrimination,  ppc_result_posterior_weak_discrimination = compare_prior_posterior(traces['weak_discrimination'])
+summaries_weak_discrimination,  ppc_result_posterior_weak_discrimination = compare_prior_posterior(traces_discrimination['weak_discrimination'])
 
 summaries_weak_discrimination
 
@@ -695,7 +596,7 @@ plot_differences(summaries_weak_discrimination)
 
 
 ```{python}
-summaries_moderate_discrimination, ppc_result_posterior_moderate_discrimination = compare_prior_posterior(traces['moderate_discrimination'])
+summaries_moderate_discrimination, ppc_result_posterior_moderate_discrimination = compare_prior_posterior(traces_discrimination['moderate_discrimination'])
 
 summaries_moderate_discrimination
 
@@ -719,7 +620,7 @@ plot_differences(summaries_moderate_discrimination)
 
 ```{python}
 
-summaries_strong_discrimination, ppc_result_posterior_strong_discrimination = compare_prior_posterior(traces['strong_discrimination'])
+summaries_strong_discrimination, ppc_result_posterior_strong_discrimination = compare_prior_posterior(traces_discrimination['strong_discrimination'])
 
 summaries_strong_discrimination
 
@@ -789,7 +690,7 @@ def ppc_with_case_difficulty(
 
 for sigma in [0.0, 0.2, 0.5, 1]:
     ppc = ppc_with_case_difficulty(
-        traces['strong_discrimination'],
+        traces_discrimination['weak_discrimination'],
         n_cases=50,
         sigma_case=sigma,
         true_states=true_states
@@ -819,3 +720,98 @@ for sigma in [0.0, 0.2, 0.5, 1]:
 
 ```
 
+
+## Final Model
+
+```{python}
+
+votes, p_jurors = make_ground_truth(n_cases, n_jurors, blocks=True)
+majority_votes = (votes.mean(axis=1) > 0.5).astype(int)
+agreements_per_juror = np.array([(votes[:, j] == majority_votes).sum() for j in range(n_jurors)])
+
+block_id = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2])
+
+with pm.Model() as final_model:
+
+    # --------------------------------------------------
+    # Juror skill (individual discrimination)
+    # --------------------------------------------------
+    mu_alpha = pm.Normal("mu_alpha", mu=0.0, sigma=0.5)
+    sigma_alpha = pm.HalfNormal("sigma_alpha", sigma=1.0)
+
+    z_juror = pm.Normal("z_juror", 0.0, 1.0, shape=n_jurors)
+    alpha_j = pm.Deterministic(
+        "alpha_j",
+        mu_alpha + sigma_alpha * z_juror
+    )
+
+    # --------------------------------------------------
+    # Block / faction effects
+    # --------------------------------------------------
+    n_blocks = len(np.unique(block_id))
+    sigma_block = pm.HalfNormal("sigma_block", sigma=1.0)
+
+    block_effect = pm.Normal(
+        "block_effect",
+        mu=0.0,
+        sigma=sigma_block,
+        shape=n_blocks
+    )
+
+    beta_block_j = block_effect[block_id]
+
+    # --------------------------------------------------
+    # Case difficulty (asymmetric, shared)
+    # --------------------------------------------------
+    mu_case = pm.Normal("mu_case", mu=0.0, sigma=0.5)
+    sigma_case = pm.HalfNormal("sigma_case", sigma=1.0)
+
+    # Expected difficulty effect (collapsed over cases)
+    delta_bar = pm.Normal(
+        "delta_bar",
+        mu=mu_case,
+        sigma=sigma_case / pm.math.sqrt(n_cases)
+    )
+
+    # --------------------------------------------------
+    # Effective correctness probability
+    # --------------------------------------------------
+    logit_p_correct = alpha_j + beta_block_j + delta_bar
+    p_correct = pm.Deterministic(
+        "p_correct",
+        pm.math.sigmoid(logit_p_correct)
+    )
+
+    # --------------------------------------------------
+    # Binomial likelihood (collapsed)
+    # --------------------------------------------------
+    pm.Binomial(
+        "agreements",
+        n=n_cases,
+        p=p_correct,
+        observed=agreements_per_juror
+    )
+
+    idata = pm.sample(
+        2000,
+        tune=2000,
+        target_accept=0.975,
+        return_inferencedata=True
+    )
+
+
+
+
+
+
+```
+
+
+```{python}
+
+
+az.summary(idata)
+
+
+
+```
