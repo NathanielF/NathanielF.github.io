@@ -11,7 +11,7 @@ execute:
   execute: true
   eval: true
 jupyter: applied-bayesian-regression-modeling-env
-image: 'evolving_dag.png'
+image: 'Independent_voter_errors_correlation.png'
 author:
     - url: https://nathanielf.github.io/
     - affiliation: PyMC dev
@@ -24,7 +24,7 @@ Decision making in the modern corporation has to be seen to be believed. Arguabl
 
 To the analyst and the private equity partner, "unfamiliarity" is unquantifiable risk. They demand a recognizable org chart, a standardized "Agile" workflow, and a set of "Core Values" that could be swapped between a pet-food startup and a sovereign wealth fund without anyone noticing. __This is the cult of Legibility__. Borrowing from James C. Scott’s _Seeing Like a State_, we see that when central authorities cannot understand a complex, organic system, they flatten it. They replace the wild, high-information "forest" of human talent with a "plantation" of identical, predictable units.
 
-But this familiarity breeds a systemic contempt for reality. When you optimize for the gaze of the outsider, you perform a cognitive lobotomy on your own workforce. In our quest for "alignment" or adherence to irrelevant standards, we destroy the only thing that makes a group smarter than an individual: the generative friction of our differences. The "miracle" of collective intelligence is a generative process. It requires that we be wrong in different directions so that, in the aggregate, we might be right. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine that makes democracy and decentralization work. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine of collective intelligence: The Condorcet Jury Theorem.
+But this familiarity breeds a systemic contempt for reality. When you optimize for the gaze of the outsider or conformity with precedent, you push a lobotomy on your own workforce. In our quest for "alignment" or adherence to irrelevant standards, we destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences_. The "miracle" of collective intelligence is a generative process. It requires that we be wrong in different directions so that, in the aggregate, we might be right. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine that makes democracy and decentralization work. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine of collective intelligence: The Condorcet Jury Theorem.
 
 ## Do as I say, Not what I do.
 
@@ -124,11 +124,9 @@ print(f"Majority vote accuracy: {np.mean(majority == true_states):.3f}")
 
 We've seen how our data generating process encodes a baseline degree of juror competence. On any yes/no question we've ensured that the average juror has $(p \sim N(.65, \sigma_{disc}))$ chance of getting the right answer. The $\sigma_{disc}$ determines the range of individual skill in the population. We've then asked each juror to cast their vote on 50 decisions.
 
-## Part 2: Sensitivity to Prior Beliefs About Competence
+## Sensitivity to Prior Beliefs About Competence
 
-Our first sensitivity analysis asks: **how much do our conclusions depend on our prior beliefs about juror competence?**
-
-The Condorcet theorem assumes jurors are better than random (p > 0.5), but how confident should we be in this? Let's test four different prior specifications:
+In this model, we treat every employee as an interchangeable unit. We assume there are no factions, no "weird" outliers, and no cases that are harder than others. More important than that is the key is the requirement of conditional independence. No two people are "thinking alike" because of their shared training or culture; they are only "aligned" because they are all seeing the same Truth. This model (Model 1) defines the idealized world of the Condorcet Jury Theorem. Our first sensitivity analysis asks: **how much do our conclusions depend on our prior beliefs about juror competence?** 
 
 ```{python}
 # Define prior specifications
@@ -138,8 +136,8 @@ prior_specs = {
         'desc': 'Weakly informative (centered at 0.6)'
     },
     'strong_competence': {
-        'alpha': 10, 'beta': 5, 
-        'desc': 'Strong prior (p ~ 0.67)'
+        'alpha': 10, 'beta': 3, 
+        'desc': 'Strong prior (p ~ 0.76)'
     },
     'barely_competent': {
         'alpha': 6, 'beta': 5, 
@@ -152,11 +150,13 @@ prior_specs = {
 }
 ```
 
-Now we'll fit our base Condorcet model under each prior specification:
+To perform our sensitivity analysis, we test four different "Corporate Climates." These represent the level of faith an organization has in its own internal competence. When a corporate decision leads to disaster, the post-mortem almost always focuses on competence. The diagnosis is usually that the "wrong people were in the room" or that the team lacked "domain expertise." This focus on individual skill is a convenient fiction for the investor class; it suggests that the organizational structure is fine, it just needs better "units."
+
+We'll see that there are legitimate reasons to worry about individual incompetence for collective decision making. But you need to achieve a critical mass of incompetence for consequential error. In most cases marginal incomptence within an organisation rarely breaks the corporate mechanism. As long as those errors are independent—as long as the "incompetent" people are failing in their own unique, "weird" ways—the majority will still find the truth. The high-performers provide the signal, and the low-performers provide "white noise" that cancels itself out.
 
 ### Model 1: The Classical Condorcet Jury Model
 
-Let $$T_i \in \{0,1\}$$ denote the true state of case $$i = 1,\dots,N$$, with
+Let $T_i \in \{0,1\}$ denote the true state of case $i = 1,\dots,N$, with
 $$
 T_i \sim \text{Bernoulli}(0.5).
 $$
@@ -176,8 +176,6 @@ V_{ij} \mid T_i, p \sim
 \end{cases}
 $$
 
-#### Structural Assumptions
-
 This model imposes three strong assumptions:
 
 1. **Exchangeability across jurors**: all jurors are equally competent.
@@ -189,8 +187,8 @@ $$
 
 These assumptions define the idealized world in which the Condorcet Jury Theorem applies.
 
-
 ```{python}
+
 def fit_base_condorcet_model(votes, prior_spec, n_cases=N_CASES):
     """
     Fit basic Condorcet model with specified prior on competence.
@@ -231,26 +229,15 @@ def fit_base_condorcet_model(votes, prior_spec, n_cases=N_CASES):
     return idata, model
 ```
 
-### Prior Sensitivity in the Condorcet Model
-
-We retain the likelihood from the classical Condorcet model but introduce uncertainty
-about juror competence via a prior distribution:
+The key property of the model we want to probe is how the accuracy of the majority vote evolves as we incorporate more jurors in the vote. The stressor we apply to test the system is to gauge how this accuracy evolve with degrees of population competence.
 $$
 p \sim \text{Beta}(\alpha, \beta).
 $$
 
-No assumptions about independence or exchangeability are altered.
-Instead, this model makes explicit the epistemic commitment that the Condorcet theorem leaves implicit: jurors are often assumed to be better than random *a priori*.
-
-#### Interpretation
-
-This modification does not change how votes are generated.
-It only affects how strongly we believe in democratic competence before observing data.
-
-If Condorcet-style aggregation fails under this model, the failure cannot be attributed to unrealistic priors — only to the structure of the voting process itself.
-
+No assumptions about independence or exchangeability are altered. Instead, this model makes explicit the epistemic commitment that the Condorcet theorem leaves implicit: jurors are often assumed to be better than random *a priori*. You must hire well so that the average for each employee has a better than coin-flip chance of accuracy. This modest requirement is all we require to ensure collective accuracy, under the conditions of the model. 
 
 ```{python}
+# | output: false
 # Fit under all prior specifications
 traces = {}
 for prior_name, spec in prior_specs.items():
@@ -260,7 +247,7 @@ for prior_name, spec in prior_specs.items():
     traces[prior_name + '_model'] = model
 ```
 
-Let's examine how our prior beliefs influence predictions:
+Let's examine how our prior beliefs influence prediction. We have sampled the majority votes under both our prior and the derived posterior distribution. We see how the accuracy of the majority vote grows with more voters when the priors about group competence is high. 
 
 ```{python}
 def extract_estimates(traces, prior_specs, jury_sizes=[3, 7, 15], stage='prior'):
@@ -293,6 +280,8 @@ print("="*70)
 print(posterior_estimates)
 ```
 
+However, we can also see how the aggregation of incompetent opinion tends towards incorrect. 
+
 ```{python}
 # Visualize the shift from prior to posterior
 fig, axs = plt.subplots(1, 2, figsize=(20, 5))
@@ -314,26 +303,32 @@ plt.tight_layout()
 plt.show()
 ```
 
-**Key insight**: Strong prior beliefs about incompetence, the data updates our beliefs away from the truth. You cannot avoid the requirement of minimum competence in the jury pool.
+You cannot avoid the requirement of minimum competence in the jury pool if you hope for collective wisdom. But more strikingly, when we have even modest competence, the aggregation of votes quickly converges towards high accuracy. This is exactly the finding of Condorcet's Jury Theorem. 
 
-## Part 3: Individual Differences in Competence
+::: {.callout-important}
+## Formal Statement: The Condorcet Jury Theorem
 
-The base Condorcet model assumes all jurors are identically competent. In reality, people vary in expertise, attention, and judgment. Let's model **heterogeneity** in juror competence.
+Let a group of $n$ independent individuals (a "jury") be tasked with choosing between two outcomes, one of which is "correct." Let $p$ represent the probability of any single individual making the correct choice. The theorem consists of two parts:
 
-### The Hierarchical Model
+1.  **The Competence Requirement:** If $p > 0.5$, then the probability that a majority of the group makes the correct choice is greater than $p$.
+2.  **The Asymptotic Result:** As $n \to \infty$, the probability that the majority choice is correct approaches $1$.
 
-We'll use a hierarchical model where individual competencies are drawn from a population distribution. The key sensitivity parameter is σ (discrimination): how much do jurors differ?
+Conversely, if $p < 0.5$, increasing the size of the jury only increases the probability that the group will arrive at the *wrong* conclusion, with that probability approaching $1$ as $n$ grows.
+:::
+
+This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and we know that competence isn't uniform. This pulls us in two ways: (1) management panic over hiring standards and (2) fostering diversity in the employee base. We'll look at (1) next. 
+
+## Individual Differences in Competence
+
+The base Condorcet model assumes all jurors are identically competent. In reality, people vary in expertise, attention, and judgment. Let's model **heterogeneity** in juror competence. To gauge these effects we'll use a hierarchical model where individual competencies are drawn from a population distribution. The key sensitivity parameter is $\sigma$ (discrimination): how much do jurors differ?
 
 #### Heterogeneous Juror Competence
 
-We now relax the assumption that all jurors are equally competent.
-
-Each juror $j$ is assigned an individual probability of voting correctly:
+We now relax the assumption that all jurors are equally competent. Each juror $j$ is assigned an individual probability of voting correctly:
 $$
 \text{logit}(p_j) = \mu + \sigma z_j, \qquad z_j \sim \mathcal{N}(0,1).
 $$
 
-### Collapsing Bernoulli Votes to a Binomial Likelihood
 
 For a fixed juror $j$, define the number of agreements with the majority:
 $$
@@ -346,22 +341,16 @@ $$
 A_j \mid p_j \sim \text{Binomial}(N, p_j).
 $$
 
-This is not an approximation.
-It is the marginal likelihood obtained by integrating over $$N$$ independent Bernoulli trials:
+This is not an approximation. It is the marginal likelihood obtained by integrating over $$N$$ independent Bernoulli trials:
 $$
 \prod_{i=1}^N \text{Bernoulli}(V_{ij} \mid p_j)
 \;\Longrightarrow\;
 \text{Binomial}(A_j \mid N, p_j).
 $$
 
-#### Structural Interpretation
+This observation motivates a re-articuation of the condorcet model. The binomial phrasing is often easier to sample than the Bernoulli likelihood, so we shall switch to that model. Our next model uses a Binomial likelihood and  relies on two assumptions. We hold fixed the exchangeability across the cases and we rely on sufficiency of the count statistic. Once jurors are treated as stable measurement instruments, their entire voting history becomes a single aggregated observation. 
 
-The Binomial likelihood relies on two assumptions:
-
-1. **Exchangeability across cases**
-2. **Sufficiency of the count statistic**
-
-Once jurors are treated as stable measurement instruments, their entire voting history becomes a single aggregated observation. This collapse will fail as soon as cases are no longer interchangeable.
+### Model 2: Varying Competence
 
 ```{python}
 def fit_hierarchical_model(votes, n_jurors, discrimination_prior):
@@ -414,17 +403,20 @@ def fit_hierarchical_model(votes, n_jurors, discrimination_prior):
 ```
 
 
+Again, we'll test a range of priors. But this time we'll push on the range of permissable competence in the jury pool. 
+
 ```{python}
+# | output: false
 
 # Test three levels of discrimination
 discrimination_priors = {
     'weak_discrimination': {
         'sigma': 0.5, 
-        'desc': 'Weak discrimination (σ ~ 0.25)'
+        'desc': 'Weak discrimination (σ ~ 0.5)'
     },
     'moderate_discrimination': {
         'sigma': 1.0, 
-        'desc': 'Moderate discrimination (σ ~ 0.5)'
+        'desc': 'Moderate discrimination (σ ~ 1)'
     },
     'strong_discrimination': {
         'sigma': 2.0, 
@@ -439,13 +431,22 @@ for prior_name, spec in discrimination_priors.items():
     traces_discrimination[prior_name] = idata
     traces_discrimination[prior_name + '_model'] = model
 
-# Examine one of the fitted models
-az.summary(traces_discrimination['moderate_discrimination'])
 ```
 
-## Posterior Predictive Checks
+Whereas in the previous model we observed each and every vote in the likelihood, here we're abstracting away from the particular and assuming their realised values are a consequece of latent structure; individual estimable competence. 
 
-To understand the implications of different discrimination levels, we need to simulate complete jury deliberations. We need to translate our individual voter's profile into votes. As before votes are generated as, but we have no longer directly modelled this outcome, so we derive implied votes through posterior predictive checks. 
+```{python}
+# Examine one of the fitted models
+ax = az.plot_forest(traces_discrimination['strong_discrimination'], var_names=['p_juror'], combined=True)
+ax[0].set_title("Diversity of Jury Competence \n Under Strong Discrimination");
+
+```
+
+By collapsing these observations into a Binomial distribution, we focus the model’s attention on the success rate of the collective. Paradoxically, by "throwing away" the individual case observations of the jurors, we force the model to account for the variance in the process itself.
+
+### The Generative Process and Implied Votes 
+
+It's for this reason we now rely on Posterior Predictive Sampling (PPC) to reconstruct these votes is that we are no longer just fitting a line to a set of points; we are simulating a generative process. To understand the implications of different discrimination levels, we need to simulate complete jury deliberations. In other words, we need to translate our individual voter's profile into votes. 
 $$
 V_{ij} \mid T_i, p_j \sim
 \begin{cases}
@@ -454,15 +455,7 @@ V_{ij} \mid T_i, p_j \sim
 \end{cases}
 $$
 
-#### Structural Consequences
-
-Conditional independence is preserved, but only after conditioning on individual competence:
-$$
-V_{ij} \perp V_{ik} \mid T_i, \{p_j\}.
-$$
-
-This model introduces inequality among jurors without introducing dependence.
-Heterogeneous competence alone does not violate the conditions of the Condorcet theorem. Here's our comprehensive PPC framework:
+This will then allow us to test for accuracy of the majority under different ranges of skill. The core insight is that we must forward sample to derive the voting profile of each individual.
 
 ```{python}
 def simulate_votes_from_competence(p_juror, n_cases, truth=None):
@@ -479,6 +472,13 @@ def simulate_votes_from_competence(p_juror, n_cases, truth=None):
     
     return truth, votes
 
+
+```
+
+To do so we'll define a number of helper functions below.
+
+```{python}
+# | code-fold: true
 
 def compute_diagnostics(votes, truth):
     """Compute suite of diagnostic metrics for jury performance."""
@@ -585,11 +585,7 @@ def compare_prior_posterior(idata, n_cases, truth, jury_sizes=JURY_SIZES):
                                       jury_sizes)
     
     return pd.concat(results, names=['stage', 'percentile'])
-```
 
-Now let's apply this framework. We'll focus on the moderate discrimination case as it's most realistic:
-
-```{python}
 def plot_prior_posterior_comparison(df, title="Majority Accuracy"):
     """Plot prior vs posterior distributions."""
     x_values = JURY_SIZES
@@ -617,6 +613,12 @@ def plot_prior_posterior_comparison(df, title="Majority Accuracy"):
     return fig
 
 
+```
+
+Now let's apply this framework. We'll focus on the moderate discrimination case as it's most realistic:
+
+```{python}
+
 # Analyze the moderate discrimination case
 print(f"\n{'='*70}")
 print(f"Analysis: {discrimination_priors['moderate_discrimination']['desc']}")
@@ -628,21 +630,27 @@ comparison = compare_prior_posterior(
     true_states
 )
 
-print(comparison)
+comparison
+
+```
+
+We still see convergen to the truth as we scale up the size of our majority even when we allow heterogeneous levels of skill in the voting population. The median prior and posterior estimates of accuracy are quite close, but we've significantly shrunk the uncertainty in our estimate. 
+
+```{python}
 plot_prior_posterior_comparison(
     comparison, 
     title="Prior vs Posterior: Moderate Individual Variation"
-)
+);
 ```
 
 The pattern is consistent across all discrimination levels: the data updates our beliefs, and larger juries show higher accuracy. The key question is whether errors remain independent.
 
-
-## Error Correlation Analysis
+#### Error Correlation Analysis
 
 A critical assumption of Condorcet is **independence**: jurors make errors independently. Let's check this for our moderate discrimination model:
 
 ```{python}
+# | output: false
 def plot_error_correlation_heatmap(ppc_results, title="Error Correlation"):
     """Plot mean error correlation matrix, handling NaN values properly."""
     all_corrs = ppc_results['error_corr']  # (n_samples, n_jurors, n_jurors)
@@ -652,11 +660,14 @@ def plot_error_correlation_heatmap(ppc_results, title="Error Correlation"):
     
     # For cells that are still NaN (all samples were NaN), replace with 0
     mean_corr = np.nan_to_num(mean_corr, nan=0.0)
-    
-    fig, ax = plt.subplots(figsize=(6, 5))
-    sns.heatmap(mean_corr, vmin=-0.3, vmax=0.3, cmap="coolwarm",
-                square=True, cbar_kws={"label": "Error correlation"}, ax=ax)
-    ax.set_title(title)
+    mean_corr = np.round(mean_corr, 2)
+    fig, ax = plt.subplots(figsize=(15, 6))
+    sns.heatmap(mean_corr, vmin=-1, vmax=1, cmap="coolwarm",
+                square=False, cbar_kws={"label": "Error correlation"}, ax=ax, 
+                annot=True, fmt=".2f")
+    ax.set_title(title, fontsize=20)
+    ax.set_xlabel("Voter Index")
+    ax.set_ylabel("Voter Index")
     plt.tight_layout()
     return fig
 
@@ -698,18 +709,23 @@ ppc_moderate = run_ppc_analysis(
     true_states
 )
 
-plot_error_correlation_heatmap(
+fig = plot_error_correlation_heatmap(
     ppc_moderate, 
-    title="Error Correlation: Moderate Individual Variation"
-)
-
-print("\nError Correlation Summary:")
-print(summarize_error_correlation(ppc_moderate))
+    title="Error Correlation Among Voters:  \n Moderate Individual Skill Difference"
+);
+fig.savefig("Independent_voter_errors_correlation.png")
 ```
 
-**Key insight**: With heterogeneous competence alone, errors remain largely uncorrelated (mean ≈ 0). The Condorcet theorem's independence assumption holds—so far.
+![](Independent_voter_errors_correlation.png)
 
-# Part 4: Shared Case Difficulty
+```{python}
+print("\nError Correlation Summary:")
+summarize_error_correlation(ppc_moderate)
+```
+
+**Key insight**: With heterogeneous competence alone, errors remain largely uncorrelated. The Condorcet theorem's independence assumption holds—so far. Which is to say that diverse workforces and varying degrees of competence do not inherently short-circuit the firm's ability to learn. 
+
+## Shared Case Difficulty
 
 Now we introduce a critical violation: **shared case-level effects**. Some cases are genuinely harder, causing even competent jurors to fail together.
 

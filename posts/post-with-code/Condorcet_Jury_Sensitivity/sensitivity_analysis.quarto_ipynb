@@ -17,7 +17,7 @@
         "  execute: true\n",
         "  eval: true\n",
         "jupyter: applied-bayesian-regression-modeling-env\n",
-        "image: 'evolving_dag.png'\n",
+        "image: 'Independent_voter_errors_correlation.png'\n",
         "author:\n",
         "    - url: https://nathanielf.github.io/\n",
         "    - affiliation: PyMC dev\n",
@@ -31,7 +31,7 @@
         "\n",
         "To the analyst and the private equity partner, \"unfamiliarity\" is unquantifiable risk. They demand a recognizable org chart, a standardized \"Agile\" workflow, and a set of \"Core Values\" that could be swapped between a pet-food startup and a sovereign wealth fund without anyone noticing. __This is the cult of Legibility__. Borrowing from James C. Scott’s _Seeing Like a State_, we see that when central authorities cannot understand a complex, organic system, they flatten it. They replace the wild, high-information \"forest\" of human talent with a \"plantation\" of identical, predictable units.\n",
         "\n",
-        "But this familiarity breeds a systemic contempt for reality. When you optimize for the gaze of the outsider, you perform a cognitive lobotomy on your own workforce. In our quest for \"alignment\" or adherence to irrelevant standards, we destroy the only thing that makes a group smarter than an individual: the generative friction of our differences. The \"miracle\" of collective intelligence is a generative process. It requires that we be wrong in different directions so that, in the aggregate, we might be right. By smoothing out the \"noise\" of individual culture and opinion, we break the statistical engine that makes democracy and decentralization work. By smoothing out the \"noise\" of individual culture and opinion, we break the statistical engine of collective intelligence: The Condorcet Jury Theorem.\n",
+        "But this familiarity breeds a systemic contempt for reality. When you optimize for the gaze of the outsider or conformity with precedent, you push a lobotomy on your own workforce. In our quest for \"alignment\" or adherence to irrelevant standards, we destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences_. The \"miracle\" of collective intelligence is a generative process. It requires that we be wrong in different directions so that, in the aggregate, we might be right. By smoothing out the \"noise\" of individual culture and opinion, we break the statistical engine that makes democracy and decentralization work. By smoothing out the \"noise\" of individual culture and opinion, we break the statistical engine of collective intelligence: The Condorcet Jury Theorem.\n",
         "\n",
         "## Do as I say, Not what I do.\n",
         "\n",
@@ -43,7 +43,7 @@
         "\n",
         "To understand how legibility short-circuits learning, we need a way to build a \"company\" from the ground up and stress-test its decision-making. Our simulation function, simulate_jury_data, is the generative heart of this piece. It doesn’t just create random numbers; it creates a world where we can toggle the parameters of Generative Friction.\n"
       ],
-      "id": "cada26c9"
+      "id": "62bd1c53"
     },
     {
       "cell_type": "code",
@@ -64,7 +64,7 @@
         "JURY_SIZES = [3, 5, 7, 10, 15]\n",
         "BLOCK_ID = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2])"
       ],
-      "id": "6e5bf3da",
+      "id": "115c62b5",
       "execution_count": null,
       "outputs": []
     },
@@ -76,7 +76,7 @@
         "\n",
         "In a healthy system, learning happens in the gaps between different perspectives. But in a \"legible\" system, those gaps are closed. Our simulation allows us to model this across three dimensions\n"
       ],
-      "id": "84904d29"
+      "id": "e635d858"
     },
     {
       "cell_type": "code",
@@ -145,7 +145,7 @@
         "majority = (votes.mean(axis=1) > 0.5) \n",
         "print(f\"Majority vote accuracy: {np.mean(majority == true_states):.3f}\")"
       ],
-      "id": "8c89b630",
+      "id": "634c1c44",
       "execution_count": null,
       "outputs": []
     },
@@ -155,13 +155,11 @@
       "source": [
         "We've seen how our data generating process encodes a baseline degree of juror competence. On any yes/no question we've ensured that the average juror has $(p \\sim N(.65, \\sigma_{disc}))$ chance of getting the right answer. The $\\sigma_{disc}$ determines the range of individual skill in the population. We've then asked each juror to cast their vote on 50 decisions.\n",
         "\n",
-        "## Part 2: Sensitivity to Prior Beliefs About Competence\n",
+        "## Sensitivity to Prior Beliefs About Competence\n",
         "\n",
-        "Our first sensitivity analysis asks: **how much do our conclusions depend on our prior beliefs about juror competence?**\n",
-        "\n",
-        "The Condorcet theorem assumes jurors are better than random (p > 0.5), but how confident should we be in this? Let's test four different prior specifications:\n"
+        "In this model, we treat every employee as an interchangeable unit. We assume there are no factions, no \"weird\" outliers, and no cases that are harder than others. More important than that is the key is the requirement of conditional independence. No two people are \"thinking alike\" because of their shared training or culture; they are only \"aligned\" because they are all seeing the same Truth. This model (Model 1) defines the idealized world of the Condorcet Jury Theorem. Our first sensitivity analysis asks: **how much do our conclusions depend on our prior beliefs about juror competence?** \n"
       ],
-      "id": "73a73fa2"
+      "id": "842954f0"
     },
     {
       "cell_type": "code",
@@ -174,8 +172,8 @@
         "        'desc': 'Weakly informative (centered at 0.6)'\n",
         "    },\n",
         "    'strong_competence': {\n",
-        "        'alpha': 10, 'beta': 5, \n",
-        "        'desc': 'Strong prior (p ~ 0.67)'\n",
+        "        'alpha': 10, 'beta': 3, \n",
+        "        'desc': 'Strong prior (p ~ 0.76)'\n",
         "    },\n",
         "    'barely_competent': {\n",
         "        'alpha': 6, 'beta': 5, \n",
@@ -187,7 +185,7 @@
         "    },\n",
         "}"
       ],
-      "id": "08d9c64e",
+      "id": "8c8997cd",
       "execution_count": null,
       "outputs": []
     },
@@ -195,11 +193,13 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "Now we'll fit our base Condorcet model under each prior specification:\n",
+        "To perform our sensitivity analysis, we test four different \"Corporate Climates.\" These represent the level of faith an organization has in its own internal competence. When a corporate decision leads to disaster, the post-mortem almost always focuses on competence. The diagnosis is usually that the \"wrong people were in the room\" or that the team lacked \"domain expertise.\" This focus on individual skill is a convenient fiction for the investor class; it suggests that the organizational structure is fine, it just needs better \"units.\"\n",
+        "\n",
+        "We'll see that there are legitimate reasons to worry about individual incompetence for collective decision making. But you need to achieve a critical mass of incompetence for consequential error. In most cases marginal incomptence within an organisation rarely breaks the corporate mechanism. As long as those errors are independent—as long as the \"incompetent\" people are failing in their own unique, \"weird\" ways—the majority will still find the truth. The high-performers provide the signal, and the low-performers provide \"white noise\" that cancels itself out.\n",
         "\n",
         "### Model 1: The Classical Condorcet Jury Model\n",
         "\n",
-        "Let $$T_i \\in \\{0,1\\}$$ denote the true state of case $$i = 1,\\dots,N$$, with\n",
+        "Let $T_i \\in \\{0,1\\}$ denote the true state of case $i = 1,\\dots,N$, with\n",
         "$$\n",
         "T_i \\sim \\text{Bernoulli}(0.5).\n",
         "$$\n",
@@ -219,8 +219,6 @@
         "\\end{cases}\n",
         "$$\n",
         "\n",
-        "#### Structural Assumptions\n",
-        "\n",
         "This model imposes three strong assumptions:\n",
         "\n",
         "1. **Exchangeability across jurors**: all jurors are equally competent.\n",
@@ -232,7 +230,7 @@
         "\n",
         "These assumptions define the idealized world in which the Condorcet Jury Theorem applies.\n"
       ],
-      "id": "04fa8bef"
+      "id": "868c0161"
     },
     {
       "cell_type": "code",
@@ -277,7 +275,7 @@
         "    \n",
         "    return idata, model"
       ],
-      "id": "423e6c3a",
+      "id": "6b624788",
       "execution_count": null,
       "outputs": []
     },
@@ -285,30 +283,20 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "### Prior Sensitivity in the Condorcet Model\n",
-        "\n",
-        "We retain the likelihood from the classical Condorcet model but introduce uncertainty\n",
-        "about juror competence via a prior distribution:\n",
+        "The key property of the model we want to probe is how the accuracy of the majority vote evolves as we incorporate more jurors in the vote. The stressor we apply to test the system is to gauge how this accuracy evolve with degrees of population competence.\n",
         "$$\n",
         "p \\sim \\text{Beta}(\\alpha, \\beta).\n",
         "$$\n",
         "\n",
-        "No assumptions about independence or exchangeability are altered.\n",
-        "Instead, this model makes explicit the epistemic commitment that the Condorcet theorem leaves implicit: jurors are often assumed to be better than random *a priori*.\n",
-        "\n",
-        "#### Interpretation\n",
-        "\n",
-        "This modification does not change how votes are generated.\n",
-        "It only affects how strongly we believe in democratic competence before observing data.\n",
-        "\n",
-        "If Condorcet-style aggregation fails under this model, the failure cannot be attributed to unrealistic priors — only to the structure of the voting process itself.\n"
+        "No assumptions about independence or exchangeability are altered. Instead, this model makes explicit the epistemic commitment that the Condorcet theorem leaves implicit: jurors are often assumed to be better than random *a priori*. You must hire well so that the average for each employee has a better than coin-flip chance of accuracy. This modest requirement is all we require to ensure collective accuracy, under the conditions of the model. \n"
       ],
-      "id": "c328d0eb"
+      "id": "81402820"
     },
     {
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "# | output: false\n",
         "# Fit under all prior specifications\n",
         "traces = {}\n",
         "for prior_name, spec in prior_specs.items():\n",
@@ -317,7 +305,7 @@
         "    traces[prior_name] = idata\n",
         "    traces[prior_name + '_model'] = model"
       ],
-      "id": "22861c80",
+      "id": "2dbf9764",
       "execution_count": null,
       "outputs": []
     },
@@ -325,9 +313,9 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "Let's examine how our prior beliefs influence predictions:\n"
+        "Let's examine how our prior beliefs influence prediction. We have sampled the majority votes under both our prior and the derived posterior distribution. We see how the accuracy of the majority vote grows with more voters when the priors about group competence is high. \n"
       ],
-      "id": "db8ff087"
+      "id": "9b5ecf16"
     },
     {
       "cell_type": "code",
@@ -362,9 +350,17 @@
         "print(\"=\"*70)\n",
         "print(posterior_estimates)"
       ],
-      "id": "aa5ab1b5",
+      "id": "cf7696fa",
       "execution_count": null,
       "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "However, we can also see how the aggregation of incompetent opinion tends towards incorrect. \n"
+      ],
+      "id": "e8412fc1"
     },
     {
       "cell_type": "code",
@@ -389,7 +385,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "07bf488c",
+      "id": "48c27760",
       "execution_count": null,
       "outputs": []
     },
@@ -397,26 +393,32 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "**Key insight**: Strong prior beliefs about incompetence, the data updates our beliefs away from the truth. You cannot avoid the requirement of minimum competence in the jury pool.\n",
+        "You cannot avoid the requirement of minimum competence in the jury pool if you hope for collective wisdom. But more strikingly, when we have even modest competence, the aggregation of votes quickly converges towards high accuracy. This is exactly the finding of Condorcet's Jury Theorem. \n",
         "\n",
-        "## Part 3: Individual Differences in Competence\n",
+        "::: {.callout-important}\n",
+        "## Formal Statement: The Condorcet Jury Theorem\n",
         "\n",
-        "The base Condorcet model assumes all jurors are identically competent. In reality, people vary in expertise, attention, and judgment. Let's model **heterogeneity** in juror competence.\n",
+        "Let a group of $n$ independent individuals (a \"jury\") be tasked with choosing between two outcomes, one of which is \"correct.\" Let $p$ represent the probability of any single individual making the correct choice. The theorem consists of two parts:\n",
         "\n",
-        "### The Hierarchical Model\n",
+        "1.  **The Competence Requirement:** If $p > 0.5$, then the probability that a majority of the group makes the correct choice is greater than $p$.\n",
+        "2.  **The Asymptotic Result:** As $n \\to \\infty$, the probability that the majority choice is correct approaches $1$.\n",
         "\n",
-        "We'll use a hierarchical model where individual competencies are drawn from a population distribution. The key sensitivity parameter is σ (discrimination): how much do jurors differ?\n",
+        "Conversely, if $p < 0.5$, increasing the size of the jury only increases the probability that the group will arrive at the *wrong* conclusion, with that probability approaching $1$ as $n$ grows.\n",
+        ":::\n",
+        "\n",
+        "This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and we know that competence isn't uniform. This pulls us in two ways: (1) management panic over hiring standards and (2) fostering diversity in the employee base. We'll look at (1) next. \n",
+        "\n",
+        "## Individual Differences in Competence\n",
+        "\n",
+        "The base Condorcet model assumes all jurors are identically competent. In reality, people vary in expertise, attention, and judgment. Let's model **heterogeneity** in juror competence. To gauge these effects we'll use a hierarchical model where individual competencies are drawn from a population distribution. The key sensitivity parameter is $\\sigma$ (discrimination): how much do jurors differ?\n",
         "\n",
         "#### Heterogeneous Juror Competence\n",
         "\n",
-        "We now relax the assumption that all jurors are equally competent.\n",
-        "\n",
-        "Each juror $j$ is assigned an individual probability of voting correctly:\n",
+        "We now relax the assumption that all jurors are equally competent. Each juror $j$ is assigned an individual probability of voting correctly:\n",
         "$$\n",
         "\\text{logit}(p_j) = \\mu + \\sigma z_j, \\qquad z_j \\sim \\mathcal{N}(0,1).\n",
         "$$\n",
         "\n",
-        "### Collapsing Bernoulli Votes to a Binomial Likelihood\n",
         "\n",
         "For a fixed juror $j$, define the number of agreements with the majority:\n",
         "$$\n",
@@ -429,24 +431,18 @@
         "A_j \\mid p_j \\sim \\text{Binomial}(N, p_j).\n",
         "$$\n",
         "\n",
-        "This is not an approximation.\n",
-        "It is the marginal likelihood obtained by integrating over $$N$$ independent Bernoulli trials:\n",
+        "This is not an approximation. It is the marginal likelihood obtained by integrating over $$N$$ independent Bernoulli trials:\n",
         "$$\n",
         "\\prod_{i=1}^N \\text{Bernoulli}(V_{ij} \\mid p_j)\n",
         "\\;\\Longrightarrow\\;\n",
         "\\text{Binomial}(A_j \\mid N, p_j).\n",
         "$$\n",
         "\n",
-        "#### Structural Interpretation\n",
+        "This observation motivates a re-articuation of the condorcet model. The binomial phrasing is often easier to sample than the Bernoulli likelihood, so we shall switch to that model. Our next model uses a Binomial likelihood and  relies on two assumptions. We hold fixed the exchangeability across the cases and we rely on sufficiency of the count statistic. Once jurors are treated as stable measurement instruments, their entire voting history becomes a single aggregated observation. \n",
         "\n",
-        "The Binomial likelihood relies on two assumptions:\n",
-        "\n",
-        "1. **Exchangeability across cases**\n",
-        "2. **Sufficiency of the count statistic**\n",
-        "\n",
-        "Once jurors are treated as stable measurement instruments, their entire voting history becomes a single aggregated observation. This collapse will fail as soon as cases are no longer interchangeable.\n"
+        "### Model 2: Varying Competence\n"
       ],
-      "id": "a5d2b43b"
+      "id": "caf8469a"
     },
     {
       "cell_type": "code",
@@ -498,23 +494,33 @@
         "    \n",
         "    return idata, model\n"
       ],
-      "id": "02fb3eae",
+      "id": "ab887282",
       "execution_count": null,
       "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Again, we'll test a range of priors. But this time we'll push on the range of permissable competence in the jury pool. \n"
+      ],
+      "id": "855676fc"
     },
     {
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "# | output: false\n",
+        "\n",
         "# Test three levels of discrimination\n",
         "discrimination_priors = {\n",
         "    'weak_discrimination': {\n",
         "        'sigma': 0.5, \n",
-        "        'desc': 'Weak discrimination (σ ~ 0.25)'\n",
+        "        'desc': 'Weak discrimination (σ ~ 0.5)'\n",
         "    },\n",
         "    'moderate_discrimination': {\n",
         "        'sigma': 1.0, \n",
-        "        'desc': 'Moderate discrimination (σ ~ 0.5)'\n",
+        "        'desc': 'Moderate discrimination (σ ~ 1)'\n",
         "    },\n",
         "    'strong_discrimination': {\n",
         "        'sigma': 2.0, \n",
@@ -527,12 +533,9 @@
         "    print(f\"\\nFitting with {spec['desc']}...\")\n",
         "    idata, model = fit_hierarchical_model(votes, N_JURORS, spec)\n",
         "    traces_discrimination[prior_name] = idata\n",
-        "    traces_discrimination[prior_name + '_model'] = model\n",
-        "\n",
-        "# Examine one of the fitted models\n",
-        "az.summary(traces_discrimination['moderate_discrimination'])"
+        "    traces_discrimination[prior_name + '_model'] = model"
       ],
-      "id": "fef02bd0",
+      "id": "be20516a",
       "execution_count": null,
       "outputs": []
     },
@@ -540,9 +543,31 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "## Posterior Predictive Checks\n",
+        "Whereas in the previous model we observed each and every vote in the likelihood, here we're abstracting away from the particular and assuming their realised values are a consequece of latent structure; individual estimable competence. \n"
+      ],
+      "id": "3e585c49"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Examine one of the fitted models\n",
+        "ax = az.plot_forest(traces_discrimination['strong_discrimination'], var_names=['p_juror'], combined=True)\n",
+        "ax[0].set_title(\"Diversity of Jury Competence \\n Under Strong Discrimination\");"
+      ],
+      "id": "019b6cc2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "By collapsing these observations into a Binomial distribution, we focus the model’s attention on the success rate of the collective. Paradoxically, by \"throwing away\" the individual case observations of the jurors, we force the model to account for the variance in the process itself.\n",
         "\n",
-        "To understand the implications of different discrimination levels, we need to simulate complete jury deliberations. We need to translate our individual voter's profile into votes. As before votes are generated as, but we have no longer directly modelled this outcome, so we derive implied votes through posterior predictive checks. \n",
+        "### The Generative Process and Implied Votes \n",
+        "\n",
+        "It's for this reason we now rely on Posterior Predictive Sampling (PPC) to reconstruct these votes is that we are no longer just fitting a line to a set of points; we are simulating a generative process. To understand the implications of different discrimination levels, we need to simulate complete jury deliberations. In other words, we need to translate our individual voter's profile into votes. \n",
         "$$\n",
         "V_{ij} \\mid T_i, p_j \\sim\n",
         "\\begin{cases}\n",
@@ -551,17 +576,9 @@
         "\\end{cases}\n",
         "$$\n",
         "\n",
-        "#### Structural Consequences\n",
-        "\n",
-        "Conditional independence is preserved, but only after conditioning on individual competence:\n",
-        "$$\n",
-        "V_{ij} \\perp V_{ik} \\mid T_i, \\{p_j\\}.\n",
-        "$$\n",
-        "\n",
-        "This model introduces inequality among jurors without introducing dependence.\n",
-        "Heterogeneous competence alone does not violate the conditions of the Condorcet theorem. Here's our comprehensive PPC framework:\n"
+        "This will then allow us to test for accuracy of the majority under different ranges of skill. The core insight is that we must forward sample to derive the voting profile of each individual.\n"
       ],
-      "id": "82f60f4e"
+      "id": "463c96e3"
     },
     {
       "cell_type": "code",
@@ -579,8 +596,25 @@
         "            prob = p_juror[j] if truth[i] == 1 else 1 - p_juror[j]\n",
         "            votes[i, j] = np.random.binomial(1, prob)\n",
         "    \n",
-        "    return truth, votes\n",
-        "\n",
+        "    return truth, votes\n"
+      ],
+      "id": "77388d3b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "To do so we'll define a number of helper functions below.\n"
+      ],
+      "id": "da94c541"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# | code-fold: true\n",
         "\n",
         "def compute_diagnostics(votes, truth):\n",
         "    \"\"\"Compute suite of diagnostic metrics for jury performance.\"\"\"\n",
@@ -686,24 +720,8 @@
         "        results[stage] = summarize_ppc({'accuracy_by_size': stage_results}, \n",
         "                                      jury_sizes)\n",
         "    \n",
-        "    return pd.concat(results, names=['stage', 'percentile'])"
-      ],
-      "id": "d4d2d91a",
-      "execution_count": null,
-      "outputs": []
-    },
-    {
-      "cell_type": "markdown",
-      "metadata": {},
-      "source": [
-        "Now let's apply this framework. We'll focus on the moderate discrimination case as it's most realistic:\n"
-      ],
-      "id": "e7264581"
-    },
-    {
-      "cell_type": "code",
-      "metadata": {},
-      "source": [
+        "    return pd.concat(results, names=['stage', 'percentile'])\n",
+        "\n",
         "def plot_prior_posterior_comparison(df, title=\"Majority Accuracy\"):\n",
         "    \"\"\"Plot prior vs posterior distributions.\"\"\"\n",
         "    x_values = JURY_SIZES\n",
@@ -728,9 +746,24 @@
         "    ax.grid(True, linestyle='--', alpha=0.6)\n",
         "    \n",
         "    plt.tight_layout()\n",
-        "    return fig\n",
-        "\n",
-        "\n",
+        "    return fig\n"
+      ],
+      "id": "e5d2872e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Now let's apply this framework. We'll focus on the moderate discrimination case as it's most realistic:\n"
+      ],
+      "id": "ebb6c157"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
         "# Analyze the moderate discrimination case\n",
         "print(f\"\\n{'='*70}\")\n",
         "print(f\"Analysis: {discrimination_priors['moderate_discrimination']['desc']}\")\n",
@@ -742,13 +775,30 @@
         "    true_states\n",
         ")\n",
         "\n",
-        "print(comparison)\n",
+        "comparison"
+      ],
+      "id": "26956c8e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We still see convergen to the truth as we scale up the size of our majority even when we allow heterogeneous levels of skill in the voting population. The median prior and posterior estimates of accuracy are quite close, but we've significantly shrunk the uncertainty in our estimate. \n"
+      ],
+      "id": "6eb815ff"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
         "plot_prior_posterior_comparison(\n",
         "    comparison, \n",
         "    title=\"Prior vs Posterior: Moderate Individual Variation\"\n",
-        ")"
+        ");"
       ],
-      "id": "6423f5d6",
+      "id": "79ba081a",
       "execution_count": null,
       "outputs": []
     },
@@ -758,17 +808,17 @@
       "source": [
         "The pattern is consistent across all discrimination levels: the data updates our beliefs, and larger juries show higher accuracy. The key question is whether errors remain independent.\n",
         "\n",
-        "\n",
-        "## Error Correlation Analysis\n",
+        "#### Error Correlation Analysis\n",
         "\n",
         "A critical assumption of Condorcet is **independence**: jurors make errors independently. Let's check this for our moderate discrimination model:\n"
       ],
-      "id": "270a9025"
+      "id": "3c754198"
     },
     {
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "# | output: false\n",
         "def plot_error_correlation_heatmap(ppc_results, title=\"Error Correlation\"):\n",
         "    \"\"\"Plot mean error correlation matrix, handling NaN values properly.\"\"\"\n",
         "    all_corrs = ppc_results['error_corr']  # (n_samples, n_jurors, n_jurors)\n",
@@ -778,11 +828,14 @@
         "    \n",
         "    # For cells that are still NaN (all samples were NaN), replace with 0\n",
         "    mean_corr = np.nan_to_num(mean_corr, nan=0.0)\n",
-        "    \n",
-        "    fig, ax = plt.subplots(figsize=(6, 5))\n",
-        "    sns.heatmap(mean_corr, vmin=-0.3, vmax=0.3, cmap=\"coolwarm\",\n",
-        "                square=True, cbar_kws={\"label\": \"Error correlation\"}, ax=ax)\n",
-        "    ax.set_title(title)\n",
+        "    mean_corr = np.round(mean_corr, 2)\n",
+        "    fig, ax = plt.subplots(figsize=(15, 6))\n",
+        "    sns.heatmap(mean_corr, vmin=-1, vmax=1, cmap=\"coolwarm\",\n",
+        "                square=False, cbar_kws={\"label\": \"Error correlation\"}, ax=ax, \n",
+        "                annot=True, fmt=\".2f\")\n",
+        "    ax.set_title(title, fontsize=20)\n",
+        "    ax.set_xlabel(\"Voter Index\")\n",
+        "    ax.set_ylabel(\"Voter Index\")\n",
         "    plt.tight_layout()\n",
         "    return fig\n",
         "\n",
@@ -824,15 +877,13 @@
         "    true_states\n",
         ")\n",
         "\n",
-        "plot_error_correlation_heatmap(\n",
+        "fig = plot_error_correlation_heatmap(\n",
         "    ppc_moderate, \n",
-        "    title=\"Error Correlation: Moderate Individual Variation\"\n",
-        ")\n",
-        "\n",
-        "print(\"\\nError Correlation Summary:\")\n",
-        "print(summarize_error_correlation(ppc_moderate))"
+        "    title=\"Error Correlation Among Voters:  \\n Moderate Individual Skill Difference\"\n",
+        ");\n",
+        "fig.savefig(\"Independent_voter_errors_correlation.png\")"
       ],
-      "id": "6f010822",
+      "id": "14406bbf",
       "execution_count": null,
       "outputs": []
     },
@@ -840,9 +891,28 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "**Key insight**: With heterogeneous competence alone, errors remain largely uncorrelated (mean ≈ 0). The Condorcet theorem's independence assumption holds—so far.\n",
+        "![](Independent_voter_errors_correlation.png)\n"
+      ],
+      "id": "223a82dd"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(\"\\nError Correlation Summary:\")\n",
+        "summarize_error_correlation(ppc_moderate)"
+      ],
+      "id": "10005ed3",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Key insight**: With heterogeneous competence alone, errors remain largely uncorrelated. The Condorcet theorem's independence assumption holds—so far. Which is to say that diverse workforces and varying degrees of competence do not inherently short-circuit the firm's ability to learn. \n",
         "\n",
-        "# Part 4: Shared Case Difficulty\n",
+        "## Shared Case Difficulty\n",
         "\n",
         "Now we introduce a critical violation: **shared case-level effects**. Some cases are genuinely harder, causing even competent jurors to fail together.\n",
         "\n",
@@ -873,7 +943,7 @@
         "This violation produces correlated errors across jurors and directly undermines\n",
         "the Condorcet theorem.\n"
       ],
-      "id": "e32c8a4b"
+      "id": "9cbd2870"
     },
     {
       "cell_type": "code",
@@ -1052,7 +1122,7 @@
         "    print(f\"  Median error correlation: {res['median_corr']:.3f}\")\n",
         "    print(f\"  95th %ile |correlation|: {res['p95_abs_corr']:.3f}\")"
       ],
-      "id": "c3dc1088",
+      "id": "5fb82439",
       "execution_count": null,
       "outputs": []
     },
@@ -1092,7 +1162,7 @@
         "Block effects induce structured error correlations that persist even in large juries.\n",
         "Aggregation no longer produces independent evidence.\n"
       ],
-      "id": "63d9bfcf"
+      "id": "d0850747"
     },
     {
       "cell_type": "code",
@@ -1182,7 +1252,7 @@
         "summaries = pd.concat({'Full Model': full_summary, 'Full Model + Treatment': full_trt_summary})\n",
         "summaries"
       ],
-      "id": "a6a32a3a",
+      "id": "2c002dcd",
       "execution_count": null,
       "outputs": []
     },
@@ -1194,7 +1264,7 @@
         "\n",
         "Now let's examine how the complete model performs, including its error correlations:\n"
       ],
-      "id": "28085187"
+      "id": "105a812e"
     },
     {
       "cell_type": "code",
@@ -1273,7 +1343,7 @@
         "print(\"=\"*70)\n",
         "print(summary_full)"
       ],
-      "id": "9792b009",
+      "id": "622abcb4",
       "execution_count": null,
       "outputs": []
     },
@@ -1283,7 +1353,7 @@
       "source": [
         "Notice how the increasing size of the voting block does not substantially improve on the accuracy. This pattern is also unfortunately visible in our treatment model. \n"
       ],
-      "id": "c49592cb"
+      "id": "ca1581fc"
     },
     {
       "cell_type": "code",
@@ -1295,7 +1365,7 @@
         "print(\"=\"*70)\n",
         "print(summary_full_trt)\n"
       ],
-      "id": "916edf71",
+      "id": "31e8e540",
       "execution_count": null,
       "outputs": []
     },
@@ -1305,7 +1375,7 @@
       "source": [
         "The allocation of a heterogenous treatment progromme was not sufficient to break the block voting effects. The increased correlations between voters reduces the number of independent signals in the jury pool. \n"
       ],
-      "id": "e876e2c7"
+      "id": "2babd4fa"
     },
     {
       "cell_type": "code",
@@ -1324,7 +1394,7 @@
         "for key, value in error_summary.items():\n",
         "    print(f\"{key}: {value:.3f}\")"
       ],
-      "id": "b7952446",
+      "id": "675fab8b",
       "execution_count": null,
       "outputs": []
     },
@@ -1334,7 +1404,7 @@
       "source": [
         "Notice the structured patterns in the error correlation heatmap—jurors within the same block (0-4, 5-10, 11-14) show correlated errors. This is the smoking gun: **block effects create dependencies that violate the independence assumption**.\n"
       ],
-      "id": "a20bbd7d"
+      "id": "fd1036f0"
     },
     {
       "cell_type": "code",
@@ -1353,7 +1423,7 @@
         "for key, value in error_summary.items():\n",
         "    print(f\"{key}: {value:.3f}\")"
       ],
-      "id": "f83c631c",
+      "id": "b0a7d092",
       "execution_count": null,
       "outputs": []
     },
@@ -1365,7 +1435,7 @@
         "\n",
         "Let's visualize how much this matters:"
       ],
-      "id": "6b1e09e3"
+      "id": "9041269d"
     },
     {
       "cell_type": "code",
@@ -1424,7 +1494,7 @@
         "\n",
         "final_plot(ppc_full)"
       ],
-      "id": "e4e87fd3",
+      "id": "885c4ec5",
       "execution_count": null,
       "outputs": []
     },
@@ -1434,7 +1504,7 @@
       "source": [
         "Similar final patterns can be seen again with the treatment model.\n"
       ],
-      "id": "56742ad3"
+      "id": "82d1a1bf"
     },
     {
       "cell_type": "code",
@@ -1442,7 +1512,7 @@
       "source": [
         "final_plot(ppc_full_trt)"
       ],
-      "id": "71c6505d",
+      "id": "e63e246c",
       "execution_count": null,
       "outputs": []
     },
@@ -1468,7 +1538,7 @@
         "\n",
         "Democracy works—but only when we actively work to satisfy its preconditions."
       ],
-      "id": "178d7425"
+      "id": "8da10ac2"
     }
   ],
   "metadata": {
