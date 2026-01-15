@@ -18,13 +18,23 @@ author:
 citation: true
 ---
 
-# Introduction
+# The Legibility Trap: Contemptible Familiarity
 
-The Condorcet Jury Theorem offers a compelling foundation for democratic decision-making: if each member of a group is more likely than not to make the correct decision, then the majority decision becomes increasingly accurate as the group size grows. This mathematical result has profound implications for how we think about collective intelligence, from jury trials to democratic governance.
+Decision making in the modern corporation has to be seen to be believed. Arguably, a smooth running machine for making decisions to game the market. In reality it is a hodge podge of salves for making the investor class feel safe, and C-suites feel in control. 
 
-But the theorem rests on strong assumptions: voters are independent, equally competent, and better than random. What happens when these assumptions fail? In this post, we'll use Bayesian sensitivity analysis to explore the failure modes of democratic aggregation.
+To the analyst and the private equity partner, "unfamiliarity" is unquantifiable risk. They demand a recognizable org chart, a standardized "Agile" workflow, and a set of "Core Values" that could be swapped between a pet-food startup and a sovereign wealth fund without anyone noticing. __This is the cult of Legibility__. Borrowing from James C. Scott’s _Seeing Like a State_, we see that when central authorities cannot understand a complex, organic system, they flatten it. They replace the wild, high-information "forest" of human talent with a "plantation" of identical, predictable units.
 
-## Setup
+But this familiarity breeds a systemic contempt for reality. When you optimize for the gaze of the outsider, you perform a cognitive lobotomy on your own workforce. In our quest for "alignment" or adherence to irrelevant standards, we destroy the only thing that makes a group smarter than an individual: the generative friction of our differences. The "miracle" of collective intelligence is a generative process. It requires that we be wrong in different directions so that, in the aggregate, we might be right. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine that makes democracy and decentralization work. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine of collective intelligence: The Condorcet Jury Theorem.
+
+## Do as I say, Not what I do.
+
+Investors are the world's most fervent believers in the power of diversification. They know that to survive a volatile market, they must hedge their bets across uncorrelated assets. While the investor hedges in the aggregate, they force the subordinate company to appear as a single, comparable unit on a spreadsheet. They demand that the company eliminate internal variance. They want the firm to be "aligned," "standardized," and "legible." In doing so, they strip the company of the very same diversification they rely on for their portfolio.
+
+The Condorcet Jury Theorem (CJT) is the mathematical foundation of this diversification. It suggests that if you have a group of independent individuals who are each slightly more likely than not to be right ($p > 0.5$), the probability of the majority being correct approaches 100% as the group size grows. There is real value in diversity when deployed well. But it's brittle and corporate best practice is uniquely designed to break it. Let's see how this works.
+
+#### Setup
+
+To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, simulate_jury_data, is the generative heart of this piece. It doesn’t just create random numbers; it creates a world where we can toggle the parameters of Generative Friction.
 
 ```{python}
 import pandas as pd
@@ -43,9 +53,9 @@ JURY_SIZES = [3, 5, 7, 10, 15]
 BLOCK_ID = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2])
 ```
 
-# Part 1: Data Generation and the Ground Truth
+### Data Generation and the Ground Truth
 
-Let's start by simulating jury voting data where we control the ground truth. We'll create a flexible simulation function that can handle both simple scenarios and more complex ones with group effects.
+In a healthy system, learning happens in the gaps between different perspectives. But in a "legible" system, those gaps are closed. Our simulation allows us to model this across three dimensions
 
 ```{python}
 def simulate_jury_data(n_cases, n_jurors, true_p=0.65, true_discrimination=0.5, 
@@ -108,10 +118,13 @@ votes, p_jurors, true_states = simulate_jury_data(N_CASES, N_JURORS)
 
 print(f"Data simulated: {N_CASES} cases, {N_JURORS} jurors")
 print(f"True average competence: {p_jurors.mean():.3f}")
-print(f"Majority vote accuracy: {(votes.mean(axis=1) > 0.5).mean():.3f}")
+majority = (votes.mean(axis=1) > 0.5) 
+print(f"Majority vote accuracy: {np.mean(majority == true_states):.3f}")
 ```
 
-# Part 2: Sensitivity to Prior Beliefs About Competence
+We've seen how our data generating process encodes a baseline degree of juror competence. On any yes/no question we've ensured that the average juror has $(p \sim N(.65, \sigma_{disc}))$ chance of getting the right answer. The $\sigma_{disc}$ determines the range of individual skill in the population. We've then asked each juror to cast their vote on 50 decisions.
+
+## Part 2: Sensitivity to Prior Beliefs About Competence
 
 Our first sensitivity analysis asks: **how much do our conclusions depend on our prior beliefs about juror competence?**
 
@@ -303,15 +316,15 @@ plt.show()
 
 **Key insight**: Strong prior beliefs about incompetence, the data updates our beliefs away from the truth. You cannot avoid the requirement of minimum competence in the jury pool.
 
-# Part 3: Individual Differences in Competence
+## Part 3: Individual Differences in Competence
 
 The base Condorcet model assumes all jurors are identically competent. In reality, people vary in expertise, attention, and judgment. Let's model **heterogeneity** in juror competence.
 
-## The Hierarchical Model
+### The Hierarchical Model
 
 We'll use a hierarchical model where individual competencies are drawn from a population distribution. The key sensitivity parameter is σ (discrimination): how much do jurors differ?
 
-### Heterogeneous Juror Competence
+#### Heterogeneous Juror Competence
 
 We now relax the assumption that all jurors are equally competent.
 
@@ -909,9 +922,9 @@ for sigma in sigma_values:
 
 Finally, we combine all sources of variation into a realistic hierarchical model:
 
-### Adding Group-Level (Block) Effects
+### Adding Group-Level (Block) Effects and Treatment Programmes
 
-Finally, we introduce block-level effects representing factions or information silos.
+Finally, we introduce block-level effects representing factions or information silos. We will also allow for the inclusion of a treatment programme. We might hope the latter drives the voter base towards better information. But we also risk driving the jury pool toward confidently wrong but shared opinions. 
 
 Each juror belongs to a block $b(j)$, with:
 $$
@@ -921,7 +934,7 @@ $$
 The full voting model becomes:
 $$
 \text{logit}\,\Pr(V_{ij} = T_i)
-= \alpha_j + \beta_{b(j)} + \delta_i.
+= \alpha_j + \beta_{b(j)} + \delta_i + \text{ treatment }*\tau
 $$
 
 #### Structural Consequences
@@ -945,7 +958,7 @@ votes_blocked, p_jurors_blocked, true_states_blocked = simulate_jury_data(
 def fit_full_model(votes, n_jurors, block_id, treatment_indicator,
     use_treatment=0):
     """
-    Complete model with three sources of variation:
+    Complete model with four sources of variation:
     1. Individual skill (α_j)
     2. Block/faction effects (β_block)
     3. Case difficulty (δ_case)
@@ -983,7 +996,7 @@ def fit_full_model(votes, n_jurors, block_id, treatment_indicator,
         # -----------------------------
         # Treatment effect (switchable)
         # -----------------------------
-        tau = pm.HalfNormal("tau", sigma=1.0)
+        tau = pm.Normal("tau", mu=0, sigma=1.0, shape=N_JURORS)
 
         # convert to tensors to avoid shape surprises
         Z = pm.math.constant(treatment_indicator)
@@ -1001,7 +1014,7 @@ def fit_full_model(votes, n_jurors, block_id, treatment_indicator,
                    observed=agreements_per_juror)
         
         idata = pm.sample(2000, tune=2000, target_accept=0.985, 
-                         return_inferencedata=True)
+                         return_inferencedata=True, nuts_sampler='numpyro')
     
     return idata, model
 
@@ -1009,12 +1022,17 @@ def fit_full_model(votes, n_jurors, block_id, treatment_indicator,
 print("\nFitting complete hierarchical model...")
 idata_full, model_full = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=np.zeros(N_JURORS), use_treatment=0)
 
-idata_full_trt, model_full_trt = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=np.random.binomial(1, .5, N_JURORS), use_treatment=1)
+idata_full_trt, model_full_trt = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=np.ones(N_JURORS), use_treatment=1)
 
 print("\n" + "="*70)
 print("COMPLETE MODEL SUMMARY")
 print("="*70)
-az.summary(idata_full, var_names=["mu_alpha", "sigma_alpha", "sigma_block", "mu_case", "sigma_case"])
+full_summary = az.summary(idata_full, var_names=["mu_alpha", "sigma_alpha", "sigma_block", "mu_case", "sigma_case", "trt"])
+
+full_trt_summary = az.summary(idata_full_trt, var_names=["mu_alpha", "sigma_alpha", "sigma_block", "mu_case", "sigma_case", "trt"])
+
+summaries = pd.concat({'Full Model': full_summary, 'Full Model + Treatment': full_trt_summary})
+summaries
 ```
 
 ## Posterior Predictive Checks for Complete Model
@@ -1085,6 +1103,9 @@ print("\nRunning posterior predictive checks for complete model...")
 ppc_full = run_ppc_full_model(idata_full, N_CASES, true_states_blocked, 
                                BLOCK_ID, n_draws=500)
 
+ppc_full_trt = run_ppc_full_model(idata_full_trt, N_CASES, true_states_blocked, 
+                               BLOCK_ID, n_draws=500)
+
 # Summarize accuracy by jury size
 summary_full = summarize_ppc(ppc_full)
 print("\n" + "="*70)
@@ -1092,6 +1113,25 @@ print("MAJORITY ACCURACY BY JURY SIZE (Complete Model)")
 print("="*70)
 print(summary_full)
 
+```
+
+Notice how the increasing size of the voting block does not substantially improve on the accuracy. This pattern is also unfortunately visible in our treatment model. 
+
+
+```{python}
+summary_full_trt = summarize_ppc(ppc_full_trt)
+print("\n" + "="*70)
+print("MAJORITY ACCURACY BY JURY SIZE (Complete Model + Treatment)")
+print("="*70)
+print(summary_full_trt)
+
+
+```
+
+The allocation of a heterogenous treatment progromme was not sufficient to break the block voting effects. The increased correlations between voters reduces the number of independent signals in the jury pool. 
+
+
+```{python}
 # Plot error correlations
 plot_error_correlation_heatmap(
     ppc_full,
@@ -1108,56 +1148,86 @@ for key, value in error_summary.items():
 
 Notice the structured patterns in the error correlation heatmap—jurors within the same block (0-4, 5-10, 11-14) show correlated errors. This is the smoking gun: **block effects create dependencies that violate the independence assumption**.
 
-Let's visualize how much this matters:
 
 ```{python}
-# Compare accuracy distributions
-fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+# Plot error correlations
+plot_error_correlation_heatmap(
+    ppc_full_trt,
+    title="Error Correlation: Complete Model with Block & Case Effects"
+)
 
-# Plot 1: Accuracy by jury size
-ax = axes[0]
-jury_size_labels = [3, 5, 7, 10, 15]
-for i, size in enumerate(jury_size_labels):
-    accuracies = ppc_full['accuracy_by_size'][size]
-    ax.violinplot([accuracies], positions=[i], widths=0.7, 
-                   showmeans=True, showmedians=True)
-
-ax.set_xticks(range(len(jury_size_labels)))
-ax.set_xticklabels(jury_size_labels)
-ax.set_xlabel('Jury Size')
-ax.set_ylabel('Majority Accuracy')
-ax.set_title('Accuracy Distribution by Jury Size\n(Complete Model)')
-ax.grid(True, alpha=0.3)
-
-# Plot 2: Error correlation distribution
-ax = axes[1]
-off_diag_corrs = []
-for s in range(ppc_full['error_corr'].shape[0]):
-    mat = ppc_full['error_corr'][s]
-    n = mat.shape[0]
-    off_diag_corrs.extend(mat[np.triu_indices(n, k=1)])
-
-ax.hist(off_diag_corrs, bins=50, alpha=0.7, edgecolor='black')
-ax.axvline(0, color='red', linestyle='--', linewidth=2, label='Independence')
-ax.set_xlabel('Pairwise Error Correlation')
-ax.set_ylabel('Frequency')
-ax.set_title('Distribution of Error Correlations\n(Complete Model)')
-ax.legend()
-ax.grid(True, alpha=0.3)
-
-plt.tight_layout()
-plt.show()
-
-# Calculate the impact on the Condorcet theorem
 print("\n" + "="*70)
-print("QUANTIFYING THE VIOLATION")
+print("ERROR CORRELATION SUMMARY (Complete Model)")
 print("="*70)
-print(f"Mean error correlation: {np.mean(off_diag_corrs):.3f}")
-print(f"Proportion of positive correlations: {(np.array(off_diag_corrs) > 0).mean():.1%}")
-print(f"\nMedian accuracy (15 jurors): {np.median(ppc_full['accuracy_by_size'][15]):.3f}")
-print(f"Median accuracy (3 jurors): {np.median(ppc_full['accuracy_by_size'][3]):.3f}")
-print(f"Improvement from larger jury: {np.median(ppc_full['accuracy_by_size'][15]) - np.median(ppc_full['accuracy_by_size'][3]):.3f}")
+error_summary = summarize_error_correlation(ppc_full_trt)
+for key, value in error_summary.items():
+    print(f"{key}: {value:.3f}")
 ```
+
+While the correlation patterns change slightly, they remain high and reduce the effectiveness of the majority.
+
+Let's visualize how much this matters:
+```{python}
+#| code-fold: true 
+#| 
+def final_plot(ppc_full):
+    # Compare accuracy distributions
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    # Plot 1: Accuracy by jury size
+    ax = axes[0]
+    jury_size_labels = [3, 5, 7, 10, 15]
+    for i, size in enumerate(jury_size_labels):
+        accuracies = ppc_full['accuracy_by_size'][size]
+        ax.violinplot([accuracies], positions=[i], widths=0.7, 
+                    showmeans=True, showmedians=True)
+
+    ax.set_xticks(range(len(jury_size_labels)))
+    ax.set_xticklabels(jury_size_labels)
+    ax.set_xlabel('Jury Size')
+    ax.set_ylabel('Majority Accuracy')
+    ax.set_title('Accuracy Distribution by Jury Size\n(Complete Model)')
+    ax.grid(True, alpha=0.3)
+
+    # Plot 2: Error correlation distribution
+    ax = axes[1]
+    off_diag_corrs = []
+    for s in range(ppc_full['error_corr'].shape[0]):
+        mat = ppc_full['error_corr'][s]
+        n = mat.shape[0]
+        off_diag_corrs.extend(mat[np.triu_indices(n, k=1)])
+
+    ax.hist(off_diag_corrs, bins=50, alpha=0.7, edgecolor='black')
+    ax.axvline(0, color='red', linestyle='--', linewidth=2, label='Independence')
+    ax.set_xlabel('Pairwise Error Correlation')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Distribution of Error Correlations\n(Complete Model)')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+
+    # Calculate the impact on the Condorcet theorem
+    print("\n" + "="*70)
+    print("QUANTIFYING THE VIOLATION")
+    print("="*70)
+    print(f"Mean error correlation: {np.mean(off_diag_corrs):.3f}")
+    print(f"Proportion of positive correlations: {(np.array(off_diag_corrs) > 0).mean():.1%}")
+    print(f"\nMedian accuracy (15 jurors): {np.median(ppc_full['accuracy_by_size'][15]):.3f}")
+    print(f"Median accuracy (3 jurors): {np.median(ppc_full['accuracy_by_size'][3]):.3f}")
+    print(f"Improvement from larger jury: {np.median(ppc_full['accuracy_by_size'][15]) - np.median(ppc_full['accuracy_by_size'][3]):.3f}")
+
+
+final_plot(ppc_full)
+```
+
+Similar final patterns can be seen again with the treatment model.
+
+```{python}
+
+final_plot(ppc_full_trt)
+
 ```
 
 # Conclusions
