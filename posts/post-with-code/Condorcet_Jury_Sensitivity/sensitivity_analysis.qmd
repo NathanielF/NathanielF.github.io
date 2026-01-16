@@ -4,7 +4,7 @@ subtitle: "Sensitivity Analysis of Failure Conditions"
 categories: ["theory", "simulation", "causal inference", "sensitivity analysis"]
 keep-ipynb: true
 self-contained: true
-draft: true
+draft: false
 toc: true
 execute: 
   freeze: auto 
@@ -725,13 +725,19 @@ summarize_error_correlation(ppc_moderate)
 
 **Key insight**: With heterogeneous competence alone, errors remain largely uncorrelated. The Condorcet theorem's independence assumption holds—so far. Which is to say that diverse workforces and varying degrees of competence do not inherently short-circuit the firm's ability to learn. 
 
-## Shared Case Difficulty
+## Shared Case Difficulty: When Everyone Fails Together
+Now we introduce a critical violation: shared case-level effects. Some cases are genuinely harder, causing even competent jurors to fail together. This is the first structural break in the independence assumption—and it reveals why "hard problems" are exponentially harder for groups than the Condorcet theorem predicts.
 
-Now we introduce a critical violation: **shared case-level effects**. Some cases are genuinely harder, causing even competent jurors to fail together.
+### The Nature of Difficulty
+In our models so far, we've assumed cases are exchangeable—each decision is equally difficult. But reality is messier. Consider:
 
-To properly explore this, we need to do posterior predictive sampling that includes case difficulty in the generative model. 
+- The obvious merger: Everyone agrees it's a good fit
+- The ambiguous pivot: Market signals are mixed, competitive response is uncertain
+- The moonshot bet: Technical feasibility is genuinely unknown
 
-### Simulating Shared Case Shocks
+These aren't just decisions with different answers; they're decisions with different signal strength. When the signal is weak—when δᵢ is large in magnitude—even highly competent decision-makers will struggle. More importantly, they'll struggle in the same direction. This is fundamentally different from the heterogeneous competence we modeled earlier. Individual skill differences create uncorrelated noise: some people excel where others fail, and in aggregate, errors cancel out. Case difficulty creates correlated signal loss: when the evidence is weak, everyone's instruments fail simultaneously.
+
+### The Mathematical Structure of Difficulty Shocks
 
 We now introduce case-level difficulty effects:
 $$
@@ -744,7 +750,9 @@ $$
 = \alpha_j + \delta_i.
 $$
 
-#### Structural Consequences
+Notice what's happened to our model's architecture. Previously, each juror's vote depended only on their individual competence αⱼ and the truth Tᵢ. Now there's a third term—δᵢ—that affects every juror voting on case i. When δᵢ is large and negative, even our most competent jurors face degraded odds. When it's large and positive, even marginal performers temporarily shine.
+
+### Structural Consequences of Error
 
 Votes for the same case now share a common latent influence.
 As a result:
@@ -752,98 +760,12 @@ $$
 V_{ij} \not\!\perp V_{ik} \mid T_i, \alpha_j.
 $$
 
-Cases are no longer exchangeable, and the Binomial likelihood is no longer valid.
-This violation produces correlated errors across jurors and directly undermines
-the Condorcet theorem.
+conditioning on the truth is no longer sufficient to guarantee independence. Two jurors voting on the same hard case will make correlated errors, even if they're drawing on completely different expertise and making independent judgments. The theorem's guarantee—that majority accuracy approaches 100% with large groups—relied on errors being independent and therefore canceling out. But correlated errors don't cancel; they accumulate.
 
+### Simulating Shared Case Shocks
+To properly explore this, we need to do posterior predictive sampling that includes case difficulty in the generative model. We can't just fit a model with case effects and examine the posterior—we need to generate new votes under different difficulty regimes and see how the correlation structure changes.
 
 ```{python}
-def ppc_with_case_difficulty(idata, model, n_cases_sim, sigma_case_values, 
-                            true_states=None, n_draws=500):
-    """
-    Posterior predictive checks with shared case-level difficulty effects.
-    
-    This properly samples from the posterior predictive distribution,
-    including uncertainty in juror competencies.
-    """
-    if true_states is None:
-        true_states = np.random.binomial(1, 0.5, size=n_cases_sim)
-    
-    results = {}
-    
-    for sigma_case in sigma_case_values:
-        with model:
-            # Get posterior samples of logit_p_juror
-            logit_p_trace = idata.posterior['logit_p_juror']
-            n_jurors = logit_p_trace.shape[-1]
-            
-            # Sample from posterior predictive with case difficulty
-            # For each posterior sample, generate new votes with case effects
-            pm.set_data({'n_cases_ppc': n_cases_sim})
-            
-            # Case difficulty effects (shared across jurors)
-            delta_case = pm.Normal('delta_case', mu=0, sigma=sigma_case, 
-                                  shape=n_cases_sim)
-            
-            # Generate votes for each case and juror
-            votes_list = []
-            for i in range(n_cases_sim):
-                truth_i = true_states[i]
-                sign = 1 if truth_i == 1 else -1
-                
-                # Competence + case difficulty
-                logit_p_case = sign * logit_p_trace + delta_case[i]
-                p_case = pm.math.sigmoid(logit_p_case)
-                
-                # This will be shape (chain, draw, n_jurors)
-                votes_i = pm.Bernoulli(f'votes_case_{i}', p=p_case)
-                votes_list.append(votes_i)
-            
-            # Sample from posterior predictive
-            ppc = pm.sample_posterior_predictive(
-                idata, 
-                var_names=[f'votes_case_{i}' for i in range(n_cases_sim)] + ['delta_case'],
-                predictions=True,
-                random_seed=42
-            )
-        
-        # Reorganize votes into (sample, case, juror) array
-        n_samples = n_draws
-        votes_array = np.zeros((n_samples, n_cases_sim, n_jurors), dtype=int)
-        
-        for i in range(n_cases_sim):
-            votes_case = ppc.predictions[f'votes_case_{i}'].values
-            # Flatten chain and draw dimensions
-            votes_flat = votes_case.reshape(-1, n_jurors)[:n_samples]
-            votes_array[:, i, :] = votes_flat
-        
-        # Calculate diagnostics
-        acc = []
-        corrs = []
-        
-        for s in range(n_samples):
-            majority = votes_array[s].mean(axis=1) > 0.5
-            acc.append((majority == true_states).mean())
-            
-            errors = votes_array[s] != true_states[:, None]
-            if errors.var(axis=0).sum() > 0:
-                C = np.corrcoef(errors.T)
-                corrs.append(C)
-        
-        corrs = np.stack(corrs) if corrs else np.zeros((1, n_jurors, n_jurors))
-        off_diag = corrs[:, ~np.eye(n_jurors, dtype=bool)]
-        
-        results[sigma_case] = {
-            'accuracy': acc,
-            'mean_accuracy': np.mean(acc),
-            'error_corr': corrs,
-            'mean_corr': np.nanmean(off_diag),
-            'median_corr': np.nanmedian(off_diag),
-            'p95_abs_corr': np.nanpercentile(np.abs(off_diag), 95)
-        }
-    
-    return results
-
 
 # Simpler approach: directly simulate from posterior samples
 def simple_case_difficulty_ppc(idata, n_cases_sim, sigma_case_values, 
@@ -932,17 +854,34 @@ for sigma in sigma_values:
     print(f"  95th %ile |correlation|: {res['p95_abs_corr']:.3f}")
 ```
 
-**Critical insight**: As case difficulty variance increases (σ_case), error correlation rises dramatically. At σ = 1.0, jurors make correlated errors with mean correlation around 0.15-0.17. This violates the independence assumption and **degrades majority accuracy** even with competent jurors.
+**Critical insight**: As case difficulty variance increases ($\sigma_{case}$), error correlation rises dramatically. At $\sigma_{case} = 1.0$, jurors make correlated errors with mean correlation around 0.15-0.17. This violates the independence assumption and **degrades majority accuracy** even with competent jurors.
 
-# Part 5: The Complete Model
+The remaining question for organisational design: Are the patterns of correlation among jurors based on independent sources, or do they interact? We'll see that block effects and case difficulty can create a toxic synergy—when hard cases hit groups with shared biases, the correlation compounds and majority rule fails catastrophically. But what can we do about it?
 
-Finally, we combine all sources of variation into a realistic hierarchical model:
+## The Complete Model: Voting Blocks and Improvement Programmes
+
+Now we introduce the forces that will determine whether an organization can sustain collective wisdom or succumbs to coordinated failure: block effects ($\beta$) and treatment programmes ($\tau$). These structural additions represent opposing gravitational forces in a delicate equilibrium. Pull too hard in one direction and you get chaos; pull too hard in the other and you get lockstep failure.
+
+### The Anatomy of Blocks: Epistemic Consolidation
+In real organizations, people don't arrive at decisions in isolation. They cluster into groups that share:
+
+- Functional training: All the engineers learned the same architecture patterns; all the MBAs learned the same strategy frameworks
+- Information access: The sales team sees customer feedback the finance team never sees; executives receive filtered summaries while front-line workers see raw reality
+- Incentive structures: Different departments optimize for different metrics, creating systematically different biases
+- Social networks: People who talk to each other regularly start thinking alike, even without realizing it
+
+These patterns promote an consolidation of epistemological standards. Members of a block don't just share surface characteristics; they share ways of knowing and hence ways of being wrong. We saw that case difficulty created correlation across the entire jury for specific cases. But block effects create persistent correlation within subgroups across all cases. This is structurally worse. And then when evidence is ambiguous and cases difficult, people fall back on their frameworks, and if everyone shares frameworks, everyone fails together. The case-difficulty and group-think interact to drive an organisation to shared evaluation of empirical questions.
+
+### The Legibility Trap: Redux
+Recall that investors demand "alignment" and "standardization". They want unified KPI systems, "Culture fit"-hiring and best-practices adoption, Common Tooling. These forces push us towards organisations towards consolidation of shared incentives, methods and cognitive practices. In Thi Nguygen's work this creates the risk of value capture. Not only can corporate values supplant your individual perspective, they do so at scale. Every legibility-seeking practice is a block-creating mechanism. By making the organization more "readable" to outsiders, you create the very correlations that break collective intelligence.
+
+### The Treatment Paradox
+Organisations aren't static. Leaders intervene. They can run training programs, hire consultants, promote new processes, suggest or mandate resolution frameworks. The constant question is whether these interventions break group-think or reinforce it? One useful example is the pattern of "red-teaming" in software development. Before a major decision, you randomly assign people from each block to argue against their block's default position. This intervention creates divergent pressure. It doesn't eliminate block membership. Engineers remain engineers, but it forces block members to engage with perspectives that directly challenge their shared frameworks. The treatment pulls against block effects.
 
 ### Adding Group-Level (Block) Effects and Treatment Programmes
 
-Finally, we introduce block-level effects representing factions or information silos. We will also allow for the inclusion of a treatment programme. We might hope the latter drives the voter base towards better information. But we also risk driving the jury pool toward confidently wrong but shared opinions. 
 
-Each juror belongs to a block $b(j)$, with:
+In the mathematical formulation we allow that each juror belongs to a block $b(j)$, with:
 $$
 \beta_{b(j)} \sim \mathcal{N}(0, \sigma_{\text{block}}).
 $$
@@ -950,22 +889,13 @@ $$
 The full voting model becomes:
 $$
 \text{logit}\,\Pr(V_{ij} = T_i)
-= \alpha_j + \beta_{b(j)} + \delta_i + \text{ treatment }*\tau
+= \alpha_j + \beta_{b(j)} + \delta_i - \text{ treatment }*\tau
 $$
 
-#### Structural Consequences
-
-Conditional independence between jurors fails even after conditioning on the truth:
-$$
-V_{ij} \not\!\perp V_{ik}
-\quad \text{if } b(j) = b(k).
-$$
-
-Block effects induce structured error correlations that persist even in large juries.
-Aggregation no longer produces independent evidence.
-
+We can allow for different types of treatment. Global or individual or randomly assinged. The hope is that the treatment mechanism pulls against the push for homogeniety. We generate new data with explict block effects and specify a switch to test the impact of our treatment programme.
 
 ```{python}
+# | output: false
 # Generate new data with block structure
 votes_blocked, p_jurors_blocked, true_states_blocked = simulate_jury_data(
     N_CASES, N_JURORS, block_id=BLOCK_ID
@@ -1012,7 +942,7 @@ def fit_full_model(votes, n_jurors, block_id, treatment_indicator,
         # -----------------------------
         # Treatment effect (switchable)
         # -----------------------------
-        tau = pm.Normal("tau", mu=0, sigma=1.0, shape=N_JURORS)
+        tau = pm.Exponential("tau", 1.0, shape=N_JURORS)
 
         # convert to tensors to avoid shape surprises
         Z = pm.math.constant(treatment_indicator)
@@ -1039,6 +969,10 @@ print("\nFitting complete hierarchical model...")
 idata_full, model_full = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=np.zeros(N_JURORS), use_treatment=0)
 
 idata_full_trt, model_full_trt = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=np.ones(N_JURORS), use_treatment=1)
+```
+
+
+```{python}
 
 print("\n" + "="*70)
 print("COMPLETE MODEL SUMMARY")
