@@ -24,7 +24,7 @@
         "citation: true\n",
         "---"
       ],
-      "id": "a995619f"
+      "id": "be8ef324"
     },
     {
       "cell_type": "code",
@@ -44,7 +44,7 @@
         "# Suppress all FutureWarnings\n",
         "warnings.simplefilter(action='ignore', category=FutureWarning)"
       ],
-      "id": "aef80ffc",
+      "id": "5966054b",
       "execution_count": null,
       "outputs": []
     },
@@ -94,7 +94,7 @@
         "\n",
         "We can visualize this \"filmstrip\" of causality using `networkx`. We have a series of dynamic causal DAGs representing our assumptions of the relationships:\n"
       ],
-      "id": "971fbc2b"
+      "id": "3bd2fc05"
     },
     {
       "cell_type": "code",
@@ -144,7 +144,7 @@
         "fig = plot_temporal_dag()\n",
         "fig.savefig(\"evolving_dag.png\")"
       ],
-      "id": "af5801ee",
+      "id": "329f246d",
       "execution_count": null,
       "outputs": []
     },
@@ -212,7 +212,7 @@
         "\n",
         "This identity holds because the model is additive. The `dpasurv` package demonstrates these decomposition with the following data. \n"
       ],
-      "id": "9501af8f"
+      "id": "128a0171"
     },
     {
       "cell_type": "code",
@@ -222,7 +222,7 @@
         "df = df[['subject', 'x', 'dose', 'M', 'start', 'stop', 'event']]\n",
         "df.head()"
       ],
-      "id": "8da1754c",
+      "id": "02ed0155",
       "execution_count": null,
       "outputs": []
     },
@@ -250,7 +250,7 @@
         "\n",
         "Let's begin by looking at a simple cross-cut. \n"
       ],
-      "id": "82e68078"
+      "id": "684f76b8"
     },
     {
       "cell_type": "code",
@@ -258,7 +258,7 @@
       "source": [
         "df.groupby(['x', 'dose'])[['event', 'M']].agg(['mean', 'sum'])"
       ],
-      "id": "89ae7fdf",
+      "id": "a0be0ebd",
       "execution_count": null,
       "outputs": []
     },
@@ -268,7 +268,7 @@
       "source": [
         "which shows a higher incidence of the event in the control group than the treatment group, but even within the treatment it seems a higher dosage is linked to lower incident rate. The size of the groups for each treatment level are approximately equal, but ignoring the dosage we see more people in the treatment group than the control.\n"
       ],
-      "id": "e0637ca2"
+      "id": "6b9ab42c"
     },
     {
       "cell_type": "code",
@@ -422,7 +422,7 @@
         "\n",
         "fig.savefig(\"timelines_plot.png\")"
       ],
-      "id": "253b2019",
+      "id": "2c848690",
       "execution_count": null,
       "outputs": []
     },
@@ -434,7 +434,7 @@
         "\n",
         "The plot shows the timelines and the occurence of incidents for each treatment group. In most cases we see the terminal event occurs for each subject. Next we'll try and pull out the differences due to dosage.\n"
       ],
-      "id": "b0524375"
+      "id": "a76aee64"
     },
     {
       "cell_type": "code",
@@ -458,7 +458,7 @@
         "fig = plt.gcf()\n",
         "fig.savefig(\"Crosscut_MeanMediator.png\")"
       ],
-      "id": "7afbdfd6",
+      "id": "d78934d1",
       "execution_count": null,
       "outputs": []
     },
@@ -478,7 +478,7 @@
         "\n",
         "We discretise time in to sequential blocks of an evolving narrative. Rather than treating regression coefficients as fully continuous functions of time, we work with piecewise constant approximations indexed by these bins. Conceptually, this mirrors the classical Aalen estimator, where coefficient paths only change at observed event times and remain flat in between. A sequence of chapters in our odyssey. \n"
       ],
-      "id": "462353f6"
+      "id": "17c57d55"
     },
     {
       "cell_type": "code",
@@ -586,7 +586,7 @@
         "\n",
         "    return data\n"
       ],
-      "id": "f6d5cc90",
+      "id": "6dee1b14",
       "execution_count": null,
       "outputs": []
     },
@@ -596,7 +596,7 @@
       "source": [
         "In addition to defining the time bins, the function constructs predictable covariates—most notably a lagged mediator within subject—and performs the centering required for additive hazard models.\n"
       ],
-      "id": "9276ec45"
+      "id": "aafcc9cf"
     },
     {
       "cell_type": "code",
@@ -606,7 +606,7 @@
         "df_long = data['df_long']\n",
         "df_long[['subject', 'x', 'dose', 'm_c', 'm_lag', 'event', 'dt', 'bin_idx']].head(14)"
       ],
-      "id": "82c852f3",
+      "id": "b71239e1",
       "execution_count": null,
       "outputs": []
     },
@@ -620,7 +620,7 @@
         "\n",
         "This code lets us approximate continuously varying coefficient functions using a flexible but structured set of basis functions defined over the discretised time axis. \n"
       ],
-      "id": "cf8698da"
+      "id": "292acc06"
     },
     {
       "cell_type": "code",
@@ -680,7 +680,7 @@
         "basis_df = pd.DataFrame(basis, columns=[f'feature_{i}' for i in range(n_cols)])\n",
         "basis_df.head(10)"
       ],
-      "id": "76da1185",
+      "id": "3bbc2e35",
       "execution_count": null,
       "outputs": []
     },
@@ -692,7 +692,7 @@
         "\n",
         "Our discretisation of time into bins provides a natural scaffold for working with these cumulative effects. Instead of letting each time bin jump independently (which produces those jagged `dpasurv` plots) we smooth the path with splines. Weaving a thread through the jagged sequence. \n"
       ],
-      "id": "fb6109ad"
+      "id": "dfcf0bac"
     },
     {
       "cell_type": "code",
@@ -708,7 +708,7 @@
         "\n",
         "fig.savefig(\"random_splines.png\")"
       ],
-      "id": "253ddc27",
+      "id": "7e53c0c4",
       "execution_count": null,
       "outputs": []
     },
@@ -760,7 +760,7 @@
         "\n",
         "This transformation turns the baseline hazard into an explicit, time-indexed parameter rather than a nuisance to be factored out. This structure is perfectly suited for Bayesian modeling; it provides a differentiable likelihood that allows the baseline and time-varying effects to be estimated simultaneously via MCMC, while enabling posterior predictive simulations that the partial likelihood approach cannot natively support.\n"
       ],
-      "id": "96f4187b"
+      "id": "4ed59c05"
     },
     {
       "cell_type": "code",
@@ -818,7 +818,7 @@
         "\n",
         "fig.savefig(\"poisson_approximation.png\")\n"
       ],
-      "id": "f838c08a",
+      "id": "cad59faf",
       "execution_count": null,
       "outputs": []
     },
@@ -831,7 +831,7 @@
         "\n",
         "The Poisson bridge treats time as an **explicit covariate** rather than a nuisance to be conditioned away. By mapping the hazard to a discrete index, we gain a \"universal currency\" of probability. This allows the baseline risk, the treatment effects, and the mediated paths to all live in the same mathematical space, estimated simultaneously through a single likelihood formulation. The Poisson formulation matters causally because it lets us specify a full data-generating process consistent with the DAG.\n"
       ],
-      "id": "8c5fe166"
+      "id": "9bde40f0"
     },
     {
       "cell_type": "code",
@@ -1011,7 +1011,7 @@
         "basis = create_bspline_basis(n_bins, n_knots=12, degree=3)\n",
         "aalen_dpa_model, idata_aalen =  make_model(data, basis)"
       ],
-      "id": "50b350cb",
+      "id": "ed3fe912",
       "execution_count": null,
       "outputs": []
     },
@@ -1042,7 +1042,7 @@
         "\n",
         "This structure is perfectly suited for Bayesian modeling, providing a \"well-behaved\" likelihood that handles the Aalen additivity while remaining amenable to MCMC. We can see the model structure illustrated in the `PyMC` graph. \n"
       ],
-      "id": "65aab619"
+      "id": "7c3e8ac9"
     },
     {
       "cell_type": "code",
@@ -1050,7 +1050,7 @@
       "source": [
         "pm.model_to_graphviz(aalen_dpa_model)"
       ],
-      "id": "48620e3c",
+      "id": "d3871ba6",
       "execution_count": null,
       "outputs": []
     },
@@ -1062,7 +1062,7 @@
         "\n",
         "The use of B-splines to model time-varying effects introduces a critical hyperparameter: the number of knots. The knots determine the \"wiggliness\" or flexibility of the recovered hazard paths. To ensure the causal conclusions are not artifacts of an underfit or overfit baseline, we perform a sensitivity analysis by varying the knot density and comparing the models using Leave-One-Out Cross-Validation (LOO). This will help us choose how to chart Odysseus' path. How smooth the journey.\n"
       ],
-      "id": "807b303c"
+      "id": "4c4f2b27"
     },
     {
       "cell_type": "code",
@@ -1081,7 +1081,7 @@
         "compare_df = az.compare(idatas, var_name='obs_event')\n",
         "az.plot_compare(compare_df, figsize=(8, 6), plot_ic_diff=True)"
       ],
-      "id": "e45c74bd",
+      "id": "320786b7",
       "execution_count": null,
       "outputs": []
     },
@@ -1102,7 +1102,7 @@
         "\n",
         "In the above plot we seen the model fits ranked by the number of splines. Suggesting that 12 is the optimal of the tested splines. The stability of the implied direct effects can be seen in the below plot. \n"
       ],
-      "id": "1b088ff0"
+      "id": "93e1a503"
     },
     {
       "cell_type": "code",
@@ -1117,7 +1117,7 @@
         "fig = ax[0].figure\n",
         "fig.savefig('forest_plot_comparing_tv_direct.png')"
       ],
-      "id": "efd7fdd3",
+      "id": "25756f71",
       "execution_count": null,
       "outputs": []
     },
@@ -1131,7 +1131,7 @@
         "\n",
         "More diagnostically, we can see how the sampler behaves well for our model too. The trace plots show that each chain properly explores the parameter space. \n"
       ],
-      "id": "8963ca27"
+      "id": "906c7a37"
     },
     {
       "cell_type": "code",
@@ -1140,7 +1140,7 @@
         "az.plot_trace(idata_aalen, var_names=['tv_direct_effect', 'tv_indirect_effect', 'tv_total_effect', 'beta_high', 'beta_low'], divergences=False);\n",
         "plt.tight_layout()"
       ],
-      "id": "0563cb47",
+      "id": "341b1fb1",
       "execution_count": null,
       "outputs": []
     },
@@ -1155,7 +1155,7 @@
         "\n",
         "The second plot on the right panel confirms the \"Poisson Bridge\" is functioning. It checks if the simulated event counts per time bin match the observed frequency. A tight fit here confirms that your hazard intensity is neither over-smoothed nor tracking random noise.\n"
       ],
-      "id": "2f6e4be2"
+      "id": "30dca9f3"
     },
     {
       "cell_type": "code",
@@ -1168,7 +1168,7 @@
         "fig = ax[0].figure\n",
         "fig.savefig(\"Posterior_Predictive_checks.png\")"
       ],
-      "id": "705124b5",
+      "id": "99df4d0c",
       "execution_count": null,
       "outputs": []
     },
@@ -1187,7 +1187,7 @@
         "* **Time-Varying Indirect Effect ($\\beta_t \\cdot \\alpha_{2,t}$):** In contrast, the indirect path shows a stable, materializing **harmful effect** mediated through $M$. As the study progresses, the mediator offsets the treatment's benefits, introducing a source of risk that grows in certainty (narrowing HDI).\n",
         "* **Time-Varying Total Effect:** The sum of these two opposing forces. The harmful indirect effect partially \"cancels out\" the protective direct effect, so the total effect appears slightly reduced. This reveals a **masked harmful effect**: without this decomposition, we would not have seen the mediating harm. Overall it is highly effective but being undermined by the specific biological or behavioral pathway of the mediator.\n"
       ],
-      "id": "442b0054"
+      "id": "cc73f025"
     },
     {
       "cell_type": "code",
@@ -1225,7 +1225,7 @@
         "    plt.tight_layout()\n",
         "    return fig\n"
       ],
-      "id": "b3ffee39",
+      "id": "0a413146",
       "execution_count": null,
       "outputs": []
     },
@@ -1238,7 +1238,7 @@
         "\n",
         "plot_effects(idata_aalen, vars_to_plot, labels);"
       ],
-      "id": "7d300956",
+      "id": "0e067c82",
       "execution_count": null,
       "outputs": []
     },
@@ -1256,7 +1256,7 @@
         "\n",
         "Given that the previous causal decomposition occurs on the transformed scale of the linear predictor, interpreting the raw magnitudes of the $\\alpha$ coefficients can be challenging when comparing against traditional identity-scale models like `dpasurv`. To move from these internal model dynamics to a more universally interpretable metric, we calculate the Time-Varying Relative Risk (RR). By taking the ratio of the hazard with exposure and compare it with the baseline hazard.\n"
       ],
-      "id": "e11b8432"
+      "id": "4a63e8cf"
     },
     {
       "cell_type": "code",
@@ -1266,7 +1266,7 @@
         "labels = ['Time varying Baseline Hazard', 'Time varying Hazard + Exposure', 'Time varying RR']\n",
         "plot_effects(idata_aalen, vars_to_plot, labels, scale='Hazard Scale');"
       ],
-      "id": "5cd9d4a8",
+      "id": "4b652e63",
       "execution_count": null,
       "outputs": []
     },
@@ -1280,7 +1280,7 @@
         "\n",
         "Using g-computation, we simulate two counterfactual worlds—everyone treated vs. no one treated—and compare outcomes. Different journey trajectories.\n"
       ],
-      "id": "dfdf6ec1"
+      "id": "0d21189f"
     },
     {
       "cell_type": "code",
@@ -1298,7 +1298,7 @@
         "    pm.set_data({'trt': trt_values})\n",
         "    idata_trt0 = pm.sample_posterior_predictive(idata_aalen, return_inferencedata=True, var_names=['Lambda', 'obs_m', 'obs_event'])"
       ],
-      "id": "cbbe2057",
+      "id": "365d0873",
       "execution_count": null,
       "outputs": []
     },
@@ -1308,7 +1308,7 @@
       "source": [
         "We summarise the imputed posterior distribution by describing range of probable RR scores. We clip the maximim posterior predictive distribution at 1 as scores above 1 are an artefact the Poisson likelihood, not a meaningful contribution to the rate. \n"
       ],
-      "id": "73450730"
+      "id": "d2e0f0a2"
     },
     {
       "cell_type": "code",
@@ -1327,7 +1327,7 @@
         "print(f\"Imputed Mean Relative Risk {np.round(rr_mean.item(), 3)} and 50% HDI {[rr_hdi['obs_event'][0].item(), rr_hdi['obs_event'][1].item()]}\")\n",
         "print(f\"Imputed Percent Risk Reduction of {1- np.round(rr_mean.item(), 3)}\")"
       ],
-      "id": "51ec7c5d",
+      "id": "4c30ca8a",
       "execution_count": null,
       "outputs": []
     },
@@ -1337,7 +1337,7 @@
       "source": [
         "The marginal risk ratio tells us treatment reduces events by ~17% by the end of study period. This single number, however, conceals the rich temporal story: the treatment is consistently protective (direct effect), but partially undermined by a harmful mediated pathway emerging around Day 100. The dynamic path model gives you both the summary *and* the mechanistic decomposition over time. Yet, the imputation mechanism is not merely for bookkeeping and statistical summaries. It can be extended to compute alternative causal estimands under different counterfactual settings to identify other causal estimands like the non-parametric natural direct effect. \n"
       ],
-      "id": "f0bf2656"
+      "id": "b76c2c2e"
     },
     {
       "cell_type": "code",
@@ -1377,7 +1377,7 @@
         "print(f\"Expected Natural Direct Effect as Relative Risk: {mean_rr}\")\n",
         "print(f\"Expected Natural Direct Effect as %Risk Reduction: {1 - mean_rr}\")"
       ],
-      "id": "a696db26",
+      "id": "8df5a02e",
       "execution_count": null,
       "outputs": []
     },
@@ -1387,7 +1387,7 @@
       "source": [
         "The NDE is the contrast between the outcome under treatment and the outcome under control, while holding the mediator constant at its natural value under control. By nesting the $M(0)$ potential outcome within the $Y(1)$ potential outcome, we create a \"pure\" experimental condition that does not exist in nature. This allows us to measure the intervention's potency while surgically removing its ability to act through the mediator. In our time-varying model, this ensures that the Direct Effect we report is the \"unmediated\" pressure of the treatment, isolated from the evolving dynamics of the secondary causal path.\n"
       ],
-      "id": "53e08780"
+      "id": "d254438c"
     },
     {
       "cell_type": "code",
@@ -1406,7 +1406,7 @@
         "axs[1].set_title(\"Non Parametric Estimate of Natural Direct Effect \\n Expessed as Percentage of Risk Reduction\");\n",
         "fig.savefig(\"NonparametricEstimateNDE.png\");"
       ],
-      "id": "c741b00b",
+      "id": "12583fba",
       "execution_count": null,
       "outputs": []
     },
@@ -1438,7 +1438,7 @@
         "\n",
         "This approach respects the nonlinearity and properly accounts for individual heterogeneity in both baseline characteristics and time-varying mediator dynamics.\n"
       ],
-      "id": "0353fed4"
+      "id": "56d0a627"
     },
     {
       "cell_type": "code",
@@ -1495,7 +1495,7 @@
         "surv_trt1 = get_marginal_survival(idata_trt1, df_long, n_bins)\n",
         "surv_trt0 = get_marginal_survival(idata_trt0, df_long, n_bins)\n"
       ],
-      "id": "9d9edf5f",
+      "id": "e2c8f2c5",
       "execution_count": null,
       "outputs": []
     },
@@ -1510,7 +1510,7 @@
         "- Transform to survival and average across individuals\n",
         "- Repeat across posterior samples to quantify uncertainty\n"
       ],
-      "id": "50ff6319"
+      "id": "14976beb"
     },
     {
       "cell_type": "code",
@@ -1551,7 +1551,7 @@
         "fig_survival = plot_survival_comparison(surv_trt1, surv_trt0, np.arange(n_bins))\n",
         "plt.show();"
       ],
-      "id": "474e7c01",
+      "id": "fd4f4b28",
       "execution_count": null,
       "outputs": []
     },
@@ -1582,7 +1582,7 @@
         "\n",
         "This implementation builds on Fosen et al.'s 2006 paper \"Dynamic path analysis—a new approach to analyzing time-dependent covariates\" (*Lifetime Data Analysis*) and Aalen's foundational 1989 work on additive regression models for survival data (*Statistics in Medicine*) and the discussion of causal inference in Brostrom's _Event History Analysis with R_. We aim to replicate, as close as feasible, the results reported in [`dpasurv`](https://opensource.nibr.com/dpasurv/articles/dpa.html#dynamic-path-analysis-1)\n"
       ],
-      "id": "b28eebee"
+      "id": "b9b2201e"
     }
   ],
   "metadata": {

@@ -20,21 +20,37 @@ citation: true
 
 # The Legibility Trap: Contemptible Familiarity
 
-Decision making in the modern corporation has to be seen to be believed. Arguably, a smooth running machine for making decisions to game the market. In reality it is a hodge podge of salves for making the investor class feel safe, and C-suites feel in control. 
+Decision making in the modern corporation faces a paradox. On the surface, a smooth-running machine optimized for predictable outcomes. In practice, a careful balance between genuine risk assessment and the familiar processes that make investors feel confident and executives feel in control. But when familiar process becomes sacred process, something breaks: reasonable bets give way to bankable certainty, and accountability dissolves into alignment.
 
-To the analyst and the private equity partner, "unfamiliarity" is unquantifiable risk. They demand a recognizable org chart, a standardized "Agile" workflow, and a set of "Core Values" that could be swapped between a pet-food startup and a sovereign wealth fund without anyone noticing. __This is the cult of Legibility__. Borrowing from James C. Scott’s _Seeing Like a State_, we see that when central authorities cannot understand a complex, organic system, they flatten it. They replace the wild, high-information "forest" of human talent with a "plantation" of identical, predictable units.
+To the investment analyst and the private equity partner, "unfamiliarity" is unquantifiable risk. They demand a recognizable org chart, a standardized "Agile" workflow, and a set of "Core Values" that could be swapped between a pet-food startup and a sovereign wealth fund without anyone noticing. __This is the cult of Legibility__. Borrowing from James C. Scott’s _Seeing Like a State_, we see that when central authorities cannot understand a complex, organic system, they flatten it. They replace the wild, high-information "forest" of human talent with a "plantation" of identical, predictable units.
 
-But this familiarity breeds a systemic contempt for reality. When you optimize for the gaze of the outsider or conformity with precedent, you push a lobotomy on your own workforce. In our quest for "alignment" or adherence to irrelevant standards, we destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences_. The "miracle" of collective intelligence is a generative process. It requires that we be wrong in different directions so that, in the aggregate, we might be right. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine that makes democracy and decentralization work. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine of collective intelligence: The Condorcet Jury Theorem.
+When you optimize primarily for the gaze of the outsider or conformity with precedent, you risk dulling your workforce's most valuable asset: their ability to see things differently. In our quest for "alignment" and adherence to legible standards, we can inadvertently destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences._
+
+What makes this pattern so difficult to resist is that it isn't purely imposed from above. We participate willingly; it is what Thi Nguyen calls "Value Capture". In the rough ground of reality it's genuinely hard to gauge quality, but in the planned organization we have metrics: 'Alignment,' 'Velocity,' and 'Team Spirit'. We trade the rich but murky value of truth-seeking for the thin but legible value of metric-meeting. We do so eagerly—not because we're foolish, but because legibility confers real benefits: clearer communication, easier justification, visible contribution. We adopt the value of the corporation as our own, and so short-circuit collective learning. 
+
+But "miracle" of collective intelligence is a generative process that requires diversity. It requires that we be wrong in different directions so that, in the aggregate, we might be right. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine that makes democracy and decentralization work. We break the statistical engine of collective intelligence: The Condorcet Jury Theorem.
+
 
 ## Do as I say, Not what I do.
 
-Investors are the world's most fervent believers in the power of diversification. They know that to survive a volatile market, they must hedge their bets across uncorrelated assets. While the investor hedges in the aggregate, they force the subordinate company to appear as a single, comparable unit on a spreadsheet. They demand that the company eliminate internal variance. They want the firm to be "aligned," "standardized," and "legible." In doing so, they strip the company of the very same diversification they rely on for their portfolio.
+Investors are among the world's most fervent believers in the power of diversification. They know that to survive a volatile market, they must hedge their bets across uncorrelated assets. Yet while the investor hedges in the aggregate, they need each subordinate company to appear as a single, comparable unit on a spreadsheet. They abstract away the details of any individual firm, eliminating the local variance in their portfolio view. They want each firm to be "aligned," "standardized," and "legible." In doing so, they incentivise a surface homogeneity that can propagate inward. The firms in their portfolio stop asking, 'Is this the right decision?' and start asking, 'Does this decision look aligned to the investor's model?' or "Are our peers doing the same?" The macro consequences of such mimicry are still being felt today, many years after the financial crisis of 2008.
 
-The Condorcet Jury Theorem (CJT) is the mathematical foundation of this diversification. It suggests that if you have a group of independent individuals who are each slightly more likely than not to be right ($p > 0.5$), the probability of the majority being correct approaches 100% as the group size grows. There is real value in diversity when deployed well. But it's brittle and corporate best practice is uniquely designed to break it. Let's see how this works.
+The Condorcet Jury Theorem (CJT) is the mathematical foundation of this drive for diversification. It shows that if you have a group of independent actors who are minimally competent (i.e. $p > 0.5$ of being correct on binary decisions), then the probability of the majority being correct approaches 100% as the group size grows. There is real value in diversity when deployed well. But it's brittle, and many corporate "best practices"—however well-intentioned—can inadvertently undermine it.
+
+::: {.callout-important}
+## Deconstructing the Organizational Short-Circuit
+
+In this post, we move beyond the idealized "spreadsheet" view of decision-making to understand why modern organizations often fail in lockstep. We will:
+
+* **Revisit the Condorcet Miracle**: Define the mathematical preconditions for collective intelligence and identify where corporate "best practices" begin to subvert them.
+* **Simulate Institutional Gravity**: Use a hierarchical Bayesian model to isolate how individual skill, systemic case difficulty, and organizational "blocks" compete for influence over the final vote.
+* **Run the Post-Mortem**: Use Posterior Predictive Checks (PPC) to visualize how standardized cultures create an "accuracy ceiling" that remains stagnant even as the group size grows.
+* **Bridge Theory to Philosophy**: Connect the statistical reality of correlated error to **James C. Scott’s** "Legibility" and **C. Thi Nguyen’s** "Value Capture".
+:::
 
 #### Setup
 
-To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, simulate_jury_data, is the generative heart of this piece. It doesn’t just create random numbers; it creates a world where we can toggle the parameters of Generative Friction.
+To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, `simulate_jury_data`, is the generative heart of this piece. It doesn’t just create random numbers; it creates a world where we can toggle the parameters of Generative Friction.
 
 ```{python}
 import pandas as pd
@@ -99,7 +115,7 @@ def simulate_jury_data(n_cases, n_jurors, true_p=0.65, true_discrimination=0.5,
     # Add block effects if specified
     if block_id is not None:
         n_blocks = len(np.unique(block_id))
-        block_effect = np.random.normal(0.0, true_sigma_block, n_blocks)
+        block_effect = np.random.normal(1, true_sigma_block, n_blocks)
         logit_p_jurors += block_effect[block_id]
     
     p_jurors = 1 / (1 + np.exp(-logit_p_jurors))
@@ -122,7 +138,7 @@ majority = (votes.mean(axis=1) > 0.5)
 print(f"Majority vote accuracy: {np.mean(majority == true_states):.3f}")
 ```
 
-We've seen how our data generating process encodes a baseline degree of juror competence. On any yes/no question we've ensured that the average juror has $(p \sim N(.65, \sigma_{disc}))$ chance of getting the right answer. The $\sigma_{disc}$ determines the range of individual skill in the population. We've then asked each juror to cast their vote on 50 decisions.
+Here how our data generating process encodes a baseline degree of juror competence. On any yes/no question we've ensured that the average juror has $(p \sim N(.65, \sigma_{disc}))$ chance of getting the right answer. The $\sigma_{disc}$ determines the range of individual skill in the population. We've then asked each juror to cast their vote on 50 decisions.
 
 ## Sensitivity to Prior Beliefs About Competence
 
@@ -662,7 +678,7 @@ def plot_error_correlation_heatmap(ppc_results, title="Error Correlation"):
     mean_corr = np.nan_to_num(mean_corr, nan=0.0)
     mean_corr = np.round(mean_corr, 2)
     fig, ax = plt.subplots(figsize=(15, 6))
-    sns.heatmap(mean_corr, vmin=-1, vmax=1, cmap="coolwarm",
+    sns.heatmap(mean_corr, vmin=-.3, vmax=.3, cmap="coolwarm",
                 square=False, cbar_kws={"label": "Error correlation"}, ax=ax, 
                 annot=True, fmt=".2f")
     ax.set_title(title, fontsize=20)
@@ -858,11 +874,44 @@ for sigma in sigma_values:
 
 The remaining question for organisational design: Are the patterns of correlation among jurors based on independent sources, or do they interact? We'll see that block effects and case difficulty can create a toxic synergy—when hard cases hit groups with shared biases, the correlation compounds and majority rule fails catastrophically. But what can we do about it?
 
-## The Complete Model: Voting Blocks and Improvement Programmes
+## Voting Blocks and Improvement Programmes
 
 Now we introduce the forces that will determine whether an organization can sustain collective wisdom or succumbs to coordinated failure: block effects ($\beta$) and treatment programmes ($\tau$). These structural additions represent opposing gravitational forces in a delicate equilibrium. Pull too hard in one direction and you get chaos; pull too hard in the other and you get lockstep failure.
 
-### The Anatomy of Blocks: Epistemic Consolidation
+### The Mathematical Structure: Competing Forces
+
+We model each juror's vote as a negotiation between three forces:
+
+$$
+\text{logit}\,\Pr(V_{ij} = T_i) = \underbrace{\alpha_j}_{\text{individual skill}} + \underbrace{\beta_{b(j)}}_{\text{block gravity}} + \underbrace{\delta_i}_{\text{case difficulty}} - \underbrace{\tau_j \cdot Z_j}_{\text{treatment push}}
+$$
+
+Where:
+
+- $\alpha_j$: Individual competence (heterogeneous across jurors)
+
+- $\beta_b(j)$: Block effect for juror j's group (shared within blocks, creating correlation)
+
+- $\delta_i$: Case difficulty (shared across all jurors for case i)
+- $\tau_j \cdot Z_j$: Treatment effect (Z_j = 1 if juror j receives intervention, 0 otherwise)
+
+The sign on the treatment term is critical: it *subtracts* from the combined logit. This means treatment is pushing *against* the combined force of individual tendency + block conformity + case difficulty. 
+
+Think of it this way: Without treatment, a juror's probability of voting correctly is determined by their skill, modified by their block's shared bias, and further modified by how hard the case is. Treatment attempts to "decouple" them from their block's default position—to make them think independently even when their block would pull them in a particular direction.
+
+If treatment works, $\tau$ should be positive: it reduces the influence of the $(\alpha + \beta + \delta)$ package and forces the juror to reconsider from first principles.
+
+::: {.callout-note}
+## A Note on Block Effects and Specialization
+
+Block effects can arise from legitimate sources: engineers possess genuine domain expertise that others lack, sales teams have unique customer insights, executives have access to strategic information. These blocks may differ in average competence, and those differences can be entirely justified.
+
+But for the Condorcet Jury Theorem, what matters is not whether one group is more competent than another—it's whether their errors are independent. A block of highly skilled specialists who share the same blind spots creates correlated errors that violate the theorem's assumptions. Even if Block A is objectively more accurate than Block B on average, if all members of Block A fail together on hard cases, the wisdom of crowds collapses.
+
+This analysis explores these failure conditions: the point at which shared frameworks, training, or information access cause errors to cluster rather than cancel. The statistical machinery cannot distinguish "good blocks" from "bad blocks"—it can only detect correlation. And correlation, regardless of its source, is what breaks collective intelligence.
+:::
+
+### The Anatomy of Blocks: Epistemic Consolidation and Value Capture
 In real organizations, people don't arrive at decisions in isolation. They cluster into groups that share:
 
 - Functional training: All the engineers learned the same architecture patterns; all the MBAs learned the same strategy frameworks
@@ -870,29 +919,27 @@ In real organizations, people don't arrive at decisions in isolation. They clust
 - Incentive structures: Different departments optimize for different metrics, creating systematically different biases
 - Social networks: People who talk to each other regularly start thinking alike, even without realizing it
 
-These patterns promote an consolidation of epistemological standards. Members of a block don't just share surface characteristics; they share ways of knowing and hence ways of being wrong. We saw that case difficulty created correlation across the entire jury for specific cases. But block effects create persistent correlation within subgroups across all cases. This is structurally worse. And then when evidence is ambiguous and cases difficult, people fall back on their frameworks, and if everyone shares frameworks, everyone fails together. The case-difficulty and group-think interact to drive an organisation to shared evaluation of empirical questions.
+These patterns promote an consolidation of epistemological standards. Members of a block don't just share surface characteristics; they share ways of knowing and hence ways of being wrong. We saw that case difficulty created correlation across the entire jury for specific cases. But block effects create persistent correlation within subgroups across all cases. This is structurally worse. And then when evidence is ambiguous and cases difficult, people fall back on their frameworks, and if everyone shares frameworks, everyone fails together. In this way case-difficulty and group-think interact to drive an organisation to overly simplified, but easily defensible heuristics.
 
-### The Legibility Trap: Redux
-Recall that investors demand "alignment" and "standardization". They want unified KPI systems, "Culture fit"-hiring and best-practices adoption, Common Tooling. These forces push us towards organisations towards consolidation of shared incentives, methods and cognitive practices. In Thi Nguygen's work this creates the risk of value capture. Not only can corporate values supplant your individual perspective, they do so at scale. Every legibility-seeking practice is a block-creating mechanism. By making the organization more "readable" to outsiders, you create the very correlations that break collective intelligence.
+> "Value capture happens when a person or group adopts an externally-sourced value as their own, without adapting it to their particular context... In value capture, we outsource the process of value deliberation. And, as with other forms of outsourcing, there is a trade-off...When we adopt those values, we gain access to readymade methods for justification" - Nguygen
 
-### The Treatment Paradox
-Organisations aren't static. Leaders intervene. They can run training programs, hire consultants, promote new processes, suggest or mandate resolution frameworks. The constant question is whether these interventions break group-think or reinforce it? One useful example is the pattern of "red-teaming" in software development. Before a major decision, you randomly assign people from each block to argue against their block's default position. This intervention creates divergent pressure. It doesn't eliminate block membership. Engineers remain engineers, but it forces block members to engage with perspectives that directly challenge their shared frameworks. The treatment pulls against block effects.
+The adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignore relevant detail. We lose focus on local context we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. 
 
-### Adding Group-Level (Block) Effects and Treatment Programmes
+#### The Legibility Trap: Redux
+Recall that investors demand "alignment" and "standardization". They want unified KPI systems, "Culture fit"-hiring and best-practices adoption, Common Tooling. These forces push us towards organisations towards consolidation of shared incentives, methods and cognitive practices. Not only can corporate values supplant your individual perspective, they do so at scale. Every legibility-seeking practice is a block-creating mechanism. By making the organization more "readable" to outsiders, you create the very correlations that break collective intelligence.
 
+#### The Treatment Paradox
+Pulling in the opposite direction. Organisations aren't static and leaders can intervene. They can run training programs, hire consultants, promote new processes and suggest or mandate resolution frameworks. The question is whether these interventions break group-think or reinforce it? One useful example is the pattern of "red-teaming" in software development. Before a major decision, you randomly assign people from each block to argue against their block's default position. This intervention creates divergent pressure. It doesn't eliminate block membership. Engineers remain engineers, but it forces block members to engage with perspectives that directly challenge their shared frameworks. The treatment pulls against block effects. Or so goes the theory.
 
-In the mathematical formulation we allow that each juror belongs to a block $b(j)$, with:
-$$
-\beta_{b(j)} \sim \mathcal{N}(0, \sigma_{\text{block}}).
-$$
+## The Complete Model: Modeling the Push and Pull
 
-The full voting model becomes:
-$$
-\text{logit}\,\Pr(V_{ij} = T_i)
-= \alpha_j + \beta_{b(j)} + \delta_i - \text{ treatment }*\tau
-$$
+We've now seen two opposing forces at work in organizational decision-making:
 
-We can allow for different types of treatment. Global or individual or randomly assinged. The hope is that the treatment mechanism pulls against the push for homogeniety. We generate new data with explict block effects and specify a switch to test the impact of our treatment programme.
+**The Pull Toward Legibility (Block Effects)**: Shared training, common frameworks, aligned incentives. These create β-blocks—groups who think alike not because they're incompetent, but because they've been optimized for coherence. This is the gravitational force that makes organizations manageable but epistemically fragile.
+
+**The Push Toward Independence (Treatment Effects)**: Interventions designed to break people out of their default frameworks. Red-teaming exercises, devil's advocate assignments, cross-functional rotation, deliberately soliciting dissent. These are organizational attempts to restore the independence that the Condorcet theorem requires.
+
+Our final model formalizes this tension. Block effects (β) pull jurors toward correlated errors. Treatment effects (τ) push them back toward independence. The question is whether deliberate intervention can overcome structural gravity—or whether the legibility trap is too strong to escape.
 
 ```{python}
 # | output: false
@@ -917,32 +964,28 @@ def fit_full_model(votes, n_jurors, block_id, treatment_indicator,
     
     with pm.Model() as model:
         # Individual skill
-        mu_alpha = pm.Normal("mu_alpha", mu=0.0, sigma=0.5)
+        mu_alpha = 0
         sigma_alpha = pm.Exponential("sigma_alpha", lam=3.0)
         alpha_raw = pm.Normal("alpha_raw", 0.0, 1.0, shape=n_jurors)
-        alpha_j = pm.Normal(
-        "alpha_j",
-        mu=mu_alpha,
-        sigma=sigma_alpha,
-        shape=n_jurors,
-        )
+        alpha_j = pm.Deterministic("alpha_j", mu_alpha + sigma_alpha * alpha_raw)
         
         # Block effects (ideological factions, info silos)
         n_blocks = len(np.unique(block_id))
         sigma_block = pm.HalfNormal("sigma_block", sigma=1.0)
-        block_effect = pm.Normal("block_effect", mu=0.0, sigma=sigma_block, shape=n_blocks)
+        block_effect_raw = pm.Normal("block_effect_raw", mu=0.0, sigma=1.0, shape=n_blocks)
+        block_effect = pm.Deterministic("block_effect", sigma_block * block_effect_raw)
         beta_block_j = block_effect[block_id]
         
         # Case difficulty (collapsed over cases)
+        # Simplify:
         mu_case = pm.Normal("mu_case", mu=0.0, sigma=0.5)
         sigma_case = pm.HalfNormal("sigma_case", sigma=1.0)
-        delta_bar = pm.Normal("delta_bar", mu=mu_case, 
-                             sigma=sigma_case / pm.math.sqrt(N_CASES))
+        delta_bar = pm.Normal("delta_bar", mu=mu_case, sigma=sigma_case)
 
         # -----------------------------
         # Treatment effect (switchable)
         # -----------------------------
-        tau = pm.Exponential("tau", 1.0, shape=N_JURORS)
+        tau = pm.Exponential("tau", 3.0, shape=N_JURORS)
 
         # convert to tensors to avoid shape surprises
         Z = pm.math.constant(treatment_indicator)
@@ -959,8 +1002,8 @@ def fit_full_model(votes, n_jurors, block_id, treatment_indicator,
         pm.Binomial("agreements", n=N_CASES, p=p_correct, 
                    observed=agreements_per_juror)
         
-        idata = pm.sample(2000, tune=2000, target_accept=0.985, 
-                         return_inferencedata=True, nuts_sampler='numpyro')
+        idata = pm.sample(2000, tune=2000, target_accept=0.99, 
+                         return_inferencedata=True)
     
     return idata, model
 
@@ -968,26 +1011,53 @@ def fit_full_model(votes, n_jurors, block_id, treatment_indicator,
 print("\nFitting complete hierarchical model...")
 idata_full, model_full = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=np.zeros(N_JURORS), use_treatment=0)
 
-idata_full_trt, model_full_trt = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=np.ones(N_JURORS), use_treatment=1)
+treatment_assignment = np.ones(N_JURORS)
+idata_full_trt, model_full_trt = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=treatment_assignment, use_treatment=1)
 ```
+
+
+We fit two versions of the model against the same blocked data:
+
+**Model 1: Natural State (Z = 0 for all jurors)**
+This is the organization as it exists: blocks have formed through natural processes (hiring, training, cultural evolution), and no deliberate effort is made to break people out of their silos. All variance in voting patterns must be explained by individual skill, block membership, and case difficulty.
+
+**Model 2: Intervention State (Z = 1 for all jurors)**
+This represents an organization that has implemented a comprehensive independence-restoration program. Examples might include:
+
+- **Red-teaming**: Before voting, randomly assign people to argue against their block's default position
+
+- **Rotation**: Temporarily embed engineers in sales, finance in product
+
+- **Structured dissent**: Require each block to produce an internal critic before voting
+
+- **Anonymous voting**: Remove social pressure to conform to block consensus
+
+The treatment indicator $Z_j = 1$ tells the model: "This juror has been subjected to an intervention designed to reduce their dependence on block-default thinking."
+
+The question: Can such interventions meaningfully push against the gravity of legibility? Or does the correlation persist despite our best efforts?
 
 
 ```{python}
 
-print("\n" + "="*70)
-print("COMPLETE MODEL SUMMARY")
-print("="*70)
-full_summary = az.summary(idata_full, var_names=["mu_alpha", "sigma_alpha", "sigma_block", "mu_case", "sigma_case", "trt"])
+ax = az.plot_forest([idata_full, idata_full_trt], var_names=["sigma_alpha", "sigma_block", "mu_case", "sigma_case", "trt"], combined=True, model_names=['Block + Without Treatment', 'Block + With Treatment'], figsize=(10, 7))
+ax[0].set_title("Comparing Parameter Effects \n With and Without Improvement Plan");
 
-full_trt_summary = az.summary(idata_full_trt, var_names=["mu_alpha", "sigma_alpha", "sigma_block", "mu_case", "sigma_case", "trt"])
 
-summaries = pd.concat({'Full Model': full_summary, 'Full Model + Treatment': full_trt_summary})
-summaries
 ```
+
+### What the Model Tells Us About Organizational Intervention
+
+The forest plot reveals something uncomfortable: when we "turn on" treatment (Z = 1), the model doesn't conclude that block effects have weakened. Instead, it concludes that block effects must be *even stronger* than we thought.
+
+Why? Because the voting patterns remain stubbornly correlated despite the presumed intervention. The Bayesian engine reasons backwards: "If treatment is supposed to push people toward independence, but I still see strong correlation in the data, then either (a) treatment doesn't work, or (b) the underlying block effects are so powerful that even treated jurors remain influenced."
+
+The model chooses interpretation (b), allocating *more* variance to σ_block in the treatment model. This is the statistical signature of organizational inertia: interventions that look good on paper (red-teaming, rotation programs, diversity training) fail to break the fundamental correlation structure.
+
+The treatment effect τ remains small or uncertain because the model cannot distinguish "treatment is working a little" from "blocks are just that strong." This is not a flaw in the model—it's an honest reflection of the data-generating process. If block effects are structural (shared information, shared incentives, shared training), surface-level interventions may not be enough.
 
 ## Posterior Predictive Checks for Complete Model
 
-Now let's examine how the complete model performs, including its error correlations:
+Fitting the model is only half the battle; the PPC allows us to simulate "new" decisions from the inferred organizational structure to see if the "Condorcet Miracle" survives the reality of corporate blocks. In our earlier model we saw majority accuracy march steadily toward $100\%$ as the jury size grew. Here, that progress hits a hard ceiling.
 
 ```{python}
 def run_ppc_full_model(idata, n_cases, true_states, block_id, 
@@ -1048,6 +1118,11 @@ def run_ppc_full_model(idata, n_cases, true_states, block_id,
     
     return results
 
+```
+
+The power of the hierarchical model lies in its ability to "partial out" exactly why a juror was wrong. In the vanilla model, an incorrect vote was simply "incompetence." Here, it is a structural outcome. To derive the vote profile of each individual, we have re-assembled the components we just decomposed. Forward sampling in this way allows us to see how the probability of correctness for any single voter is a negotiation between their own talent and the gravitational forces of the system they inhabit.
+
+```{python}
 
 print("\nRunning posterior predictive checks for complete model...")
 ppc_full = run_ppc_full_model(idata_full, N_CASES, true_states_blocked, 
@@ -1061,24 +1136,23 @@ summary_full = summarize_ppc(ppc_full)
 print("\n" + "="*70)
 print("MAJORITY ACCURACY BY JURY SIZE (Complete Model)")
 print("="*70)
-print(summary_full)
+summary_full
 
 ```
 
-Notice how the increasing size of the voting block does not substantially improve on the accuracy. This pattern is also unfortunately visible in our treatment model. 
-
+Notice how the increasing size of the voting block does not substantially improve on the accuracy. There is strong evidence of a plateau effect in the majority accuracy. The combination of new voters is not providing new information. This pattern is also unfortunately visible in our treatment model. 
 
 ```{python}
 summary_full_trt = summarize_ppc(ppc_full_trt)
 print("\n" + "="*70)
 print("MAJORITY ACCURACY BY JURY SIZE (Complete Model + Treatment)")
 print("="*70)
-print(summary_full_trt)
+summary_full_trt
 
 
 ```
 
-The allocation of a heterogenous treatment progromme was not sufficient to break the block voting effects. The increased correlations between voters reduces the number of independent signals in the jury pool. 
+The allocation of a heterogenous treatment progromme was also not sufficient to break the block voting effects. 
 
 
 ```{python}
@@ -1096,8 +1170,7 @@ for key, value in error_summary.items():
     print(f"{key}: {value:.3f}")
 ```
 
-Notice the structured patterns in the error correlation heatmap—jurors within the same block (0-4, 5-10, 11-14) show correlated errors. This is the smoking gun: **block effects create dependencies that violate the independence assumption**.
-
+Notice the structured patterns in the error correlation heatmap—jurors within the same block show correlated errors. This is the smoking gun: **block effects create dependencies that violate the independence assumption**.
 
 ```{python}
 # Plot error correlations
@@ -1116,84 +1189,20 @@ for key, value in error_summary.items():
 
 While the correlation patterns change slightly, they remain high and reduce the effectiveness of the majority.
 
-Let's visualize how much this matters:
-```{python}
-#| code-fold: true 
-#| 
-def final_plot(ppc_full):
-    # Compare accuracy distributions
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+The treatment paradox captures the organizational dilemma in statistical form. Leaders genuinely try to foster independence: they hire for "cognitive diversity," they implement devil's advocate protocols, they rotate people across functions. These are the $\tau$ terms in our model—deliberate pushes against the pull of legibility.
 
-    # Plot 1: Accuracy by jury size
-    ax = axes[0]
-    jury_size_labels = [3, 5, 7, 10, 15]
-    for i, size in enumerate(jury_size_labels):
-        accuracies = ppc_full['accuracy_by_size'][size]
-        ax.violinplot([accuracies], positions=[i], widths=0.7, 
-                    showmeans=True, showmedians=True)
+But our posterior estimates suggest that these interventions often fail to overcome structural forces. The $\beta$ terms (block effects driven by shared training, information, and incentives) dominate the $\tau$ terms (deliberate interventions). This isn't because leaders are incompetent or uncommitted—it's because block formation is structural while treatment is episodic. You can send an engineer to shadow a sales call ($\tau$), but they return to an engineering team with engineering metrics, engineering promotion criteria, and engineering social networks ($\beta$). The gravitational field reasserts itself.
 
-    ax.set_xticks(range(len(jury_size_labels)))
-    ax.set_xticklabels(jury_size_labels)
-    ax.set_xlabel('Jury Size')
-    ax.set_ylabel('Majority Accuracy')
-    ax.set_title('Accuracy Distribution by Jury Size\n(Complete Model)')
-    ax.grid(True, alpha=0.3)
-
-    # Plot 2: Error correlation distribution
-    ax = axes[1]
-    off_diag_corrs = []
-    for s in range(ppc_full['error_corr'].shape[0]):
-        mat = ppc_full['error_corr'][s]
-        n = mat.shape[0]
-        off_diag_corrs.extend(mat[np.triu_indices(n, k=1)])
-
-    ax.hist(off_diag_corrs, bins=50, alpha=0.7, edgecolor='black')
-    ax.axvline(0, color='red', linestyle='--', linewidth=2, label='Independence')
-    ax.set_xlabel('Pairwise Error Correlation')
-    ax.set_ylabel('Frequency')
-    ax.set_title('Distribution of Error Correlations\n(Complete Model)')
-    ax.legend()
-    ax.grid(True, alpha=0.3)
-
-    plt.tight_layout()
-    plt.show()
-
-    # Calculate the impact on the Condorcet theorem
-    print("\n" + "="*70)
-    print("QUANTIFYING THE VIOLATION")
-    print("="*70)
-    print(f"Mean error correlation: {np.mean(off_diag_corrs):.3f}")
-    print(f"Proportion of positive correlations: {(np.array(off_diag_corrs) > 0).mean():.1%}")
-    print(f"\nMedian accuracy (15 jurors): {np.median(ppc_full['accuracy_by_size'][15]):.3f}")
-    print(f"Median accuracy (3 jurors): {np.median(ppc_full['accuracy_by_size'][3]):.3f}")
-    print(f"Improvement from larger jury: {np.median(ppc_full['accuracy_by_size'][15]) - np.median(ppc_full['accuracy_by_size'][3]):.3f}")
-
-
-final_plot(ppc_full)
-```
-
-Similar final patterns can be seen again with the treatment model.
-
-```{python}
-
-final_plot(ppc_full_trt)
-
-```
+The model cannot tell us whether stronger interventions would work—whether, for instance, permanently breaking up blocks through forced cross-functional teams would restore independence. What it does tell us is that incremental, well-intentioned programs often aren't enough to overcome the correlation that legibility creates.
 
 # Conclusions
 
-Through systematic sensitivity analysis, we've identified three critical failure modes for democratic aggregation:
+A failure to properly instrumentalize values through appropriate proxy metrics hinders communication, cohesion and cooperation within and between organisations. And yet too crude an instrumentalization of value turns work from a compelling collective action project into a metric movement charade. Worse, it drives us to error and expected failure. 
 
-1. **Heterogeneous Competence**: Individual differences alone don't break the Condorcet theorem, but they do create inequality in influence. A few highly competent jurors can dominate.
+The statistical breakdown of the Condorcet Jury Theorem is not an accident of poor corporate planning; it is the inevitable result of a fundamental tension in cooperative work. We are witnessing a persistent tug-of-war between two opposing gravitational forces:
 
-2. **Shared Difficulties**: When cases vary in difficulty—especially systematically—jurors make correlated errors. This is the most severe violation: it directly undermines the statistical power of aggregation.
+- The Pull for Legibility (Scott): The necessary drive to make the organization understandable to the investor, the analyst, and the leader. This force creates the "blocks," the standardized workflows, and the shared cultures that allow thousands of people to move in the same direction.
 
-3. **Group Effects**: Ideological factions, information silos, and social clustering create structured dependence. Jurors no longer provide independent evidence.
+- The Push for Agency (Nguyen): The individual’s resistance to Value Capture. This is the drive to maintain a unique, high-fidelity perspective on reality that hasn't been flattened by a KPI or a "Core Value."
 
-The Condorcet Jury Theorem remains a powerful ideal, but its assumptions are fragile. Real-world collective decision-making must account for:
-- Training and expertise development (reduce heterogeneity)
-- Procedural safeguards against groupthink (break dependencies)
-- Recognition of case difficulty (adjust decision rules)
-- Diverse information sources (counteract block effects)
-
-Democracy works—but only when we actively work to satisfy its preconditions.
+When we let the pull for Legibility dominate entirely, we risk the "Contemptible Familiarity" of the over-optimized corporation. We get a system that is easy to manage on a spreadsheet or JIRA-board but potentially epistemically compromised. In the worst case: a group of 1,000 people with the collective wisdom of one, because they have all been trained to see the world through the same lens—and thus to share the same blind spots. This is the cardinal sin of "Value Capture". We have adopted the organization's simplified map of the world as our own, and in doing so, we have destroyed our ability to help the organization see.
