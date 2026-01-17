@@ -59,6 +59,7 @@ import pymc as pm
 import matplotlib.pyplot as plt
 import arviz as az
 import seaborn as sns
+from pytensor.tensor import gammaln
 
 np.random.seed(42)
 
@@ -765,118 +766,129 @@ In our models so far, we've assumed cases are exchangeable—each decision is eq
 
 These aren't just decisions with different answers; they're decisions with different signal strength. When the signal is weak—when δᵢ is large in magnitude—even highly competent decision-makers will struggle. More importantly, they'll struggle in the same direction. This is fundamentally different from the heterogeneous competence we modeled earlier. Individual skill differences create uncorrelated noise: some people excel where others fail, and in aggregate, errors cancel out. Case difficulty creates correlated signal loss: when the evidence is weak, everyone's instruments fail simultaneously.
 
-### The Mathematical Structure of Difficulty Shocks
-
-We now introduce case-level difficulty effects:
-$$
-\delta_i \sim \mathcal{N}(0, \sigma_{\text{case}}).
-$$
-
-Votes are generated according to:
-$$
-\text{logit}\,\Pr(V_{ij} = T_i)
-= \alpha_j + \delta_i.
-$$
-
-Notice what's happened to our model's architecture. Previously, each juror's vote depended only on their individual competence αⱼ and the truth Tᵢ. Now there's a third term—δᵢ—that affects every juror voting on case i. When δᵢ is large and negative, even our most competent jurors face degraded odds. When it's large and positive, even marginal performers temporarily shine.
-
-### Structural Consequences of Error
-
-Votes for the same case now share a common latent influence.
-As a result:
-$$
-V_{ij} \not\!\perp V_{ik} \mid T_i, \alpha_j.
-$$
-
-conditioning on the truth is no longer sufficient to guarantee independence. Two jurors voting on the same hard case will make correlated errors, even if they're drawing on completely different expertise and making independent judgments. The theorem's guarantee—that majority accuracy approaches 100% with large groups—relied on errors being independent and therefore canceling out. But correlated errors don't cancel; they accumulate.
-
-### Simulating Shared Case Shocks
+### Simulating Shared Case Shocks and Heterogenous Skills
 To properly explore this, we need to do posterior predictive sampling that includes case difficulty in the generative model. We can't just fit a model with case effects and examine the posterior—we need to generate new votes under different difficulty regimes and see how the correlation structure changes.
 
 
 ```{python}
 
-"""
-Complete IRT Analysis for Condorcet Jury Theorem Breakdown
-Single file - ready to run
-
-DIAGNOSTIC FOCUS: The issue is that posterior predictive votes may not be
-respecting the known ground truth. We need to carefully check how votes
-are being generated in the posterior predictive.
-"""
-
-import numpy as np
-import pymc as pm
-import pandas as pd
-import matplotlib.pyplot as plt
-import arviz as az
-import seaborn as sns
-
-# Set style
-plt.style.use('seaborn-v0_8-darkgrid')
-np.random.seed(42)
-
-
 # ============================================================================
 # PART 1: DATA GENERATION
 # ============================================================================
 
-def simulate_irt_data(n_cases, n_jurors, 
-                      true_mu_theta=0.5,   # Shift this > 0 for competence
-                      true_sigma_theta=1.0, # Skill variance
-                      true_sigma_delta=0.5, # Case difficulty variance
-                      block_id=None, 
-                      true_sigma_block=0.5,
-                      treatment=None,
-                      true_tau=0.8,         # Effect of "training" or "distraction"
-                      seed=None):
+import numpy as np
+
+def simulate_irt_data(
+    n_cases, n_jurors,
+    true_mu_theta=0.5,          # Baseline competence (>0 => above chance)
+    true_sigma_theta=1.0,       # Individual skill variance
+    true_sigma_delta=0.5,       # Case difficulty variance
+    block_id=None,              # Integer block index per juror
+    block_type="expertise",     # "expertise" | "groupthink" | "mixed"
+    true_sigma_block=0.5,       # Block mean competence SD
+    true_kappa_groupthink=0.5,  # Skill compression (<1)
+    true_kappa_expertise=1.2,   # Skill amplification (>1)
+    treatment=None,             # Per-juror treatment indicator
+    true_tau=0.8,               # Treatment effect on ability
+    seed=None
+):
     if seed is not None:
         np.random.seed(seed)
-    
+
+    # ------------------------------------------------------------------
+    # Ground truth states for cases
+    # ------------------------------------------------------------------
     true_states = np.random.binomial(1, 0.5, n_cases)
-    
-    # Juror abilities: Center around mu_theta to ensure baseline competence > 50%
-    theta = np.random.normal(true_mu_theta, true_sigma_theta, n_jurors)
-    
+
+    # ------------------------------------------------------------------
+    # Baseline juror abilities
+    # ------------------------------------------------------------------
+    theta_raw = np.random.normal(true_mu_theta, true_sigma_theta, n_jurors)
+    theta = theta_raw.copy()
+
+    # ------------------------------------------------------------------
     # Case difficulties
+    # ------------------------------------------------------------------
     delta = np.random.normal(0, true_sigma_delta, n_cases)
-    
+    print("Generated IRT Data:")
+
+    # ------------------------------------------------------------------
+    # Block-level social mechanisms
+    # ------------------------------------------------------------------
     if block_id is not None:
-        n_blocks = len(np.unique(block_id))
-        block_effect = np.random.normal(0, true_sigma_block, n_blocks)
-        theta = theta + block_effect[block_id]
-    
+        block_id = np.asarray(block_id)
+        block_ids = np.unique(block_id)
+        n_blocks = len(block_ids)
+
+        # Mean competence shifts per block
+        u_block = np.random.normal(0, true_sigma_block, n_blocks)
+
+        # Skill expression scaling
+        if block_type == "expertise":
+            kappa = np.full(n_blocks, true_kappa_expertise)
+        elif block_type == "groupthink":
+            kappa = np.full(n_blocks, true_kappa_groupthink)
+        elif block_type == "mixed":
+            kappa = np.random.choice(
+                [true_kappa_expertise, true_kappa_groupthink],
+                size=n_blocks
+            )
+        else:
+            raise ValueError("block_type must be 'expertise', 'groupthink', or 'mixed'")
+
+        # Apply block effects
+        for b in block_ids:
+            idx = block_id == b
+            theta[idx] = (
+                true_mu_theta
+                + u_block[b]
+                + kappa[b] * (theta_raw[idx] - true_mu_theta)
+            )
+        print(f"  Block type: {block_type}")
+
+    # ------------------------------------------------------------------
+    # Treatment effect (additive, separable)
+    # ------------------------------------------------------------------
     if treatment is not None:
-        # Suggestion: use + for improvement, - for "breakdown"
         theta = theta + true_tau * treatment
-    
+
+    # ------------------------------------------------------------------
+    # Voting process
+    # ------------------------------------------------------------------
     votes = np.zeros((n_cases, n_jurors), dtype=int)
+
     for i in range(n_cases):
-        # IRT Probability: logit(p) = Skill - Difficulty
+        # Rasch model: logit(p_correct) = ability - difficulty
         logit_p_correct = theta - delta[i]
         p_correct = 1 / (1 + np.exp(-logit_p_correct))
-        
-        # If state is 1, vote 1 with p_correct. If state is 0, vote 0 with p_correct.
+
         for j in range(n_jurors):
             if true_states[i] == 1:
                 votes[i, j] = np.random.binomial(1, p_correct[j])
             else:
                 votes[i, j] = np.random.binomial(1, 1 - p_correct[j])
-    
+
+    # ------------------------------------------------------------------
+    # Diagnostic majority accuracy
+    # ------------------------------------------------------------------
     majority = (votes.mean(axis=1) > 0.5).astype(int)
     accuracy = np.mean(majority == true_states)
-    
-    print(f"Generated IRT Data (Avg p_correct logic):")
-    print(f"  Raw majority accuracy: {accuracy:.3f}")
+
+    print(f"  Majority accuracy: {accuracy:.3f}")
+
     return votes, theta, delta, true_states
 
+
 ```
+
+Now we generate three varieties of voting data where the drivers of voting outcomes are more or less variously effected by: individual competence, case difficulty, effects of block voting. 
 
 ```{python}
 
 # Configuration
 N_CASES = 50
 N_JURORS = 30
+np.random.seed(100)
 BLOCK_ID = np.random.choice([1, 0, 2], size=N_JURORS)
 JURY_SIZES = [3, 5, 7, 10, 15, 20, 30]
 
@@ -894,6 +906,7 @@ votes_blocked, t_theta_blocked, t_delta_blocked, truth_blocked = simulate_irt_da
     true_sigma_delta=3,
     block_id=BLOCK_ID,
     true_sigma_block=10,
+    block_type="groupthink",  
     seed=43
 )
 
@@ -901,18 +914,46 @@ treatment = np.random.binomial(1, .5, size=N_JURORS)
 
 votes_full, t_theta_full, t_delta_full, truth_full = simulate_irt_data(
     N_CASES, N_JURORS,
-    true_sigma_theta=0.5,
-    true_sigma_delta=7,
+    true_sigma_theta=0.1,
+    true_sigma_delta=6,
     block_id=BLOCK_ID,
     true_sigma_block=10,
     treatment=treatment,
-    true_tau=1.5,
+    block_type="expertise",  
+    true_tau=0.3, # random variation across voters
     seed=44
 )
 
 
 ```
 
+This should highlight the diversity of factors that contribute to individual accuracy, but more importantly how the aggregation of opinion determines the success or failure of organisational decisions. Crucially, we've operationalised the effects of value capture by allowing for block-voting effects. Note however, the block effects can be both positive and negative; reflecting either shared error or expertise. 
+
+## Voting Blocks and Improvement Programmes
+
+There is a tension between the forces that will determine whether an organization can sustain collective wisdom or succumbs to coordinated failure: block effects ($\beta$) and treatment programmes ($\tau$). These structural additions represent opposing gravitational forces in a delicate equilibrium. Pull too hard in one direction and you get chaos; pull too hard in the other and you get lockstep failure.
+
+### The Mathematical Structure: Competing Forces
+
+We model each juror's vote as a negotiation between three forces:
+
+$$
+\text{logit}\,\Pr(V_{ij} = T_i) = \underbrace{\alpha_j}_{\text{individual skill}} + \underbrace{\beta_{b(j)}}_{\text{block gravity}} + \underbrace{\delta_i}_{\text{case difficulty}} - \underbrace{\tau_j \cdot Z_j}_{\text{treatment push}}
+$$
+
+Where:
+
+- $\alpha_j$: Individual competence (heterogeneous across jurors)
+
+- $\beta_b(j)$: Block effect for juror j's group (shared within blocks, creating correlation)
+
+- $\delta_i$: Case difficulty (shared across all jurors for case i)
+- $\tau_j \cdot Z_j$: Treatment effect (Z_j = 1 if juror j receives intervention, 0 otherwise)
+
+
+Think of it this way: Without treatment, a juror's probability of voting correctly is determined by their skill, modified by their block's shared bias, and further modified by how hard the case is. Treatment attempts to "decouple" them from their block's default position—to make them think independently even when their block would pull them in a particular direction.
+
+If treatment works, $\tau$ should be positive: it reduces the influence of the $(\alpha + \beta + \delta)$ package and forces the juror to reconsider from first principles.
 
 
 ```{python}
@@ -931,12 +972,12 @@ def fit_irt_model(votes, true_states, n_cases, n_jurors,
     """
     
     with pm.Model() as model:
-        # Case difficulty (centered)
+        # Case difficulty (non centered)
         sigma_delta = pm.HalfNormal("sigma_delta", sigma=sigma_delta_prior)
         delta_raw = pm.Normal("delta_raw", mu=0.0, sigma=1.0, shape=n_cases)
         delta = pm.Deterministic("delta", sigma_delta * (delta_raw - delta_raw.mean()))
         
-        # Juror ability (centered)
+        # Juror ability (non centered)
         sigma_theta = pm.HalfNormal("sigma_theta", sigma=sigma_theta_prior)
         theta_raw = pm.Normal("theta_raw", mu=0.0, sigma=1.0, shape=n_jurors)
         theta_base = sigma_theta * theta_raw
@@ -955,7 +996,7 @@ def fit_irt_model(votes, true_states, n_cases, n_jurors,
         # Treatment effects
         if treatment is not None:
             tau_mu = pm.Normal("tau_mu", mu=0, sigma=1)
-            tau_sigma = pm.HalfNormal("tau_sigma", sigma=1.0)
+            tau_sigma = pm.HalfNormal("tau_sigma", sigma=1)
             tau_raw = pm.Normal("tau_raw", mu=0.0, sigma=1.0, shape=n_jurors)
             tau = pm.Deterministic("tau", tau_mu + tau_raw * tau_sigma)
             theta_with_blocks = theta_with_blocks + tau * treatment
@@ -971,27 +1012,73 @@ def fit_irt_model(votes, true_states, n_cases, n_jurors,
         vote_prob = true_states[:, None] * p_correct + (1 - true_states[:, None]) * (1 - p_correct)
         
         y_obs = pm.Bernoulli("y_obs", p=vote_prob, observed=votes)
+
+        p_jury = pm.Deterministic(
+            "p_jury",
+            p_correct.mean(axis=1)  # shape: (n_cases,)
+        )
+
+        for k in [5, 10, 15, 20, 25, 30]:
+            # We simulate a jury of size k picking from the 'average' juror ability for that case
+            n_correct = pm.Binomial(
+                f"n_correct_{k}",
+                n=k,
+                p=p_jury,
+                shape=p_jury.shape
+            )
+
+            # A jury is correct if the number of correct jurors is a majority
+            # This is true for BOTH true_states = 0 and true_states = 1
+            jury_correct = pm.Deterministic(
+                f"jury_correct_{k}_cases", 
+                n_correct > (k / 2)
+            )
+
+            # Average across all cases to get expected accuracy for this jury size
+            pm.Deterministic(
+                f"expected_jury_accuracy_{k}",
+                jury_correct.mean()
+            )
         
         # Sample posterior
-        idata = pm.sample(2000, tune=2000, chains=4, target_accept=0.90,
-                         random_seed=42, return_inferencedata=True)
+        idata = pm.sample_prior_predictive()
+        idata.extend(pm.sample(1000, tune=1000, chains=4, target_accept=0.90,random_seed=42, return_inferencedata=True))
         
         # Generate posterior predictive samples
         # CRITICAL: These should respect the known truth
         idata.extend(pm.sample_posterior_predictive(idata, var_names=["y_obs"]))
     
-    # Store known truth explicitly
-    import xarray as xr
-    n_chains = idata.posterior.dims['chain']
-    n_draws = idata.posterior.dims['draw']
-    idata.posterior['z'] = xr.DataArray(
-        np.tile(true_states, (n_chains, n_draws, 1)),
-        dims=['chain', 'draw', 'z_dim_0']
-    )
-    
     return idata, model
 
+
 ```
+
+### The Anatomy of Blocks: Epistemic Consolidation and Value Capture
+In real organizations, people don't arrive at decisions in isolation. They cluster into groups that share:
+
+- Functional training: All the engineers learned the same architecture patterns; all the MBAs learned the same strategy frameworks
+- Information access: The sales team sees customer feedback the finance team never sees; executives receive filtered summaries while front-line workers see raw reality
+- Incentive structures: Different departments optimize for different metrics, creating systematically different biases
+- Social networks: People who talk to each other regularly start thinking alike, even without realizing it
+
+These patterns promote an consolidation of epistemological standards. Members of a block don't just share surface characteristics; they share ways of knowing and hence ways of being wrong. We saw that case difficulty created correlation across the entire jury for specific cases. But block effects create persistent correlation within subgroups across all cases. This is structurally worse. And then when evidence is ambiguous and cases difficult, people fall back on their frameworks, and if everyone shares frameworks, everyone fails together. In this way case-difficulty and group-think interact to drive an organisation to overly simplified, but easily defensible heuristics.
+
+> "Value capture happens when a person or group adopts an externally-sourced value as their own, without adapting it to their particular context... In value capture, we outsource the process of value deliberation. And, as with other forms of outsourcing, there is a trade-off...When we adopt those values, we gain access to readymade methods for justification" - Nguygen
+
+The adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignore relevant detail. We lose focus on local context we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. 
+
+
+::: {.callout-note}
+## A Note on Block Effects and Specialization
+
+Block effects can arise from legitimate sources: engineers possess genuine domain expertise that others lack, sales teams have unique customer insights, executives have access to strategic information. These blocks may differ in average competence, and those differences can be entirely justified.
+
+But for the Condorcet Jury Theorem, what matters is not whether one group is more competent than another—it's whether their errors are independent. A block of highly skilled specialists who share the same blind spots creates correlated errors that violate the theorem's assumptions. Even if Block A is objectively more accurate than Block B on average, if all members of Block A fail together on hard cases, the wisdom of crowds collapses.
+
+This analysis explores these failure conditions: the point at which shared frameworks, training, or information access cause errors to cluster rather than cancel. The statistical machinery cannot distinguish "good blocks" from "bad blocks"—it can only detect correlation. And correlation, regardless of its source, is what breaks collective intelligence.
+:::
+
+We now fit the three models. Our vanilla model without any block effects. The block model with a negatively keyed "group think" effect. And finally we fit a model with both a block effect that pulls positively to increase overall competence through shared expertise. But additionally, we use the treatment parameter $\tau$ to impose random shocks to individuals. The idea is that this parameter can serve as a sensitivity gauge how extreme a treatment must be to change the range of accuracy outcomes.  
 
 ```{python}
 
@@ -1001,6 +1088,7 @@ idata_blocked, model_blocked = fit_irt_model(
     votes_blocked, truth_blocked, N_CASES, N_JURORS, block_id=BLOCK_ID
 )
 
+treatment = np.ones(N_JURORS)
 idata_full, model_full = fit_irt_model(
     votes_full, truth_full, N_CASES, N_JURORS, 
     block_id=BLOCK_ID, treatment=treatment
@@ -1008,6 +1096,7 @@ idata_full, model_full = fit_irt_model(
 
 ```
 
+We will now define a helper function to sample the posterior predictive distribution of these models to estimate the individual votes on each issue of randomly selected subsets of the jurors. 
 
 ```{python}
 # ============================================================================
@@ -1018,7 +1107,6 @@ def compute_majority_accuracy_simple(idata, true_states, jury_sizes, n_samples=5
     """
     Compute majority accuracy directly from posterior parameters.
     
-    FIXED APPROACH:
     - Use posterior samples of theta and delta
     - Generate new votes using the IRT model
     - Compare to KNOWN truth (not inferred truth)
@@ -1080,6 +1168,7 @@ def compute_majority_accuracy_simple(idata, true_states, jury_sizes, n_samples=5
 
 ```
 
+Additionally, we define a number of plotting functions which will be used to display these accuracy statistics and compare the models fairly. 
 
 ```{python}
 
@@ -1271,232 +1360,159 @@ def plot_condorcet_efficiency(jury_sizes, accuracies_dict):
 
 ```
 
+Now we're ready to assess each of the three models. 
+
+### The Vanilla IRT model: Skill Difference and Difficulty
 
 ```{python}
 
-# ============================================================================
-# MAIN EXECUTION
-# ============================================================================
+print(f"\nEstimated parameters:")
+print(f"  σ_θ: {idata_vanilla.posterior['sigma_theta'].mean():.3f}")
+print(f"  σ_δ: {idata_vanilla.posterior['sigma_delta'].mean():.3f}")
+plot_parameter_recovery(idata_vanilla, t_theta, t_delta, "Vanilla Case");
 
-if __name__ == "__main__":
-    
-    print("="*70)
-    print("CONDORCET JURY THEOREM BREAKDOWN ANALYSIS")
-    print("="*70)
-    
-    # Configuration
-    N_CASES = 50
-    N_JURORS = 30
-    BLOCK_ID = np.random.choice([1, 0, 2], size=N_JURORS)
-    JURY_SIZES = [3, 5, 7, 10, 15]
-    
-    # ========================================================================
-    # SCENARIO 1: Vanilla (Ability + Difficulty only)
-    # ========================================================================
-    
-    print("\n" + "="*70)
-    print("SCENARIO 1: VANILLA IRT")
-    print("="*70)
-    
-    votes_vanilla, t_theta, t_delta, truth_vanilla = simulate_irt_data(
-        N_CASES, N_JURORS,
-        true_sigma_theta=0.8,
-        true_sigma_delta=0.3,
-        seed=42
-    )
-    
-    print("\nFitting model...")
-    idata_vanilla, _ = fit_irt_model(votes_vanilla, truth_vanilla, N_CASES, N_JURORS)
-    
-    print(f"\nEstimated parameters:")
-    print(f"  σ_θ: {idata_vanilla.posterior['sigma_theta'].mean():.3f}")
-    print(f"  σ_δ: {idata_vanilla.posterior['sigma_delta'].mean():.3f}")
-    plot_parameter_recovery(idata_vanilla, t_theta, t_delta, "Vanilla Case")
-    
-    print("\nComputing accuracy by jury size...")
-    results_vanilla = compute_majority_accuracy_simple(
-        idata_vanilla, truth_vanilla, JURY_SIZES, n_samples=500
-    )
-    
-    plot_residual_correlation(idata_vanilla, votes_vanilla, truth_vanilla)
-    # ========================================================================
-    # SCENARIO 2: Blocked (Add block effects)
-    # ========================================================================
-    
-    print("\n" + "="*70)
-    print("SCENARIO 2: WITH BLOCK EFFECTS")
-    print("="*70)
-    
-    votes_blocked, t_theta_blocked, t_delta_blocked, truth_blocked = simulate_irt_data(
-        N_CASES, N_JURORS,
-        true_sigma_theta=0.1,
-        true_sigma_delta=3,
-        block_id=BLOCK_ID,
-        true_sigma_block=10,
-        seed=43
-    )
-    
-    print("\nFitting model...")
-    idata_blocked, _ = fit_irt_model(
-        votes_blocked, truth_blocked, N_CASES, N_JURORS, block_id=BLOCK_ID
-    )
-    plot_parameter_recovery(idata_blocked, t_theta_blocked, t_delta_blocked, "Blocked Case");
-    
-    print(f"\nEstimated parameters:")
-    print(f"  σ_θ: {idata_blocked.posterior['sigma_theta'].mean():.3f}")
-    print(f"  σ_δ: {idata_blocked.posterior['sigma_delta'].mean():.3f}")
-    print(f"  σ_block: {idata_blocked.posterior['sigma_block'].mean():.3f}")
-    
-    print("\nComputing accuracy by jury size...")
-    results_blocked = compute_majority_accuracy_simple(
-        idata_blocked, truth_blocked, JURY_SIZES, n_samples=500
-    )
-    plot_residual_correlation(idata_blocked, votes_blocked, truth_blocked)
+```
 
-    # ========================================================================
-    # SCENARIO 3: Full (Blocks + Treatment)
-    # ========================================================================
-    
-    print("\n" + "="*70)
-    print("SCENARIO 3: WITH BLOCKS + TREATMENT")
-    print("="*70)
-    
-    treatment = np.random.binomial(1, .5, size=N_JURORS)
-    
-    votes_full, t_theta_full, t_delta_full, truth_full = simulate_irt_data(
-        N_CASES, N_JURORS,
-        true_sigma_theta=0.5,
-        true_sigma_delta=7,
-        block_id=BLOCK_ID,
-        true_sigma_block=10,
-        treatment=treatment,
-        true_tau=1.5,
-        seed=44
-    )
-    
-    print("\nFitting model...")
-    idata_full, _ = fit_irt_model(
-        votes_full, truth_full, N_CASES, N_JURORS, 
-        block_id=BLOCK_ID, treatment=treatment
-    )
+```{python}
+results_vanilla = compute_majority_accuracy_simple(
+    idata_vanilla, truth_vanilla, JURY_SIZES, n_samples=500
+)
 
-    plot_parameter_recovery(idata_full, t_theta_full, t_delta_full, "Full Case");
-    
-    print(f"\nEstimated parameters:")
-    print(f"  σ_θ: {idata_full.posterior['sigma_theta'].mean():.3f}")
-    print(f"  σ_δ: {idata_full.posterior['sigma_delta'].mean():.3f}")
-    print(f"  σ_block: {idata_full.posterior['sigma_block'].mean():.3f}")
-    print(f"  τ: {idata_full.posterior['tau'].mean():.3f}")
-    
-    print("\nComputing accuracy by jury size...")
-    results_full = compute_majority_accuracy_simple(
-        idata_full, truth_full, JURY_SIZES, n_samples=500
-    )
+plot_residual_correlation(idata_vanilla, votes_vanilla, truth_vanilla);
 
-    plot_residual_correlation(idata_full, votes_full, truth_full)
+```
+
+
+```{python}
+
+ax = az.plot_forest(idata_vanilla, var_names=['expected_jury_accuracy_5', 'expected_jury_accuracy_10', 'expected_jury_accuracy_15', 'expected_jury_accuracy_20', 'expected_jury_accuracy_25' ,'expected_jury_accuracy_30'], combined=True, figsize=(8, 6));
+ax[0].axvline(1, linestyle='--', color='k')
+ax[0].set_title("Vanilla Model - Accuracy of Majority Vote \n With Increasing Juror Pool");
+
+
+```
+
+
+
+### The Block IRT model: Skill Difference, Difficulty and Block effects
+
+```{python}
+
+print(f"\nEstimated parameters:")
+print(f"  σ_θ: {idata_blocked.posterior['sigma_theta'].mean():.3f}")
+print(f"  σ_δ: {idata_blocked.posterior['sigma_delta'].mean():.3f}")
+print(f"  σ_block: {idata_blocked.posterior['sigma_block'].mean():.3f}")
+
+plot_parameter_recovery(idata_blocked, t_theta_blocked, t_delta_blocked, "Blocked Case");
     
-    # ========================================================================
-    # RESULTS
-    # ========================================================================
+```
+
+```{python}
+print("\nComputing accuracy by jury size...")
+results_blocked = compute_majority_accuracy_simple(
+    idata_blocked, truth_blocked, JURY_SIZES, n_samples=500
+)
+plot_residual_correlation(idata_blocked, votes_blocked, truth_blocked);
+```
+
+
+```{python}
+
+ax = az.plot_forest(idata_blocked, var_names=['expected_jury_accuracy_5', 'expected_jury_accuracy_10', 'expected_jury_accuracy_15', 'expected_jury_accuracy_20', 'expected_jury_accuracy_25' ,'expected_jury_accuracy_30'], combined=True, figsize=(8, 6));
+ax[0].axvline(1, linestyle='--', color='k')
+ax[0].set_title("Block Model - Accuracy of Majority Vote \n With Increasing Juror Pool");
+
+```
+
+
+### The Full IRT model: Difference, Difficulty, Blocks and Hetereogenous Noise
+
+```{python}
     
-    results_dict = {
+print(f"\nEstimated parameters:")
+print(f"  σ_θ: {idata_full.posterior['sigma_theta'].mean():.3f}")
+print(f"  σ_δ: {idata_full.posterior['sigma_delta'].mean():.3f}")
+print(f"  σ_block: {idata_full.posterior['sigma_block'].mean():.3f}")
+print(f"  τ: {idata_full.posterior['tau'].mean():.3f}")
+
+plot_parameter_recovery(idata_full, t_theta_full, t_delta_full, "Full Case");
+```
+
+
+```{python}
+print("\nComputing accuracy by jury size...")
+results_full = compute_majority_accuracy_simple(
+    idata_full, truth_full, JURY_SIZES, n_samples=500
+)
+
+plot_residual_correlation(idata_full, votes_full, truth_full)
+
+```
+
+```{python}
+
+ax = az.plot_forest(idata_full, var_names=['expected_jury_accuracy_5', 'expected_jury_accuracy_10', 'expected_jury_accuracy_15', 'expected_jury_accuracy_20', 'expected_jury_accuracy_25' ,'expected_jury_accuracy_30'], combined=True, figsize=(8, 6));
+ax[0].axvline(1, linestyle='--', color='k')
+ax[0].set_title("Full Model - Accuracy of Majority Vote \n With Increasing Juror Pool");
+
+```
+
+
+```{python}
+
+az.plot_pair(idata_full, var_names=['expected_jury_accuracy_30', 'tau_mu', 'tau_sigma'], kind='kde');
+```
+
+
+### Comparing the IRT models: Rate of Learning
+
+
+```{python}
+
+results_dict = {
         'vanilla': results_vanilla,
         'blocked': results_blocked,
         'full': results_full
     }
     
-    print_accuracy_table(results_dict, JURY_SIZES)
+print_accuracy_table(results_dict, JURY_SIZES)
     
-    print("\n" + "="*70)
-    print("CREATING VISUALIZATIONS")
-    print("="*70)
-    
-    fig, ax = plot_accuracy_comparison(results_dict, JURY_SIZES)
-    plt.show()
-    
-    print("\n" + "="*70)
-    print("ANALYSIS COMPLETE")
-    print("="*70)
-    print("\nIf accuracy is still near chance, check:")
-    print("1. Are the generated votes actually informative? (check raw majority)")
-    print("2. Is theta >> delta in magnitude? (if yes, all cases become easy)")
-    print("3. Are posterior samples reasonable? (check parameter recovery)")
-    print("="*70)
+```
 
-    accuracy_dict = {
-    "Vanilla": [results_vanilla[size].mean() for size in JURY_SIZES],
-    "Blocked": [results_blocked[size].mean() for size in JURY_SIZES],
-    "Full (Treatment)": [results_full[size].mean() for size in JURY_SIZES]
-}
-
-    # Now call the efficiency plotter
-    plot_condorcet_efficiency(JURY_SIZES, accuracy_dict);
+```{python}
+fig, ax = plot_accuracy_comparison(results_dict, JURY_SIZES)
+plt.show()
 
 
 ```
 
-**Critical insight**: As case difficulty variance increases ($\sigma_{case}$), error correlation rises dramatically. At $\sigma_{case} = 1.0$, jurors make correlated errors with mean correlation around 0.15-0.17. This violates the independence assumption and **degrades majority accuracy** even with competent jurors.
 
-The remaining question for organisational design: Are the patterns of correlation among jurors based on independent sources, or do they interact? We'll see that block effects and case difficulty can create a toxic synergy—when hard cases hit groups with shared biases, the correlation compounds and majority rule fails catastrophically. But what can we do about it?
+```{python}
+accuracy_dict = {
+"Vanilla": [results_vanilla[size].mean() for size in JURY_SIZES],
+"Blocked": [results_blocked[size].mean() for size in JURY_SIZES],
+"Full (Treatment)": [results_full[size].mean() for size in JURY_SIZES]
+}
 
-## Voting Blocks and Improvement Programmes
+# Now call the efficiency plotter
+plot_condorcet_efficiency(JURY_SIZES, accuracy_dict);
 
-Now we introduce the forces that will determine whether an organization can sustain collective wisdom or succumbs to coordinated failure: block effects ($\beta$) and treatment programmes ($\tau$). These structural additions represent opposing gravitational forces in a delicate equilibrium. Pull too hard in one direction and you get chaos; pull too hard in the other and you get lockstep failure.
 
-### The Mathematical Structure: Competing Forces
+```
 
-We model each juror's vote as a negotiation between three forces:
 
-$$
-\text{logit}\,\Pr(V_{ij} = T_i) = \underbrace{\alpha_j}_{\text{individual skill}} + \underbrace{\beta_{b(j)}}_{\text{block gravity}} + \underbrace{\delta_i}_{\text{case difficulty}} - \underbrace{\tau_j \cdot Z_j}_{\text{treatment push}}
-$$
+We've seen here that the vanilla IRT implementation seems to exhibit convergence to accuracy expected of majority vote with increasing sets of jurors. The block model characterising group-think drives down the expected accuracy profile and the increases due to extra voters in the pool is much less pronounced that in the vanilla case. Finally, we've seen a model with expertise driven block effects that dominate our treatment intervention. The expected juror accuracy is insensitive to any degree of treatment effect because accuracy is strongly driven by the block effects in the model. 
 
-Where:
-
-- $\alpha_j$: Individual competence (heterogeneous across jurors)
-
-- $\beta_b(j)$: Block effect for juror j's group (shared within blocks, creating correlation)
-
-- $\delta_i$: Case difficulty (shared across all jurors for case i)
-- $\tau_j \cdot Z_j$: Treatment effect (Z_j = 1 if juror j receives intervention, 0 otherwise)
-
-The sign on the treatment term is critical: it *subtracts* from the combined logit. This means treatment is pushing *against* the combined force of individual tendency + block conformity + case difficulty. 
-
-Think of it this way: Without treatment, a juror's probability of voting correctly is determined by their skill, modified by their block's shared bias, and further modified by how hard the case is. Treatment attempts to "decouple" them from their block's default position—to make them think independently even when their block would pull them in a particular direction.
-
-If treatment works, $\tau$ should be positive: it reduces the influence of the $(\alpha + \beta + \delta)$ package and forces the juror to reconsider from first principles.
-
-::: {.callout-note}
-## A Note on Block Effects and Specialization
-
-Block effects can arise from legitimate sources: engineers possess genuine domain expertise that others lack, sales teams have unique customer insights, executives have access to strategic information. These blocks may differ in average competence, and those differences can be entirely justified.
-
-But for the Condorcet Jury Theorem, what matters is not whether one group is more competent than another—it's whether their errors are independent. A block of highly skilled specialists who share the same blind spots creates correlated errors that violate the theorem's assumptions. Even if Block A is objectively more accurate than Block B on average, if all members of Block A fail together on hard cases, the wisdom of crowds collapses.
-
-This analysis explores these failure conditions: the point at which shared frameworks, training, or information access cause errors to cluster rather than cancel. The statistical machinery cannot distinguish "good blocks" from "bad blocks"—it can only detect correlation. And correlation, regardless of its source, is what breaks collective intelligence.
-:::
-
-### The Anatomy of Blocks: Epistemic Consolidation and Value Capture
-In real organizations, people don't arrive at decisions in isolation. They cluster into groups that share:
-
-- Functional training: All the engineers learned the same architecture patterns; all the MBAs learned the same strategy frameworks
-- Information access: The sales team sees customer feedback the finance team never sees; executives receive filtered summaries while front-line workers see raw reality
-- Incentive structures: Different departments optimize for different metrics, creating systematically different biases
-- Social networks: People who talk to each other regularly start thinking alike, even without realizing it
-
-These patterns promote an consolidation of epistemological standards. Members of a block don't just share surface characteristics; they share ways of knowing and hence ways of being wrong. We saw that case difficulty created correlation across the entire jury for specific cases. But block effects create persistent correlation within subgroups across all cases. This is structurally worse. And then when evidence is ambiguous and cases difficult, people fall back on their frameworks, and if everyone shares frameworks, everyone fails together. In this way case-difficulty and group-think interact to drive an organisation to overly simplified, but easily defensible heuristics.
-
-> "Value capture happens when a person or group adopts an externally-sourced value as their own, without adapting it to their particular context... In value capture, we outsource the process of value deliberation. And, as with other forms of outsourcing, there is a trade-off...When we adopt those values, we gain access to readymade methods for justification" - Nguygen
-
-The adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignore relevant detail. We lose focus on local context we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. 
 
 #### The Legibility Trap: Redux
 Recall that investors demand "alignment" and "standardization". They want unified KPI systems, "Culture fit"-hiring and best-practices adoption, Common Tooling. These forces push us towards organisations towards consolidation of shared incentives, methods and cognitive practices. Not only can corporate values supplant your individual perspective, they do so at scale. Every legibility-seeking practice is a block-creating mechanism. By making the organization more "readable" to outsiders, you create the very correlations that break collective intelligence.
 
 #### The Treatment Paradox
-Pulling in the opposite direction. Organisations aren't static and leaders can intervene. They can run training programs, hire consultants, promote new processes and suggest or mandate resolution frameworks. The question is whether these interventions break group-think or reinforce it? One useful example is the pattern of "red-teaming" in software development. Before a major decision, you randomly assign people from each block to argue against their block's default position. This intervention creates divergent pressure. It doesn't eliminate block membership. Engineers remain engineers, but it forces block members to engage with perspectives that directly challenge their shared frameworks. The treatment pulls against block effects. Or so goes the theory.
+We've cheated slightly. In our model, we've modelled the treatment and tried to attribute heterogenous responses that would help explain the voting outcome. However, we never encoded a treatment effect in the data generating process, so there was nothing to recover. Instead of a structural parameter the `tau_mu` parameter is better seen as a sensitivity parameter. We've allowed it to be weakly identified and have the model partial out any remaining influence to the treatment. The fact that it appears to have neglible effect in this case, stems from the observation that group effects sufficiently explain the outcomes. 
 
-## The Complete Model: Modeling the Push and Pull
+But in real cases this is common - group effects are persistent. Interventions are fleeting. One useful example is the pattern of "red-teaming" in software development. Before a major decision, you randomly assign people from each block to argue against their block's default position. This intervention creates divergent pressure. It doesn't eliminate block membership. Engineers remain engineers, but it forces block members to engage with perspectives that directly challenge their shared frameworks. The treatment pulls against block effects. Or so goes the theory.
+
+## The Push and Pull: Indepence and Conformity
 
 We've now seen two opposing forces at work in organizational decision-making:
 
@@ -1505,256 +1521,6 @@ We've now seen two opposing forces at work in organizational decision-making:
 **The Push Toward Independence (Treatment Effects)**: Interventions designed to break people out of their default frameworks. Red-teaming exercises, devil's advocate assignments, cross-functional rotation, deliberately soliciting dissent. These are organizational attempts to restore the independence that the Condorcet theorem requires.
 
 Our final model formalizes this tension. Block effects (β) pull jurors toward correlated errors. Treatment effects (τ) push them back toward independence. The question is whether deliberate intervention can overcome structural gravity—or whether the legibility trap is too strong to escape.
-
-```{python}
-
-treatment = np.ones(N_JURORS)
-with pm.Model() as irt_model:
-
-    # -----------------------------
-    # Hyperpriors
-    # -----------------------------
-    sigma_delta = pm.HalfNormal("sigma_delta", 1.0)
-    sigma_block = pm.HalfNormal("sigma_block", 1.0)
-    sigma_juror = pm.HalfNormal("sigma_juror", 1.0)
-
-    # Treatment effect (mirrors your tau)
-    tau = pm.Normal("tau", 0.0, 1.0)
-
-    # -----------------------------
-    # Case-level difficulty
-    # -----------------------------
-    delta = pm.Normal(
-        "delta",
-        mu=0.0,
-        sigma=sigma_delta,
-        shape=N_CASES
-    )
-
-    # -----------------------------
-    # Latent ground truth
-    # -----------------------------
-    z = pm.Bernoulli(
-        "z",
-        p=0.5,
-        shape=N_CASES
-    )
-
-    # -----------------------------
-    # Block-level effects
-    # -----------------------------
-    alpha_block = pm.Normal(
-        "alpha_block",
-        mu=0.0,
-        sigma=sigma_block,
-        shape=N_BLOCKS
-    )
-
-    # -----------------------------
-    # Juror-level ability
-    # -----------------------------
-    eps = pm.Normal(
-        "eps",
-        mu=0.0,
-        sigma=sigma_juror,
-        shape=N_JURORS
-    )
-
-    theta = pm.Deterministic(
-        "theta",
-        alpha_block[BLOCK_ID] + tau * treatment + eps
-    )
-
-    # -----------------------------
-    # IRT likelihood
-    # -----------------------------
-    # p_ij = logistic(theta_j - delta_i)
-    logit_p = theta[None, :] - delta[:, None]
-    p = pm.math.sigmoid(logit_p)
-
-    # Probability of observed vote
-    # If z_i = 1: y_ij ~ Bernoulli(p_ij)
-    # If z_i = 0: y_ij ~ Bernoulli(1 - p_ij)
-    vote_prob = z[:, None] * p + (1 - z[:, None]) * (1 - p)
-
-    y_obs = pm.Bernoulli(
-        "y_obs",
-        p=vote_prob,
-        observed=votes_blocked
-    )
-
-with irt_model:
-    idata_irt = pm.sample(
-        draws=2000,
-        tune=2000,
-        chains=4,
-        target_accept=0.9
-    )
-    ppc = pm.sample_posterior_predictive(
-        idata_irt,
-        var_names=["y_obs"]
-    )
-
-
-
-```
-
-
-
-```{python}
-
-import numpy as np
-
-# ---------------------------
-# 1. Stack posterior predictive & latent truth
-# ---------------------------
-y_rep = ppc.posterior_predictive["y_obs"].stack(sample=("chain", "draw"))  # (cases, jurors, total_samples)
-z_post = idata_irt.posterior["z"].stack(sample=("chain", "draw"))          # (cases, total_samples)
-
-# ---------------------------
-# 2. Parameters
-# ---------------------------
-total_jurors = y_rep.shape[1]      # 15
-cases = y_rep.shape[0]             # 50
-total_samples = y_rep.shape[2]     # 8000
-n_samples = 1000                    # subsample for speed
-
-# Subsample posterior draws
-sample_idx = np.random.choice(total_samples, size=n_samples, replace=False)
-y_rep_sub = y_rep[:, :, sample_idx]   # (cases, jurors, n_samples)
-z_post_sub = z_post[:, sample_idx]    # (cases, n_samples)
-
-# ---------------------------
-# 3. Initialize results
-# ---------------------------
-jury_sizes = np.arange(1, total_jurors + 1)
-accuracy_mean = []
-accuracy_hdi_lower = []
-accuracy_hdi_upper = []
-
-# ---------------------------
-# 4. Loop over jury sizes
-# ---------------------------
-for k in jury_sizes:
-    # Pick k random jurors for each k
-    jurors = np.random.choice(total_jurors, size=k, replace=False)
-    
-    # Extract votes for selected jurors: (cases, k, n_samples)
-    votes = y_rep_sub[:, jurors, :]
-    
-    # Majority vote per case per sample
-    majority_vote = (votes.sum(axis=1) > k / 2).astype(int)  # shape: (cases, n_samples)
-    
-    # Compare to latent truth
-    correct = (majority_vote == z_post_sub)  # (cases, n_samples)
-    
-    # Posterior accuracy per sample
-    posterior_accuracy = correct.mean(axis=0)  # (n_samples,)
-    
-    # Summarize posterior
-    accuracy_mean.append(posterior_accuracy.mean())
-    accuracy_hdi_lower.append(np.percentile(posterior_accuracy, 2.5))
-    accuracy_hdi_upper.append(np.percentile(posterior_accuracy, 97.5))
-
-# ---------------------------
-# 5. Convert to numpy arrays
-# ---------------------------
-accuracy_mean = np.array(accuracy_mean)
-accuracy_hdi_lower = np.array(accuracy_hdi_lower)
-accuracy_hdi_upper = np.array(accuracy_hdi_upper)
-
-# ---------------------------
-# 6. Plot posterior majority accuracy vs jury size
-# ---------------------------
-import matplotlib.pyplot as plt
-
-plt.fill_between(jury_sizes, accuracy_hdi_lower, accuracy_hdi_upper, alpha=0.3, label="95% CI")
-plt.plot(jury_sizes, accuracy_mean, marker='o', label="Posterior mean")
-plt.xlabel("Number of jurors")
-plt.ylabel("Posterior majority accuracy")
-plt.title("Accuracy vs Jury Size")
-plt.legend()
-plt.show()
-
-
-
-```
-
-
-```{python}
-# | output: false
-# Generate new data with block structure
-votes_blocked, p_jurors_blocked, true_states_blocked = simulate_jury_data(
-    N_CASES, N_JURORS, block_id=BLOCK_ID
-)
-
-def fit_full_model(votes, n_jurors, block_id, treatment_indicator,
-    use_treatment=0):
-    """
-    Complete model with four sources of variation:
-    1. Individual skill (α_j)
-    2. Block/faction effects (β_block)
-    3. Case difficulty (δ_case)
-    4. Treatment Programme (tau)
-    """
-    majority_votes = (votes.mean(axis=1) > 0.5).astype(int)
-    agreements_per_juror = np.array([
-        (votes[:, j] == majority_votes).sum() for j in range(n_jurors)
-    ])
-    
-    with pm.Model() as model:
-        # Individual skill
-        mu_alpha = 0
-        sigma_alpha = pm.Exponential("sigma_alpha", lam=3.0)
-        alpha_raw = pm.Normal("alpha_raw", 0.0, 1.0, shape=n_jurors)
-        alpha_j = pm.Deterministic("alpha_j", mu_alpha + sigma_alpha * alpha_raw)
-        
-        # Block effects (ideological factions, info silos)
-        n_blocks = len(np.unique(block_id))
-        sigma_block = pm.HalfNormal("sigma_block", sigma=1.0)
-        block_effect_raw = pm.Normal("block_effect_raw", mu=0.0, sigma=1.0, shape=n_blocks)
-        block_effect = pm.Deterministic("block_effect", sigma_block * block_effect_raw)
-        beta_block_j = block_effect[block_id]
-        
-        # Case difficulty (collapsed over cases)
-        # Simplify:
-        mu_case = pm.Normal("mu_case", mu=0.0, sigma=0.5)
-        sigma_case = pm.HalfNormal("sigma_case", sigma=1.0)
-        delta_bar = pm.Normal("delta_bar", mu=mu_case, sigma=sigma_case)
-
-        # -----------------------------
-        # Treatment effect (switchable)
-        # -----------------------------
-        tau = pm.Exponential("tau", 3.0, shape=N_JURORS)
-
-        # convert to tensors to avoid shape surprises
-        Z = pm.math.constant(treatment_indicator)
-        s = pm.math.constant(use_treatment)
-
-        treatment_term = pm.Deterministic('trt', s * Z * tau)
-        
-        # Combined model
-        logit_p_correct = ((alpha_j + beta_block_j + delta_bar) - treatment_term)
-        p_correct = pm.Deterministic("p_correct", 
-                                    pm.math.sigmoid(logit_p_correct))
-        
-        # Collapsed likelihood
-        pm.Binomial("agreements", n=N_CASES, p=p_correct, 
-                   observed=agreements_per_juror)
-        
-        idata = pm.sample(2000, tune=2000, target_accept=0.99, 
-                         return_inferencedata=True)
-    
-    return idata, model
-
-
-print("\nFitting complete hierarchical model...")
-idata_full, model_full = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=np.zeros(N_JURORS), use_treatment=0)
-
-treatment_assignment = np.ones(N_JURORS)
-idata_full_trt, model_full_trt = fit_full_model(votes_blocked, N_JURORS, BLOCK_ID,  treatment_indicator=treatment_assignment, use_treatment=1)
-```
-
 
 We fit two versions of the model against the same blocked data:
 
@@ -1773,17 +1539,7 @@ This represents an organization that has implemented a comprehensive independenc
 - **Anonymous voting**: Remove social pressure to conform to block consensus
 
 The treatment indicator $Z_j = 1$ tells the model: "This juror has been subjected to an intervention designed to reduce their dependence on block-default thinking."
-
-The question: Can such interventions meaningfully push against the gravity of legibility? Or does the correlation persist despite our best efforts?
-
-
-```{python}
-
-ax = az.plot_forest([idata_full, idata_full_trt], var_names=["sigma_alpha", "sigma_block", "mu_case", "sigma_case", "trt"], combined=True, model_names=['Block + Without Treatment', 'Block + With Treatment'], figsize=(10, 7))
-ax[0].set_title("Comparing Parameter Effects \n With and Without Improvement Plan");
-
-
-```
+The question: Can such interventions meaningfully push against the legibility demand? Or does the correlation persist despite our best efforts?
 
 ### What the Model Tells Us About Organizational Intervention
 
@@ -1793,147 +1549,7 @@ Why? Because the voting patterns remain stubbornly correlated despite the presum
 
 The model chooses interpretation (b), allocating *more* variance to σ_block in the treatment model. This is the statistical signature of organizational inertia: interventions that look good on paper (red-teaming, rotation programs, diversity training) fail to break the fundamental correlation structure.
 
-The treatment effect τ remains small or uncertain because the model cannot distinguish "treatment is working a little" from "blocks are just that strong." This is not a flaw in the model—it's an honest reflection of the data-generating process. If block effects are structural (shared information, shared incentives, shared training), surface-level interventions may not be enough.
-
-## Posterior Predictive Checks for Complete Model
-
-Fitting the model is only half the battle; the PPC allows us to simulate "new" decisions from the inferred organizational structure to see if the "Condorcet Miracle" survives the reality of corporate blocks. In our earlier model we saw majority accuracy march steadily toward $100\%$ as the jury size grew. Here, that progress hits a hard ceiling.
-
-```{python}
-def run_ppc_full_model(idata, n_cases, true_states, block_id, 
-                       jury_sizes=JURY_SIZES, n_draws=500):
-    """
-    PPC for complete model including block and case effects.
-    Properly samples from posterior distribution.
-    """
-    # Extract posterior samples
-    alpha_j = idata.posterior['alpha_j'].stack(sample=("chain", "draw")).values
-    block_effect = idata.posterior['block_effect'].stack(sample=("chain", "draw")).values
-    sigma_case = idata.posterior['sigma_case'].stack(sample=("chain", "draw")).values
-    mu_case = idata.posterior['mu_case'].stack(sample=("chain", "draw")).values
-    trt = idata.posterior['trt'].stack(sample=("chain", "draw")).values
-    
-    n_jurors = alpha_j.shape[0]
-    total_samples = alpha_j.shape[1]
-    
-    # Randomly select n_draws samples
-    sample_idx = np.random.choice(total_samples, size=min(n_draws, total_samples), 
-                                 replace=False)
-    n_draws = len(sample_idx)
-    
-    results = {
-        'majority_acc': np.zeros(n_draws),
-        'error_corr': np.zeros((n_draws, n_jurors, n_jurors)),
-        'accuracy_by_size': {k: np.zeros(n_draws) for k in jury_sizes}
-    }
-    
-    rng = np.random.default_rng(42)
-    
-    for idx, s in enumerate(sample_idx):
-        # Sample case difficulty effects for this posterior draw
-        delta_case = rng.normal(mu_case[s], sigma_case[s], size=n_cases)
-        
-        # Generate votes for each case
-        votes = np.zeros((n_cases, n_jurors), dtype=int)
-        
-        for i in range(n_cases):
-            truth_i = true_states[i]
-            sign = 1 if truth_i == 1 else -1
-            
-            for j in range(n_jurors):
-                # Combine individual skill + block effect + case difficulty
-                logit_p = sign * (alpha_j[j, s] + block_effect[block_id[j], s]) + delta_case[i] + trt[j, s]
-                p = 1 / (1 + np.exp(-logit_p))
-                votes[i, j] = rng.binomial(1, p)
-        
-        # Compute diagnostics
-        diag = compute_diagnostics(votes, true_states)
-        results['majority_acc'][idx] = diag['majority_accuracy']
-        results['error_corr'][idx] = diag['error_corr']
-        
-        for k in jury_sizes:
-            results['accuracy_by_size'][k][idx] = (
-                majority_accuracy_by_size(votes, true_states, k)
-            )
-    
-    return results
-
-```
-
-The power of the hierarchical model lies in its ability to "partial out" exactly why a juror was wrong. In the vanilla model, an incorrect vote was simply "incompetence." Here, it is a structural outcome. To derive the vote profile of each individual, we have re-assembled the components we just decomposed. Forward sampling in this way allows us to see how the probability of correctness for any single voter is a negotiation between their own talent and the gravitational forces of the system they inhabit.
-
-```{python}
-
-print("\nRunning posterior predictive checks for complete model...")
-ppc_full = run_ppc_full_model(idata_full, N_CASES, true_states_blocked, 
-                               BLOCK_ID, n_draws=500)
-
-ppc_full_trt = run_ppc_full_model(idata_full_trt, N_CASES, true_states_blocked, 
-                               BLOCK_ID, n_draws=500)
-
-# Summarize accuracy by jury size
-summary_full = summarize_ppc(ppc_full)
-print("\n" + "="*70)
-print("MAJORITY ACCURACY BY JURY SIZE (Complete Model)")
-print("="*70)
-summary_full
-
-```
-
-Notice how the increasing size of the voting block does not substantially improve on the accuracy. There is strong evidence of a plateau effect in the majority accuracy. The combination of new voters is not providing new information. This pattern is also unfortunately visible in our treatment model. 
-
-```{python}
-summary_full_trt = summarize_ppc(ppc_full_trt)
-print("\n" + "="*70)
-print("MAJORITY ACCURACY BY JURY SIZE (Complete Model + Treatment)")
-print("="*70)
-summary_full_trt
-
-
-```
-
-The allocation of a heterogenous treatment progromme was also not sufficient to break the block voting effects. 
-
-
-```{python}
-# Plot error correlations
-plot_error_correlation_heatmap(
-    ppc_full,
-    title="Error Correlation: Complete Model with Block & Case Effects"
-)
-
-print("\n" + "="*70)
-print("ERROR CORRELATION SUMMARY (Complete Model)")
-print("="*70)
-error_summary = summarize_error_correlation(ppc_full)
-for key, value in error_summary.items():
-    print(f"{key}: {value:.3f}")
-```
-
-Notice the structured patterns in the error correlation heatmap—jurors within the same block show correlated errors. This is the smoking gun: **block effects create dependencies that violate the independence assumption**.
-
-```{python}
-# Plot error correlations
-plot_error_correlation_heatmap(
-    ppc_full_trt,
-    title="Error Correlation: Complete Model with Block & Case Effects"
-)
-
-print("\n" + "="*70)
-print("ERROR CORRELATION SUMMARY (Complete Model)")
-print("="*70)
-error_summary = summarize_error_correlation(ppc_full_trt)
-for key, value in error_summary.items():
-    print(f"{key}: {value:.3f}")
-```
-
-While the correlation patterns change slightly, they remain high and reduce the effectiveness of the majority.
-
-The treatment paradox captures the organizational dilemma in statistical form. Leaders genuinely try to foster independence: they hire for "cognitive diversity," they implement devil's advocate protocols, they rotate people across functions. These are the $\tau$ terms in our model—deliberate pushes against the pull of legibility.
-
-But our posterior estimates suggest that these interventions often fail to overcome structural forces. The $\beta$ terms (block effects driven by shared training, information, and incentives) dominate the $\tau$ terms (deliberate interventions). This isn't because leaders are incompetent or uncommitted—it's because block formation is structural while treatment is episodic. You can send an engineer to shadow a sales call ($\tau$), but they return to an engineering team with engineering metrics, engineering promotion criteria, and engineering social networks ($\beta$). The gravitational field reasserts itself.
-
-The model cannot tell us whether stronger interventions would work—whether, for instance, permanently breaking up blocks through forced cross-functional teams would restore independence. What it does tell us is that incremental, well-intentioned programs often aren't enough to overcome the correlation that legibility creates.
+The treatment effect $\tau$ remains small or uncertain because the model cannot distinguish "treatment is working a little" from "blocks are just that strong." This is not a flaw in the model—it's an honest reflection of the data-generating process. If block effects are structural (shared information, shared incentives, shared training), surface-level interventions may not be enough. The model cannot tell us whether stronger interventions would work—whether, for instance, permanently breaking up blocks through forced cross-functional teams would restore independence. What it does tell us is that incremental, well-intentioned programs often aren't enough to overcome the correlation that legibility creates.
 
 # Conclusions
 
