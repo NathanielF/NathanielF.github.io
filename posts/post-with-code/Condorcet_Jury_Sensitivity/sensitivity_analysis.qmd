@@ -4,7 +4,7 @@ subtitle: "Sensitivity Analysis of Failure Conditions"
 categories: ["theory", "simulation", "causal inference", "sensitivity analysis"]
 keep-ipynb: true
 self-contained: true
-draft: false
+draft: true
 toc: true
 execute: 
   freeze: auto 
@@ -67,6 +67,7 @@ N_CASES = 50
 N_JURORS = 15
 JURY_SIZES = [3, 5, 7, 10, 15]
 BLOCK_ID = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2])
+N_BLOCKS = 3
 ```
 
 ### Data Generation and the Ground Truth
@@ -330,6 +331,8 @@ Let a group of $n$ independent individuals (a "jury") be tasked with choosing be
 2.  **The Asymptotic Result:** As $n \to \infty$, the probability that the majority choice is correct approaches $1$.
 
 Conversely, if $p < 0.5$, increasing the size of the jury only increases the probability that the group will arrive at the *wrong* conclusion, with that probability approaching $1$ as $n$ grows.
+
+This is a theorem. We're not showing that it is incorrect, but we are stress-testing it in finite domains to gauge it's applicability to practical decision making. 
 :::
 
 This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and we know that competence isn't uniform. This pulls us in two ways: (1) management panic over hiring standards and (2) fostering diversity in the employee base. We'll look at (1) next. 
@@ -741,6 +744,15 @@ summarize_error_correlation(ppc_moderate)
 
 **Key insight**: With heterogeneous competence alone, errors remain largely uncorrelated. The Condorcet theorem's independence assumption holds—so far. Which is to say that diverse workforces and varying degrees of competence do not inherently short-circuit the firm's ability to learn. 
 
+### From Aggregated to Generative: Why We Need Item Response Theory
+
+The binomial model served us well for exploring individual differences because we only cared whether jurors *on average* agreed with majorities. But to explore **shared case difficulty**—where hard cases cause everyone to struggle simultaneously—we need to model each vote explicitly.
+
+Enter Item Response Theory (IRT). Instead of collapsing votes into agreement counts, we now model:
+$$V_{ij} \mid T_i, p_j, \delta_i$$
+
+This lets us ask: when case *i* is hard (large |δ_i|), do errors cluster across jurors? The binomial model can't answer this because it averages over cases. The IRT model can, and the answer will show us where the Condorcet theorem truly breaks down.
+
 ## Shared Case Difficulty: When Everyone Fails Together
 Now we introduce a critical violation: shared case-level effects. Some cases are genuinely harder, causing even competent jurors to fail together. This is the first structural break in the independence assumption—and it reveals why "hard problems" are exponentially harder for groups than the Condorcet theorem predicts.
 
@@ -781,93 +793,646 @@ conditioning on the truth is no longer sufficient to guarantee independence. Two
 ### Simulating Shared Case Shocks
 To properly explore this, we need to do posterior predictive sampling that includes case difficulty in the generative model. We can't just fit a model with case effects and examine the posterior—we need to generate new votes under different difficulty regimes and see how the correlation structure changes.
 
+
 ```{python}
 
-# Simpler approach: directly simulate from posterior samples
-def simple_case_difficulty_ppc(idata, n_cases_sim, sigma_case_values, 
-                               true_states=None, n_draws=500):
+"""
+Complete IRT Analysis for Condorcet Jury Theorem Breakdown
+Single file - ready to run
+
+DIAGNOSTIC FOCUS: The issue is that posterior predictive votes may not be
+respecting the known ground truth. We need to carefully check how votes
+are being generated in the posterior predictive.
+"""
+
+import numpy as np
+import pymc as pm
+import pandas as pd
+import matplotlib.pyplot as plt
+import arviz as az
+import seaborn as sns
+
+# Set style
+plt.style.use('seaborn-v0_8-darkgrid')
+np.random.seed(42)
+
+
+# ============================================================================
+# PART 1: DATA GENERATION
+# ============================================================================
+
+def simulate_irt_data(n_cases, n_jurors, 
+                      true_mu_theta=0.5,   # Shift this > 0 for competence
+                      true_sigma_theta=1.0, # Skill variance
+                      true_sigma_delta=0.5, # Case difficulty variance
+                      block_id=None, 
+                      true_sigma_block=0.5,
+                      treatment=None,
+                      true_tau=0.8,         # Effect of "training" or "distraction"
+                      seed=None):
+    if seed is not None:
+        np.random.seed(seed)
+    
+    true_states = np.random.binomial(1, 0.5, n_cases)
+    
+    # Juror abilities: Center around mu_theta to ensure baseline competence > 50%
+    theta = np.random.normal(true_mu_theta, true_sigma_theta, n_jurors)
+    
+    # Case difficulties
+    delta = np.random.normal(0, true_sigma_delta, n_cases)
+    
+    if block_id is not None:
+        n_blocks = len(np.unique(block_id))
+        block_effect = np.random.normal(0, true_sigma_block, n_blocks)
+        theta = theta + block_effect[block_id]
+    
+    if treatment is not None:
+        # Suggestion: use + for improvement, - for "breakdown"
+        theta = theta + true_tau * treatment
+    
+    votes = np.zeros((n_cases, n_jurors), dtype=int)
+    for i in range(n_cases):
+        # IRT Probability: logit(p) = Skill - Difficulty
+        logit_p_correct = theta - delta[i]
+        p_correct = 1 / (1 + np.exp(-logit_p_correct))
+        
+        # If state is 1, vote 1 with p_correct. If state is 0, vote 0 with p_correct.
+        for j in range(n_jurors):
+            if true_states[i] == 1:
+                votes[i, j] = np.random.binomial(1, p_correct[j])
+            else:
+                votes[i, j] = np.random.binomial(1, 1 - p_correct[j])
+    
+    majority = (votes.mean(axis=1) > 0.5).astype(int)
+    accuracy = np.mean(majority == true_states)
+    
+    print(f"Generated IRT Data (Avg p_correct logic):")
+    print(f"  Raw majority accuracy: {accuracy:.3f}")
+    return votes, theta, delta, true_states
+
+```
+
+```{python}
+
+# Configuration
+N_CASES = 50
+N_JURORS = 30
+BLOCK_ID = np.random.choice([1, 0, 2], size=N_JURORS)
+JURY_SIZES = [3, 5, 7, 10, 15, 20, 30]
+
+votes_vanilla, t_theta, t_delta, truth_vanilla = simulate_irt_data(
+    N_CASES, N_JURORS,
+    true_sigma_theta=0.8,
+    true_sigma_delta=0.5,
+    seed=42
+)
+    
+
+votes_blocked, t_theta_blocked, t_delta_blocked, truth_blocked = simulate_irt_data(
+    N_CASES, N_JURORS,
+    true_sigma_theta=0.1,
+    true_sigma_delta=3,
+    block_id=BLOCK_ID,
+    true_sigma_block=10,
+    seed=43
+)
+
+treatment = np.random.binomial(1, .5, size=N_JURORS)
+
+votes_full, t_theta_full, t_delta_full, truth_full = simulate_irt_data(
+    N_CASES, N_JURORS,
+    true_sigma_theta=0.5,
+    true_sigma_delta=7,
+    block_id=BLOCK_ID,
+    true_sigma_block=10,
+    treatment=treatment,
+    true_tau=1.5,
+    seed=44
+)
+
+
+```
+
+
+
+```{python}
+# ============================================================================
+# PART 2: MODEL FITTING
+# ============================================================================
+
+def fit_irt_model(votes, true_states, n_cases, n_jurors,
+                  block_id=None, treatment=None,
+                  sigma_delta_prior=0.5,
+                  sigma_theta_prior=1.0,
+                  sigma_block_prior=1.0):
     """
-    Simplified PPC that samples logit_p from posterior then adds case effects.
+    Fit IRT model conditioned on known ground truth.
+    Returns both model parameters AND generates proper posterior predictive.
     """
-    if true_states is None:
-        true_states = np.random.binomial(1, 0.5, size=n_cases_sim)
     
-    # Get posterior samples
-    logit_p_samples = (idata.posterior['logit_p_juror']
-                      .stack(sample=("chain", "draw")).values)
-    n_jurors, total_samples = logit_p_samples.shape
-    
-    # Randomly select n_draws samples
-    sample_idx = np.random.choice(total_samples, size=n_draws, replace=False)
-    logit_p_samples = logit_p_samples[:, sample_idx]
-    
-    results = {}
-    
-    for sigma_case in sigma_case_values:
-        votes_array = np.zeros((n_draws, n_cases_sim, n_jurors), dtype=int)
+    with pm.Model() as model:
+        # Case difficulty (centered)
+        sigma_delta = pm.HalfNormal("sigma_delta", sigma=sigma_delta_prior)
+        delta_raw = pm.Normal("delta_raw", mu=0.0, sigma=1.0, shape=n_cases)
+        delta = pm.Deterministic("delta", sigma_delta * (delta_raw - delta_raw.mean()))
         
-        for s in range(n_draws):
-            # Sample case difficulty effects
-            delta_case = np.random.normal(0, sigma_case, size=n_cases_sim)
-            
-            for i in range(n_cases_sim):
-                truth_i = true_states[i]
-                sign = 1 if truth_i == 1 else -1
+        # Juror ability (centered)
+        sigma_theta = pm.HalfNormal("sigma_theta", sigma=sigma_theta_prior)
+        theta_raw = pm.Normal("theta_raw", mu=0.0, sigma=1.0, shape=n_jurors)
+        theta_base = sigma_theta * theta_raw
+        
+        # Block effects
+        if block_id is not None:
+            n_blocks = len(np.unique(block_id))
+            sigma_block = pm.HalfNormal("sigma_block", sigma=sigma_block_prior)
+            block_raw = pm.Normal("block_raw", mu=0.0, sigma=1.0, shape=n_blocks)
+            block_effect = pm.Deterministic("block_effect", 
+                                           sigma_block * (block_raw - block_raw.mean()))
+            theta_with_blocks = theta_base + block_effect[block_id]
+        else:
+            theta_with_blocks = theta_base
+        
+        # Treatment effects
+        if treatment is not None:
+            tau_mu = pm.Normal("tau_mu", mu=0, sigma=1)
+            tau_sigma = pm.HalfNormal("tau_sigma", sigma=1.0)
+            tau_raw = pm.Normal("tau_raw", mu=0.0, sigma=1.0, shape=n_jurors)
+            tau = pm.Deterministic("tau", tau_mu + tau_raw * tau_sigma)
+            theta_with_blocks = theta_with_blocks + tau * treatment
+
+        # Apply to theta
+        theta = pm.Deterministic("theta", theta_with_blocks)
                 
-                # Apply case difficulty to all jurors
-                logit_p_case = sign * logit_p_samples[:, s] + delta_case[i]
-                p_case = 1 / (1 + np.exp(-logit_p_case))
+        # IRT likelihood with KNOWN truth
+        logit_p_correct = theta[None, :] - delta[:, None]
+        p_correct = pm.Deterministic("p_correct", pm.math.sigmoid(logit_p_correct))
+        
+        # Vote probability given known truth
+        vote_prob = true_states[:, None] * p_correct + (1 - true_states[:, None]) * (1 - p_correct)
+        
+        y_obs = pm.Bernoulli("y_obs", p=vote_prob, observed=votes)
+        
+        # Sample posterior
+        idata = pm.sample(2000, tune=2000, chains=4, target_accept=0.90,
+                         random_seed=42, return_inferencedata=True)
+        
+        # Generate posterior predictive samples
+        # CRITICAL: These should respect the known truth
+        idata.extend(pm.sample_posterior_predictive(idata, var_names=["y_obs"]))
+    
+    # Store known truth explicitly
+    import xarray as xr
+    n_chains = idata.posterior.dims['chain']
+    n_draws = idata.posterior.dims['draw']
+    idata.posterior['z'] = xr.DataArray(
+        np.tile(true_states, (n_chains, n_draws, 1)),
+        dims=['chain', 'draw', 'z_dim_0']
+    )
+    
+    return idata, model
+
+```
+
+```{python}
+
+idata_vanilla, model_vanilla = fit_irt_model(votes_vanilla, truth_vanilla, N_CASES, N_JURORS)
+
+idata_blocked, model_blocked = fit_irt_model(
+    votes_blocked, truth_blocked, N_CASES, N_JURORS, block_id=BLOCK_ID
+)
+
+idata_full, model_full = fit_irt_model(
+    votes_full, truth_full, N_CASES, N_JURORS, 
+    block_id=BLOCK_ID, treatment=treatment
+)
+
+```
+
+
+```{python}
+# ============================================================================
+# PART 3: ACCURACY COMPUTATION 
+# ============================================================================
+
+def compute_majority_accuracy_simple(idata, true_states, jury_sizes, n_samples=500):
+    """
+    Compute majority accuracy directly from posterior parameters.
+    
+    FIXED APPROACH:
+    - Use posterior samples of theta and delta
+    - Generate new votes using the IRT model
+    - Compare to KNOWN truth (not inferred truth)
+    """
+    
+    rng = np.random.default_rng(42)
+    
+    # Extract posterior samples
+    theta_samples = idata.posterior['theta'].stack(sample=('chain', 'draw'))
+    delta_samples = idata.posterior['delta'].stack(sample=('chain', 'draw'))
+    
+    n_total = theta_samples.sizes['sample']
+    n_cases = len(true_states)
+    n_jurors = theta_samples.sizes['theta_dim_0']
+    
+    # Subsample
+    sample_idx = rng.choice(n_total, size=min(n_samples, n_total), replace=False)
+    
+    results = {size: [] for size in jury_sizes}
+    
+    for s_idx in sample_idx:
+        # Get this posterior sample's parameters
+        theta_s = theta_samples.isel(sample=s_idx).values
+        delta_s = delta_samples.isel(sample=s_idx).values
+        
+        # Generate votes for this sample
+        votes_s = np.zeros((n_cases, n_jurors), dtype=int)
+        
+        for i in range(n_cases):
+            for j in range(n_jurors):
+                logit_p = theta_s[j] - delta_s[i]
+                p_correct = 1 / (1 + np.exp(-logit_p))
                 
-                votes_array[s, i, :] = np.random.binomial(1, p_case)
+                # Generate vote based on KNOWN truth
+                if true_states[i] == 1:
+                    votes_s[i, j] = rng.binomial(1, p_correct)
+                else:
+                    votes_s[i, j] = rng.binomial(1, 1 - p_correct)
         
-        # Calculate diagnostics
-        acc = []
-        corrs = []
-        
-        for s in range(n_draws):
-            majority = votes_array[s].mean(axis=1) > 0.5
-            acc.append((majority == true_states).mean())
+        # Test different jury sizes
+        for jury_size in jury_sizes:
+            correct_count = 0
+            for case_i in range(n_cases):
+                # Randomly select jurors
+                selected = rng.choice(n_jurors, size=jury_size, replace=False)
+                majority = 1 if votes_s[case_i, selected].mean() > 0.5 else 0
+                
+                if majority == true_states[case_i]:
+                    correct_count += 1
             
-            errors = votes_array[s] != true_states[:, None]
-            if errors.var(axis=0).sum() > 0:
-                C = np.corrcoef(errors.T)
-                corrs.append(C)
-        
-        corrs = np.stack(corrs) if corrs else np.zeros((1, n_jurors, n_jurors))
-        off_diag = corrs[:, ~np.eye(n_jurors, dtype=bool)]
-        
-        results[sigma_case] = {
-            'accuracy': acc,
-            'mean_accuracy': np.mean(acc),
-            'error_corr': corrs,
-            'mean_corr': np.nanmean(off_diag),
-            'median_corr': np.nanmedian(off_diag),
-            'p95_abs_corr': np.nanpercentile(np.abs(off_diag), 95)
-        }
+            accuracy = correct_count / n_cases
+            results[jury_size].append(accuracy)
+    
+    # Convert to arrays
+    for size in jury_sizes:
+        results[size] = np.array(results[size])
     
     return results
 
+```
 
-print("="*70)
-print("IMPACT OF SHARED CASE DIFFICULTY")
-print("="*70)
 
-sigma_values = [0.0, 0.2, 0.5, 1.0]
-case_diff_results = simple_case_difficulty_ppc(
-    traces_discrimination['weak_discrimination'],
-    n_cases_sim=N_CASES,
-    sigma_case_values=sigma_values,
-    true_states=true_states,
-    n_draws=500
-)
+```{python}
 
-for sigma in sigma_values:
-    res = case_diff_results[sigma]
-    print(f"\nσ_case = {sigma}")
-    print(f"  Mean majority accuracy: {res['mean_accuracy']:.3f}")
-    print(f"  Mean error correlation: {res['mean_corr']:.3f}")
-    print(f"  Median error correlation: {res['median_corr']:.3f}")
-    print(f"  95th %ile |correlation|: {res['p95_abs_corr']:.3f}")
+# | code-fold: true
+
+# ============================================================================
+# PART 4: VISUALIZATION
+# ============================================================================
+
+def plot_accuracy_comparison(results_dict, jury_sizes, figsize=(14, 8)):
+    """Plot accuracy vs jury size for multiple models."""
+    
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    colors = {'vanilla': 'steelblue', 'blocked': 'coral', 'full': 'forestgreen'}
+    labels = {
+        'vanilla': 'Vanilla (Case Difficulty Only)',
+        'blocked': 'With Block Effects',
+        'full': 'With Treatment Program'
+    }
+    
+    for model_name, results in results_dict.items():
+        medians = [np.median(results[size]) for size in jury_sizes]
+        p5 = [np.percentile(results[size], 5) for size in jury_sizes]
+        p95 = [np.percentile(results[size], 95) for size in jury_sizes]
+        
+        ax.plot(jury_sizes, medians, marker='o', label=labels[model_name],
+               color=colors[model_name], linewidth=2, markersize=8)
+        ax.fill_between(jury_sizes, p5, p95, alpha=0.2, color=colors[model_name])
+    
+    ax.axhline(0.5, color='red', linestyle='--', alpha=0.5, linewidth=1.5,
+              label='Chance')
+    ax.axhline(1.0, color='green', linestyle='--', alpha=0.3, linewidth=1,
+              label='Perfect')
+    
+    ax.set_xlabel('Jury Size', fontsize=14)
+    ax.set_ylabel('Majority Vote Accuracy', fontsize=14)
+    ax.set_title('The Condorcet Test: Does Accuracy Improve With More Voters?',
+                fontsize=16, fontweight='bold')
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim([0.2, 1.05])
+    ax.legend(loc='best', fontsize=11)
+    
+    plt.tight_layout()
+    return fig, ax
+
+def plot_parameter_recovery(idata, true_theta, true_delta, model_name="Vanilla"):
+    """Compare estimated parameters against ground truth."""
+    
+    # Extract posterior means
+    est_theta = idata.posterior['theta'].mean(dim=['chain', 'draw']).values
+    est_delta = idata.posterior['delta'].mean(dim=['chain', 'draw']).values
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+    
+    # 1. Juror Skill Recovery (Theta)
+    ax1.scatter(true_theta, est_theta, color='teal', alpha=0.7, s=80, edgecolors='k')
+    # Add identity line
+    lims = [np.min([ax1.get_xlim(), ax1.get_ylim()]), 
+            np.max([ax1.get_xlim(), ax1.get_ylim()])]
+    ax1.plot(lims, lims, 'r--', alpha=0.5, label='Perfect Recovery')
+    
+    ax1.set_xlabel('True Skill (θ)', fontsize=12)
+    ax1.set_ylabel('Estimated Skill (θ̂)', fontsize=12)
+    ax1.set_title(f'Juror Skill Recovery: {model_name}', fontweight='bold')
+    ax1.legend()
+    
+    # 2. Case Difficulty Recovery (Delta)
+    ax2.scatter(true_delta, est_delta, color='darkorange', alpha=0.7, s=80, edgecolors='k')
+    # Add identity line
+    lims = [np.min([ax2.get_xlim(), ax2.get_ylim()]), 
+            np.max([ax2.get_xlim(), ax2.get_ylim()])]
+    ax2.plot(lims, lims, 'r--', alpha=0.5, label='Perfect Recovery')
+    
+    ax2.set_xlabel('True Difficulty (δ)', fontsize=12)
+    ax2.set_ylabel('Estimated Difficulty (δ̂)', fontsize=12)
+    ax2.set_title(f'Case Difficulty Recovery: {model_name}', fontweight='bold')
+    ax2.legend()
+    
+    plt.tight_layout()
+    return fig
+
+def print_accuracy_table(results_dict, jury_sizes):
+    """Print detailed accuracy comparison."""
+    
+    print("\n" + "="*70)
+    print("DETAILED ACCURACY COMPARISON")
+    print("="*70)
+    
+    for model_name, results in results_dict.items():
+        print(f"\n{model_name.upper()}:")
+        for size in jury_sizes:
+            median = np.median(results[size])
+            p5 = np.percentile(results[size], 5)
+            p95 = np.percentile(results[size], 95)
+            print(f"  Size {size:2d}: {median:.3f} [{p5:.3f}, {p95:.3f}]")
+    
+    print("\n" + "="*70)
+    print("IMPROVEMENT FROM SIZE 3 → 15")
+    print("="*70)
+    
+    for model_name, results in results_dict.items():
+        acc_3 = np.median(results[3])
+        acc_15 = np.median(results[15])
+        improvement = acc_15 - acc_3
+        pct_change = 100 * improvement / acc_3 if acc_3 > 0 else 0
+        print(f"{model_name:8s}: {acc_3:.3f} → {acc_15:.3f} "
+              f"(Δ = {improvement:+.3f}, {pct_change:+.1f}%)")
+
+
+def plot_residual_correlation(idata, votes, true_states):
+    """
+    Computes Effective Jury Size (N_eff) based on the residual correlation
+    and updates the heatmap title.
+    """
+    # 1. Extract the posterior mean of p_correct (prob of being right)
+    p_corr = idata.posterior['p_correct'].mean(dim=['chain', 'draw']).values
+    
+    # 2. Calculate Predicted Probability of the observed vote
+    # Probability of voting '1' is p_correct if truth is 1, and (1-p_correct) if truth is 0
+    y_hat = true_states[:, None] * p_corr + (1 - true_states[:, None]) * (1 - p_corr)
+    
+    # 3. Calculate Residuals (Observed vote - Model's expected probability)
+    residuals = votes - y_hat
+    
+    # 4. Compute Juror-to-Juror Correlation Matrix
+    res_df = pd.DataFrame(residuals)
+    corr_matrix = res_df.corr()
+    
+    # 5. Calculate Effective Jury Size (N_eff)
+    # Formula: N_eff = N / (1 + (N-1) * rho_bar)
+    N = len(corr_matrix)
+    # Extract only the upper triangle (excluding diagonal) to get unique pairs
+    off_diag = corr_matrix.values[np.triu_indices(N, k=1)]
+    rho_bar = np.mean(off_diag)
+    
+    # Clamp rho_bar at 0 for N_eff calculation (negative correlations technically increase N_eff,
+    # but for CJT breakdown analysis we focus on the loss of power from bias)
+    n_eff = N / (1 + (N - 1) * max(0, rho_bar))
+    
+    # 6. Plotting
+    plt.figure(figsize=(11, 9))
+    sns.heatmap(corr_matrix, annot=False, cmap='RdBu_r', center=0, vmin=-1, vmax=1)
+    
+    # Add metrics to title using LaTeX formatting
+    plt.title(
+        f"Juror Residual Correlation Structure\n"
+        f"Avg Correlation ($\\bar{{\\rho}}$): {rho_bar:.3f} | "
+        f"Effective Jury Size ($N_{{eff}}$): {n_eff:.2f} (Nominal $N$: {N})",
+        fontsize=14, fontweight='bold'
+    )
+    
+    plt.xlabel("Juror Index", fontsize=12)
+    plt.ylabel("Juror Index", fontsize=12)
+    plt.tight_layout()
+
+def plot_condorcet_efficiency(jury_sizes, accuracies_dict):
+    """
+    Plots the relative log-odds gain to compare convergence rates 
+    across scenarios with different baseline accuracies.
+    """
+    plt.figure(figsize=(10, 6))
+    
+    for label, accs in accuracies_dict.items():
+        acc_arr = np.array(accs)
+        # Clip to avoid log(0) or log(inf)
+        acc_arr = np.clip(acc_arr, 1e-5, 1 - 1e-5)
+        
+        # 1. Transform to Log-Odds
+        logits = np.log(acc_arr / (1 - acc_arr))
+        
+        # 2. Normalize: Gain relative to the first entry (N=3)
+        efficiency_gain = logits - logits[0]
+        
+        plt.plot(jury_sizes, efficiency_gain, marker='o', label=label, linewidth=2.5)
+
+    plt.axhline(0, color='black', linestyle='--', alpha=0.3)
+    plt.title("Jury Efficiency: Relative Log-Evidence Gain\n(Isolating Convergence Rate from Baseline Competence)", 
+              fontsize=14, fontweight='bold')
+    plt.ylabel(r"Relative Log-Odds Gain ($\Delta \text{logit}(p)$)", fontsize=12)
+    plt.xlabel("Jury Size ($N$)", fontsize=12)
+    plt.legend()
+    plt.grid(True, linestyle=':', alpha=0.6)
+    plt.tight_layout()
+    
+    # Save the figure
+    plt.savefig('condorcet_efficiency_comparison.png')
+    return plt.gcf()
+
+```
+
+
+```{python}
+
+# ============================================================================
+# MAIN EXECUTION
+# ============================================================================
+
+if __name__ == "__main__":
+    
+    print("="*70)
+    print("CONDORCET JURY THEOREM BREAKDOWN ANALYSIS")
+    print("="*70)
+    
+    # Configuration
+    N_CASES = 50
+    N_JURORS = 30
+    BLOCK_ID = np.random.choice([1, 0, 2], size=N_JURORS)
+    JURY_SIZES = [3, 5, 7, 10, 15]
+    
+    # ========================================================================
+    # SCENARIO 1: Vanilla (Ability + Difficulty only)
+    # ========================================================================
+    
+    print("\n" + "="*70)
+    print("SCENARIO 1: VANILLA IRT")
+    print("="*70)
+    
+    votes_vanilla, t_theta, t_delta, truth_vanilla = simulate_irt_data(
+        N_CASES, N_JURORS,
+        true_sigma_theta=0.8,
+        true_sigma_delta=0.3,
+        seed=42
+    )
+    
+    print("\nFitting model...")
+    idata_vanilla, _ = fit_irt_model(votes_vanilla, truth_vanilla, N_CASES, N_JURORS)
+    
+    print(f"\nEstimated parameters:")
+    print(f"  σ_θ: {idata_vanilla.posterior['sigma_theta'].mean():.3f}")
+    print(f"  σ_δ: {idata_vanilla.posterior['sigma_delta'].mean():.3f}")
+    plot_parameter_recovery(idata_vanilla, t_theta, t_delta, "Vanilla Case")
+    
+    print("\nComputing accuracy by jury size...")
+    results_vanilla = compute_majority_accuracy_simple(
+        idata_vanilla, truth_vanilla, JURY_SIZES, n_samples=500
+    )
+    
+    plot_residual_correlation(idata_vanilla, votes_vanilla, truth_vanilla)
+    # ========================================================================
+    # SCENARIO 2: Blocked (Add block effects)
+    # ========================================================================
+    
+    print("\n" + "="*70)
+    print("SCENARIO 2: WITH BLOCK EFFECTS")
+    print("="*70)
+    
+    votes_blocked, t_theta_blocked, t_delta_blocked, truth_blocked = simulate_irt_data(
+        N_CASES, N_JURORS,
+        true_sigma_theta=0.1,
+        true_sigma_delta=3,
+        block_id=BLOCK_ID,
+        true_sigma_block=10,
+        seed=43
+    )
+    
+    print("\nFitting model...")
+    idata_blocked, _ = fit_irt_model(
+        votes_blocked, truth_blocked, N_CASES, N_JURORS, block_id=BLOCK_ID
+    )
+    plot_parameter_recovery(idata_blocked, t_theta_blocked, t_delta_blocked, "Blocked Case");
+    
+    print(f"\nEstimated parameters:")
+    print(f"  σ_θ: {idata_blocked.posterior['sigma_theta'].mean():.3f}")
+    print(f"  σ_δ: {idata_blocked.posterior['sigma_delta'].mean():.3f}")
+    print(f"  σ_block: {idata_blocked.posterior['sigma_block'].mean():.3f}")
+    
+    print("\nComputing accuracy by jury size...")
+    results_blocked = compute_majority_accuracy_simple(
+        idata_blocked, truth_blocked, JURY_SIZES, n_samples=500
+    )
+    plot_residual_correlation(idata_blocked, votes_blocked, truth_blocked)
+
+    # ========================================================================
+    # SCENARIO 3: Full (Blocks + Treatment)
+    # ========================================================================
+    
+    print("\n" + "="*70)
+    print("SCENARIO 3: WITH BLOCKS + TREATMENT")
+    print("="*70)
+    
+    treatment = np.random.binomial(1, .5, size=N_JURORS)
+    
+    votes_full, t_theta_full, t_delta_full, truth_full = simulate_irt_data(
+        N_CASES, N_JURORS,
+        true_sigma_theta=0.5,
+        true_sigma_delta=7,
+        block_id=BLOCK_ID,
+        true_sigma_block=10,
+        treatment=treatment,
+        true_tau=1.5,
+        seed=44
+    )
+    
+    print("\nFitting model...")
+    idata_full, _ = fit_irt_model(
+        votes_full, truth_full, N_CASES, N_JURORS, 
+        block_id=BLOCK_ID, treatment=treatment
+    )
+
+    plot_parameter_recovery(idata_full, t_theta_full, t_delta_full, "Full Case");
+    
+    print(f"\nEstimated parameters:")
+    print(f"  σ_θ: {idata_full.posterior['sigma_theta'].mean():.3f}")
+    print(f"  σ_δ: {idata_full.posterior['sigma_delta'].mean():.3f}")
+    print(f"  σ_block: {idata_full.posterior['sigma_block'].mean():.3f}")
+    print(f"  τ: {idata_full.posterior['tau'].mean():.3f}")
+    
+    print("\nComputing accuracy by jury size...")
+    results_full = compute_majority_accuracy_simple(
+        idata_full, truth_full, JURY_SIZES, n_samples=500
+    )
+
+    plot_residual_correlation(idata_full, votes_full, truth_full)
+    
+    # ========================================================================
+    # RESULTS
+    # ========================================================================
+    
+    results_dict = {
+        'vanilla': results_vanilla,
+        'blocked': results_blocked,
+        'full': results_full
+    }
+    
+    print_accuracy_table(results_dict, JURY_SIZES)
+    
+    print("\n" + "="*70)
+    print("CREATING VISUALIZATIONS")
+    print("="*70)
+    
+    fig, ax = plot_accuracy_comparison(results_dict, JURY_SIZES)
+    plt.show()
+    
+    print("\n" + "="*70)
+    print("ANALYSIS COMPLETE")
+    print("="*70)
+    print("\nIf accuracy is still near chance, check:")
+    print("1. Are the generated votes actually informative? (check raw majority)")
+    print("2. Is theta >> delta in magnitude? (if yes, all cases become easy)")
+    print("3. Are posterior samples reasonable? (check parameter recovery)")
+    print("="*70)
+
+    accuracy_dict = {
+    "Vanilla": [results_vanilla[size].mean() for size in JURY_SIZES],
+    "Blocked": [results_blocked[size].mean() for size in JURY_SIZES],
+    "Full (Treatment)": [results_full[size].mean() for size in JURY_SIZES]
+}
+
+    # Now call the efficiency plotter
+    plot_condorcet_efficiency(JURY_SIZES, accuracy_dict);
+
+
 ```
 
 **Critical insight**: As case difficulty variance increases ($\sigma_{case}$), error correlation rises dramatically. At $\sigma_{case} = 1.0$, jurors make correlated errors with mean correlation around 0.15-0.17. This violates the independence assumption and **degrades majority accuracy** even with competent jurors.
@@ -940,6 +1505,181 @@ We've now seen two opposing forces at work in organizational decision-making:
 **The Push Toward Independence (Treatment Effects)**: Interventions designed to break people out of their default frameworks. Red-teaming exercises, devil's advocate assignments, cross-functional rotation, deliberately soliciting dissent. These are organizational attempts to restore the independence that the Condorcet theorem requires.
 
 Our final model formalizes this tension. Block effects (β) pull jurors toward correlated errors. Treatment effects (τ) push them back toward independence. The question is whether deliberate intervention can overcome structural gravity—or whether the legibility trap is too strong to escape.
+
+```{python}
+
+treatment = np.ones(N_JURORS)
+with pm.Model() as irt_model:
+
+    # -----------------------------
+    # Hyperpriors
+    # -----------------------------
+    sigma_delta = pm.HalfNormal("sigma_delta", 1.0)
+    sigma_block = pm.HalfNormal("sigma_block", 1.0)
+    sigma_juror = pm.HalfNormal("sigma_juror", 1.0)
+
+    # Treatment effect (mirrors your tau)
+    tau = pm.Normal("tau", 0.0, 1.0)
+
+    # -----------------------------
+    # Case-level difficulty
+    # -----------------------------
+    delta = pm.Normal(
+        "delta",
+        mu=0.0,
+        sigma=sigma_delta,
+        shape=N_CASES
+    )
+
+    # -----------------------------
+    # Latent ground truth
+    # -----------------------------
+    z = pm.Bernoulli(
+        "z",
+        p=0.5,
+        shape=N_CASES
+    )
+
+    # -----------------------------
+    # Block-level effects
+    # -----------------------------
+    alpha_block = pm.Normal(
+        "alpha_block",
+        mu=0.0,
+        sigma=sigma_block,
+        shape=N_BLOCKS
+    )
+
+    # -----------------------------
+    # Juror-level ability
+    # -----------------------------
+    eps = pm.Normal(
+        "eps",
+        mu=0.0,
+        sigma=sigma_juror,
+        shape=N_JURORS
+    )
+
+    theta = pm.Deterministic(
+        "theta",
+        alpha_block[BLOCK_ID] + tau * treatment + eps
+    )
+
+    # -----------------------------
+    # IRT likelihood
+    # -----------------------------
+    # p_ij = logistic(theta_j - delta_i)
+    logit_p = theta[None, :] - delta[:, None]
+    p = pm.math.sigmoid(logit_p)
+
+    # Probability of observed vote
+    # If z_i = 1: y_ij ~ Bernoulli(p_ij)
+    # If z_i = 0: y_ij ~ Bernoulli(1 - p_ij)
+    vote_prob = z[:, None] * p + (1 - z[:, None]) * (1 - p)
+
+    y_obs = pm.Bernoulli(
+        "y_obs",
+        p=vote_prob,
+        observed=votes_blocked
+    )
+
+with irt_model:
+    idata_irt = pm.sample(
+        draws=2000,
+        tune=2000,
+        chains=4,
+        target_accept=0.9
+    )
+    ppc = pm.sample_posterior_predictive(
+        idata_irt,
+        var_names=["y_obs"]
+    )
+
+
+
+```
+
+
+
+```{python}
+
+import numpy as np
+
+# ---------------------------
+# 1. Stack posterior predictive & latent truth
+# ---------------------------
+y_rep = ppc.posterior_predictive["y_obs"].stack(sample=("chain", "draw"))  # (cases, jurors, total_samples)
+z_post = idata_irt.posterior["z"].stack(sample=("chain", "draw"))          # (cases, total_samples)
+
+# ---------------------------
+# 2. Parameters
+# ---------------------------
+total_jurors = y_rep.shape[1]      # 15
+cases = y_rep.shape[0]             # 50
+total_samples = y_rep.shape[2]     # 8000
+n_samples = 1000                    # subsample for speed
+
+# Subsample posterior draws
+sample_idx = np.random.choice(total_samples, size=n_samples, replace=False)
+y_rep_sub = y_rep[:, :, sample_idx]   # (cases, jurors, n_samples)
+z_post_sub = z_post[:, sample_idx]    # (cases, n_samples)
+
+# ---------------------------
+# 3. Initialize results
+# ---------------------------
+jury_sizes = np.arange(1, total_jurors + 1)
+accuracy_mean = []
+accuracy_hdi_lower = []
+accuracy_hdi_upper = []
+
+# ---------------------------
+# 4. Loop over jury sizes
+# ---------------------------
+for k in jury_sizes:
+    # Pick k random jurors for each k
+    jurors = np.random.choice(total_jurors, size=k, replace=False)
+    
+    # Extract votes for selected jurors: (cases, k, n_samples)
+    votes = y_rep_sub[:, jurors, :]
+    
+    # Majority vote per case per sample
+    majority_vote = (votes.sum(axis=1) > k / 2).astype(int)  # shape: (cases, n_samples)
+    
+    # Compare to latent truth
+    correct = (majority_vote == z_post_sub)  # (cases, n_samples)
+    
+    # Posterior accuracy per sample
+    posterior_accuracy = correct.mean(axis=0)  # (n_samples,)
+    
+    # Summarize posterior
+    accuracy_mean.append(posterior_accuracy.mean())
+    accuracy_hdi_lower.append(np.percentile(posterior_accuracy, 2.5))
+    accuracy_hdi_upper.append(np.percentile(posterior_accuracy, 97.5))
+
+# ---------------------------
+# 5. Convert to numpy arrays
+# ---------------------------
+accuracy_mean = np.array(accuracy_mean)
+accuracy_hdi_lower = np.array(accuracy_hdi_lower)
+accuracy_hdi_upper = np.array(accuracy_hdi_upper)
+
+# ---------------------------
+# 6. Plot posterior majority accuracy vs jury size
+# ---------------------------
+import matplotlib.pyplot as plt
+
+plt.fill_between(jury_sizes, accuracy_hdi_lower, accuracy_hdi_upper, alpha=0.3, label="95% CI")
+plt.plot(jury_sizes, accuracy_mean, marker='o', label="Posterior mean")
+plt.xlabel("Number of jurors")
+plt.ylabel("Posterior majority accuracy")
+plt.title("Accuracy vs Jury Size")
+plt.legend()
+plt.show()
+
+
+
+```
+
 
 ```{python}
 # | output: false
