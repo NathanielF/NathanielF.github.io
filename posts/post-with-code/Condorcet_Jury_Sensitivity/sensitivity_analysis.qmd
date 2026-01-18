@@ -122,12 +122,14 @@ Even if individuals people were wrong, they were wrong in their own unique ways 
 
 When an organization demands "standardization"—standardized training, standardized tools, standardized culture—it is actively working to eliminate unique error. It is trying to make every employee "readable" to the center. In statistical terms, legibility is Correlation.
 
-To model this, we must move to Item Response Theory (IRT). We will introduce "Blocks"—groups of voters who have been successfully "aligned" (captured) by a shared framework. We will see that while this alignment makes the organization easier to manage (more legible), it breaks the mathematical engine of collective intelligence.
+To model this, we must move to Item Response Theory (IRT). We will introduce "Blocks" i.e. groups of voters who have been successfully "aligned" (captured) by a shared framework. We will see that while this alignment makes the organization easier to manage (more legible), it breaks the mathematical engine of collective intelligence.
 
-Instead of collapsing votes into simple agreement counts, we now model the interaction between the person and the problem:
+We now model the interaction between the person and the problem:
 $$V_{ij} \mid T_i, p_j, \delta_i, \beta$$
 
-This lets us ask: when case *i* is hard (large $|\delta_i|$), do errors cluster across jurors? If a juror is a member of a "voter block," how does that gravitational pull affect their competence? The binomial model averages over cases, hiding these dynamics. The IRT model performs an anatomy of the vote, revealing exactly where the Condorcet "miracle" dies.
+where $T_{i}$ is the true state of the world, $p_i$ is the individual's competence measure. $delta_{i}$ is the difficulty of the various cases/questions under conideration and $\beta$ is a gauge of conformity among the actors.
+
+This lets us ask: when case *i* is hard (large $|\delta_i|$), do errors cluster across jurors? If a juror is a member of a "voter block," how does that gravitational pull affect their competence? The IRT model performs an anatomy of the vote, revealing exactly where the Condorcet "miracle" dies.
 
 #### Shared Case Difficulty and Shared Thinking: When Everyone Fails Together
 
