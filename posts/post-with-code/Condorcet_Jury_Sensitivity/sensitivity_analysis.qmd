@@ -1,10 +1,10 @@
 ---
-title: "The Condorcet Jury Theorem and Democratic Rationality"
-subtitle: "Sensitivity Analysis of Failure Conditions"
-categories: ["theory", "simulation", "causal inference", "sensitivity analysis"]
+title: "Violations of the Condorcet Jury Theorem"
+subtitle: "Sensitivity Analysis with Item Responses"
+categories: ["theory", "simulation", "causal inference", "sensitivity analysis", "irt"]
 keep-ipynb: true
 self-contained: true
-draft: true
+draft: false
 toc: true
 execute: 
   freeze: auto 
@@ -18,35 +18,6 @@ author:
 citation: true
 ---
 
-# The Legibility Trap: Why Organizations Fail in Lockstep
-
-Decision-making in the modern corporation faces a paradox. On the surface, the organization is a smooth-running machine optimized for "alignment," "velocity," and predictable outcomes. Investors demand a recognizable org chart; executives demand standardized workflows; and everyone demands a set of "Core Values" that can be measured on a performance review.
-
-But when familiar process becomes sacred process, something breaks. In our quest for "alignment," we inadvertently destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences._
-
-To understand why, we must look beyond the spreadsheet and into how large systems "see." the world.
-
-- James C. Scott warns us of incentivised "Legibility": the tendency of central authorities to flatten complex, organic systems into simplified maps they can understand. When a state (or a CEO) cannot read the wild "forest" of local expertise, they replace it with a "plantation" of identical, predictable units, and encourage conformity.
-
-- C. Thi Nguyen warns us how this drives "Value Capture": the tendency of individuals to outsource their own reasoning to these external metrics. We trade the murky, difficult pursuit of truth for the crisp, legible satisfaction of "meeting the KPI."
-
-This post is a stress test of that tradeoff. We will use the Condorcet Jury Theorem—the mathematical foundation of democracy and diversification—to demonstrate a fatal flaw in the modern corporate operating system. We will show that by optimizing for Legibility (standardization) and Value Capture (alignment), organizations manufacture the very statistical homogeniety that guarantees their collapse.
-
-::: {.callout-important}
-## The Structure of the Argument
-
-In this post, we move beyond the false rigour of "spreadsheet" driven decision-making to understand why modern organizations often fail in lockstep. To interrogate these questions we will
-
-- Establish the Baseline: Model Condorcet's Jury theorem using an Item Response theory (IRT) to isolate how individual skill ($\theta$) and case difficulty ($\delta$) interact in a healthy, independent environment.
-
-- Simulate Institutional Gravity: Introduce "Blocks" ($\beta$) to model how functional training and groupthink create reduce the collective wisdom of the group.
-
-- Test the "Escape Velocity": Introduce a treatment parameter ($\tau$) to see if interventions like "Red Teaming" can shatter these blocks and restore collective intelligence
-:::
-
-To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, `simulate_jury_data`, is the generative heart of this piece. It creates a laboratory where we can toggle the variables of organizational health—from individual competence to the crushing weight of groupthink. 
-
-**Note**: I'm not suggesting every real world dynamic of business or politics is captured by the structure of our simulation, or that every decision has a simple yes or no answer. But there are enough meaningful cases which resemble the CJT setting, that understanding this limit case is fruitful for diagnosing the failures to replicate it in practice. 
 
 ```{python}
 import pandas as pd
@@ -60,6 +31,37 @@ from pytensor.tensor import gammaln
 np.random.seed(42)
 ```
 
+
+## The Legibility Trap: Why Organizations Fail in Lockstep
+
+Decision-making in the modern corporation faces a paradox. On the surface, the organization is a smooth-running machine optimized for "alignment," "velocity," and predictable outcomes. Investors demand a recognizable org chart; executives demand standardized workflows; and everyone demands a set of "Core Values" that can be measured on a performance review.
+
+But when familiar process becomes sacred process, something breaks. In our quest for "alignment," we inadvertently destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences._
+
+To understand why, we must look into how large organisations "see" the world.
+
+- James C. Scott in _Seeing like a State_ warns us of incentivised "Legibility". The tendency of central authorities to flatten complex, organic systems into simplified maps they can understand. When a state (or a CEO) cannot read the wild "forest" of local expertise, they replace it with a "plantation" of identical, predictable units, and encourage conformity.
+
+- C. Thi Nguyen warns us how these dynamics drives "Value Capture": the tendency of individuals to outsource their own reasoning to these external metrics and organisational goals. We trade the murky, difficult pursuit of truth for the crisp, legible satisfaction of "meeting the KPI" or "hitting quota".
+
+This post is a stress test of that tradeoff. We will use the Condorcet Jury Theorem — the mathematical foundation of democracy and diversification — to demonstrate a fatal flaw in the modern corporate operating system. We will show that by optimizing for Legibility (standardization) and Value Capture (alignment), organizations manufacture the very statistical homogeniety that guarantees their collapse.
+
+::: {.callout-note}
+## The Structure of the Argument
+
+In this post, we move beyond the false rigour of "spreadsheet" driven decision-making to understand why modern organizations often fail in lockstep. To interrogate these questions we will
+
+- Establish the Baseline: Model Condorcet's Jury theorem using an Item Response theory (IRT) to isolate how individual skill ($\theta$) and case difficulty ($\delta$) interact in a healthy, independent environment.
+
+- Simulate Institutional Gravity: Introduce "Blocks" ($\beta$) to model how functional training and groupthink create reduce the collective wisdom of the group.
+
+- Test the "Escape Velocity": Introduce a treatment parameter ($\tau$) to see if interventions like "Red Teaming" can shatter these blocks and restore collective intelligence
+
+- Consider the Algorithmic Horizon: Reflect on how AI-assisted work may 
+  represent a new—and uniquely scalable—mechanism for epistemic homogenization.
+:::
+
+To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, `simulate_jury_data`, is the generative heart of this piece. It creates a laboratory where we can toggle the variables of organizational health—from individual competence to the crushing weight of groupthink. 
 
 ### The Classical Condorcet Jury Model
 
@@ -109,18 +111,19 @@ This is a theorem. We're not showing that it is incorrect, but we are stress-tes
 
 This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and we know that competence isn't uniform. 
 
-This pulls us in two ways: (1) management panic over hiring standards and (2) and mission driven culture fit. On the one hand increased competence in the worker base is an objective good, but the drive for alignment reduces the set of competent actors that matter for decision making. The drive for alignment, should come with the attendant observation that responsibility and accountability becomes concentrated within the executive class. It rarely does. 
+#### The Role and  Locus of Competence
 
-#### The Technocratic Fantasy: "We Just Need Better Units"
-The first line of defense for the "Legible" organization is hiring. The assumption is simple: if the system is failing, the "units" (employees) must be defective. This view assumes that if we just hire "A-Players" with high individual competence ($p > 0.5$), the organization will inevitably succeed. This is the technocratic fantasy. It's a fantasy often compounded by annual performance assessment which grade on an artificial curve. It's easier to diagnose failure as limited competence when you regularly orchestrate a system to label a portion of the workforce as incompetent. It aligns with Nguyen's concept of metrics gaming — the belief that maximizing individual scores sums to a maximized collective outcome. It's a failure mode that ignores strucutural aspects of the organisation's problems in lieu of easier proxies. 
+This pulls us in two ways: (1) management panic over hiring standards and (2) and mission driven culture fit. On the one hand increased competence in the worker base is an objective good, but the drive for alignment reduces the set of competent actors that matter for decision making.  When workers are expected to "fall in line," responsibility and accountability should correspondingly concentrate within the executive class. It rarely does.
 
-This is not to say that incompetence doesn't exist in a business or political organisation, but variations in competence are less of a threat to organisational competence and execution that the latent determinants of decision accuracy in the business. These determinants are generally structural or institutional.
+The first line of defense for the "Legible" organization is hiring. The assumption is simple: if the system is failing, the "units" (employees) must be defective. This view assumes that if we just hire "A-Players" with high individual competence ($p > 0.5$), the organization will inevitably succeed. This is often a convenient fantasy. It's a fantasy compounded by annual performance assessment which grade on an artificial curve. It's easier to diagnose failure as limited competence when you regularly orchestrate a system to label a portion of the workforce as incompetent. It aligns with Nguyen's concept of metrics gaming — the belief that maximizing individual scores sums to a maximized collective outcome. It's a failure mode that ignores strucutural aspects of the organisation's problems in lieu of easier proxies. 
+
+This is not to say that incompetence doesn't exist in a business or political organisation, but variations in competence are less of a threat to organisational competence and execution than the latent determinants of decision accuracy in the business. These determinants are generally structural or institutional. The process of hiring and firing certainly changes the distribution of competence, it does not (as we'll see) ensure the onset of collective wisdom. 
 
 ## Incentivised Legibility: Modeling "The Block" Effects
 
-Even if individuals people were wrong, they were wrong in their own unique ways and this cancels out. Those people wrong today, can be right tomorrow if they remain independent actors. But James C. Scott’s theory of incentivised legibility suggests something darker.
+Even if individuals people were wrong, they were wrong in their own unique ways and this cancels out. Those people wrong today, can be right tomorrow if they remain independent actors. But James C. Scott’s theory of incentivised legibility suggests something darker. Imposed strictures on planning and acting short-circuit our ability to be find signal on hard problems.
 
-When an organization demands "standardization"—standardized training, standardized tools, standardized culture—it is actively working to eliminate unique error. It is trying to make every employee "readable" to the center. In statistical terms, legibility is Correlation.
+When an organization demands "standardization"—standardized training, standardized tools, standardized culture—it is actively working to eliminate unique error. It is trying to make every employee "readable" to the center. In statistical terms, legibility is drives correlation and collapses independence.
 
 To model this, we must move to Item Response Theory (IRT). We will introduce "Blocks" i.e. groups of voters who have been successfully "aligned" (captured) by a shared framework. We will see that while this alignment makes the organization easier to manage (more legible), it breaks the mathematical engine of collective intelligence.
 
@@ -129,13 +132,15 @@ $$V_{ij} \mid T_i, p_j, \delta_i, \beta$$
 
 where $T_{i}$ is the true state of the world, $p_i$ is the individual's competence measure. $delta_{i}$ is the difficulty of the various cases/questions under conideration and $\beta$ is a gauge of conformity among the actors.
 
-This lets us ask: when case *i* is hard (large $|\delta_i|$), do errors cluster across jurors? If a juror is a member of a "voter block," how does that gravitational pull affect their competence? The IRT model performs an anatomy of the vote, revealing exactly where the Condorcet "miracle" dies.
+This lets us ask: when case *i* is hard (large $|\delta_i|$), do errors cluster across jurors? If a juror is a member of a "voter block," how does that gravitational pull affect their competence? The IRT model partials out the structural influences on voter competence, revealing exactly where the Condorcet "miracle" dies.
 
 #### Shared Case Difficulty and Shared Thinking: When Everyone Fails Together
 
-Now we introduce a critical violation: shared case-level effects. Some cases are genuinely harder, causing even competent jurors to fail together. This is the first structural break in the independence assumption—and it reveals why "hard problems" are exponentially harder for groups than the Condorcet theorem predicts.
+The motivation behind is IRT models is that some cases are genuinely harder than others. The interaction between individual comptence and case difficulty will cause even competent jurors to fail together if the difficulty is extreme. This is the first structural break in the independence assumption required for CJT.
 
-Consider the difference between a routine budget approval and an "Ambiguous Pivot" to a new market. On the pivot, even the most competent jurors will struggle. More importantly, they will struggle in the same direction. Case difficulty creates correlated signal loss: when the evidence is weak, everyone’s instruments fail simultaneously.
+Consider the difference between a routine budget approval and an "Ambiguous Pivot" to a new market. On the pivot, even the most competent jurors will struggle. More importantly, their shared expertise in the current market can drive them to struggle in the same direction. Case difficulty creates correlated signal loss: when the evidence is weak, everyone’s instruments fail simultaneously. 
+
+We will simulate these effects now. 
 
 ```{python}
 
@@ -248,6 +253,11 @@ def simulate_irt_data(
 
 ```
 
+The function induces block effects by applying a linear transformation to baseline juror skills, effectively overriding individual variance with group-level dynamics. The transformation follows this logic:
+
+$$\theta_{idx} = \text{true\_mu\_theta} + u_{block} + \kappa \cdot (\theta_{raw, idx} - \text{true\_mu\_theta})$$
+
+
 Now we generate three varieties of voting data where the drivers of voting outcomes are more or less variously effected by: individual competence, case difficulty, effects of block voting. 
 
 ```{python}
@@ -272,7 +282,8 @@ votes_blocked, t_theta_blocked, t_delta_blocked, truth_blocked = simulate_irt_da
     true_sigma_theta=0.1,
     true_sigma_delta=3,
     block_id=BLOCK_ID,
-    true_sigma_block=10,
+    true_sigma_block=2,
+    true_kappa_groupthink=0.2,
     block_type="groupthink",  
     seed=43
 )
@@ -284,9 +295,10 @@ votes_full, t_theta_full, t_delta_full, truth_full = simulate_irt_data(
     true_sigma_theta=0.1,
     true_sigma_delta=6,
     block_id=BLOCK_ID,
-    true_sigma_block=10,
+    true_sigma_block=2,
     treatment=treatment,
     block_type="expertise",  
+    true_kappa_expertise=1.4, 
     true_tau=0.3, # random variation across voters
     seed=44
 )
@@ -294,34 +306,52 @@ votes_full, t_theta_full, t_delta_full, truth_full = simulate_irt_data(
 
 ```
 
-This should highlight the diversity of factors that contribute to individual accuracy, but more importantly how the aggregation of opinion determines the success or failure of organisational decisions. Crucially, we've operationalised the effects of value capture by allowing for block-voting effects. Note however, the block effects can be both positive and negative; reflecting either shared error or expertise. 
+These three scenarios will allow us to probe the limits of the Condorcet setting. 
 
-## Voting Blocks and Improvement Programmes
+::: {.callout-note}
+
+## A Note on Abstraction and Scope
+
+These simulations deliberately abstract away much of what makes real organizational decision-making messy. The Condorcet Jury Theorem is a limit result for binary decisions under strong assumptions, and real-world choices rarely satisfy them cleanly. Truth can be ambiguous, decisions are multi-dimensional, incentives are endogenous, and actors are strategic.
+
+We vary three core structural elements that matter for Condorcet-style aggregation — individual skill ($\theta$), case difficulty ($\delta$), and correlated thinking via blocks — and explore how different interventions interact with them. Our simulations do not aim to provide a faithful model of any particular firm, institution, or political system. Instead, they are stress tests of the Condorcet logic under increasingly realistic violations of its assumptions.
+
+There are many ways these forces can combine, and no single simulation exhausts the space of possibilities. The patterns shown here should be read as **illustrative regimes**, not exhaustive coverage. What they offer is diagnostic leverage: a clear view of how collective intelligence can fail to scale once independence is compromised, even when competence is high and intentions are good.
+
+:::
+
+The reason to stress-test Condorcet under these simulations is not because it is descriptively accurate, but because it has __normative force.__ If we care about building organizations that reliably assess decisions within their domain, Condorcet-style aggregation represents an ideal we implicitly aim for when we value diversity, decentralization, and error-correction. So the conditions under which Condorcet fails are of practical importance, because they mark the point at which organizational design actively undermines collective judgment.
+
+### The Mathematical Structure: An Anatomy of Decision-Making
 
 There is a tension between the forces that will determine whether an organization can sustain collective wisdom or succumbs to coordinated failure: block effects ($\beta$) and treatment programmes ($\tau$). These structural additions represent opposing gravitational forces in a delicate equilibrium. Pull too hard in one direction and you get chaos; pull too hard in the other and you get lockstep failure.
 
-### The Mathematical Structure: Competing Forces
+To move beyond simple vote tallies and into the "Anatomy of a Decision," we implement a **Hierarchical Bayesian Item Response Theory (IRT)** model. In the IRT paradigm, a vote is not just a random event; it is a latent interaction between the characteristics of the person and the characteristics of the problem.
 
-We model each juror's vote as a negotiation between three forces:
+#### The Core Framework
 
-$$
-\text{logit}\,\Pr(V_{ij} = T_i) = \underbrace{\alpha_j}_{\text{individual skill}} + \underbrace{\beta_{b(j)}}_{\text{block gravity}} + \underbrace{\delta_i}_{\text{case difficulty}} - \underbrace{\tau_j \cdot Z_j}_{\text{treatment push}}
-$$
+We model the probability $p_{ij}$ of a juror $j$ being correct on case $i$ using a Rasch-style logistic formulation. The model decomposes the decision-making process into four distinct structural forces:
 
-Where:
+$$\text{logit}(p_{ij}) = \underbrace{\theta_j}_{\text{Juror Ability}} - \underbrace{\delta_i}_{\text{Case Difficulty}} + \underbrace{\beta_{b(j)}}_{\text{Block Effect}} + \underbrace{(\tau_\mu + \tau_{\sigma} \cdot z_j) \cdot Z_j}_{\text{Treatment Shock}}$$
 
-- $\alpha_j$: Individual competence (heterogeneous across jurors)
+This represents the individual’s latent competence. To ensure the model is robust and to assist the MCMC sampler in navigating the posterior geometry, we use a **non-centered parameterization**:
+$$\theta_{\text{base}, j} = \sigma_\theta \cdot \theta_{\text{raw}, j}, \quad \theta_{\text{raw}, j} \sim \mathcal{N}(0, 1)$$
 
-- $\beta_b(j)$: Block effect for juror j's group (shared within blocks, creating correlation)
+#### 2. Case Difficulty ($\delta_i$)
+Not all decisions are equal. Some cases have a weak signal that causes even experts to fail simultaneously. By explicitly modeling $\delta_i$, we account for **shared signal loss**, preventing the model from misinterpreting a "hard case" as "staff incompetence."
+$$\delta_i = \sigma_\delta \cdot (\delta_{\text{raw}, i} - \bar{\delta}_{\text{raw}}), \quad \delta_{\text{raw}, i} \sim \mathcal{N}(0, 1)$$
 
-- $\delta_i$: Case difficulty (shared across all jurors for case i)
-- $\tau_j \cdot Z_j$: Treatment effect (Z_j = 1 if juror j receives intervention, 0 otherwise)
+#### 3. The Block Effect ($\beta_{b(j)}$)
+This is the mathematical implementation of **Scott’s Legibility**. It represents a shared bias or "gravitational pull" applied to all members of a specific block $b$. 
+* If $\beta$ is positive, the block represents **Shared Expertise**.
+* If $\beta$ is negative, it represents **Groupthink** or **Value Capture**.
+Crucially, because this effect is shared, it creates the **correlated error** that violates the independence assumption of the Condorcet Jury Theorem.
 
+#### 4. The Treatment Shock ($\tau_j$)
+This is our sensitivity parameter. It represents an intervention (like Red Teaming or independent auditing) that attempts to decouple the juror from their block. We model this hierarchically to allow for heterogeneous responses to the same organizational intervention:
+$$\tau_j = \tau_\mu + \tau_{\sigma} \cdot z_j$$
 
-Think of it this way: Without treatment, a juror's probability of voting correctly is determined by their skill, modified by their block's shared bias, and further modified by how hard the case is. Treatment attempts to "decouple" them from their block's default position—to make them think independently even when their block would pull them in a particular direction.
-
-If treatment works, $\tau$ should be positive: it reduces the influence of the $(\alpha + \beta + \delta)$ package and forces the juror to reconsider from first principles.
-
+We implement these structures in PyMC as follows:
 
 ```{python}
 # ============================================================================
@@ -421,6 +451,7 @@ def fit_irt_model(votes, true_states, n_cases, n_jurors,
 ```
 
 ### The Anatomy of Blocks: Epistemic Consolidation and Value Capture
+
 In real organizations, people don't arrive at decisions in isolation. They cluster into groups that share:
 
 - Functional training: All the engineers learned the same architecture patterns; all the MBAs learned the same strategy frameworks
@@ -432,20 +463,11 @@ These patterns promote an consolidation of epistemological standards. Members of
 
 > "Value capture happens when a person or group adopts an externally-sourced value as their own, without adapting it to their particular context... In value capture, we outsource the process of value deliberation. And, as with other forms of outsourcing, there is a trade-off...When we adopt those values, we gain access to readymade methods for justification" - Nguygen
 
-The adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignoreS relevant detail. We lose focus on local context we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. 
+The argument here is that the adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignores relevant detail. We lose focus on local context we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. Nguygen also suggests there is something horrifying about value capture - you adopt the corporate value, but it co-opts you. These effects work together to confound organisational goals and limit our ability to solve collective problems. 
 
+### Fitting the Model and Interrogating the Implications
 
-::: {.callout-note}
-## A Note on Block Effects and Specialization
-
-Block effects can arise from legitimate sources: engineers possess genuine domain expertise that others lack, sales teams have unique customer insights, executives have access to strategic information. These blocks may differ in average competence, and those differences can be entirely justified.
-
-But for the Condorcet Jury Theorem, what matters is not whether one group is more competent than another—it's whether their errors are independent. A block of highly skilled specialists who share the same blind spots creates correlated errors that violate the theorem's assumptions. Even if Block A is objectively more accurate than Block B on average, if all members of Block A fail together on hard cases, the wisdom of crowds collapses.
-
-This analysis explores these failure conditions: the point at which shared frameworks, training, or information access cause errors to cluster rather than cancel. The statistical machinery cannot distinguish "good blocks" from "bad blocks"—it can only detect correlation. And correlation, regardless of its source, is what breaks collective intelligence.
-:::
-
-Fitting the Three RealitiesWe now fit three IRT models to represent three distinct organizational states:
+We now fit three IRT models to represent three distinct scenarios:
 
 - The Vanilla Model: Independent agents, shared case difficulty, but no social "blocks.
 - "The Blocked Model: Jurors are captured by "Groupthink" blocks that compress individual skill and introduce massive correlation.
@@ -453,6 +475,7 @@ Fitting the Three RealitiesWe now fit three IRT models to represent three distin
 - The Full Model: A "Treatment" model where we test if an intervention ($\tau$) can overcome the structural gravity of shared expertise and blocks.
 
 ```{python}
+# | output: false
 
 idata_vanilla, model_vanilla = fit_irt_model(votes_vanilla, truth_vanilla, N_CASES, N_JURORS)
 
@@ -540,7 +563,16 @@ def compute_majority_accuracy_simple(idata, true_states, jury_sizes, n_samples=5
 
 ```
 
-Additionally, we define a number of plotting functions which will be used to display these accuracy statistics and compare the models fairly. 
+
+#### On Majority Accuracy and Posterior Prediction Checks
+
+The code block above warrants comment. It concerns how majority accuracy is assessed. Within our fitted model, expected jury accuracy is computed analytically from posterior estimates of individual correctness probabilities, effectively averaging over a _hypothetical exchangeable jury_ for each case. This is useful for understanding structural scaling under the model’s assumptions.
+
+Separately, we also evaluate accuracy using a post-hoc posterior predictive workflow, where we explicitly simulate new votes from posterior samples of $\theta$ and $\delta$, form majorities from randomly selected jurors, and compare them to the known ground truth. This second approach is more computationally expensive but makes fewer exchangeability assumptions and better reflects how correlated errors manifest in finite juries.
+
+Both calculations are answering related but distinct questions. The former highlights how accuracy should scale under the model; the latter shows how it does scale when individual votes are explicitly realized. Agreement between them is reassuring; divergence is itself diagnostic of the mechanisms that break Condorcet-style aggregation.
+
+We will use both the posterior predictive checks and the posterior implications below. 
 
 ```{python}
 
@@ -730,12 +762,26 @@ def plot_condorcet_efficiency(jury_sizes, accuracies_dict):
     plt.savefig('condorcet_efficiency_comparison.png')
     return plt.gcf()
 
+def plot_skill_corr(idata, 
+    title="Posterior Correlation in Juror Skill (Theta)\nEvidence of Latent Block Structure"):
+    # Extract theta samples (dimensions: chain, draw, juror)
+    theta_samples = idata.posterior['theta'].values
+    # Reshape to (samples, jurors)
+    theta_flat = theta_samples.reshape(-1, theta_samples.shape[-1])
+
+    # Calculate Correlation Matrix
+    skill_corr = np.corrcoef(theta_flat, rowvar=False)
+
+    # Plotting
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(skill_corr, cmap='RdBu_r', vmin=-1, vmax=1, annot=False)
+    plt.title(title)
+
 ```
 
 Now we're ready to assess each of the three models. 
 
 ### The Vanilla IRT model: Skill Difference and Difficulty
-
 
 The "Vanilla" model is our baseline. It represents an organization that acknowledges two fundamental truths: Some employees are more skilled than others ($\theta$). Some problems are harder than others ($\delta$). Crucially, however, it assumes that these differences are independent. There are no "Blocks." No one is being coached to think alike.
 
@@ -755,7 +801,7 @@ results_vanilla = compute_majority_accuracy_simple(
     idata_vanilla, truth_vanilla, JURY_SIZES, n_samples=500
 )
 
-plot_residual_correlation(idata_vanilla, votes_vanilla, truth_vanilla);
+plot_skill_corr(idata_vanilla);
 
 ```
 
@@ -773,9 +819,9 @@ ax[0].set_title("Vanilla Model - Accuracy of Majority Vote \n With Increasing Ju
 Finally, we look at accuracy. As we scale the jury size from 5 to 30, we see the classic Condorcet upward sweep. We're still only using 30 jurors but the conditions are such that if we scale the jurors further we would expect increased accuracy.
 
 
-### The Block IRT model: Skill Difference, Difficulty and Block effects
+### The Block IRT model: Skill Difference, Difficulty and Block effects
 
-In Model 2, we introduce Blocks. We’ve simulated an organization where individuals have been "aligned" into three distinct factions. This might represent departments (Engineering vs. Sales), regional offices, or simply different "schools of thought" within the C-suite.
+Now we introduce Blocks. We’ve simulated an organization where individuals have been "aligned" into three distinct factions. This might represent departments (Engineering vs. Sales), regional offices, or simply different "schools of thought" within the C-suite.
 
 The management team loves this predictable, legible structure. You can manage three block leaders much more easily than 30 independent jurors. But as we’re about to see, this management convenience comes with a steep epistemic tax.
 
@@ -797,7 +843,7 @@ print("\nComputing accuracy by jury size...")
 results_blocked = compute_majority_accuracy_simple(
     idata_blocked, truth_blocked, JURY_SIZES, n_samples=500
 )
-plot_residual_correlation(idata_blocked, votes_blocked, truth_blocked);
+plot_skill_corr(idata_blocked);
 ```
 
 Unlike the white noise of the Vanilla model, we now see dark red squares along the diagonal. Statistically, this organization doesn't have 30 employees, the signal is diminished through swamping effects of the block.
@@ -814,7 +860,7 @@ Even as we add 10, 20, or 30 jurors, the accuracy doesn't improve significantly.
 
 ### The Full IRT model: Difference, Difficulty, Blocks and Hetereogenous Noise
 
-In the Full Model, we see a more subtle flavour of the Legibility Trap. Here, the blocks aren't "Groupthink" (negative/error-prone); they are "Expertise" (positive/competent).
+In the Full Model, we see a more subtle flavour of the Legibility Trap. Here, the blocks aren't "Groupthink" (negative/error-prone); they are "Expertise" (positive/competent). But despite the block effects we see a range of juror skills unlike in the previous model.
 
 ```{python}
     
@@ -827,7 +873,7 @@ print(f"  τ: {idata_full.posterior['tau'].mean():.3f}")
 plot_parameter_recovery(idata_full, t_theta_full, t_delta_full, "Full Case");
 ```
 
-The parameter recovery shows clustering on individual competence around the block effects again. But we also see a straightline in the lower difficulty cases. This is related to the high level of competence making easier cases almost certainly correctly identified. The organization becomes "stuck in its own success." Because it is so good at the (easy) cases, it stops valuing the "Independent Friction" ($\tau$) needed to solve the hard ones. The flat line represents a state of optimal sub-optimization: you are 100% accurate on the trivial, which masks the fact that you have lost the ability to scale your intelligence on the complex. We can see this further by looking at the correlations. 
+The parameter recovery shows reduced clustering on individual competence around the block effects. But we also see a straightline in the lower difficulty cases. This is related to the high level of competence making easier cases almost certainly correctly identified. The organization becomes "stuck in its own success." Because it is so good at the (easy) cases, it stops valuing the "Independent Friction" ($\tau$) needed to solve the hard ones. The flat line represents a state of optimal sub-optimization: you are 100% accurate on the trivial, which masks the fact that you have lost the ability to scale your intelligence on the complex. We can see this further by looking at the correlations. 
 
 ```{python}
 print("\nComputing accuracy by jury size...")
@@ -835,11 +881,11 @@ results_full = compute_majority_accuracy_simple(
     idata_full, truth_full, JURY_SIZES, n_samples=500
 )
 
-plot_residual_correlation(idata_full, votes_full, truth_full)
+plot_skill_corr(idata_full)
 
 ```
 
-The treatment ($\tau$) successfully breaks the residual correlation by inducing differential individual competence. Your heatmap should show that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But surprisingly, the accuracy curve remains flat.
+The treatment ($\tau$) successfully reduces the correlation by inducing differential individual competence. The heatmap should shows that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But surprisingly, the accuracy curve remains flat.
 
 ```{python}
 
@@ -857,7 +903,7 @@ Adding more "experts" from the same block doesn't help because they all fail on 
 az.plot_pair(idata_full, var_names=['expected_jury_accuracy_30', 'tau_mu', 'tau_sigma'], kind='kde');
 ```
 
-The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing 15% of the signal.
+The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal.
 
 ### Comparing the IRT models: Rate of Learning
 
@@ -865,11 +911,11 @@ The "Technocratic Fantasy" assumes that if you hire A-Players (High $\theta$) an
 
 - The Vanilla Model shows that Independence is the actual engine of growth.
 
-- The Blocked Model shows that Alignment is the engine of stagnation.
+- The Blocked Model shows that Alignment can be an engine of stagnation.
 
-- The Full Model shows that even Expert Alignment creates a "competence trap" where you are too legible to be truly intelligent.
+- The Full Model shows that even Expert Alignment creates a "competence trap" where you are too fixated to be truly intelligent.
 
-As C. Thi Nguyen might put it: the organization has "captured" the value of expertise so effectively that it has lost the ability to see anything that falls outside of its chosen metrics. The organisation is often "right" in a very legible way, but you are permanently blind to the "illegible" truths that a messy, unaligned, vanilla organization might have caught.
+As C. Thi Nguyen might put it: the organization has "captured" the value of expertise so effectively that it has lost the ability to see anything that falls outside of its chosen metrics. The organisation is often "right" in a very legible way, but you are permanently blind to the "illegible" truths that a messy, unorthodox organization might have caught.
 
 
 ```{python}
@@ -941,3 +987,6 @@ Solving "Hard" problems (the ones on the steep, unforgiving part of our difficul
 
 In the end, we must choose: do we want an organization that is easy to see, or one that is actually capable of seeing?
 
+## Coda: Shared Priors and Foundation Models
+
+TBD
