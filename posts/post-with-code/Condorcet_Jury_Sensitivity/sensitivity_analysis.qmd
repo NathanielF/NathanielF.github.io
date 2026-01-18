@@ -44,7 +44,7 @@ To understand why, we must look into how large organisations "see" the world.
 
 - C. Thi Nguyen warns us how these dynamics drives "Value Capture": the tendency of individuals to outsource their own reasoning to these external metrics and organisational goals. We trade the murky, difficult pursuit of truth for the crisp, legible satisfaction of "meeting the KPI" or "hitting quota".
 
-This post is a stress test of that tradeoff. We will use the Condorcet Jury Theorem — the mathematical foundation of democracy and diversification — to demonstrate a fatal flaw in the modern corporate operating system. We will show that by optimizing for Legibility (standardization) and Value Capture (alignment), organizations manufacture the very statistical homogeniety that guarantees their collapse.
+This post is a stress test of that tradeoff. We will use the Condorcet Jury Theorem — the mathematical foundation of democracy and diversification — to demonstrate a fatal flaw in the modern corporate operating system. We will show that by optimizing for Legibility (standardization) and Value Capture (alignment), organizations manufacture the very statistical homogeniety that predicts their collapse.
 
 ::: {.callout-note}
 ## The Structure of the Argument
@@ -570,9 +570,7 @@ The code block above warrants comment. It concerns how majority accuracy is asse
 
 Separately, we also evaluate accuracy using a post-hoc posterior predictive workflow, where we explicitly simulate new votes from posterior samples of $\theta$ and $\delta$, form majorities from randomly selected jurors, and compare them to the known ground truth. This second approach is more computationally expensive but makes fewer exchangeability assumptions and better reflects how correlated errors manifest in finite juries.
 
-Both calculations are answering related but distinct questions. The former highlights how accuracy should scale under the model; the latter shows how it does scale when individual votes are explicitly realized. Agreement between them is reassuring; divergence is itself diagnostic of the mechanisms that break Condorcet-style aggregation.
-
-We will use both the posterior predictive checks and the posterior implications below. 
+Both calculations are answering related but distinct questions. The former highlights how accuracy should scale under the model; the latter shows how it does scale when individual votes are explicitly realized. We will use both the posterior predictive checks and the posterior implications below. 
 
 ```{python}
 
@@ -981,7 +979,7 @@ We often treat "Alignment" as an unalloyed good. But our simulation of the **Exp
 In the pursuit of a "bankable" process, we inadvertently destroy the very thing that makes a group smarter than an individual: the friction of uncorrelated perspectives. When everyone is trained to see the world through the same lens, they share the same blind spots. The organization becomes perfectly legible—it is easy to manage on a spreadsheet—but it becomes epistemically compromised. 
 
 ### The Value of Productive Discomfort
-The point is that collective Wisdom is expensive. Its price is the discomfort of "unalignment." The "Legibility Trap" is seductive because it offers the illusion of control. It is much easier to manage three predictable blocks than thirty "unaligned" individuals. However, as the **Effective Jury Size ($N_{eff}$)** collapses, so does the organization’s ability to solve hard problems.
+The point is that collective Wisdom is expensive. Its price is the discomfort of discordance. The "Legibility Trap" is seductive because it offers the illusion of control. It is much easier to manage three predictable blocks than thirty "unaligned" individuals. However, as the **Effective Jury Size ($N_{eff}$)** collapses, so does the organization’s ability to solve hard problems.
 
 Solving "Hard" problems (the ones on the steep, unforgiving part of our difficulty curve) requires us to intentionally preserve independence To build a truly intelligent organization, leadership must move beyond the Technocratic Fantasy. It requires a deliberate tolerance for the "messy" and the "unaligned." True collective intelligence depends on **Autonomy**—the courage to let individuals maintain their own maps of the world, even when those maps make the organization harder to read. 
 
@@ -989,4 +987,17 @@ In the end, we must choose: do we want an organization that is easy to see, or o
 
 ## Coda: Shared Priors and Foundation Models
 
-TBD
+In 2003, Edward Tufte published a quietly cutting critique of PowerPoint titled *The Cognitive Style of PowerPoint*. He argued that software didn't just present information, but that it *structured how people thought*. The hierarchical bullet point list, the pressure to fit complex arguments on a single slide, the aesthetic of "professionalism" over precision. All of it conspired to flatten nuance and discourage rigorous analysis. It killed people. 
+
+In particular, he argued that the loss of information due to pre-mature simplification, and the coddling of the executive class was responsible for the Columbia space shuttle disaster. Seven astronauts died for the sake of an audience imagined as busy.   
+
+### Powerpoint for Prose
+
+I did use a large language model to critique and help refine the argument here. The need to be legible, the drive to be understood is powerful. Generative AI is a tool that pushes us towards a common diction. It is a remarkable technology with innumerable applications that I can't even begin to predict. 
+
+I did not use a large language model to think my thoughts for me. Like any other technology pushing for standardisation and external legibility, LLMs are both useful, limiting and horrifying at the same time. Useful, because they encode a library of babel open to the curious. Limiting because consolidation of information drives conformity and diminishes independence of thought within you. Horrifying, because you want the free roaming ideas,speculative whims and jagged singularity of actual thought, not the funneled folly of algorithmic hallucinations. When even your errors aren't your own, you can't learn and you can barely contribute to the real diversity of opinion that solves actual problems.  
+
+### Tools for Thinking
+
+Within any work you are pulled between the incentive of external legibility and seeking the satisfaction of a job well done. Different writers are pulled towards differently towards each of these poles. Some write primarily for the pleasure of self-illumination, others for the acclaim of recognition, or even just a moment of fleeting understanding. Ultimately for your work to be useful, for it to be informative it must resist the pull towards excessive standardisation. Crass regurgitation of poorly digested wisdom is useless when we now have it on tap. But you can search the library of babel to pull out hidden gems, and scaffold your thoughts to ascend to new ideas. In this latter respect, LLMs are a tool like any other. The risk is when tools replace thought. With AI fact-checkers, or automated performance reviews the push for legibility goes too far. Scott argues that society functions only when low-grade civil disobedience circumvents the foolishness of the law misapplied. A society that builds tools to think at scale must also cultivate the courage to think apart. Without that friction, we do not get collective wisdom or dynamic learning. We get stasis — efficient, legible, and catastrophically brittle. In such a society it's a moral obligation to think for yourself.  
+
