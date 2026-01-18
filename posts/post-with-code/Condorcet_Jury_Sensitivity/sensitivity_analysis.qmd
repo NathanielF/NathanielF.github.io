@@ -57,8 +57,7 @@ In this post, we move beyond the false rigour of "spreadsheet" driven decision-m
 
 - Test the "Escape Velocity": Introduce a treatment parameter ($\tau$) to see if interventions like "Red Teaming" can shatter these blocks and restore collective intelligence
 
-- Consider the Algorithmic Horizon: Reflect on how AI-assisted work may 
-  represent a new—and uniquely scalable—mechanism for epistemic homogenization.
+- Consider the Algorithmic Horizon of Shared Priors and Foundation Models: Reflect on how AI-assisted work may represent a new—and uniquely scalable—mechanism for epistemic homogenization.
 :::
 
 To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, `simulate_jury_data`, is the generative heart of this piece. It creates a laboratory where we can toggle the variables of organizational health—from individual competence to the crushing weight of groupthink. 
@@ -871,7 +870,7 @@ print(f"  τ: {idata_full.posterior['tau'].mean():.3f}")
 plot_parameter_recovery(idata_full, t_theta_full, t_delta_full, "Full Case");
 ```
 
-The parameter recovery shows reduced clustering on individual competence around the block effects. But we also see a straightline in the lower difficulty cases. This is related to the high level of competence making easier cases almost certainly correctly identified. The organization becomes "stuck in its own success." Because it is so good at the (easy) cases, it stops valuing the "Independent Friction" ($\tau$) needed to solve the hard ones. The flat line represents a state of optimal sub-optimization: you are 100% accurate on the trivial, which masks the fact that you have lost the ability to scale your intelligence on the complex. We can see this further by looking at the correlations. 
+The parameter recovery shows reduced clustering on individual competence around the block effects. Where it seems that $\tau$ dominates $\sigma_{block}$ and represents the decoupling force i.e the specific organizational or individual intervention required to break the 'gravitational pull' of the block and restore independent signal. But we also see a straightline in the lower difficulty parameter plot. This is related to the high level of competence making easier cases almost certainly correctly identified. The organization becomes "stuck in its own success." Because it is so good at the (easy) cases, it stops valuing the "Independent Friction" ($\tau$) needed to solve the hard ones. The flat line represents a state of optimal sub-optimization: you are 100% accurate on the trivial, which masks the fact that you have lost the ability to scale your intelligence on the complex. We can see this further by looking at the correlations. 
 
 ```{python}
 print("\nComputing accuracy by jury size...")
@@ -893,15 +892,14 @@ ax[0].set_title("Full Model - Accuracy of Majority Vote \n With Increasing Juror
 
 ```
 
-Adding more "experts" from the same block doesn't help because they all fail on the same "Hard" cases ($\delta_i$). We have optimized for a specific type of excellence, and in doing so, you have sacrificed the diversity of error required to cross the final threshold to 100% accuracy.
-
+Adding more "experts" from the same block doesn't help because they all fail on the same "Hard" cases ($\delta_i$). We have optimized for a specific type of excellence, and in doing so, you have sacrificed the diversity of error required to cross the final threshold to 100% accuracy. We can see how the accuracy doesn't move as we scale the $\tau$ parameter.
 
 ```{python}
 
 az.plot_pair(idata_full, var_names=['expected_jury_accuracy_30', 'tau_mu', 'tau_sigma'], kind='kde');
 ```
 
-The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal.
+The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit.
 
 ### Comparing the IRT models: Rate of Learning
 
@@ -999,5 +997,5 @@ I did not use a large language model to think my thoughts for me. Like any other
 
 ### Tools for Thinking
 
-Within any work you are pulled between the incentive of external legibility and seeking the satisfaction of a job well done. Different writers are pulled towards differently towards each of these poles. Some write primarily for the pleasure of self-illumination, others for the acclaim of recognition, or even just a moment of fleeting understanding. Ultimately for your work to be useful, for it to be informative it must resist the pull towards excessive standardisation. Crass regurgitation of poorly digested wisdom is useless when we now have it on tap. But you can search the library of babel to pull out hidden gems, and scaffold your thoughts to ascend to new ideas. In this latter respect, LLMs are a tool like any other. The risk is when tools replace thought. With AI fact-checkers, or automated performance reviews the push for legibility goes too far. Scott argues that society functions only when low-grade civil disobedience circumvents the foolishness of the law misapplied. A society that builds tools to think at scale must also cultivate the courage to think apart. Without that friction, we do not get collective wisdom or dynamic learning. We get stasis — efficient, legible, and catastrophically brittle. In such a society it's a moral obligation to think for yourself.  
+Within any work you are pulled between the incentive of external legibility and seeking the satisfaction of a job well done. Different writers are pulled differently towards each of these poles. Some write primarily for the pleasure of self-illumination, others for the acclaim of recognition, or even just a moment of fleeting understanding. Ultimately for your work to be useful, for it to be informative it must resist the pull towards excessive standardisation. Crass regurgitation of poorly digested wisdom is useless when we now have it on tap. But you can search the library of babel to pull out hidden gems, and scaffold your thoughts to ascend to new ideas. In this latter respect, LLMs are a tool like any other. The risk is when tools replace thought. With AI fact-checkers, or automated performance reviews the push for legibility goes too far. Scott argues that society functions only when low-grade civil disobedience circumvents the foolishness of the law misapplied. A society that builds tools to think at scale must also cultivate the courage to think apart. Without that friction, we do not get collective wisdom or dynamic learning. We get stasis — efficient, legible, and catastrophically brittle. In such a society it's a moral obligation to think for yourself.  
 
