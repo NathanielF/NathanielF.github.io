@@ -18,39 +18,35 @@ author:
 citation: true
 ---
 
-# The Legibility Trap: Contemptible Familiarity
+# The Legibility Trap: Why Organizations Fail in Lockstep
 
-Decision making in the modern corporation faces a paradox. On the surface, a smooth-running machine optimized for predictable outcomes. In practice, a careful balance between genuine risk assessment and the familiar processes that make investors feel confident and executives feel in control. But when familiar process becomes sacred process, something breaks: reasonable bets give way to bankable certainty, and accountability dissolves into alignment.
+Decision-making in the modern corporation faces a paradox. On the surface, the organization is a smooth-running machine optimized for "alignment," "velocity," and predictable outcomes. Investors demand a recognizable org chart; executives demand standardized workflows; and everyone demands a set of "Core Values" that can be measured on a performance review.
 
-To the investment analyst and the private equity partner, "unfamiliarity" is unquantifiable risk. They demand a recognizable org chart, a standardized "Agile" workflow, and a set of "Core Values" that could be swapped between a pet-food startup and a sovereign wealth fund without anyone noticing. __This is the cult of Legibility__. Borrowing from James C. Scott’s _Seeing Like a State_, we see that when central authorities cannot understand a complex, organic system, they flatten it. They replace the wild, high-information "forest" of human talent with a "plantation" of identical, predictable units.
+But when familiar process becomes sacred process, something breaks. In our quest for "alignment," we inadvertently destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences._
 
-When you optimize primarily for the gaze of the outsider or conformity with precedent, you risk dulling your workforce's most valuable asset: their ability to see things differently. In our quest for "alignment" and adherence to legible standards, we can inadvertently destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences._
+To understand why, we must look beyond the spreadsheet and into how large systems "see." the world.
 
-What makes this pattern so difficult to resist is that it isn't purely imposed from above. We participate willingly; it is what Thi Nguyen calls "Value Capture". In the rough ground of reality it's genuinely hard to gauge quality, but in the planned organization we have metrics: 'Alignment,' 'Velocity,' and 'Team Spirit'. We trade the rich but murky value of truth-seeking for the thin but legible value of metric-meeting. We do so eagerly—not because we're foolish, but because legibility confers real benefits: clearer communication, easier justification, visible contribution. We adopt the value of the corporation as our own, and so short-circuit collective learning. 
+- James C. Scott warns us of incentivised "Legibility": the tendency of central authorities to flatten complex, organic systems into simplified maps they can understand. When a state (or a CEO) cannot read the wild "forest" of local expertise, they replace it with a "plantation" of identical, predictable units, and encourage conformity.
 
-But "miracle" of collective intelligence is a generative process that requires diversity. It requires that we be wrong in different directions so that, in the aggregate, we might be right. By smoothing out the "noise" of individual culture and opinion, we break the statistical engine that makes democracy and decentralization work. We break the statistical engine of collective intelligence: The Condorcet Jury Theorem.
+- C. Thi Nguyen warns us how this drives "Value Capture": the tendency of individuals to outsource their own reasoning to these external metrics. We trade the murky, difficult pursuit of truth for the crisp, legible satisfaction of "meeting the KPI."
 
-
-## Do as I say, Not what I do.
-
-Investors are among the world's most fervent believers in the power of diversification. They know that to survive a volatile market, they must hedge their bets across uncorrelated assets. Yet while the investor hedges in the aggregate, they need each subordinate company to appear as a single, comparable unit on a spreadsheet. They abstract away the details of any individual firm, eliminating the local variance in their portfolio view. They want each firm to be "aligned," "standardized," and "legible." In doing so, they incentivise a surface homogeneity that can propagate inward. The firms in their portfolio stop asking, 'Is this the right decision?' and start asking, 'Does this decision look aligned to the investor's model?' or "Are our peers doing the same?" The macro consequences of such mimicry are still being felt today, many years after the financial crisis of 2008.
-
-The Condorcet Jury Theorem (CJT) is the mathematical foundation of this drive for diversification. It shows that if you have a group of independent actors who are minimally competent (i.e. $p > 0.5$ of being correct on binary decisions), then the probability of the majority being correct approaches 100% as the group size grows. There is real value in diversity when deployed well. But it's brittle, and many corporate "best practices"—however well-intentioned—can inadvertently undermine it.
+This post is a stress test of that tradeoff. We will use the Condorcet Jury Theorem—the mathematical foundation of democracy and diversification—to demonstrate a fatal flaw in the modern corporate operating system. We will show that by optimizing for Legibility (standardization) and Value Capture (alignment), organizations manufacture the very statistical homogeniety that guarantees their collapse.
 
 ::: {.callout-important}
-## Deconstructing the Organizational Short-Circuit
+## The Structure of the Argument
 
-In this post, we move beyond the idealized "spreadsheet" view of decision-making to understand why modern organizations often fail in lockstep. We will:
+In this post, we move beyond the false rigour of "spreadsheet" driven decision-making to understand why modern organizations often fail in lockstep. To interrogate these questions we will
 
-* **Revisit the Condorcet Miracle**: Define the mathematical preconditions for collective intelligence and identify where corporate "best practices" begin to subvert them.
-* **Simulate Institutional Gravity**: Use a hierarchical Bayesian model to isolate how individual skill, systemic case difficulty, and organizational "blocks" compete for influence over the final vote.
-* **Run the Post-Mortem**: Use Posterior Predictive Checks (PPC) to visualize how standardized cultures create an "accuracy ceiling" that remains stagnant even as the group size grows.
-* **Bridge Theory to Philosophy**: Connect the statistical reality of correlated error to **James C. Scott’s** "Legibility" and **C. Thi Nguyen’s** "Value Capture".
+- Establish the Baseline: Model Condorcet's Jury theorem using an Item Response theory (IRT) to isolate how individual skill ($\theta$) and case difficulty ($\delta$) interact in a healthy, independent environment.
+
+- Simulate Institutional Gravity: Introduce "Blocks" ($\beta$) to model how functional training and groupthink create reduce the collective wisdom of the group.
+
+- Test the "Escape Velocity": Introduce a treatment parameter ($\tau$) to see if interventions like "Red Teaming" can shatter these blocks and restore collective intelligence
 :::
 
-#### Setup
+To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, `simulate_jury_data`, is the generative heart of this piece. It creates a laboratory where we can toggle the variables of organizational health—from individual competence to the crushing weight of groupthink. 
 
-To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, `simulate_jury_data`, is the generative heart of this piece. It doesn’t just create random numbers; it creates a world where we can toggle the parameters of Generative Friction.
+**Note**: I'm not suggesting every real world dynamic of business or politics is captured by the structure of our simulation, or that every decision has a simple yes or no answer. But there are enough meaningful cases which resemble the CJT setting, that understanding this limit case is fruitful for diagnosing the failures to replicate it in practice. 
 
 ```{python}
 import pandas as pd
@@ -62,117 +58,10 @@ import seaborn as sns
 from pytensor.tensor import gammaln
 
 np.random.seed(42)
-
-# Configuration
-N_CASES = 50
-N_JURORS = 15
-JURY_SIZES = [3, 5, 7, 10, 15]
-BLOCK_ID = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2])
-N_BLOCKS = 3
 ```
 
-### Data Generation and the Ground Truth
 
-In a healthy system, learning happens in the gaps between different perspectives. But in a "legible" system, those gaps are closed. Our simulation allows us to model this across three dimensions
-
-```{python}
-def simulate_jury_data(n_cases, n_jurors, true_p=0.65, true_discrimination=0.5, 
-                       block_id=None, true_sigma_block=1.2):
-    """
-    Simulate jury voting data with optional block effects.
-    
-    Parameters:
-    -----------
-    n_cases : int
-        Number of cases to judge
-    n_jurors : int
-        Number of jurors
-    true_p : float
-        Average competence (probability of correct vote)
-    true_discrimination : float
-        Standard deviation of competence in logit space
-    block_id : array, optional
-        Group membership for each juror (enables faction effects)
-    true_sigma_block : float
-        Standard deviation of block effects
-        
-    Returns:
-    --------
-    votes : (n_cases, n_jurors) array
-        Binary voting matrix
-    p_jurors : (n_jurors,) array
-        True competence of each juror
-    true_states : (n_cases,) array
-        Ground truth for each case
-    """
-    true_states = np.random.binomial(1, 0.5, n_cases)
-    
-    # Simulate heterogeneous competencies in logit space
-    logit_p_jurors = np.random.normal(
-        np.log(true_p / (1 - true_p)), 
-        true_discrimination, 
-        n_jurors
-    )
-    
-    # Add block effects if specified
-    if block_id is not None:
-        n_blocks = len(np.unique(block_id))
-        block_effect = np.random.normal(1, true_sigma_block, n_blocks)
-        logit_p_jurors += block_effect[block_id]
-    
-    p_jurors = 1 / (1 + np.exp(-logit_p_jurors))
-    
-    # Generate votes
-    votes = np.zeros((n_cases, n_jurors))
-    for i in range(n_cases):
-        for j in range(n_jurors):
-            prob = p_jurors[j] if true_states[i] == 1 else 1 - p_jurors[j]
-            votes[i, j] = np.random.binomial(1, prob)
-    
-    return votes, p_jurors, true_states
-
-# Generate our first dataset: simple case without blocks
-votes, p_jurors, true_states = simulate_jury_data(N_CASES, N_JURORS)
-
-print(f"Data simulated: {N_CASES} cases, {N_JURORS} jurors")
-print(f"True average competence: {p_jurors.mean():.3f}")
-majority = (votes.mean(axis=1) > 0.5) 
-print(f"Majority vote accuracy: {np.mean(majority == true_states):.3f}")
-```
-
-Here how our data generating process encodes a baseline degree of juror competence. On any yes/no question we've ensured that the average juror has $(p \sim N(.65, \sigma_{disc}))$ chance of getting the right answer. The $\sigma_{disc}$ determines the range of individual skill in the population. We've then asked each juror to cast their vote on 50 decisions.
-
-## Sensitivity to Prior Beliefs About Competence
-
-In this model, we treat every employee as an interchangeable unit. We assume there are no factions, no "weird" outliers, and no cases that are harder than others. More important than that is the key is the requirement of conditional independence. No two people are "thinking alike" because of their shared training or culture; they are only "aligned" because they are all seeing the same Truth. This model (Model 1) defines the idealized world of the Condorcet Jury Theorem. Our first sensitivity analysis asks: **how much do our conclusions depend on our prior beliefs about juror competence?** 
-
-```{python}
-# Define prior specifications
-prior_specs = {
-    'weakly_informative': {
-        'alpha': 3, 'beta': 2, 
-        'desc': 'Weakly informative (centered at 0.6)'
-    },
-    'strong_competence': {
-        'alpha': 10, 'beta': 3, 
-        'desc': 'Strong prior (p ~ 0.76)'
-    },
-    'barely_competent': {
-        'alpha': 6, 'beta': 5, 
-        'desc': 'Skeptical prior (p ~ 0.55)'
-    },
-    'incompetent': {
-        'alpha': 5, 'beta': 10, 
-        'desc': 'Incompetent prior (p ~ 0.33)'
-    },
-}
-```
-
-To perform our sensitivity analysis, we test four different "Corporate Climates." These represent the level of faith an organization has in its own internal competence. When a corporate decision leads to disaster, the post-mortem almost always focuses on competence. The diagnosis is usually that the "wrong people were in the room" or that the team lacked "domain expertise." This focus on individual skill is a convenient fiction for the investor class; it suggests that the organizational structure is fine, it just needs better "units."
-
-We'll see that there are legitimate reasons to worry about individual incompetence for collective decision making. But you need to achieve a critical mass of incompetence for consequential error. In most cases marginal incomptence within an organisation rarely breaks the corporate mechanism. As long as those errors are independent—as long as the "incompetent" people are failing in their own unique, "weird" ways—the majority will still find the truth. The high-performers provide the signal, and the low-performers provide "white noise" that cancels itself out.
-
-### Model 1: The Classical Condorcet Jury Model
+### The Classical Condorcet Jury Model
 
 Let $T_i \in \{0,1\}$ denote the true state of case $i = 1,\dots,N$, with
 $$
@@ -205,124 +94,6 @@ $$
 
 These assumptions define the idealized world in which the Condorcet Jury Theorem applies.
 
-```{python}
-
-def fit_base_condorcet_model(votes, prior_spec, n_cases=N_CASES):
-    """
-    Fit basic Condorcet model with specified prior on competence.
-    
-    This model assumes:
-    - All jurors have identical competence p
-    - Votes are conditionally independent given the truth
-    - Equal prior probability for guilty/not guilty
-    """
-    with pm.Model() as model:
-        # SENSITIVITY PARAMETER: Prior on competence
-        p = pm.Beta('p', alpha=prior_spec['alpha'], beta=prior_spec['beta'])
-        
-        # Latent true state of each case
-        true_state = pm.Bernoulli('true_state', p=0.5, shape=n_cases)
-        
-        # Voting probability depends on true state
-        vote_prob = pm.Deterministic('vote_prob', pm.math.switch(
-            pm.math.eq(true_state[:, None], 1), p, 1 - p
-        ))
-        
-        pm.Bernoulli('votes', p=vote_prob, observed=votes)
-        
-        # Posterior predictive: majority vote accuracy for different jury sizes
-        for size in [3, 7, 15]:
-            votes_sim = pm.Bernoulli(f'sim_votes_{size}', p=p, shape=size)
-            pm.Deterministic(
-                f'majority_correct_{size}',
-                pm.math.sum(votes_sim) > size / 2
-            )
-        
-        # Sample
-        idata = pm.sample_prior_predictive()
-        idata.extend(pm.sample(2000, tune=1000, random_seed=42,
-                              target_accept=0.95, return_inferencedata=True))
-        idata.extend(pm.sample_posterior_predictive(idata))
-    
-    return idata, model
-```
-
-The key property of the model we want to probe is how the accuracy of the majority vote evolves as we incorporate more jurors in the vote. The stressor we apply to test the system is to gauge how this accuracy evolve with degrees of population competence.
-$$
-p \sim \text{Beta}(\alpha, \beta).
-$$
-
-No assumptions about independence or exchangeability are altered. Instead, this model makes explicit the epistemic commitment that the Condorcet theorem leaves implicit: jurors are often assumed to be better than random *a priori*. You must hire well so that the average for each employee has a better than coin-flip chance of accuracy. This modest requirement is all we require to ensure collective accuracy, under the conditions of the model. 
-
-```{python}
-# | output: false
-# Fit under all prior specifications
-traces = {}
-for prior_name, spec in prior_specs.items():
-    print(f"\nFitting with {spec['desc']}...")
-    idata, model = fit_base_condorcet_model(votes, spec)
-    traces[prior_name] = idata
-    traces[prior_name + '_model'] = model
-```
-
-Let's examine how our prior beliefs influence prediction. We have sampled the majority votes under both our prior and the derived posterior distribution. We see how the accuracy of the majority vote grows with more voters when the priors about group competence is high. 
-
-```{python}
-def extract_estimates(traces, prior_specs, jury_sizes=[3, 7, 15], stage='prior'):
-    """Extract majority accuracy estimates from traces."""
-    ests = {}
-    for prior_name in prior_specs.keys():
-        estimates = []
-        for size in jury_sizes:
-            p = traces[prior_name][stage][f'majority_correct_{size}'].mean().item()
-            estimates.append(p)
-        ests[prior_name] = estimates
-    
-    return pd.DataFrame(
-        ests, 
-        index=[f'Correct % for Majority of {s}' for s in jury_sizes]
-    )
-
-# Compare prior and posterior estimates
-prior_estimates = extract_estimates(traces, prior_specs, stage='prior')
-posterior_estimates = extract_estimates(traces, prior_specs, stage='posterior')
-
-print("\n" + "="*70)
-print("PRIOR ESTIMATES")
-print("="*70)
-print(prior_estimates)
-
-print("\n" + "="*70)
-print("POSTERIOR ESTIMATES (AFTER SEEING DATA)")
-print("="*70)
-print(posterior_estimates)
-```
-
-However, we can also see how the aggregation of incompetent opinion tends towards incorrect. 
-
-```{python}
-# Visualize the shift from prior to posterior
-fig, axs = plt.subplots(1, 2, figsize=(20, 5))
-
-for prior_name in prior_specs.keys():
-    axs[0].plot(prior_estimates.index, prior_estimates[prior_name], 
-                label=prior_name, marker='o')
-    axs[1].plot(posterior_estimates.index, posterior_estimates[prior_name], 
-                label=prior_name, marker='o')
-
-axs[0].legend()
-axs[1].legend()
-axs[0].set_title("Prior Beliefs About Majority Accuracy")
-axs[1].set_title("Posterior Beliefs (After Observing Data)")
-axs[0].set_ylabel("Probability of Correct Majority Decision")
-axs[1].set_ylabel("Probability of Correct Majority Decision")
-
-plt.tight_layout()
-plt.show()
-```
-
-You cannot avoid the requirement of minimum competence in the jury pool if you hope for collective wisdom. But more strikingly, when we have even modest competence, the aggregation of votes quickly converges towards high accuracy. This is exactly the finding of Condorcet's Jury Theorem. 
-
 ::: {.callout-important}
 ## Formal Statement: The Condorcet Jury Theorem
 
@@ -336,439 +107,33 @@ Conversely, if $p < 0.5$, increasing the size of the jury only increases the pro
 This is a theorem. We're not showing that it is incorrect, but we are stress-testing it in finite domains to gauge it's applicability to practical decision making. 
 :::
 
-This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and we know that competence isn't uniform. This pulls us in two ways: (1) management panic over hiring standards and (2) fostering diversity in the employee base. We'll look at (1) next. 
+This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and we know that competence isn't uniform. 
 
-## Individual Differences in Competence
+This pulls us in two ways: (1) management panic over hiring standards and (2) and mission driven culture fit. On the one hand increased competence in the worker base is an objective good, but the drive for alignment reduces the set of competent actors that matter for decision making. The drive for alignment, should come with the attendant observation that responsibility and accountability becomes concentrated within the executive class. It rarely does. 
 
-The base Condorcet model assumes all jurors are identically competent. In reality, people vary in expertise, attention, and judgment. Let's model **heterogeneity** in juror competence. To gauge these effects we'll use a hierarchical model where individual competencies are drawn from a population distribution. The key sensitivity parameter is $\sigma$ (discrimination): how much do jurors differ?
+#### The Technocratic Fantasy: "We Just Need Better Units"
+The first line of defense for the "Legible" organization is hiring. The assumption is simple: if the system is failing, the "units" (employees) must be defective. This view assumes that if we just hire "A-Players" with high individual competence ($p > 0.5$), the organization will inevitably succeed. This is the technocratic fantasy. It's a fantasy often compounded by annual performance assessment which grade on an artificial curve. It's easier to diagnose failure as limited competence when you regularly orchestrate a system to label a portion of the workforce as incompetent. It aligns with Nguyen's concept of metrics gaming — the belief that maximizing individual scores sums to a maximized collective outcome. It's a failure mode that ignores strucutural aspects of the organisation's problems in lieu of easier proxies. 
 
-#### Heterogeneous Juror Competence
+This is not to say that incompetence doesn't exist in a business or political organisation, but variations in competence are less of a threat to organisational competence and execution that the latent determinants of decision accuracy in the business. These determinants are generally structural or institutional.
 
-We now relax the assumption that all jurors are equally competent. Each juror $j$ is assigned an individual probability of voting correctly:
-$$
-\text{logit}(p_j) = \mu + \sigma z_j, \qquad z_j \sim \mathcal{N}(0,1).
-$$
+## Incentivised Legibility: Modeling "The Block" Effects
 
+Even if individuals people were wrong, they were wrong in their own unique ways and this cancels out. Those people wrong today, can be right tomorrow if they remain independent actors. But James C. Scott’s theory of incentivised legibility suggests something darker.
 
-For a fixed juror $j$, define the number of agreements with the majority:
-$$
-A_j = \sum_{i=1}^N \mathbb{1}\{V_{ij} = \text{majority}_i\}.
-$$
+When an organization demands "standardization"—standardized training, standardized tools, standardized culture—it is actively working to eliminate unique error. It is trying to make every employee "readable" to the center. In statistical terms, legibility is Correlation.
 
-Under the assumption that cases are exchangeable and votes are conditionally independent given $p_j$, we obtain the exact likelihood:
+To model this, we must move to Item Response Theory (IRT). We will introduce "Blocks"—groups of voters who have been successfully "aligned" (captured) by a shared framework. We will see that while this alignment makes the organization easier to manage (more legible), it breaks the mathematical engine of collective intelligence.
 
-$$
-A_j \mid p_j \sim \text{Binomial}(N, p_j).
-$$
+Instead of collapsing votes into simple agreement counts, we now model the interaction between the person and the problem:
+$$V_{ij} \mid T_i, p_j, \delta_i, \beta$$
 
-This is not an approximation. It is the marginal likelihood obtained by integrating over $$N$$ independent Bernoulli trials:
-$$
-\prod_{i=1}^N \text{Bernoulli}(V_{ij} \mid p_j)
-\;\Longrightarrow\;
-\text{Binomial}(A_j \mid N, p_j).
-$$
+This lets us ask: when case *i* is hard (large $|\delta_i|$), do errors cluster across jurors? If a juror is a member of a "voter block," how does that gravitational pull affect their competence? The binomial model averages over cases, hiding these dynamics. The IRT model performs an anatomy of the vote, revealing exactly where the Condorcet "miracle" dies.
 
-This observation motivates a re-articuation of the condorcet model. The binomial phrasing is often easier to sample than the Bernoulli likelihood, so we shall switch to that model. Our next model uses a Binomial likelihood and  relies on two assumptions. We hold fixed the exchangeability across the cases and we rely on sufficiency of the count statistic. Once jurors are treated as stable measurement instruments, their entire voting history becomes a single aggregated observation. 
+#### Shared Case Difficulty and Shared Thinking: When Everyone Fails Together
 
-### Model 2: Varying Competence
-
-```{python}
-def fit_hierarchical_model(votes, n_jurors, discrimination_prior):
-    """
-    Fit hierarchical model with individual variation in competence.
-    
-    Model structure:
-    - μ: population mean competence (in logit space)
-    - σ: population standard deviation (SENSITIVITY PARAMETER)
-    - Each juror has individual competence drawn from N(μ, σ)
-    
-    We use non-centered parameterization for better sampling.
-    """
-    majority_votes = (votes.mean(axis=1) > 0.5).astype(int)
-    agreements_per_juror = np.array([
-        (votes[:, j] == majority_votes).sum() for j in range(n_jurors)
-    ])
-    
-    with pm.Model() as model:
-        # Population-level parameters
-        mu_logit_p = pm.Normal('mu_logit_p', mu=0.6, sigma=0.5)
-        
-        # KEY SENSITIVITY PARAMETER: individual discrimination
-        sigma_logit_p = pm.HalfNormal(
-            'sigma_logit_p', 
-            sigma=discrimination_prior['sigma']
-        )
-        
-        # Non-centered parameterization: logit_p = μ + σ * z
-        z_juror = pm.Normal('z_juror', mu=0, sigma=1, shape=n_jurors)
-        logit_p_juror = pm.Deterministic(
-            'logit_p_juror', 
-            mu_logit_p + sigma_logit_p * z_juror
-        )
-        p_juror = pm.Deterministic('p_juror', pm.math.invlogit(logit_p_juror))
-        
-        # Collapsed likelihood: count agreements with majority
-        pm.Binomial('agreements', n=N_CASES, p=p_juror, 
-                   observed=agreements_per_juror)
-        
-        idata = pm.sample_prior_predictive()
-        idata.extend(pm.sample(1000, tune=2000, random_seed=42,
-                              target_accept=0.95, return_inferencedata=True,
-                              idata_kwargs={"log_likelihood": True}))
-        idata.extend(pm.sample_posterior_predictive(idata))
-    
-    return idata, model
-
-
-```
-
-
-Again, we'll test a range of priors. But this time we'll push on the range of permissable competence in the jury pool. 
-
-```{python}
-# | output: false
-
-# Test three levels of discrimination
-discrimination_priors = {
-    'weak_discrimination': {
-        'sigma': 0.5, 
-        'desc': 'Weak discrimination (σ ~ 0.5)'
-    },
-    'moderate_discrimination': {
-        'sigma': 1.0, 
-        'desc': 'Moderate discrimination (σ ~ 1)'
-    },
-    'strong_discrimination': {
-        'sigma': 2.0, 
-        'desc': 'Strong discrimination (σ ~ 2)'
-    },
-}
-
-traces_discrimination = {}
-for prior_name, spec in discrimination_priors.items():
-    print(f"\nFitting with {spec['desc']}...")
-    idata, model = fit_hierarchical_model(votes, N_JURORS, spec)
-    traces_discrimination[prior_name] = idata
-    traces_discrimination[prior_name + '_model'] = model
-
-```
-
-Whereas in the previous model we observed each and every vote in the likelihood, here we're abstracting away from the particular and assuming their realised values are a consequece of latent structure; individual estimable competence. 
-
-```{python}
-# Examine one of the fitted models
-ax = az.plot_forest(traces_discrimination['strong_discrimination'], var_names=['p_juror'], combined=True)
-ax[0].set_title("Diversity of Jury Competence \n Under Strong Discrimination");
-
-```
-
-By collapsing these observations into a Binomial distribution, we focus the model’s attention on the success rate of the collective. Paradoxically, by "throwing away" the individual case observations of the jurors, we force the model to account for the variance in the process itself.
-
-### The Generative Process and Implied Votes 
-
-It's for this reason we now rely on Posterior Predictive Sampling (PPC) to reconstruct these votes is that we are no longer just fitting a line to a set of points; we are simulating a generative process. To understand the implications of different discrimination levels, we need to simulate complete jury deliberations. In other words, we need to translate our individual voter's profile into votes. 
-$$
-V_{ij} \mid T_i, p_j \sim
-\begin{cases}
-\text{Bernoulli}(p_j) & \text{if } T_i = 1, \\
-\text{Bernoulli}(1-p_j) & \text{if } T_i = 0.
-\end{cases}
-$$
-
-This will then allow us to test for accuracy of the majority under different ranges of skill. The core insight is that we must forward sample to derive the voting profile of each individual.
-
-```{python}
-def simulate_votes_from_competence(p_juror, n_cases, truth=None):
-    """Generate votes given juror competencies and ground truth."""
-    n_jurors = len(p_juror)
-    if truth is None:
-        truth = np.random.binomial(1, 0.5, size=n_cases)
-    
-    votes = np.zeros((n_cases, n_jurors), dtype=int)
-    for i in range(n_cases):
-        for j in range(n_jurors):
-            prob = p_juror[j] if truth[i] == 1 else 1 - p_juror[j]
-            votes[i, j] = np.random.binomial(1, prob)
-    
-    return truth, votes
-
-
-```
-
-To do so we'll define a number of helper functions below.
-
-```{python}
-# | code-fold: true
-
-def compute_diagnostics(votes, truth):
-    """Compute suite of diagnostic metrics for jury performance."""
-    majority = votes.mean(axis=1) > 0.5
-    
-    diagnostics = {
-        'majority_accuracy': np.mean(majority == truth),
-        'unanimity_rate': np.mean(
-            (votes.sum(axis=1) == 0) | (votes.sum(axis=1) == votes.shape[1])
-        ),
-        'juror_agreement': np.mean(votes == truth[:, None], axis=0),
-    }
-    
-    # Error correlation: do jurors make mistakes together?
-    errors = votes != truth[:, None]
-    if errors.var(axis=0).sum() > 0:
-        diagnostics['error_corr'] = np.corrcoef(errors.T)
-    else:
-        diagnostics['error_corr'] = np.zeros((votes.shape[1], votes.shape[1]))
-    
-    return diagnostics
-
-
-def majority_accuracy_by_size(votes, truth, jury_size):
-    """Calculate accuracy for random sub-juries of given size."""
-    n_cases, n_jurors = votes.shape
-    correct = np.zeros(n_cases, dtype=int)
-    
-    for i in range(n_cases):
-        jurors = np.random.choice(n_jurors, size=jury_size, replace=False)
-        majority = votes[i, jurors].mean() > 0.5
-        correct[i] = (majority == truth[i])
-    
-    return correct.mean()
-
-
-def run_ppc_analysis(idata, n_cases, truth, jury_sizes=JURY_SIZES):
-    """Run comprehensive posterior predictive checks."""
-    p_juror_samples = (idata.posterior['p_juror']
-                      .stack(sample=("chain", "draw")).values)
-    n_jurors, n_samples = p_juror_samples.shape
-    
-    results = {
-        'majority_acc': np.zeros(n_samples),
-        'unanimity': np.zeros(n_samples),
-        'error_corr': np.zeros((n_samples, n_jurors, n_jurors)),
-        'accuracy_by_size': {k: np.zeros(n_samples) for k in jury_sizes}
-    }
-    
-    for s in range(n_samples):
-        _, votes = simulate_votes_from_competence(
-            p_juror_samples[:, s], n_cases, truth
-        )
-        diag = compute_diagnostics(votes, truth)
-        
-        results['majority_acc'][s] = diag['majority_accuracy']
-        results['unanimity'][s] = diag['unanimity_rate']
-        results['error_corr'][s] = diag['error_corr']
-        
-        for k in jury_sizes:
-            results['accuracy_by_size'][k][s] = (
-                majority_accuracy_by_size(votes, truth, k)
-            )
-    
-    return results
-
-
-def summarize_ppc(ppc_results, jury_sizes=JURY_SIZES):
-    """Create summary DataFrame from PPC results."""
-    percentiles = [5, 50, 95]
-    summaries = []
-    
-    for k in jury_sizes:
-        summaries.append(np.percentile(
-            ppc_results['accuracy_by_size'][k], percentiles
-        ))
-    
-    df = pd.DataFrame(summaries).T
-    df.columns = [f'majority_accuracy_{k}' for k in jury_sizes]
-    df.index = [f'percentile_{p}' for p in percentiles]
-    
-    return df
-
-
-def compare_prior_posterior(idata, n_cases, truth, jury_sizes=JURY_SIZES):
-    """Compare prior and posterior predictive distributions."""
-    results = {}
-    
-    for stage in ['prior', 'posterior']:
-        p_samples = (getattr(idata, stage)['p_juror']
-                    .stack(sample=("chain", "draw")).values)
-        n_jurors, n_samples = p_samples.shape
-        
-        # Simplified PPC for comparison
-        stage_results = {k: np.zeros(n_samples) for k in jury_sizes}
-        for s in range(n_samples):
-            _, votes = simulate_votes_from_competence(
-                p_samples[:, s], n_cases, truth
-            )
-            for k in jury_sizes:
-                stage_results[k][s] = majority_accuracy_by_size(votes, truth, k)
-        
-        results[stage] = summarize_ppc({'accuracy_by_size': stage_results}, 
-                                      jury_sizes)
-    
-    return pd.concat(results, names=['stage', 'percentile'])
-
-def plot_prior_posterior_comparison(df, title="Majority Accuracy"):
-    """Plot prior vs posterior distributions."""
-    x_values = JURY_SIZES
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
-    for stage, color in [('prior', 'blue'), ('posterior', 'red')]:
-        median = df.loc[(stage, 'percentile_50')]
-        low = df.loc[(stage, 'percentile_5')]
-        high = df.loc[(stage, 'percentile_95')]
-        
-        ax.plot(x_values, median, label=f'{stage.title()} Median', 
-                color=color, marker='o')
-        ax.fill_between(x_values, low, high, color=color, alpha=0.2,
-                       label=f'{stage.title()} (5th-95th)')
-    
-    ax.set_title(title)
-    ax.set_xlabel('Number of Jurors')
-    ax.set_ylabel('Majority Accuracy')
-    ax.set_xticks(x_values)
-    ax.legend()
-    ax.grid(True, linestyle='--', alpha=0.6)
-    
-    plt.tight_layout()
-    return fig
-
-
-```
-
-Now let's apply this framework. We'll focus on the moderate discrimination case as it's most realistic:
-
-```{python}
-
-# Analyze the moderate discrimination case
-print(f"\n{'='*70}")
-print(f"Analysis: {discrimination_priors['moderate_discrimination']['desc']}")
-print('='*70)
-
-comparison = compare_prior_posterior(
-    traces_discrimination['moderate_discrimination'], 
-    N_CASES, 
-    true_states
-)
-
-comparison
-
-```
-
-We still see convergen to the truth as we scale up the size of our majority even when we allow heterogeneous levels of skill in the voting population. The median prior and posterior estimates of accuracy are quite close, but we've significantly shrunk the uncertainty in our estimate. 
-
-```{python}
-plot_prior_posterior_comparison(
-    comparison, 
-    title="Prior vs Posterior: Moderate Individual Variation"
-);
-```
-
-The pattern is consistent across all discrimination levels: the data updates our beliefs, and larger juries show higher accuracy. The key question is whether errors remain independent.
-
-#### Error Correlation Analysis
-
-A critical assumption of Condorcet is **independence**: jurors make errors independently. Let's check this for our moderate discrimination model:
-
-```{python}
-# | output: false
-def plot_error_correlation_heatmap(ppc_results, title="Error Correlation"):
-    """Plot mean error correlation matrix, handling NaN values properly."""
-    all_corrs = ppc_results['error_corr']  # (n_samples, n_jurors, n_jurors)
-    
-    # Use nanmean to properly average across samples, ignoring NaNs
-    mean_corr = np.nanmean(all_corrs, axis=0)
-    
-    # For cells that are still NaN (all samples were NaN), replace with 0
-    mean_corr = np.nan_to_num(mean_corr, nan=0.0)
-    mean_corr = np.round(mean_corr, 2)
-    fig, ax = plt.subplots(figsize=(15, 6))
-    sns.heatmap(mean_corr, vmin=-.3, vmax=.3, cmap="coolwarm",
-                square=False, cbar_kws={"label": "Error correlation"}, ax=ax, 
-                annot=True, fmt=".2f")
-    ax.set_title(title, fontsize=20)
-    ax.set_xlabel("Voter Index")
-    ax.set_ylabel("Voter Index")
-    plt.tight_layout()
-    return fig
-
-
-def summarize_error_correlation(ppc_results):
-    """Extract summary statistics from error correlation matrices."""
-    corr = ppc_results['error_corr']
-    n = corr.shape[1]
-    
-    off_diag = []
-    for s in range(corr.shape[0]):
-        mat = corr[s]
-        # Extract upper triangle (excluding diagonal)
-        upper_tri = mat[np.triu_indices(n, k=1)]
-        # Only include non-NaN values
-        valid_values = upper_tri[~np.isnan(upper_tri)]
-        if len(valid_values) > 0:
-            off_diag.extend(valid_values)
-    
-    off_diag = np.array(off_diag)
-    
-    if len(off_diag) == 0:
-        return {
-            'mean_off_diag': np.nan,
-            'sd_off_diag': np.nan,
-            'p95_abs_corr': np.nan,
-        }
-    
-    return {
-        'mean_off_diag': off_diag.mean(),
-        'sd_off_diag': off_diag.std(),
-        'p95_abs_corr': np.percentile(np.abs(off_diag), 95),
-    }
-
-
-ppc_moderate = run_ppc_analysis(
-    traces_discrimination['moderate_discrimination'], 
-    N_CASES, 
-    true_states
-)
-
-fig = plot_error_correlation_heatmap(
-    ppc_moderate, 
-    title="Error Correlation Among Voters:  \n Moderate Individual Skill Difference"
-);
-fig.savefig("Independent_voter_errors_correlation.png")
-```
-
-![](Independent_voter_errors_correlation.png)
-
-```{python}
-print("\nError Correlation Summary:")
-summarize_error_correlation(ppc_moderate)
-```
-
-**Key insight**: With heterogeneous competence alone, errors remain largely uncorrelated. The Condorcet theorem's independence assumption holds—so far. Which is to say that diverse workforces and varying degrees of competence do not inherently short-circuit the firm's ability to learn. 
-
-### From Aggregated to Generative: Why We Need Item Response Theory
-
-The binomial model served us well for exploring individual differences because we only cared whether jurors *on average* agreed with majorities. But to explore **shared case difficulty**—where hard cases cause everyone to struggle simultaneously—we need to model each vote explicitly.
-
-Enter Item Response Theory (IRT). Instead of collapsing votes into agreement counts, we now model:
-$$V_{ij} \mid T_i, p_j, \delta_i$$
-
-This lets us ask: when case *i* is hard (large |δ_i|), do errors cluster across jurors? The binomial model can't answer this because it averages over cases. The IRT model can, and the answer will show us where the Condorcet theorem truly breaks down.
-
-## Shared Case Difficulty: When Everyone Fails Together
 Now we introduce a critical violation: shared case-level effects. Some cases are genuinely harder, causing even competent jurors to fail together. This is the first structural break in the independence assumption—and it reveals why "hard problems" are exponentially harder for groups than the Condorcet theorem predicts.
 
-### The Nature of Difficulty
-In our models so far, we've assumed cases are exchangeable—each decision is equally difficult. But reality is messier. Consider:
-
-- The obvious merger: Everyone agrees it's a good fit
-- The ambiguous pivot: Market signals are mixed, competitive response is uncertain
-- The moonshot bet: Technical feasibility is genuinely unknown
-
-These aren't just decisions with different answers; they're decisions with different signal strength. When the signal is weak—when δᵢ is large in magnitude—even highly competent decision-makers will struggle. More importantly, they'll struggle in the same direction. This is fundamentally different from the heterogeneous competence we modeled earlier. Individual skill differences create uncorrelated noise: some people excel where others fail, and in aggregate, errors cancel out. Case difficulty creates correlated signal loss: when the evidence is weak, everyone's instruments fail simultaneously.
-
-### Simulating Shared Case Shocks and Heterogenous Skills
-To properly explore this, we need to do posterior predictive sampling that includes case difficulty in the generative model. We can't just fit a model with case effects and examine the posterior—we need to generate new votes under different difficulty regimes and see how the correlation structure changes.
-
+Consider the difference between a routine budget approval and an "Ambiguous Pivot" to a new market. On the pivot, even the most competent jurors will struggle. More importantly, they will struggle in the same direction. Case difficulty creates correlated signal loss: when the evidence is weak, everyone’s instruments fail simultaneously.
 
 ```{python}
 
@@ -1065,7 +430,7 @@ These patterns promote an consolidation of epistemological standards. Members of
 
 > "Value capture happens when a person or group adopts an externally-sourced value as their own, without adapting it to their particular context... In value capture, we outsource the process of value deliberation. And, as with other forms of outsourcing, there is a trade-off...When we adopt those values, we gain access to readymade methods for justification" - Nguygen
 
-The adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignore relevant detail. We lose focus on local context we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. 
+The adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignoreS relevant detail. We lose focus on local context we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. 
 
 
 ::: {.callout-note}
@@ -1078,7 +443,12 @@ But for the Condorcet Jury Theorem, what matters is not whether one group is mor
 This analysis explores these failure conditions: the point at which shared frameworks, training, or information access cause errors to cluster rather than cancel. The statistical machinery cannot distinguish "good blocks" from "bad blocks"—it can only detect correlation. And correlation, regardless of its source, is what breaks collective intelligence.
 :::
 
-We now fit the three models. Our vanilla model without any block effects. The block model with a negatively keyed "group think" effect. And finally we fit a model with both a block effect that pulls positively to increase overall competence through shared expertise. But additionally, we use the treatment parameter $\tau$ to impose random shocks to individuals. The idea is that this parameter can serve as a sensitivity gauge how extreme a treatment must be to change the range of accuracy outcomes.  
+Fitting the Three RealitiesWe now fit three IRT models to represent three distinct organizational states:
+
+- The Vanilla Model: Independent agents, shared case difficulty, but no social "blocks.
+- "The Blocked Model: Jurors are captured by "Groupthink" blocks that compress individual skill and introduce massive correlation.
+
+- The Full Model: A "Treatment" model where we test if an intervention ($\tau$) can overcome the structural gravity of shared expertise and blocks.
 
 ```{python}
 
@@ -1364,6 +734,9 @@ Now we're ready to assess each of the three models.
 
 ### The Vanilla IRT model: Skill Difference and Difficulty
 
+
+The "Vanilla" model is our baseline. It represents an organization that acknowledges two fundamental truths: Some employees are more skilled than others ($\theta$). Some problems are harder than others ($\delta$). Crucially, however, it assumes that these differences are independent. There are no "Blocks." No one is being coached to think alike.
+
 ```{python}
 
 print(f"\nEstimated parameters:")
@@ -1372,6 +745,8 @@ print(f"  σ_δ: {idata_vanilla.posterior['sigma_delta'].mean():.3f}")
 plot_parameter_recovery(idata_vanilla, t_theta, t_delta, "Vanilla Case");
 
 ```
+
+Here we check the model's vision. The recovery plots compare the model’s estimated values for juror skill and case difficulty against the actual "ground truth" we programmed into the simulation. The recovery looks good. Next we want to ensure errors are independent.
 
 ```{python}
 results_vanilla = compute_majority_accuracy_simple(
@@ -1382,6 +757,7 @@ plot_residual_correlation(idata_vanilla, votes_vanilla, truth_vanilla);
 
 ```
 
+The heatmap for the Vanilla model is a field of blue-white "static." There are no dark clusters. In this environment, every person added to the room is a "Whole Person." Because their errors are uncorrelated, their individual perspectives provide additive value. If you have 30 people, you have the collective power of 30 people.
 
 ```{python}
 
@@ -1392,9 +768,14 @@ ax[0].set_title("Vanilla Model - Accuracy of Majority Vote \n With Increasing Ju
 
 ```
 
+Finally, we look at accuracy. As we scale the jury size from 5 to 30, we see the classic Condorcet upward sweep. We're still only using 30 jurors but the conditions are such that if we scale the jurors further we would expect increased accuracy.
 
 
 ### The Block IRT model: Skill Difference, Difficulty and Block effects
+
+In Model 2, we introduce Blocks. We’ve simulated an organization where individuals have been "aligned" into three distinct factions. This might represent departments (Engineering vs. Sales), regional offices, or simply different "schools of thought" within the C-suite.
+
+The management team loves this predictable, legible structure. You can manage three block leaders much more easily than 30 independent jurors. But as we’re about to see, this management convenience comes with a steep epistemic tax.
 
 ```{python}
 
@@ -1407,6 +788,8 @@ plot_parameter_recovery(idata_blocked, t_theta_blocked, t_delta_blocked, "Blocke
     
 ```
 
+The parameter Recovery shows the erosion of the individual. In the Blocked Case, the recovery plot for Juror Skill ($\theta$) pulls all individual towards block competence. Because $\sigma_{block}$ is so high, the individual’s own talent is being physically "drowned out" by the group identity. In a high-alignment culture, it becomes nearly impossible to tell who is actually talented and who is just a "culture fit." The "Block Gravity" pull is so strong that individual brilliance is indistinguishable from group adherence.
+
 ```{python}
 print("\nComputing accuracy by jury size...")
 results_blocked = compute_majority_accuracy_simple(
@@ -1415,6 +798,7 @@ results_blocked = compute_majority_accuracy_simple(
 plot_residual_correlation(idata_blocked, votes_blocked, truth_blocked);
 ```
 
+Unlike the white noise of the Vanilla model, we now see dark red squares along the diagonal. Statistically, this organization doesn't have 30 employees, the signal is diminished through swamping effects of the block.
 
 ```{python}
 
@@ -1424,8 +808,11 @@ ax[0].set_title("Block Model - Accuracy of Majority Vote \n With Increasing Juro
 
 ```
 
+Even as we add 10, 20, or 30 jurors, the accuracy doesn't improve significantly. Why? Because if the "Block" is wrong about a specific hard case, adding more members of that block just increases the confidence in the error, not the chance of finding the truth. The organization is perfectly "legible", but it has created an epistemic ceiling.
 
 ### The Full IRT model: Difference, Difficulty, Blocks and Hetereogenous Noise
+
+In the Full Model, we see a more subtle flavour of the Legibility Trap. Here, the blocks aren't "Groupthink" (negative/error-prone); they are "Expertise" (positive/competent).
 
 ```{python}
     
@@ -1438,6 +825,7 @@ print(f"  τ: {idata_full.posterior['tau'].mean():.3f}")
 plot_parameter_recovery(idata_full, t_theta_full, t_delta_full, "Full Case");
 ```
 
+The parameter recovery shows clustering on individual competence around the block effects again. But we also see a straightline in the lower difficulty cases. This is related to the high level of competence making easier cases almost certainly correctly identified. The organization becomes "stuck in its own success." Because it is so good at the (easy) cases, it stops valuing the "Independent Friction" ($\tau$) needed to solve the hard ones. The flat line represents a state of optimal sub-optimization: you are 100% accurate on the trivial, which masks the fact that you have lost the ability to scale your intelligence on the complex. We can see this further by looking at the correlations. 
 
 ```{python}
 print("\nComputing accuracy by jury size...")
@@ -1449,6 +837,8 @@ plot_residual_correlation(idata_full, votes_full, truth_full)
 
 ```
 
+The treatment ($\tau$) successfully breaks the residual correlation by inducing differential individual competence. Your heatmap should show that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But surprisingly, the accuracy curve remains flat.
+
 ```{python}
 
 ax = az.plot_forest(idata_full, var_names=['expected_jury_accuracy_5', 'expected_jury_accuracy_10', 'expected_jury_accuracy_15', 'expected_jury_accuracy_20', 'expected_jury_accuracy_25' ,'expected_jury_accuracy_30'], combined=True, figsize=(8, 6));
@@ -1457,14 +847,27 @@ ax[0].set_title("Full Model - Accuracy of Majority Vote \n With Increasing Juror
 
 ```
 
+Adding more "experts" from the same block doesn't help because they all fail on the same "Hard" cases ($\delta_i$). We have optimized for a specific type of excellence, and in doing so, you have sacrificed the diversity of error required to cross the final threshold to 100% accuracy.
+
 
 ```{python}
 
 az.plot_pair(idata_full, var_names=['expected_jury_accuracy_30', 'tau_mu', 'tau_sigma'], kind='kde');
 ```
 
+The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing 15% of the signal.
 
 ### Comparing the IRT models: Rate of Learning
+
+The "Technocratic Fantasy" assumes that if you hire A-Players (High $\theta$) and align them into blocks (High $\beta$), you get a perfect organization. Your models prove the opposite:
+
+- The Vanilla Model shows that Independence is the actual engine of growth.
+
+- The Blocked Model shows that Alignment is the engine of stagnation.
+
+- The Full Model shows that even Expert Alignment creates a "competence trap" where you are too legible to be truly intelligent.
+
+As C. Thi Nguyen might put it: the organization has "captured" the value of expertise so effectively that it has lost the ability to see anything that falls outside of its chosen metrics. The organisation is often "right" in a very legible way, but you are permanently blind to the "illegible" truths that a messy, unaligned, vanilla organization might have caught.
 
 
 ```{python}
@@ -1479,6 +882,8 @@ print_accuracy_table(results_dict, JURY_SIZES)
     
 ```
 
+We can plot the achieved accuracy by jury size.
+
 ```{python}
 fig, ax = plot_accuracy_comparison(results_dict, JURY_SIZES)
 plt.show()
@@ -1486,6 +891,9 @@ plt.show()
 
 ```
 
+However, looking at raw accuracy can be deceptive. A model with high baseline competence (like our Expert Block) might look successful simply because it starts from a higher point. To truly understand if an organization is learning—that is, if it is successfully aggregating independent signal—we must control for these different baselines.
+
+By transforming our results into relative log-odds, we can isolate the Convergence Rate. This tells us how much "work" each additional employee is doing for the collective intelligence.
 
 ```{python}
 accuracy_dict = {
@@ -1500,65 +908,34 @@ plot_condorcet_efficiency(JURY_SIZES, accuracy_dict);
 
 ```
 
+The results reveal the high cost of incentivised legibility:
 
-We've seen here that the vanilla IRT implementation seems to exhibit convergence to accuracy expected of majority vote with increasing sets of jurors. The block model characterising group-think drives down the expected accuracy profile and the increases due to extra voters in the pool is much less pronounced that in the vanilla case. Finally, we've seen a model with expertise driven block effects that dominate our treatment intervention. The expected juror accuracy is insensitive to any degree of treatment effect because accuracy is strongly driven by the block effects in the model. 
+- The Vanilla Case: Exhibits the steady, logarithmic convergence expected of the Condorcet Jury Theorem. Every new voice adds new evidence.
 
+- The Blocked Case: The slope is crushed. Groupthink doesn't just lower accuracy; it destroys the scaling of accuracy. Adding more voters provides diminishing returns because the errors are correlated.
 
-#### The Legibility Trap: Redux
-Recall that investors demand "alignment" and "standardization". They want unified KPI systems, "Culture fit"-hiring and best-practices adoption, Common Tooling. These forces push us towards organisations towards consolidation of shared incentives, methods and cognitive practices. Not only can corporate values supplant your individual perspective, they do so at scale. Every legibility-seeking practice is a block-creating mechanism. By making the organization more "readable" to outsiders, you create the very correlations that break collective intelligence.
+- The Full Model (Expertise Trap): Here, we see a high baseline but a flat efficiency line. 
 
-#### The Treatment Paradox
-We've cheated slightly. In our model, we've modelled the treatment and tried to attribute heterogenous responses that would help explain the voting outcome. However, we never encoded a treatment effect in the data generating process, so there was nothing to recover. Instead of a structural parameter the `tau_mu` parameter is better seen as a sensitivity parameter. We've allowed it to be weakly identified and have the model partial out any remaining influence to the treatment. The fact that it appears to have neglible effect in this case, stems from the observation that group effects sufficiently explain the outcomes. 
+Because accuracy is strongly driven by the block effects (expertise), the expected accuracy is insensitive to any degree of treatment intervention.
 
-But in real cases this is common - group effects are persistent. Interventions are fleeting. One useful example is the pattern of "red-teaming" in software development. Before a major decision, you randomly assign people from each block to argue against their block's default position. This intervention creates divergent pressure. It doesn't eliminate block membership. Engineers remain engineers, but it forces block members to engage with perspectives that directly challenge their shared frameworks. The treatment pulls against block effects. Or so goes the theory.
+# Conclusion: The High Cost of Harmony
 
-## The Push and Pull: Indepence and Conformity
+The statistical breakdown of the Condorcet Jury Theorem is not a bug in corporate planning; it is a feature of the fundamental tension in cooperative work. Our models have mapped a persistent tug-of-war between two opposing gravitational forces:
 
-We've now seen two opposing forces at work in organizational decision-making:
+- **The Pull for Legibility (Scott):** This is the drive to make a complex organization understandable to investors and leaders. It builds the "blocks," the standardized workflows, and the shared cultures that allow thousands of people to move in the same direction. Without it, there is only chaos.
 
-**The Pull Toward Legibility (Block Effects)**: Shared training, common frameworks, aligned incentives. These create β-blocks—groups who think alike not because they're incompetent, but because they've been optimized for coherence. This is the gravitational force that makes organizations manageable but epistemically fragile.
+- **The Push for Autonomy (Nguyen):** This is the individual’s resistance to **Value Capture**. It is the drive to maintain a high-fidelity perspective on reality that hasn't been flattened by a KPI. Without it, there is only lockstep failure.
 
-**The Push Toward Independence (Treatment Effects)**: Interventions designed to break people out of their default frameworks. Red-teaming exercises, devil's advocate assignments, cross-functional rotation, deliberately soliciting dissent. These are organizational attempts to restore the independence that the Condorcet theorem requires.
+### The Fragility of Alignment
 
-Our final model formalizes this tension. Block effects (β) pull jurors toward correlated errors. Treatment effects (τ) push them back toward independence. The question is whether deliberate intervention can overcome structural gravity—or whether the legibility trap is too strong to escape.
+We often treat "Alignment" as an unalloyed good. But our simulation of the **Expertise Trap** reveals that when we let the pull for Legibility dominate, we create an **accuracy ceiling**. 
 
-We fit two versions of the model against the same blocked data:
+In the pursuit of a "bankable" process, we inadvertently destroy the very thing that makes a group smarter than an individual: the friction of uncorrelated perspectives. When everyone is trained to see the world through the same lens, they share the same blind spots. The organization becomes perfectly legible—it is easy to manage on a spreadsheet—but it becomes epistemically compromised. 
 
-**Model 1: Natural State (Z = 0 for all jurors)**
-This is the organization as it exists: blocks have formed through natural processes (hiring, training, cultural evolution), and no deliberate effort is made to break people out of their silos. All variance in voting patterns must be explained by individual skill, block membership, and case difficulty.
+### The Value of Productive Discomfort
+The point is that collective Wisdom is expensive. Its price is the discomfort of "unalignment." The "Legibility Trap" is seductive because it offers the illusion of control. It is much easier to manage three predictable blocks than thirty "unaligned" individuals. However, as the **Effective Jury Size ($N_{eff}$)** collapses, so does the organization’s ability to solve hard problems.
 
-**Model 2: Intervention State (Z = 1 for all jurors)**
-This represents an organization that has implemented a comprehensive independence-restoration program. Examples might include:
+Solving "Hard" problems (the ones on the steep, unforgiving part of our difficulty curve) requires us to intentionally preserve independence To build a truly intelligent organization, leadership must move beyond the Technocratic Fantasy. It requires a deliberate tolerance for the "messy" and the "unaligned." True collective intelligence depends on **Autonomy**—the courage to let individuals maintain their own maps of the world, even when those maps make the organization harder to read. 
 
-- **Red-teaming**: Before voting, randomly assign people to argue against their block's default position
+In the end, we must choose: do we want an organization that is easy to see, or one that is actually capable of seeing?
 
-- **Rotation**: Temporarily embed engineers in sales, finance in product
-
-- **Structured dissent**: Require each block to produce an internal critic before voting
-
-- **Anonymous voting**: Remove social pressure to conform to block consensus
-
-The treatment indicator $Z_j = 1$ tells the model: "This juror has been subjected to an intervention designed to reduce their dependence on block-default thinking."
-The question: Can such interventions meaningfully push against the legibility demand? Or does the correlation persist despite our best efforts?
-
-### What the Model Tells Us About Organizational Intervention
-
-The forest plot reveals something uncomfortable: when we "turn on" treatment (Z = 1), the model doesn't conclude that block effects have weakened. Instead, it concludes that block effects must be *even stronger* than we thought.
-
-Why? Because the voting patterns remain stubbornly correlated despite the presumed intervention. The Bayesian engine reasons backwards: "If treatment is supposed to push people toward independence, but I still see strong correlation in the data, then either (a) treatment doesn't work, or (b) the underlying block effects are so powerful that even treated jurors remain influenced."
-
-The model chooses interpretation (b), allocating *more* variance to σ_block in the treatment model. This is the statistical signature of organizational inertia: interventions that look good on paper (red-teaming, rotation programs, diversity training) fail to break the fundamental correlation structure.
-
-The treatment effect $\tau$ remains small or uncertain because the model cannot distinguish "treatment is working a little" from "blocks are just that strong." This is not a flaw in the model—it's an honest reflection of the data-generating process. If block effects are structural (shared information, shared incentives, shared training), surface-level interventions may not be enough. The model cannot tell us whether stronger interventions would work—whether, for instance, permanently breaking up blocks through forced cross-functional teams would restore independence. What it does tell us is that incremental, well-intentioned programs often aren't enough to overcome the correlation that legibility creates.
-
-# Conclusions
-
-A failure to properly instrumentalize values through appropriate proxy metrics hinders communication, cohesion and cooperation within and between organisations. And yet too crude an instrumentalization of value turns work from a compelling collective action project into a metric movement charade. Worse, it drives us to error and expected failure. 
-
-The statistical breakdown of the Condorcet Jury Theorem is not an accident of poor corporate planning; it is the inevitable result of a fundamental tension in cooperative work. We are witnessing a persistent tug-of-war between two opposing gravitational forces:
-
-- The Pull for Legibility (Scott): The necessary drive to make the organization understandable to the investor, the analyst, and the leader. This force creates the "blocks," the standardized workflows, and the shared cultures that allow thousands of people to move in the same direction.
-
-- The Push for Agency (Nguyen): The individual’s resistance to Value Capture. This is the drive to maintain a unique, high-fidelity perspective on reality that hasn't been flattened by a KPI or a "Core Value."
-
-When we let the pull for Legibility dominate entirely, we risk the "Contemptible Familiarity" of the over-optimized corporation. We get a system that is easy to manage on a spreadsheet or JIRA-board but potentially epistemically compromised. In the worst case: a group of 1,000 people with the collective wisdom of one, because they have all been trained to see the world through the same lens—and thus to share the same blind spots. This is the cardinal sin of "Value Capture". We have adopted the organization's simplified map of the world as our own, and in doing so, we have destroyed our ability to help the organization see.
