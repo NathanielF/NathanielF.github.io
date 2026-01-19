@@ -120,7 +120,7 @@ The first line of defense for the "Legible" organization is hiring. The assumpti
 
 This is not to say that incompetence doesn't exist in a business or political organisation, but variations in competence are less of a threat to organisational competence and execution than the latent determinants of decision accuracy in the business. These determinants are generally structural or institutional. The process of hiring and firing certainly changes the distribution of competence, it does not (as we'll see) ensure the onset of collective wisdom. 
 
-## Incentivised Legibility: Modeling "The Block" Effects
+### Incentivised Legibility: Modeling "The Block" Effects
 
 Even if individuals people were wrong, they were wrong in their own unique ways and this cancels out. Those people wrong today, can be right tomorrow if they remain independent actors. But James C. Scott’s theory of incentivised legibility suggests something darker. Imposed strictures on planning and acting short-circuit our ability to be find signal on hard problems.
 
@@ -964,7 +964,7 @@ The results reveal the high cost of incentivised legibility:
 
 Because accuracy is strongly driven by the block effects (expertise), the expected accuracy is insensitive to any degree of treatment intervention.
 
-# Conclusion: The High Cost of Harmony
+## Conclusion: The High Cost of Harmony
 
 The statistical breakdown of the Condorcet Jury Theorem is not a bug in corporate planning; it is a feature of the fundamental tension in cooperative work. Our models have mapped a persistent tug-of-war between two opposing gravitational forces:
 
@@ -1001,3 +1001,11 @@ I did not use a large language model to think my thoughts for me. Like any other
 
 Within any work you are pulled between the incentive of external legibility and seeking the satisfaction of a job well done. Different writers are pulled differently towards each of these poles. Some write primarily for the pleasure of self-illumination, others for the acclaim of recognition, or even just a moment of fleeting understanding. Ultimately for your work to be useful, for it to be informative it must resist the pull towards excessive standardisation. Crass regurgitation of poorly digested wisdom is useless when we now have it on tap. But you can search the library of babel to pull out hidden gems, and scaffold your thoughts to ascend to new ideas. In this latter respect, LLMs are a tool like any other. The risk is when tools replace thought. With AI fact-checkers, or automated performance reviews the push for legibility goes too far. Scott argues that society functions only when low-grade civil disobedience circumvents the foolishness of the law misapplied. A society that builds tools to think at scale must also cultivate the courage to think apart. Without that friction, we do not get collective wisdom or dynamic learning. We get stasis — efficient, legible, and catastrophically brittle. In such a society it's a moral obligation to think for yourself.  
 
+
+### False Binaries and Stylised Facts
+
+The Condorcet Jury theorem relies on the Stylised fact that the world presents us an array of 0/1 choices. The tension we've been discussing suggests the world pulls us between incentivised legibility and genuine autonomy. While the tension is real, it's a little too crude to pretend this is a binary decision. So while the advent of Generative AI and the proliferation of foundation models weights the scale toward incentivised legibility and starkly standardised process, the world does not exist in the training data. There is a real opportunity to use this technology to scaffold your thoughts, and climb to levels unimagined even six months ago, but there is also a real risk. The frictionless epistemology of LLM aided discovery is the real toy-model. It's massively, scaled and impressively competent toy model, but it still smoothes over the fruitful friction of testing our ideas against the world. The drive for homogeniety, like the push to find answers in the training data represents a retreat from the world and divestment of responsibility when we can least afford it. 
+
+The current ownership of foundation models concentrates a lot of power in the hands of the few. This is not benign. We're already seeing weaponised usage of AI to funnel information, and forment dissent. This is a malicious optimisation of block-effects used to compound division and cloud real signal. Using these tools to "pump out" racist or political content effectively launders past biases into future "facts," creating a feedback loop that drags down voter competence.
+
+Collective wisdom is not a gift of technology; it is the hard-won dividend of our refusal to think in lockstep. Your most vital role, when the choir is auto-tuned, is to cultivate your own discordant song. 
