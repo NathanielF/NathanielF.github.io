@@ -36,7 +36,7 @@ np.random.seed(42)
 
 You don't have 30 employees. You have three, rehired ten times. This is a paradox of corporate organisation.
 
-On the surface, the organization is a smooth-running machine optimized for "alignment," "velocity," and predictable outcomes. Investors demand a recognizable org chart; executives demand standardized workflows; and everyone demands a set of "Core Values" that can be measured on a performance review.
+On the surface, the organization is a smooth-running machine optimized for "alignment," "velocity," and predictable outcomes. Investors demand a recognizable org chart; executives demand standardized workflows encoded into rigid software platforms; and everyone demands a set of "Core Values" that can be measured on a performance review.
 
 But when familiar process becomes sacred process, something breaks. In our quest for "alignment," we inadvertently destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences._
 
@@ -459,6 +459,7 @@ In real organizations, people don't arrive at decisions in isolation. They clust
 - Information access: The sales team sees customer feedback the finance team never sees; executives receive filtered summaries while front-line workers see raw reality
 - Incentive structures: Different departments optimize for different metrics, creating systematically different biases
 - Social networks: People who talk to each other regularly start thinking alike, even without realizing it
+- Algorithmic scaffolding: The finance team uses the same Excel macros; the strategy team uses the same slide templates; the developers use the same code-completion prompts. When the tool suggests the next step, the user stops thinking about the alternative
 
 These patterns promote an consolidation of epistemological standards. Members of a block don't just share surface characteristics; they share ways of knowing and hence ways of being wrong. We saw that case difficulty created correlation across the entire jury for specific cases. But block effects create persistent correlation within subgroups across all cases. This is structurally worse. And then when evidence is ambiguous and cases difficult, people fall back on their frameworks, and if everyone shares frameworks, everyone fails together. In this way case-difficulty and group-think interact to drive an organisation to overly simplified, but easily defensible heuristics.
 
@@ -571,7 +572,10 @@ The code block above warrants comment. It concerns how majority accuracy is asse
 
 Separately, we also evaluate accuracy using a post-hoc posterior predictive workflow, where we explicitly simulate new votes from posterior samples of $\theta$ and $\delta$, form majorities from randomly selected jurors, and compare them to the known ground truth. This second approach is more computationally expensive but makes fewer exchangeability assumptions and better reflects how correlated errors manifest in finite juries.
 
-Both calculations are answering related but distinct questions. The former highlights how accuracy should scale under the model; the latter shows how it does scale when individual votes are explicitly realized. We will use both the posterior predictive checks and the posterior implications below. 
+Both accuracy calculations are answering related but distinct questions. The former highlights how accuracy should scale under the model; the latter shows how it does scale when individual votes are explicitly realized. We will use both the posterior predictive checks and the posterior implications below. 
+
+In the code above, the agents are allowed to be sampled as 'random,' but their randomness is constrained by the geometry of the distributions I have chosen. This is the first level of the Legibility Trap: we mistake a high-variance distribution for 'freedom,' forgetting that the agent is still trapped inside the shape of the curve we drew. In an organization, 'innovation' is often just a random sample from a pre-approved prior. We think we are being creative, but we are just exploring the interior of a box designed by the CEO or the Software Architect
+
 
 ```{python}
 
@@ -778,7 +782,7 @@ def plot_skill_corr(idata,
 
 ```
 
-Now we're ready to assess each of the three models. 
+To visualise this better, we'll continue to assess each of the three models. 
 
 ### The Vanilla IRT model: Skill Difference and Difficulty
 
@@ -993,18 +997,18 @@ In particular, he argued that the loss of information due to pre-mature simplifi
 
 ### Powerpoint for Prose
 
-I did use a large language model to critique and help refine the argument here. The need to be legible, the drive to be understood is powerful. Generative AI is a tool that pushes us towards a common diction. It is a remarkable technology with innumerable applications that I can't even begin to predict. 
+I did use a large language model to critique and help refine the argument here. The need to be legible, the drive to be understood is powerful. Generative AI is a tool that pushes us towards a common diction, and a shared global prior. It is a remarkable technology with innumerable applications that I can't even begin to predict how it will shape our dispositions.
 
-I did not use a large language model to think my thoughts for me. Like any other technology pushing for standardisation and external legibility, LLMs are both useful, limiting and horrifying at the same time. Useful, because they encode a library of babel open to the curious. Limiting because consolidation of information drives conformity and diminishes independence of thought within you. Horrifying, because you want the free roaming ideas,speculative whims and jagged singularity of actual thought, not the funneled folly of algorithmic hallucinations. When even your errors aren't your own, you can't learn and you can barely contribute to the real diversity of opinion that solves actual problems.  
+I did not use a large language model to think my thoughts for me. Like other technologies pushing for standardisation and external legibility, LLMs are useful, limiting and horrifying at the same time. Useful, because they encode a library of babel open to the curious. Limiting because consolidation of information drives conformity and diminishes independence of thought within you. Horrifying, because you want the free roaming ideas, speculative whims and jagged singularity of actual thought, not the funneled folly of algorithmic hallucinations. When even your errors aren't your own, you can't learn and you can barely contribute to the real diversity of opinion that solves actual problems.  
 
 ### Tools for Thinking
 
-Within any work you are pulled between the incentive of external legibility and seeking the satisfaction of a job well done. Different writers are pulled differently towards each of these poles. Some write primarily for the pleasure of self-illumination, others for the acclaim of recognition, or even just a moment of fleeting understanding. Ultimately for your work to be useful, for it to be informative it must resist the pull towards excessive standardisation. Crass regurgitation of poorly digested wisdom is useless when we now have it on tap. But you can search the library of babel to pull out hidden gems, and scaffold your thoughts to ascend to new ideas. In this latter respect, LLMs are a tool like any other. The risk is when tools replace thought. With AI fact-checkers, or automated performance reviews the push for legibility goes too far. Scott argues that society functions only when low-grade civil disobedience circumvents the foolishness of the law misapplied. A society that builds tools to think at scale must also cultivate the courage to think apart. Without that friction, we do not get collective wisdom or dynamic learning. We get stasis — efficient, legible, and catastrophically brittle. In such a society it's a moral obligation to think for yourself.  
+Within any work you are pulled between the incentive of external legibility and seeking the satisfaction of a job well done. Different writers are pulled differently towards each of these poles. Some write primarily for the pleasure of self-illumination, others for the acclaim of recognition, or even just a moment of fleeting understanding. Ultimately for your work to be useful, for it to be informative it must resist the pull towards excessive standardisation. Crass regurgitation of poorly digested wisdom is useless when we now have it on tap. But you can search the library of babel to pull out hidden gems, and scaffold your thoughts to ascend to new ideas. In this latter respect, LLMs are a tool like any other. The risk is when tools replace thought. With AI fact-checkers, or automated performance reviews the push for legibility goes too far. Scott argues that society functions only when low-grade civil disobedience circumvents the foolishness of the law misapplied. A society that builds tools to think at scale must also cultivate the courage to think apart. Without that friction, we do not get collective wisdom or dynamic learning. We get stasis — efficient, legible, and catastrophically brittle. In such a society it's a moral obligation to think for yourself. It is part of the Bayesian workflow to test and re-test our models for sensitivity to our priors. This process of iterative refinement is the learning, and learning requires the feedback of stress testing.
 
 
 ### False Binaries and Stylised Facts
 
-The Condorcet Jury theorem relies on the Stylised fact that the world presents us an array of 0/1 choices. The tension we've been discussing suggests the world pulls us between incentivised legibility and genuine autonomy. While the tension is real, it's a little too crude to pretend this is a binary decision. So while the advent of Generative AI and the proliferation of foundation models weights the scale toward incentivised legibility and starkly standardised process, the world does not exist in the training data. There is a real opportunity to use this technology to scaffold your thoughts, and climb to levels unimagined even six months ago, but there is also a real risk. The frictionless epistemology of LLM aided discovery is the real toy-model. It's massively, scaled and impressively competent toy model, but it still smoothes over the fruitful friction of testing our ideas against the world. The drive for homogeniety, like the push to find answers in the training data represents a retreat from the world and divestment of responsibility when we can least afford it. 
+The Condorcet Jury theorem relies on the Stylised fact that the world presents us an array of 0/1 choices. The tension we've been discussing suggests the world pulls us between incentivised legibility and genuine autonomy. While the tension is real, it's a little too crude to pretend this is a binary decision. So while the advent of Generative AI and the proliferation of foundation models weights the scale toward incentivised legibility and starkly standardised process, the world does not exist in the training data. There is a real opportunity to use this technology to scaffold your thoughts, and climb to levels unimagined even six months ago, but there is also a real risk. The frictionless epistemology of LLM aided discovery is the real toy-model. It's a massively scaled and impressively competent toy model, but it still smoothes over the fruitful friction of testing our ideas against the world. The drive for homogeniety, like the push to find answers in the training data represents a retreat from the world and divestment of responsibility when we can least afford it. 
 
 The current ownership of foundation models concentrates a lot of power in the hands of the few. This is not benign. We're already seeing weaponised usage of AI to funnel information, and forment dissent. This is a malicious optimisation of block-effects used to compound division and cloud real signal. Using these tools to "pump out" racist or political content effectively launders past biases into future "facts," creating a feedback loop that drags down voter competence.
 
