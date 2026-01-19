@@ -110,15 +110,7 @@ Conversely, if $p < 0.5$, increasing the size of the jury only increases the pro
 This is a theorem. We're not showing that it is incorrect, but we are stress-testing it in finite domains to gauge it's applicability to practical decision making. 
 :::
 
-This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and scale. But hiring budgets are capped somewhere before infinity.
-
-#### The Role and  Locus of Competence
-
-This pulls us in two ways: (1) management panic over hiring standards and (2) and mission driven culture fit. On the one hand increased competence in the worker base is an objective good, but the drive for alignment reduces the set of competent actors that matter for decision making.  When workers are expected to "fall in line," responsibility and accountability should correspondingly concentrate within the executive class. It rarely does.
-
-The first line of defense for the "Legible" organization is hiring. The assumption is simple: if the system is failing, the "units" (employees) must be defective. This view assumes that if we just hire "A-Players" with high individual competence ($p > 0.5$), the organization will inevitably succeed. This is often a convenient fantasy. It's a fantasy compounded by annual performance assessment which grade on an artificial curve. It's easier to diagnose failure as limited competence when you regularly orchestrate a system to label a portion of the workforce as incompetent. It aligns with Nguyen's concept of metrics gaming — the belief that maximizing individual scores sums to a maximized collective outcome. It's a failure mode that ignores strucutural aspects of the organisation's problems in lieu of easier proxies. 
-
-This is not to say that incompetence doesn't exist in a business or political organisation, but variations in competence are less of a threat to organisational competence and execution than the latent determinants of decision accuracy in the business. These determinants are generally structural or institutional. The process of hiring and firing certainly changes the distribution of competence, it does not (as we'll see) ensure the onset of collective wisdom. 
+This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and scale. But hiring budgets are capped somewhere before infinity and independent thought is rarer than you'd hope.
 
 ### Incentivised Legibility: Modeling "The Block" Effects
 
@@ -888,7 +880,7 @@ plot_skill_corr(idata_full)
 
 ```
 
-The treatment ($\tau$) successfully reduces structural correlation by inducing differential individual competence. But shared difficulty still drives a consistent error rates which translates to a latent correlation The heatmap should shows that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But we retain a low-grade common correlation. Because of this, the accuracy curve remains flat. 
+The treatment ($\tau$) successfully reduces structural correlation by inducing differential individual competence. We can imagine these treatments as training in radical candour, or similar inducements to challenge the status quo. But shared difficulty of the problem space still drives a consistent error rates which translates to a latent correlation The heatmap should shows that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But we retain a low-grade common correlation. Because of this, the accuracy curve remains flat. 
 
 ```{python}
 
@@ -968,6 +960,15 @@ The results reveal the high cost of incentivised legibility:
 
 Because accuracy is strongly driven by the block effects (expertise), the expected accuracy is insensitive to any degree of treatment intervention.
 
+
+#### The Role and Locus of Competence
+
+The first line of defense for the "Legible" organization is hiring. The assumption is simple: if the system is failing, the "units" (employees) must be defective. This view assumes that if we just hire "A-Players" with high individual competence ($p > 0.5$), the organization will inevitably succeed. This is often a convenient fantasy. It's a fantasy compounded by annual performance assessment which grade on an artificial curve. It's easier to diagnose failure as limited competence when you regularly orchestrate a system to label a portion of the workforce as incompetent. It aligns with Nguyen's concept of metrics gaming — the belief that maximizing individual scores sums to a maximized collective outcome. It's a failure mode that ignores strucutural aspects of the organisation's problems in lieu of easier proxies. 
+
+This is not to say that incompetence doesn't exist in a business or political organisation, but variations in competence are less of a threat to organisational competence and execution than the latent determinants of decision accuracy in the business. These determinants are generally structural or institutional; the problems we pick and the structure of decision mechanisms. The process of hiring and firing certainly changes the distribution of competence, it does not, as we've seen, ensure the onset of collective wisdom. 
+
+This pulls us in two ways: (1) management panic over hiring standards and (2) and mission driven culture fit. On the one hand increased competence in the worker base is an objective good, but the drive for alignment reduces the set of competent actors that matter for decision making.  When workers are expected to "fall in line," responsibility and accountability should correspondingly concentrate within the executive class. It rarely does.
+
 ## Conclusion: The High Cost of Harmony
 
 The statistical breakdown of the Condorcet Jury Theorem is not a bug in corporate planning; it is a feature of the fundamental tension in cooperative work. Our models have mapped a persistent tug-of-war between two opposing gravitational forces:
@@ -976,13 +977,13 @@ The statistical breakdown of the Condorcet Jury Theorem is not a bug in corporat
 
 - **The Push for Autonomy (Nguyen):** This is the individual’s resistance to **Value Capture**. It is the drive to maintain a high-fidelity perspective on reality that hasn't been flattened by a KPI. Without it, there is only lockstep failure.
 
-### The Fragility of Alignment
+#### The Fragility of Alignment
 
 We often treat "Alignment" as an unalloyed good. But our simulation of the **Expertise Trap** reveals that when we let the pull for Legibility dominate, we create an **accuracy ceiling**. 
 
 In the pursuit of a "bankable" process, we inadvertently destroy the very thing that makes a group smarter than an individual: the friction of uncorrelated perspectives. When everyone is trained to see the world through the same lens, they share the same blind spots. The organization becomes perfectly legible—it is easy to manage on a spreadsheet—but it becomes epistemically compromised. 
 
-### The Value of Productive Discomfort
+#### The Value of Productive Discomfort
 The point is that collective Wisdom is expensive. Its price is the discomfort of discordance. The "Legibility Trap" is seductive because it offers the illusion of control. It is much easier to manage three predictable blocks than thirty "unaligned" individuals. However, as the **Effective Jury Size ($N_{eff}$)** collapses, so does the organization’s ability to solve hard problems.
 
 Solving "Hard" problems (the ones on the steep, unforgiving part of our difficulty curve) requires us to intentionally preserve independence To build a truly intelligent organization, leadership must move beyond the Technocratic Fantasy. It requires a deliberate tolerance for the "messy" and the "unaligned." True collective intelligence depends on **Autonomy**—the courage to let individuals maintain their own maps of the world, even when those maps make the organization harder to read. 
