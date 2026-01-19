@@ -884,7 +884,7 @@ plot_skill_corr(idata_full)
 
 ```
 
-The treatment ($\tau$) successfully reduces the correlation by inducing differential individual competence. The heatmap should shows that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But surprisingly, the accuracy curve remains flat.
+The treatment ($\tau$) successfully reduces structural correlation by inducing differential individual competence. But shared difficulty still drives a consistent error rates which translates to a latent correlation The heatmap should shows that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But we retain a low-grade common correlation. Because of this, the accuracy curve remains flat. 
 
 ```{python}
 
@@ -901,7 +901,7 @@ Adding more "experts" from the same block doesn't help because they all fail on 
 az.plot_pair(idata_full, var_names=['expected_jury_accuracy_30', 'tau_mu', 'tau_sigma']);
 ```
 
-The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit. Indepdence is a necessary but not sufficient condition to drive accuracy gains through aggregation.
+The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit. Indepdence is a necessary but not sufficient condition to drive accuracy gains through aggregation. But here again, the solution is give up or hire more diverse competence.
 
 ### Comparing the IRT models: Rate of Learning
 
