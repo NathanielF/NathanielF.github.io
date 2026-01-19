@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "31b9ab1d",
+   "id": "6bc2e15e",
    "metadata": {},
    "source": [
     "---\n",
@@ -29,7 +29,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "71f565d2",
+   "id": "cb93bdec",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -46,7 +46,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "25465513",
+   "id": "02937649",
    "metadata": {},
    "source": [
     "## The Legibility Trap: Why Organizations Fail in Lockstep\n",
@@ -57,7 +57,7 @@
     "\n",
     "But when familiar process becomes sacred process, something breaks. In our quest for \"alignment,\" we inadvertently destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences._\n",
     "\n",
-    "To understand why, we must look into how large organisations \"see\" the world.\n",
+    "To understand why, we must look into how large organisations \"see\" the world. We'll draw out two perspectives: the anthropology of incentivised blindness and the eighteenth-century mathematics of collective judgment.\n",
     "\n",
     "- James C. Scott in _Seeing like a State_ warns us of incentivised \"Legibility\". The tendency of central authorities to flatten complex, organic systems into simplified maps they can understand. When a state (or a CEO) cannot read the wild \"forest\" of local expertise, they replace it with a \"plantation\" of identical, predictable units, and encourage conformity.\n",
     "\n",
@@ -164,7 +164,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "725a4c07",
+   "id": "1a04bb3d",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -277,7 +277,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "37b939f7",
+   "id": "bea86afa",
    "metadata": {},
    "source": [
     "The function induces block effects by applying a linear transformation to baseline juror skills, effectively overriding individual variance with group-level dynamics. The transformation follows this logic:\n",
@@ -291,7 +291,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "e58d1f02",
+   "id": "eec464a3",
    "metadata": {},
    "outputs": [
     {
@@ -354,7 +354,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e0c42c18",
+   "id": "3f3dde71",
    "metadata": {},
    "source": [
     "These three scenarios will allow us to probe the limits of the Condorcet setting. \n",
@@ -408,7 +408,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "9778b437",
+   "id": "8651a511",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -508,7 +508,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "33be67fd",
+   "id": "99a6a9e3",
    "metadata": {},
    "source": [
     "### The Anatomy of Blocks: Epistemic Consolidation and Value Capture\n",
@@ -539,7 +539,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "611fbad3",
+   "id": "51c5f154",
    "metadata": {},
    "outputs": [
     {
@@ -622,7 +622,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "d82d020428484ab787bcedd38a77479b",
+       "model_id": "8ad1f4cb248f4c7d8ec173416e565f1e",
        "version_major": 2,
        "version_minor": 0
       },
@@ -674,7 +674,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "985b46e9147542de99c16257379bffa4",
+       "model_id": "43fac98b35e042a7bcb49514ec8e3229",
        "version_major": 2,
        "version_minor": 0
       },
@@ -775,7 +775,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "52c3fc75c37b47b6a6bba659392c9b2e",
+       "model_id": "f60e1ad7237443afb6b485638cb1936a",
        "version_major": 2,
        "version_minor": 0
       },
@@ -800,7 +800,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 30 seconds.\n"
+      "Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 31 seconds.\n"
      ]
     },
     {
@@ -827,7 +827,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "34ae629fe7de4e14aa7c6a61c849f6a6",
+       "model_id": "5566e9adbfe54c9ead8c2300767838b7",
        "version_major": 2,
        "version_minor": 0
       },
@@ -928,7 +928,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "0b2a70c6658e4e31b01b6ebf7d71340c",
+       "model_id": "788e1faaa28e4e63a23d799cb7f07687",
        "version_major": 2,
        "version_minor": 0
       },
@@ -953,7 +953,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 27 seconds.\n"
+      "Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 28 seconds.\n"
      ]
     },
     {
@@ -980,7 +980,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "2f92caa8f3a940248a7876cc3844c7b6",
+       "model_id": "d025ac33d36045649ec95da344b3e9c1",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1020,7 +1020,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "45fccd84",
+   "id": "efb76fc7",
    "metadata": {},
    "source": [
     "We will now define a helper function to sample the posterior predictive distribution of these models to estimate the individual votes on each issue of randomly selected subsets of the jurors. \n"
@@ -1029,7 +1029,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "e972ee89",
+   "id": "5296e01e",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1103,7 +1103,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "afadd29f",
+   "id": "e1dc992f",
    "metadata": {},
    "source": [
     "#### On Majority Accuracy and Posterior Prediction Checks\n",
@@ -1118,7 +1118,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "61bc710f",
+   "id": "4d770505",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1326,7 +1326,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "4eac9309",
+   "id": "d69ee1cc",
    "metadata": {},
    "source": [
     "Now we're ready to assess each of the three models. \n",
@@ -1339,7 +1339,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "5c46f6bc",
+   "id": "837ff9b2",
    "metadata": {},
    "outputs": [
     {
@@ -1372,7 +1372,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "416c4354",
+   "id": "5170f0ca",
    "metadata": {},
    "source": [
     "Here we check the model's vision. The recovery plots compare the model’s estimated values for juror skill and case difficulty against the actual \"ground truth\" we programmed into the simulation. The recovery looks good. Next we want to ensure errors are independent.\n"
@@ -1381,7 +1381,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "6b409d55",
+   "id": "2536f071",
    "metadata": {},
    "outputs": [
     {
@@ -1405,7 +1405,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "ba99a3e3",
+   "id": "11a174f7",
    "metadata": {},
    "source": [
     "The heatmap for the Vanilla model is a field of blue-white \"static.\" There are no dark clusters. In this environment, every person added to the room is a \"Whole Person.\" Because their errors are uncorrelated, their individual perspectives provide additive value. If you have 30 people, you have the collective power of 30 people.\n"
@@ -1414,7 +1414,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "b22719b6",
+   "id": "fc0bd0d8",
    "metadata": {},
    "outputs": [
     {
@@ -1436,7 +1436,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b534e9c7",
+   "id": "3e19c38c",
    "metadata": {},
    "source": [
     "Finally, we look at accuracy. As we scale the jury size from 5 to 30, we see the classic Condorcet upward sweep. We're still only using 30 jurors but the conditions are such that if we scale the jurors further we would expect increased accuracy.\n",
@@ -1452,7 +1452,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "bd497a2e",
+   "id": "4218e3bf",
    "metadata": {},
    "outputs": [
     {
@@ -1488,7 +1488,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1321088a",
+   "id": "dded7634",
    "metadata": {},
    "source": [
     "The parameter Recovery shows the erosion of the individual. In the Blocked Case, the recovery plot for Juror Skill ($\\theta$) pulls all individual towards block competence. Because $\\sigma_{block}$ is so high, the individual’s own talent is being physically \"drowned out\" by the group identity. In a high-alignment culture, it becomes nearly impossible to tell who is actually talented and who is just a \"culture fit.\" The \"Block Gravity\" pull is so strong that individual brilliance is indistinguishable from group adherence.\n"
@@ -1497,7 +1497,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "6f107d69",
+   "id": "f2501601",
    "metadata": {},
    "outputs": [
     {
@@ -1529,7 +1529,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "bb0172d2",
+   "id": "59758aa9",
    "metadata": {},
    "source": [
     "Unlike the white noise of the Vanilla model, we now see dark red squares along the diagonal. Statistically, this organization doesn't have 30 employees, the signal is diminished through swamping effects of the block.\n"
@@ -1538,7 +1538,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "ea36cff3",
+   "id": "e3b95e1c",
    "metadata": {},
    "outputs": [
     {
@@ -1560,10 +1560,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "fdefa7a4",
+   "id": "349694f9",
    "metadata": {},
    "source": [
-    "Even as we add 10, 20, or 30 jurors, the accuracy doesn't improve significantly. Why? Because if the \"Block\" is wrong about a specific hard case, adding more members of that block just increases the confidence in the error, not the chance of finding the truth. The organization is perfectly \"legible\", but it has created an epistemic ceiling.\n",
+    "Even as we add 10, 20, or 30 jurors, the accuracy doesn't improve significantly. Why? Because if the \"Block\" is wrong about a specific hard case, adding more members of that block just increases the confidence in the error, not the chance of finding the truth. \n",
     "\n",
     "### The Full IRT model: Difference, Difficulty, Blocks and Hetereogenous Noise\n",
     "\n",
@@ -1573,7 +1573,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "053ab452",
+   "id": "8b06b016",
    "metadata": {},
    "outputs": [
     {
@@ -1611,7 +1611,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cd2dd530",
+   "id": "85e9564c",
    "metadata": {},
    "source": [
     "The parameter recovery shows reduced clustering on individual competence around the block effects. Where it seems that $\\tau$ dominates $\\sigma_{block}$ and represents the decoupling force i.e the specific organizational or individual intervention required to break the 'gravitational pull' of the block and restore independent signal. But we also see a straightline in the lower difficulty parameter plot. This is related to the high level of competence making easier cases almost certainly correctly identified. The organization becomes \"stuck in its own success.\" Because it is so good at the (easy) cases, it stops valuing the \"Independent Friction\" ($\\tau$) needed to solve the hard ones. The flat line represents a state of optimal sub-optimization: you are 100% accurate on the trivial, which masks the fact that you have lost the ability to scale your intelligence on the complex. We can see this further by looking at the correlations. \n"
@@ -1620,7 +1620,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "72e11cf0",
+   "id": "d0d00381",
    "metadata": {},
    "outputs": [
     {
@@ -1653,7 +1653,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1ebfd3c7",
+   "id": "ad8c559a",
    "metadata": {},
    "source": [
     "The treatment ($\\tau$) successfully reduces the correlation by inducing differential individual competence. The heatmap should shows that the dark squares of the Blocked Model have been \"shattered\" into a lighter, more fragmented pattern. But surprisingly, the accuracy curve remains flat.\n"
@@ -1662,7 +1662,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "f274d0e4",
+   "id": "5d20e016",
    "metadata": {},
    "outputs": [
     {
@@ -1684,7 +1684,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "63b01780",
+   "id": "1b77ee19",
    "metadata": {},
    "source": [
     "Adding more \"experts\" from the same block doesn't help because they all fail on the same \"Hard\" cases ($\\delta_i$). We have optimized for a specific type of excellence, and in doing so, you have sacrificed the diversity of error required to cross the final threshold to 100% accuracy. We can see how the accuracy doesn't move as we scale the $\\tau$ parameter.\n"
@@ -1693,7 +1693,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "df84ddce",
+   "id": "f2082ebd",
    "metadata": {},
    "outputs": [
     {
@@ -1713,10 +1713,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d16be77c",
+   "id": "55f38199",
    "metadata": {},
    "source": [
-    "The pair plot reveals the \"Exchange Rate\" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The \"Legibility\" of the expertise-based block is so dominant that even significant individual effort ($\\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit.\n",
+    "The pair plot reveals the \"Exchange Rate\" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The \"Legibility\" of the expertise-based block is so dominant that even significant individual effort ($\\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit. Indepdence is a necessary but not sufficient condition to drive accuracy gains through aggregation.\n",
     "\n",
     "### Comparing the IRT models: Rate of Learning\n",
     "\n",
@@ -1734,7 +1734,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "735c0807",
+   "id": "0ffa0506",
    "metadata": {},
    "outputs": [
     {
@@ -1794,7 +1794,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8c9dfa19",
+   "id": "751d6294",
    "metadata": {},
    "source": [
     "We can plot the achieved accuracy by jury size.\n"
@@ -1803,7 +1803,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "8af4f70e",
+   "id": "6a0fa885",
    "metadata": {},
    "outputs": [
     {
@@ -1824,7 +1824,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8805b2b1",
+   "id": "b9dc4a72",
    "metadata": {},
    "source": [
     "However, looking at raw accuracy can be deceptive. A model with high baseline competence (like our Expert Block) might look successful simply because it starts from a higher point. To truly understand if an organization is learning—that is, if it is successfully aggregating independent signal—we must control for these different baselines.\n",
@@ -1835,7 +1835,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "239fd65a",
+   "id": "0c2bd139",
    "metadata": {},
    "outputs": [
     {
@@ -1862,7 +1862,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "55ab0618",
+   "id": "25a4e262",
    "metadata": {},
    "source": [
     "The results reveal the high cost of incentivised legibility:\n",
@@ -1945,7 +1945,7 @@
   "widgets": {
    "application/vnd.jupyter.widget-state+json": {
     "state": {
-     "07e2682a0774466087187fe78923d6b1": {
+     "42f28b347a8e4e79aa5afc729d293b0d": {
       "model_module": "@jupyter-widgets/base",
       "model_module_version": "2.0.0",
       "model_name": "LayoutModel",
@@ -1998,7 +1998,7 @@
        "width": null
       }
      },
-     "0b2a70c6658e4e31b01b6ebf7d71340c": {
+     "43fac98b35e042a7bcb49514ec8e3229": {
       "model_module": "@jupyter-widgets/output",
       "model_module_version": "1.0.0",
       "model_name": "OutputModel",
@@ -2011,142 +2011,7 @@
        "_view_module": "@jupyter-widgets/output",
        "_view_module_version": "1.0.0",
        "_view_name": "OutputView",
-       "layout": "IPY_MODEL_07e2682a0774466087187fe78923d6b1",
-       "msg_id": "",
-       "outputs": [
-        {
-         "data": {
-          "text/html": "<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\">       </span> <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\"> Step     </span> <span style=\"font-weight: bold\"> Grad     </span> <span style=\"font-weight: bold\">        </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\"> Accept   </span> <span style=\"font-weight: bold\"> Sampling </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\">          </span> \n <span style=\"font-weight: bold\"> Progress </span> <span style=\"font-weight: bold\"> Draws </span> <span style=\"font-weight: bold\"> Diverge… </span> <span style=\"font-weight: bold\"> size     </span> <span style=\"font-weight: bold\"> evals    </span> <span style=\"font-weight: bold\"> Tuning </span> <span style=\"font-weight: bold\"> Scaling </span> <span style=\"font-weight: bold\"> Rate     </span> <span style=\"font-weight: bold\"> Speed    </span> <span style=\"font-weight: bold\"> Elapsed </span> <span style=\"font-weight: bold\"> Remaini… </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.136      31         False    1.46      0.28       72.78      0:00:27   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.113      31         False    1.52      0.62       73.92      0:00:27   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.118      31         False    1.47      0.90       74.31      0:00:26   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.133      31         False    1.50      0.50       73.81      0:00:27   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n</pre>\n",
-          "text/plain": "                                                                                                                   \n \u001b[1m          \u001b[0m \u001b[1m       \u001b[0m \u001b[1m          \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad    \u001b[0m\u001b[1m \u001b[0m \u001b[1m        \u001b[0m \u001b[1m         \u001b[0m \u001b[1m \u001b[0m\u001b[1mAccept  \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSampling\u001b[0m\u001b[1m \u001b[0m \u001b[1m         \u001b[0m \u001b[1m          \u001b[0m \n \u001b[1m \u001b[0m\u001b[1mProgress\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraws\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDiverge…\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1msize    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mevals   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mTuning\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mScaling\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRate    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSpeed   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaini…\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.136      31         False    1.46      0.28       72.78      0:00:27   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.113      31         False    1.52      0.62       73.92      0:00:27   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.118      31         False    1.47      0.90       74.31      0:00:26   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.133      31         False    1.50      0.50       73.81      0:00:27   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n"
-         },
-         "metadata": {},
-         "output_type": "display_data"
-        }
-       ],
-       "tabbable": null,
-       "tooltip": null
-      }
-     },
-     "12ba45d8f2e9455d9dadca8ee71ff776": {
-      "model_module": "@jupyter-widgets/base",
-      "model_module_version": "2.0.0",
-      "model_name": "LayoutModel",
-      "state": {
-       "_model_module": "@jupyter-widgets/base",
-       "_model_module_version": "2.0.0",
-       "_model_name": "LayoutModel",
-       "_view_count": null,
-       "_view_module": "@jupyter-widgets/base",
-       "_view_module_version": "2.0.0",
-       "_view_name": "LayoutView",
-       "align_content": null,
-       "align_items": null,
-       "align_self": null,
-       "border_bottom": null,
-       "border_left": null,
-       "border_right": null,
-       "border_top": null,
-       "bottom": null,
-       "display": null,
-       "flex": null,
-       "flex_flow": null,
-       "grid_area": null,
-       "grid_auto_columns": null,
-       "grid_auto_flow": null,
-       "grid_auto_rows": null,
-       "grid_column": null,
-       "grid_gap": null,
-       "grid_row": null,
-       "grid_template_areas": null,
-       "grid_template_columns": null,
-       "grid_template_rows": null,
-       "height": null,
-       "justify_content": null,
-       "justify_items": null,
-       "left": null,
-       "margin": null,
-       "max_height": null,
-       "max_width": null,
-       "min_height": null,
-       "min_width": null,
-       "object_fit": null,
-       "object_position": null,
-       "order": null,
-       "overflow": null,
-       "padding": null,
-       "right": null,
-       "top": null,
-       "visibility": null,
-       "width": null
-      }
-     },
-     "2a0805eacc8d44458790d4f721deda6d": {
-      "model_module": "@jupyter-widgets/base",
-      "model_module_version": "2.0.0",
-      "model_name": "LayoutModel",
-      "state": {
-       "_model_module": "@jupyter-widgets/base",
-       "_model_module_version": "2.0.0",
-       "_model_name": "LayoutModel",
-       "_view_count": null,
-       "_view_module": "@jupyter-widgets/base",
-       "_view_module_version": "2.0.0",
-       "_view_name": "LayoutView",
-       "align_content": null,
-       "align_items": null,
-       "align_self": null,
-       "border_bottom": null,
-       "border_left": null,
-       "border_right": null,
-       "border_top": null,
-       "bottom": null,
-       "display": null,
-       "flex": null,
-       "flex_flow": null,
-       "grid_area": null,
-       "grid_auto_columns": null,
-       "grid_auto_flow": null,
-       "grid_auto_rows": null,
-       "grid_column": null,
-       "grid_gap": null,
-       "grid_row": null,
-       "grid_template_areas": null,
-       "grid_template_columns": null,
-       "grid_template_rows": null,
-       "height": null,
-       "justify_content": null,
-       "justify_items": null,
-       "left": null,
-       "margin": null,
-       "max_height": null,
-       "max_width": null,
-       "min_height": null,
-       "min_width": null,
-       "object_fit": null,
-       "object_position": null,
-       "order": null,
-       "overflow": null,
-       "padding": null,
-       "right": null,
-       "top": null,
-       "visibility": null,
-       "width": null
-      }
-     },
-     "2f92caa8f3a940248a7876cc3844c7b6": {
-      "model_module": "@jupyter-widgets/output",
-      "model_module_version": "1.0.0",
-      "model_name": "OutputModel",
-      "state": {
-       "_dom_classes": [],
-       "_model_module": "@jupyter-widgets/output",
-       "_model_module_version": "1.0.0",
-       "_model_name": "OutputModel",
-       "_view_count": null,
-       "_view_module": "@jupyter-widgets/output",
-       "_view_module_version": "1.0.0",
-       "_view_name": "OutputView",
-       "layout": "IPY_MODEL_5b7fae1a23bc4f9f8b5269ffc178f673",
+       "layout": "IPY_MODEL_ef2580c415564850bf9d96134066aacb",
        "msg_id": "",
        "outputs": [
         {
@@ -2162,7 +2027,7 @@
        "tooltip": null
       }
      },
-     "34ae629fe7de4e14aa7c6a61c849f6a6": {
+     "5566e9adbfe54c9ead8c2300767838b7": {
       "model_module": "@jupyter-widgets/output",
       "model_module_version": "1.0.0",
       "model_name": "OutputModel",
@@ -2175,7 +2040,7 @@
        "_view_module": "@jupyter-widgets/output",
        "_view_module_version": "1.0.0",
        "_view_name": "OutputView",
-       "layout": "IPY_MODEL_12ba45d8f2e9455d9dadca8ee71ff776",
+       "layout": "IPY_MODEL_b48873c7dee6451bbea0fb3051f4f7c3",
        "msg_id": "",
        "outputs": [
         {
@@ -2191,7 +2056,7 @@
        "tooltip": null
       }
      },
-     "3ef97ef3c56e42d6adcf9dac7e8e9638": {
+     "6f27ccd894014d87837939f9646bb6a7": {
       "model_module": "@jupyter-widgets/base",
       "model_module_version": "2.0.0",
       "model_name": "LayoutModel",
@@ -2244,7 +2109,7 @@
        "width": null
       }
      },
-     "52c3fc75c37b47b6a6bba659392c9b2e": {
+     "788e1faaa28e4e63a23d799cb7f07687": {
       "model_module": "@jupyter-widgets/output",
       "model_module_version": "1.0.0",
       "model_name": "OutputModel",
@@ -2257,13 +2122,13 @@
        "_view_module": "@jupyter-widgets/output",
        "_view_module_version": "1.0.0",
        "_view_name": "OutputView",
-       "layout": "IPY_MODEL_b2b495a6c9fe41c693b59873849caa9b",
+       "layout": "IPY_MODEL_42f28b347a8e4e79aa5afc729d293b0d",
        "msg_id": "",
        "outputs": [
         {
          "data": {
-          "text/html": "<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\">       </span> <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\"> Step     </span> <span style=\"font-weight: bold\"> Grad     </span> <span style=\"font-weight: bold\">        </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\"> Accept   </span> <span style=\"font-weight: bold\"> Sampling </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\">          </span> \n <span style=\"font-weight: bold\"> Progress </span> <span style=\"font-weight: bold\"> Draws </span> <span style=\"font-weight: bold\"> Diverge… </span> <span style=\"font-weight: bold\"> size     </span> <span style=\"font-weight: bold\"> evals    </span> <span style=\"font-weight: bold\"> Tuning </span> <span style=\"font-weight: bold\"> Scaling </span> <span style=\"font-weight: bold\"> Rate     </span> <span style=\"font-weight: bold\"> Speed    </span> <span style=\"font-weight: bold\"> Elapsed </span> <span style=\"font-weight: bold\"> Remaini… </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.086      63         False    2.05      0.55       66.51      0:00:30   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.068      63         False    2.08      0.40       68.23      0:00:29   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.089      31         False    2.03      0.59       67.96      0:00:29   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.078      31         False    2.00      0.57       67.67      0:00:29   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n</pre>\n",
-          "text/plain": "                                                                                                                   \n \u001b[1m          \u001b[0m \u001b[1m       \u001b[0m \u001b[1m          \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad    \u001b[0m\u001b[1m \u001b[0m \u001b[1m        \u001b[0m \u001b[1m         \u001b[0m \u001b[1m \u001b[0m\u001b[1mAccept  \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSampling\u001b[0m\u001b[1m \u001b[0m \u001b[1m         \u001b[0m \u001b[1m          \u001b[0m \n \u001b[1m \u001b[0m\u001b[1mProgress\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraws\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDiverge…\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1msize    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mevals   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mTuning\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mScaling\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRate    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSpeed   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaini…\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.086      63         False    2.05      0.55       66.51      0:00:30   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.068      63         False    2.08      0.40       68.23      0:00:29   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.089      31         False    2.03      0.59       67.96      0:00:29   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.078      31         False    2.00      0.57       67.67      0:00:29   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n"
+          "text/html": "<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\">       </span> <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\"> Step     </span> <span style=\"font-weight: bold\"> Grad     </span> <span style=\"font-weight: bold\">        </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\"> Accept   </span> <span style=\"font-weight: bold\"> Sampling </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\">          </span> \n <span style=\"font-weight: bold\"> Progress </span> <span style=\"font-weight: bold\"> Draws </span> <span style=\"font-weight: bold\"> Diverge… </span> <span style=\"font-weight: bold\"> size     </span> <span style=\"font-weight: bold\"> evals    </span> <span style=\"font-weight: bold\"> Tuning </span> <span style=\"font-weight: bold\"> Scaling </span> <span style=\"font-weight: bold\"> Rate     </span> <span style=\"font-weight: bold\"> Speed    </span> <span style=\"font-weight: bold\"> Elapsed </span> <span style=\"font-weight: bold\"> Remaini… </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.136      31         False    1.46      0.28       70.22      0:00:28   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.113      31         False    1.52      0.62       71.42      0:00:27   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.118      31         False    1.47      0.90       71.79      0:00:27   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.133      31         False    1.50      0.50       71.13      0:00:28   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n</pre>\n",
+          "text/plain": "                                                                                                                   \n \u001b[1m          \u001b[0m \u001b[1m       \u001b[0m \u001b[1m          \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad    \u001b[0m\u001b[1m \u001b[0m \u001b[1m        \u001b[0m \u001b[1m         \u001b[0m \u001b[1m \u001b[0m\u001b[1mAccept  \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSampling\u001b[0m\u001b[1m \u001b[0m \u001b[1m         \u001b[0m \u001b[1m          \u001b[0m \n \u001b[1m \u001b[0m\u001b[1mProgress\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraws\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDiverge…\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1msize    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mevals   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mTuning\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mScaling\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRate    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSpeed   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaini…\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.136      31         False    1.46      0.28       70.22      0:00:28   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.113      31         False    1.52      0.62       71.42      0:00:27   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.118      31         False    1.47      0.90       71.79      0:00:27   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.133      31         False    1.50      0.50       71.13      0:00:28   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n"
          },
          "metadata": {},
          "output_type": "display_data"
@@ -2273,7 +2138,36 @@
        "tooltip": null
       }
      },
-     "5b7fae1a23bc4f9f8b5269ffc178f673": {
+     "8ad1f4cb248f4c7d8ec173416e565f1e": {
+      "model_module": "@jupyter-widgets/output",
+      "model_module_version": "1.0.0",
+      "model_name": "OutputModel",
+      "state": {
+       "_dom_classes": [],
+       "_model_module": "@jupyter-widgets/output",
+       "_model_module_version": "1.0.0",
+       "_model_name": "OutputModel",
+       "_view_count": null,
+       "_view_module": "@jupyter-widgets/output",
+       "_view_module_version": "1.0.0",
+       "_view_name": "OutputView",
+       "layout": "IPY_MODEL_d56767a0450f47ee8fb823dc704215c3",
+       "msg_id": "",
+       "outputs": [
+        {
+         "data": {
+          "text/html": "<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\">       </span> <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\"> Step     </span> <span style=\"font-weight: bold\"> Grad     </span> <span style=\"font-weight: bold\">        </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\"> Accept   </span> <span style=\"font-weight: bold\"> Sampling </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\">          </span> \n <span style=\"font-weight: bold\"> Progress </span> <span style=\"font-weight: bold\"> Draws </span> <span style=\"font-weight: bold\"> Diverge… </span> <span style=\"font-weight: bold\"> size     </span> <span style=\"font-weight: bold\"> evals    </span> <span style=\"font-weight: bold\"> Tuning </span> <span style=\"font-weight: bold\"> Scaling </span> <span style=\"font-weight: bold\"> Rate     </span> <span style=\"font-weight: bold\"> Speed    </span> <span style=\"font-weight: bold\"> Elapsed </span> <span style=\"font-weight: bold\"> Remaini… </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.210      15         False    2.53      0.60       102.37     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.210      15         False    2.55      0.73       102.46     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.236      15         False    2.59      0.52       101.84     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.172      15         False    2.55      0.86       101.47     0:00:19   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n</pre>\n",
+          "text/plain": "                                                                                                                   \n \u001b[1m          \u001b[0m \u001b[1m       \u001b[0m \u001b[1m          \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad    \u001b[0m\u001b[1m \u001b[0m \u001b[1m        \u001b[0m \u001b[1m         \u001b[0m \u001b[1m \u001b[0m\u001b[1mAccept  \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSampling\u001b[0m\u001b[1m \u001b[0m \u001b[1m         \u001b[0m \u001b[1m          \u001b[0m \n \u001b[1m \u001b[0m\u001b[1mProgress\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraws\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDiverge…\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1msize    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mevals   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mTuning\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mScaling\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRate    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSpeed   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaini…\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.210      15         False    2.53      0.60       102.37     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.210      15         False    2.55      0.73       102.46     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.236      15         False    2.59      0.52       101.84     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.172      15         False    2.55      0.86       101.47     0:00:19   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n"
+         },
+         "metadata": {},
+         "output_type": "display_data"
+        }
+       ],
+       "tabbable": null,
+       "tooltip": null
+      }
+     },
+     "b48873c7dee6451bbea0fb3051f4f7c3": {
       "model_module": "@jupyter-widgets/base",
       "model_module_version": "2.0.0",
       "model_name": "LayoutModel",
@@ -2326,7 +2220,7 @@
        "width": null
       }
      },
-     "985b46e9147542de99c16257379bffa4": {
+     "d025ac33d36045649ec95da344b3e9c1": {
       "model_module": "@jupyter-widgets/output",
       "model_module_version": "1.0.0",
       "model_name": "OutputModel",
@@ -2339,7 +2233,7 @@
        "_view_module": "@jupyter-widgets/output",
        "_view_module_version": "1.0.0",
        "_view_name": "OutputView",
-       "layout": "IPY_MODEL_2a0805eacc8d44458790d4f721deda6d",
+       "layout": "IPY_MODEL_6f27ccd894014d87837939f9646bb6a7",
        "msg_id": "",
        "outputs": [
         {
@@ -2355,7 +2249,7 @@
        "tooltip": null
       }
      },
-     "b2b495a6c9fe41c693b59873849caa9b": {
+     "d56767a0450f47ee8fb823dc704215c3": {
       "model_module": "@jupyter-widgets/base",
       "model_module_version": "2.0.0",
       "model_name": "LayoutModel",
@@ -2408,7 +2302,113 @@
        "width": null
       }
      },
-     "d82d020428484ab787bcedd38a77479b": {
+     "ef2580c415564850bf9d96134066aacb": {
+      "model_module": "@jupyter-widgets/base",
+      "model_module_version": "2.0.0",
+      "model_name": "LayoutModel",
+      "state": {
+       "_model_module": "@jupyter-widgets/base",
+       "_model_module_version": "2.0.0",
+       "_model_name": "LayoutModel",
+       "_view_count": null,
+       "_view_module": "@jupyter-widgets/base",
+       "_view_module_version": "2.0.0",
+       "_view_name": "LayoutView",
+       "align_content": null,
+       "align_items": null,
+       "align_self": null,
+       "border_bottom": null,
+       "border_left": null,
+       "border_right": null,
+       "border_top": null,
+       "bottom": null,
+       "display": null,
+       "flex": null,
+       "flex_flow": null,
+       "grid_area": null,
+       "grid_auto_columns": null,
+       "grid_auto_flow": null,
+       "grid_auto_rows": null,
+       "grid_column": null,
+       "grid_gap": null,
+       "grid_row": null,
+       "grid_template_areas": null,
+       "grid_template_columns": null,
+       "grid_template_rows": null,
+       "height": null,
+       "justify_content": null,
+       "justify_items": null,
+       "left": null,
+       "margin": null,
+       "max_height": null,
+       "max_width": null,
+       "min_height": null,
+       "min_width": null,
+       "object_fit": null,
+       "object_position": null,
+       "order": null,
+       "overflow": null,
+       "padding": null,
+       "right": null,
+       "top": null,
+       "visibility": null,
+       "width": null
+      }
+     },
+     "f2b053bdd3504e58938e993dc3023f01": {
+      "model_module": "@jupyter-widgets/base",
+      "model_module_version": "2.0.0",
+      "model_name": "LayoutModel",
+      "state": {
+       "_model_module": "@jupyter-widgets/base",
+       "_model_module_version": "2.0.0",
+       "_model_name": "LayoutModel",
+       "_view_count": null,
+       "_view_module": "@jupyter-widgets/base",
+       "_view_module_version": "2.0.0",
+       "_view_name": "LayoutView",
+       "align_content": null,
+       "align_items": null,
+       "align_self": null,
+       "border_bottom": null,
+       "border_left": null,
+       "border_right": null,
+       "border_top": null,
+       "bottom": null,
+       "display": null,
+       "flex": null,
+       "flex_flow": null,
+       "grid_area": null,
+       "grid_auto_columns": null,
+       "grid_auto_flow": null,
+       "grid_auto_rows": null,
+       "grid_column": null,
+       "grid_gap": null,
+       "grid_row": null,
+       "grid_template_areas": null,
+       "grid_template_columns": null,
+       "grid_template_rows": null,
+       "height": null,
+       "justify_content": null,
+       "justify_items": null,
+       "left": null,
+       "margin": null,
+       "max_height": null,
+       "max_width": null,
+       "min_height": null,
+       "min_width": null,
+       "object_fit": null,
+       "object_position": null,
+       "order": null,
+       "overflow": null,
+       "padding": null,
+       "right": null,
+       "top": null,
+       "visibility": null,
+       "width": null
+      }
+     },
+     "f60e1ad7237443afb6b485638cb1936a": {
       "model_module": "@jupyter-widgets/output",
       "model_module_version": "1.0.0",
       "model_name": "OutputModel",
@@ -2421,13 +2421,13 @@
        "_view_module": "@jupyter-widgets/output",
        "_view_module_version": "1.0.0",
        "_view_name": "OutputView",
-       "layout": "IPY_MODEL_3ef97ef3c56e42d6adcf9dac7e8e9638",
+       "layout": "IPY_MODEL_f2b053bdd3504e58938e993dc3023f01",
        "msg_id": "",
        "outputs": [
         {
          "data": {
-          "text/html": "<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\">       </span> <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\"> Step     </span> <span style=\"font-weight: bold\"> Grad     </span> <span style=\"font-weight: bold\">        </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\"> Accept   </span> <span style=\"font-weight: bold\"> Sampling </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\">          </span> \n <span style=\"font-weight: bold\"> Progress </span> <span style=\"font-weight: bold\"> Draws </span> <span style=\"font-weight: bold\"> Diverge… </span> <span style=\"font-weight: bold\"> size     </span> <span style=\"font-weight: bold\"> evals    </span> <span style=\"font-weight: bold\"> Tuning </span> <span style=\"font-weight: bold\"> Scaling </span> <span style=\"font-weight: bold\"> Rate     </span> <span style=\"font-weight: bold\"> Speed    </span> <span style=\"font-weight: bold\"> Elapsed </span> <span style=\"font-weight: bold\"> Remaini… </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.210      15         False    2.53      0.60       101.96     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.210      15         False    2.55      0.73       102.69     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.236      15         False    2.59      0.52       101.72     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.172      15         False    2.55      0.86       101.02     0:00:19   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n</pre>\n",
-          "text/plain": "                                                                                                                   \n \u001b[1m          \u001b[0m \u001b[1m       \u001b[0m \u001b[1m          \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad    \u001b[0m\u001b[1m \u001b[0m \u001b[1m        \u001b[0m \u001b[1m         \u001b[0m \u001b[1m \u001b[0m\u001b[1mAccept  \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSampling\u001b[0m\u001b[1m \u001b[0m \u001b[1m         \u001b[0m \u001b[1m          \u001b[0m \n \u001b[1m \u001b[0m\u001b[1mProgress\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraws\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDiverge…\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1msize    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mevals   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mTuning\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mScaling\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRate    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSpeed   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaini…\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.210      15         False    2.53      0.60       101.96     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.210      15         False    2.55      0.73       102.69     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.236      15         False    2.59      0.52       101.72     0:00:19   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.172      15         False    2.55      0.86       101.02     0:00:19   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n"
+          "text/html": "<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\">       </span> <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\"> Step     </span> <span style=\"font-weight: bold\"> Grad     </span> <span style=\"font-weight: bold\">        </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\"> Accept   </span> <span style=\"font-weight: bold\"> Sampling </span> <span style=\"font-weight: bold\">         </span> <span style=\"font-weight: bold\">          </span> \n <span style=\"font-weight: bold\"> Progress </span> <span style=\"font-weight: bold\"> Draws </span> <span style=\"font-weight: bold\"> Diverge… </span> <span style=\"font-weight: bold\"> size     </span> <span style=\"font-weight: bold\"> evals    </span> <span style=\"font-weight: bold\"> Tuning </span> <span style=\"font-weight: bold\"> Scaling </span> <span style=\"font-weight: bold\"> Rate     </span> <span style=\"font-weight: bold\"> Speed    </span> <span style=\"font-weight: bold\"> Elapsed </span> <span style=\"font-weight: bold\"> Remaini… </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.086      63         False    2.05      0.55       63.66      0:00:31   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.068      63         False    2.08      0.40       65.39      0:00:30   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.089      31         False    2.03      0.59       65.12      0:00:30   0:00:00   \n                                                                                    draws/s                        \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   2000    0          0.078      31         False    2.00      0.57       64.76      0:00:30   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n</pre>\n",
+          "text/plain": "                                                                                                                   \n \u001b[1m          \u001b[0m \u001b[1m       \u001b[0m \u001b[1m          \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad    \u001b[0m\u001b[1m \u001b[0m \u001b[1m        \u001b[0m \u001b[1m         \u001b[0m \u001b[1m \u001b[0m\u001b[1mAccept  \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSampling\u001b[0m\u001b[1m \u001b[0m \u001b[1m         \u001b[0m \u001b[1m          \u001b[0m \n \u001b[1m \u001b[0m\u001b[1mProgress\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraws\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDiverge…\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1msize    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mevals   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mTuning\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mScaling\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRate    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSpeed   \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaini…\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.086      63         False    2.05      0.55       63.66      0:00:31   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.068      63         False    2.08      0.40       65.39      0:00:30   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.089      31         False    2.03      0.59       65.12      0:00:30   0:00:00   \n                                                                                    draws/s                        \n  \u001b[38;2;31;119;180m━━━━━━━━\u001b[0m   2000    0          0.078      31         False    2.00      0.57       64.76      0:00:30   0:00:00   \n                                                                                    draws/s                        \n                                                                                                                   \n"
          },
          "metadata": {},
          "output_type": "display_data"

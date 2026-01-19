@@ -40,7 +40,7 @@ On the surface, the organization is a smooth-running machine optimized for "alig
 
 But when familiar process becomes sacred process, something breaks. In our quest for "alignment," we inadvertently destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences._
 
-To understand why, we must look into how large organisations "see" the world.
+To understand why, we must look into how large organisations "see" the world. We'll draw out two perspectives: the anthropology of incentivised blindness and the eighteenth-century mathematics of collective judgment.
 
 - James C. Scott in _Seeing like a State_ warns us of incentivised "Legibility". The tendency of central authorities to flatten complex, organic systems into simplified maps they can understand. When a state (or a CEO) cannot read the wild "forest" of local expertise, they replace it with a "plantation" of identical, predictable units, and encourage conformity.
 
@@ -855,7 +855,7 @@ ax[0].set_title("Block Model - Accuracy of Majority Vote \n With Increasing Juro
 
 ```
 
-Even as we add 10, 20, or 30 jurors, the accuracy doesn't improve significantly. Why? Because if the "Block" is wrong about a specific hard case, adding more members of that block just increases the confidence in the error, not the chance of finding the truth. The organization is perfectly "legible", but it has created an epistemic ceiling.
+Even as we add 10, 20, or 30 jurors, the accuracy doesn't improve significantly. Why? Because if the "Block" is wrong about a specific hard case, adding more members of that block just increases the confidence in the error, not the chance of finding the truth. 
 
 ### The Full IRT model: Difference, Difficulty, Blocks and Hetereogenous Noise
 
@@ -901,7 +901,7 @@ Adding more "experts" from the same block doesn't help because they all fail on 
 az.plot_pair(idata_full, var_names=['expected_jury_accuracy_30', 'tau_mu', 'tau_sigma']);
 ```
 
-The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit.
+The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit. Indepdence is a necessary but not sufficient condition to drive accuracy gains through aggregation.
 
 ### Comparing the IRT models: Rate of Learning
 
