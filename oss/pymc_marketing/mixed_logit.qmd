@@ -1,0 +1,54 @@
+---
+title: "Bayesian Mixed Logit in PyMC Marketing"
+author: "Nathaniel Forde"
+date: "2026-01-20"
+categories: ["utility", "consumer choice", "causal inference" ]
+image: "mixed_logit_trace.png"
+abstract: "Bayesian Estimation of Mixed Logit Discrete Choice Model"
+---
+
+# Mixed Logit Choice Models for Consumer Choice
+
+This addition completes the core discrete-choice toolkit, sitting alongside:
+
+- Multinomial Logit
+- Nested Logit
+- Mixed Logit (new)
+
+The implementation supports:
+
+- ✅ Individual-level preference heterogeneity via hierarchical random coefficients
+- ✅ Panel data with group-level effects
+- ✅ Non-centered parameterizations for better sampling
+- ✅ Control-function correction for price endogeneity using instruments
+- ✅ Full posterior & counterfactual simulation for policy and pricing interventions
+- ✅ Wilikinson Style Formula interface
+
+Mixed logit is the workhorse model behind modern preference estimation, WTP analysis, and market simulations — and it’s now fully Bayesian, transparent, and extensible in PyMC.
+
+The latent utility for alternative $j$ is
+
+$$
+U_{njt}
+=
+\underbrace{
+\boldsymbol{\alpha}
+}_{\text{alt-specific fixed effects}}
++
+\underbrace{
+\mathbf{x}_{njt}^\top \boldsymbol{\beta}_n
+}_{\text{alt-specific random effects}}
++
+\underbrace{
+\mathbf{z}_{n}^\top \boldsymbol{\gamma}_j
+}_{\text{individual-specific effects}}
++
+\overbrace{
+\underbrace{
+\mathbf{r}_{njt}^\top \boldsymbol{\lambda_{cf}}
+}_{\text{control function}}
+}^{\text{optional endogeneity correction}}
++
+\varepsilon_{njt}
+$$
+

@@ -15,6 +15,7 @@
       "/talks/pycon_ireland_recording/pycon_ireland_recording.html",
       "/talks/missing_data/missing_data_causal.html",
       "/talks/bayesian_mixer/bayesian_mixer_london.html",
+      "/talks/utility_and_choice/discrete_choice_and_utility.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
@@ -35,6 +36,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/pymc_marketing/mixed_logit.html",
       "/oss/causalpy/variable_selection_joint_models.html",
       "/oss/pymc/sem_workflow.html",
       "/oss/causalpy/paradox_propensity.html",
