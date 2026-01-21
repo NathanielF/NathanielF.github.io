@@ -347,7 +347,7 @@ treatment = np.random.binomial(1, .5, size=N_JURORS)
 votes_full, t_theta_full, t_delta_full, truth_full = simulate_irt_data(
     N_CASES, N_JURORS,
     true_sigma_theta=0.8,
-    true_sigma_delta=3,
+    true_sigma_delta=4,
     block_id=BLOCK_ID,
     true_sigma_block=2,
     treatment=treatment,
@@ -1000,7 +1000,7 @@ plot_skill_corr(idata_full)
 
 ```
 
-The treatment ($\tau$) successfully reduces structural correlation by inducing differential individual competence. We can imagine these treatments as training in radical candour, or similar inducements to challenge the status quo. But shared difficulty of the problem space still drives a consistent error rates which translates to a latent correlation The heatmap should shows that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But we retain a low-grade common correlation. Because of this, the accuracy curve remains flat. 
+The treatment ($\tau$) successfully reduces structural correlation by inducing differential individual competence. We can imagine these treatments as training in radical candour, or similar inducements to challenge the status quo. But shared difficulty  of the problem space and common treatment still drives a consistent error rates which translates to a latent correlation. The heatmap should show that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But we retain a low-grade common correlation. It can be read as tragedy of good intentions. Management aims to decorrelate individual error through better training, but the training is a blunt instrument and just embeds shared methodological truisms and ways of working. Because of this combination of factors, the accuracy curve remains flat. 
 
 ```{python}
 
