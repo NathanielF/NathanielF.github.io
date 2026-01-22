@@ -44,9 +44,9 @@ To understand why, we must look into how large organisations "see" the world. We
 
 - James C. Scott in _Seeing like a State_ warns us of incentivised "Legibility". The tendency of central authorities to flatten complex, organic systems into simplified maps they can understand. When a state (or a CEO) cannot read the wild "forest" of local expertise, they replace it with a "plantation" of identical, predictable units, and encourage conformity.
 
-- C. Thi Nguyen warns us how these dynamics drives "Value Capture": the tendency of individuals to outsource their own reasoning to these external metrics and organisational goals. We trade the murky, difficult pursuit of truth for the crisp, legible satisfaction of "meeting the KPI" or "hitting quota".
+- C. Thi Nguyen warns us how these dynamics drive "Value Capture": the tendency of individuals to outsource their own reasoning to these external metrics and organisational goals. We trade the murky, difficult pursuit of truth for the crisp, legible satisfaction of "meeting the KPI" or "hitting quota".
 
-This post is a stress test of that tradeoff. We will use the Condorcet Jury Theorem — the mathematical foundation of democracy and diversification — to demonstrate a flaw in the modern corporate operating system. By optimizing for Legibility (standardization) and Value Capture (alignment), organizations manufacture the very statistical homogeniety that predicts their collapse and limits their potential.
+This post is a stress test of that tradeoff. We will use the Condorcet Jury Theorem — the mathematical foundation of democracy and diversification — to demonstrate a flaw in the modern corporate operating system. By optimizing for Legibility (standardization) and Value Capture (alignment), organizations manufacture the very statistical homogeneity that predicts their collapse and limits their potential.
 
 ::: {.callout-note}
 ## The Structure of the Argument
@@ -107,14 +107,14 @@ Let a group of $n$ independent individuals (a "jury") be tasked with choosing be
 
 Conversely, if $p < 0.5$, increasing the size of the jury only increases the probability that the group will arrive at the *wrong* conclusion, with that probability approaching $1$ as $n$ grows.
 
-This is a theorem. We're not showing that it is incorrect, but we are stress-testing it in finite domains to gauge it's applicability to practical decision making. 
+This is a theorem. We're not showing that it is incorrect, but we are stress-testing it in finite domains to gauge its applicability to practical decision making. 
 :::
 
 This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and scale. But hiring budgets are capped somewhere before infinity and independent thought is rarer than you'd hope.
 
 ### Incentivised Legibility: Modeling "The Block" Effects
 
-Even if individuals people were wrong, they were wrong in their own unique ways and this cancels out. Those people wrong today, can be right tomorrow if they remain independent actors. But James C. Scott’s theory of incentivised legibility suggests something darker. Imposed strictures on planning and acting short-circuit our ability to be find signal on hard problems.
+Even if individual people were wrong, they were wrong in their own unique ways and this cancels out. Those people wrong today, can be right tomorrow if they remain independent actors. But James C. Scott’s theory of incentivised legibility suggests something darker. Imposed strictures on planning and acting short-circuit our ability to be find signal on hard problems.
 
 When an organization demands "standardization"—standardized training, standardized tools, standardized culture—it is actively working to eliminate unique error. It is trying to make every employee "readable" to the center. In statistical terms, legibility is drives correlation and collapses independence.
 
@@ -129,7 +129,7 @@ This lets us ask: when case *i* is hard (large $|\delta_i|$), do errors cluster 
 
 #### Shared Case Difficulty and Shared Thinking: When Everyone Fails Together
 
-The motivation behind is IRT models is that some cases are genuinely harder than others. The interaction between individual comptence and case difficulty will cause even competent jurors to fail together if the difficulty is extreme. This is the first structural break in the independence assumption required for CJT.
+The motivation behind IRT models is that some cases are genuinely harder than others. The interaction between individual comptence and case difficulty will cause even competent jurors to fail together if the difficulty is extreme. This is the first structural break in the independence assumption required for CJT.
 
 Consider the difference between a routine budget approval and an "Ambiguous Pivot" to a new market. On the pivot, even the most competent jurors will struggle. More importantly, their shared expertise in the current market can drive them to struggle in the same direction. Case difficulty creates correlated signal loss: when the evidence is weak, everyone’s instruments fail simultaneously. 
 
@@ -159,7 +159,6 @@ def simulate_irt_data(
     seed=None
 ):
     """
-    Backwards-compatible with your original signature, with an optional correlated-error mode.
 
     To turn ON correlated block errors, set:
       block_type="groupthink_corr"  (or "expertise_corr" or "mixed_corr")
@@ -405,8 +404,10 @@ Crucially, because this effect is shared, it creates the **correlated error** th
 This is our sensitivity parameter. It represents an intervention (like Red Teaming or independent auditing) that attempts to decouple the juror from their block. We model this hierarchically to allow for heterogeneous responses to the same organizational intervention:
 $$\tau_j = \tau_\mu + \tau_{\sigma} \cdot z_j$$
 
+The idea is induce a shock and push the juror's skill away from their likely prior. 
+
 #### 5. Latent correlation terms (γ).**
-To relax conditional independence, we introduce latent correlation terms γ that capture unobserved, case-specific dependence among jurors. For each case $i$ and block $b$, $\gamma_{ib}$ enters additively on the log-odds scale, shifting all jurors in the same block in the same direction. These terms represent shared shocks or common informational influences not explained by individual competence or case difficulty. $\gamma$ does not alter marginal juror accuracy; instead, it induces correlation among votes conditional on the truth state. 
+To relax conditional independence, we introduce latent correlation terms γ that capture unobserved, case-specific dependence among jurors. For each case $i$ and block $b$, $\gamma_{ib}$ enters additively on the log-odds scale, shifting all jurors in the same block in the same direction. These terms represent shared shocks or common informational influences not explained by individual competence or case difficulty. $\gamma$ does not alter marginal juror accuracy; instead, it induces correlation among votes conditional on the truth state. In practice, this can be due to shared information sources, the adoption of frameworks or similar behaviour shaping mechanisms. 
 
 $$
 \gamma_{i b} \sim \mathcal{N}(0, \sigma_\gamma^2)
@@ -418,7 +419,20 @@ $$
 
 When the variance of $\gamma$ is small, votes are approximately independent and classical CJT logic applies. As this variance increases, correlated errors emerge, degrading or overturning majority reliability even when individual competence exceeds chance. So we have two block effect mechanisms: (1) skill similarity and correlated responses to case difficulty.
 
-We implement these structures in PyMC as follows:
+We have the following components:
+
+| Component | Symbol | Mathematical Role | Structural Interpretation | Effect on Dependence |
+|---------|--------|-------------------|---------------------------|---------------------|
+| Juror Ability | $\theta_j$ | Baseline individual competence on the logit scale | Latent skill of juror $j$; captures heterogeneity in judgment quality | Independent across jurors (by itself) |
+| Case Difficulty | $\delta_i$ | Subtracted from ability for all jurors on case $i$ | Shared signal loss; hard cases reduce accuracy for everyone simultaneously | Shared across jurors on the same case, but does **not directly** induce correlation |
+| Block Mean Effect | $\beta_{b(j)}$ | Additive block-specific shift | Shared expertise (positive) or groupthink/value capture (negative); Scott’s legibility | Induces correlated bias across jurors in the same block |
+| Skill Similarity (Implicit) | $\kappa_b$ | Scales within-block dispersion of $\theta_j$ | Degree of conformity or specialization within blocks | Reduces effective number of independent signals |
+| Latent Correlation Shock | $\gamma_{ib}$ | Case-by-block additive logit shock | Shared informational or behavioral shocks (e.g. common frameworks, narratives) | **Directly induces correlated errors** within blocks |
+| Treatment Shock (Mean) | $\tau_\mu$ | Population-level treatment shift | Average effect of interventions (e.g. red teaming, audits) | Breaks block alignment on average |
+| Treatment Shock (Heterogeneity) | $\tau_\sigma z_j$ | Juror-specific deviation from treatment mean | Differential susceptibility to intervention | Restores diversity, weakens correlation |
+| Correlation Scale | $\sigma_\gamma$ | Controls variance of $\gamma_{ib}$ | Strength of social/organizational coupling | Governs transition from CJT to correlated-failure regime |
+
+We now implement these structures in PyMC. The Bayesian setting is apt here. In our modelling, the outcomes are shaped by the interplay between the prior and the likelihood. When data is abundant the likelihood wins out, but when it's scarce the model will fall back on its priors. Similarly, in decision making organisations will fall back frameworks and heuristics driven by block behaviors when the cases are hard. These heuristics are organisationally encoded priors. 
 
 ```{python}
 # ============================================================================
@@ -435,7 +449,7 @@ def fit_irt_model(
     # --- NEW OPTIONS ---
     correlated_blocks=False,          # turn on gamma[i, b] term
     sigma_block_case_prior=1.0,       # prior scale for correlation strength
-    scale_corr_by_difficulty=True,    # match your sim's w(|delta|)
+    scale_corr_by_difficulty=True,    # match sim's w(|delta|)
 ):
     """
     Fit IRT model conditioned on known ground truth.
@@ -560,13 +574,13 @@ In real organizations, people don't arrive at decisions in isolation. They clust
 - Information access: The sales team sees customer feedback the finance team never sees; executives receive filtered summaries while front-line workers see raw reality
 - Incentive structures: Different departments optimize for different metrics, creating systematically different biases
 - Social networks: People who talk to each other regularly start thinking alike, even without realizing it
-- Algorithmic scaffolding: The finance team uses the same Excel macros; the strategy team uses the same slide templates; the developers use the same code-completion prompts. When the tool suggests the next step, the user stops thinking about the alternative
+- Algorithmic scaffolding: The finance team uses the same Excel macros; the strategy team uses the same slide templates; the developers use the same code-completion prompts. When the tool suggests the next step, the user stops thinking about the alternative. We will return to this topic below.
 
-These patterns promote an consolidation of epistemological standards. Members of a block don't just share surface characteristics; they share ways of knowing and hence ways of being wrong. We saw that case difficulty created correlation across the entire jury for specific cases. But block effects create persistent correlation within subgroups across all cases. This is structurally worse. And then when evidence is ambiguous and cases difficult, people fall back on their frameworks, and if everyone shares frameworks, everyone fails together. In this way case-difficulty and group-think interact to drive an organisation to overly simplified, but easily defensible heuristics.
+These patterns promote a consolidation of epistemological standards. Members of a block don't just share surface characteristics; they share ways of knowing and hence ways of being wrong. We saw that case difficulty created correlation across the entire jury for specific cases. But block effects create persistent correlation within subgroups across all cases. This is structurally worse. And then when evidence is ambiguous and cases difficult, people fall back on their frameworks, and if everyone shares frameworks, everyone fails together. In this way case-difficulty and group-think interact to drive an organisation to overly simplified, but easily defensible heuristics.
 
-> "Value capture happens when a person or group adopts an externally-sourced value as their own, without adapting it to their particular context... In value capture, we outsource the process of value deliberation. And, as with other forms of outsourcing, there is a trade-off...When we adopt those values, we gain access to readymade methods for justification" - Nguygen
+> "Value capture happens when a person or group adopts an externally-sourced value as their own, without adapting it to their particular context... In value capture, we outsource the process of value deliberation. And, as with other forms of outsourcing, there is a trade-off...When we adopt those values, we gain access to readymade methods for justification" - Nguyen
 
-The argument here is that the adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignores relevant detail. We lose focus on local context we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. Nguygen also suggests there is something horrifying about value capture - you adopt the corporate value, but it co-opts you. These effects work together to confound organisational goals and limit our ability to solve collective problems. 
+The argument here is that the adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignores relevant detail. We lose focus on local context when we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. Nguyen also suggests there is something horrifying about value capture - you adopt the corporate value, but it co-opts you. These effects work together to confound organisational goals and limit our ability to solve collective problems. 
 
 ### Fitting the Model and Interrogating the Implications
 
@@ -1111,6 +1125,7 @@ Solving "Hard" problems (the ones on the steep, unforgiving part of our difficul
 In the end, we must choose: do we want an organization that is easy to see, or one that is actually capable of seeing?
 
 ## Coda: Shared Priors and Foundation Models
+We've suggested throughout that "block" effects can warp outcomes in undesirable ways. There are endless drives to grouping behavior, but here we'll take a moment to focus on the effects of algorithmic scaffolding shapes information consumption and action. 
 
 In 2003, Edward Tufte published a quietly cutting critique of PowerPoint titled *The Cognitive Style of PowerPoint*. He argued that software didn't just present information, but that it *structured how people thought*. The hierarchical bullet point list, the pressure to fit complex arguments on a single slide, the aesthetic of "professionalism" over precision. All of it conspired to flatten nuance and discourage rigorous analysis. It killed people. 
 
@@ -1129,8 +1144,8 @@ Within any work you are pulled between the incentive of external legibility and 
 
 #### False Binaries and Stylised Facts
 
-The Condorcet Jury theorem relies on the Stylised fact that the world presents us an array of 0/1 choices. The tension we've been discussing suggests the world pulls us between incentivised legibility and genuine autonomy. While the tension is real, it's a little too crude to pretend this is a binary decision. So while the advent of Generative AI and the proliferation of foundation models weights the scale toward incentivised legibility and starkly standardised process, the world does not exist in the training data. There is a real opportunity to use this technology to scaffold your thoughts, and climb to levels unimagined even six months ago, but there is also a real risk. The frictionless epistemology of LLM aided discovery is the real toy-model. It's a massively scaled and impressively competent toy model, but it still smoothes over the fruitful friction of testing our ideas against the world. The drive for homogeniety, like the push to find answers in the training data represents a retreat from the world and divestment of responsibility when we can least afford it. 
+The Condorcet Jury theorem relies on the Stylised fact that the world presents us an array of 0/1 choices. The tension we've been discussing suggests the world pulls us between incentivised legibility and genuine autonomy. While the tension is real, it's a little too crude to pretend this is a binary decision. So while the advent of Generative AI and the proliferation of foundation models weights the scale toward incentivised legibility and starkly standardised process, the world does not exist in the training data. There is a real opportunity to use this technology to scaffold your thoughts, and climb to levels unimagined even six months ago, but there is also a real risk. The frictionless epistemology of LLM aided discovery is the real toy-model. It's a massively scaled and impressively competent toy model, but it still smoothes over the fruitful friction of testing our ideas against the world. The drive for homogeneity, like the push to find answers in the training data represents a retreat from the world and divestment of responsibility when we can least afford it. 
 
-The current ownership of foundation models concentrates a lot of power in the hands of the few. This is not benign. We're already seeing weaponised usage of AI to funnel information, and forment dissent. This is a malicious optimisation of block-effects used to compound division and cloud real signal. Using these tools to "pump out" racist or political content effectively launders past biases into future "facts," creating a feedback loop that drags down voter competence.
+The current ownership of foundation models concentrates a lot of power in the hands of the few. This is not benign. We're already seeing weaponised usage of AI to funnel information, and foment dissent. This is a malicious optimisation of block-effects used to compound division and cloud real signal. Using these tools to "pump out" racist or political content effectively launders past biases into future "facts," creating a feedback loop that drags down voter competence.
 
 Collective wisdom is not a gift of technology; it is the hard-won dividend of our refusal to think in lockstep. Your most vital role, when the choir is auto-tuned, is to cultivate your own discordant song. 
