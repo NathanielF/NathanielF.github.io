@@ -156,7 +156,8 @@ def simulate_irt_data(
     true_kappa_expertise=1.2,   # Skill amplification (>1)
     treatment=None,             # Per-juror treatment indicator
     true_tau=0.8,               # Treatment effect on ability
-    seed=None
+    seed=None,
+    print_majority_k=False      #
 ):
     """
 
@@ -301,18 +302,19 @@ def simulate_irt_data(
     print(f"  Correlated blocks: {bool(gamma is not None)}")
     print(f"  Majority accuracy: {accuracy:.3f}")
 
-    samples = []
-    for i in range(200):
-        accuracy_ks = []
-        for k in [3, 5, 10, 15, 20, 25, 30]:
+    if print_majority_k:
+        samples = []
+        for i in range(200):
+            accuracy_ks = []
+            for k in [3, 5, 10, 15, 20, 25, 30]:
 
-            jury_idx = np.random.choice(range(N_JURORS), k)
-            majority_k =  (votes[:, jury_idx].mean(axis=1) > 0.5).astype(int)
-            accuracy_k = np.mean(majority_k == true_states)
-            accuracy_ks.append(accuracy_k)
-        samples.append(accuracy_ks)
-    samples = pd.DataFrame(samples, columns=[3, 5, 10, 15, 20, 25, 30])
-    print(samples.mean(axis=0))
+                jury_idx = np.random.choice(range(N_JURORS), k)
+                majority_k =  (votes[:, jury_idx].mean(axis=1) > 0.5).astype(int)
+                accuracy_k = np.mean(majority_k == true_states)
+                accuracy_ks.append(accuracy_k)
+            samples.append(accuracy_ks)
+        samples = pd.DataFrame(samples, columns=[3, 5, 10, 15, 20, 25, 30])
+        samples.mean(axis=0)
 
     return votes, theta, delta, true_states
 
