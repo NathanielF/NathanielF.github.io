@@ -301,6 +301,19 @@ def simulate_irt_data(
     print(f"  Correlated blocks: {bool(gamma is not None)}")
     print(f"  Majority accuracy: {accuracy:.3f}")
 
+    samples = []
+    for i in range(200):
+        accuracy_ks = []
+        for k in [3, 5, 10, 15, 20, 25, 30]:
+
+            jury_idx = np.random.choice(range(N_JURORS), k)
+            majority_k =  (votes[:, jury_idx].mean(axis=1) > 0.5).astype(int)
+            accuracy_k = np.mean(majority_k == true_states)
+            accuracy_ks.append(accuracy_k)
+        samples.append(accuracy_ks)
+    samples = pd.DataFrame(samples, columns=[3, 5, 10, 15, 20, 25, 30])
+    print(samples.mean(axis=0))
+
     return votes, theta, delta, true_states
 
 ```
@@ -335,7 +348,7 @@ votes_blocked, t_theta_blocked, t_delta_blocked, truth_blocked = simulate_irt_da
     true_sigma_theta=.8,
     true_sigma_delta=3,
     block_id=BLOCK_ID,
-    true_sigma_block=2.5,
+    true_sigma_block=1.5,
     true_kappa_groupthink=0.2,
     block_type="groupthink_corr",  
     seed=43
@@ -446,7 +459,6 @@ def fit_irt_model(
     sigma_delta_prior=0.5,
     sigma_theta_prior=1.0,
     sigma_block_prior=1.0,
-    # --- NEW OPTIONS ---
     correlated_blocks=False,          # turn on gamma[i, b] term
     sigma_block_case_prior=1.0,       # prior scale for correlation strength
     scale_corr_by_difficulty=True,    # match sim's w(|delta|)
