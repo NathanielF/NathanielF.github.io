@@ -21,7 +21,7 @@
         "citation: true\n",
         "---"
       ],
-      "id": "5dbb046a"
+      "id": "9c733983"
     },
     {
       "cell_type": "code",
@@ -47,7 +47,7 @@
         "\n",
         "warnings.simplefilter('ignore')"
       ],
-      "id": "40b9c494",
+      "id": "7856ffc2",
       "execution_count": null,
       "outputs": []
     },
@@ -91,7 +91,7 @@
         "\n",
         "Spline models can be optimised by fitting differing _strength_ penalities over a _varying_ number of splines. Splines are used to construct non-linear functions of the input variable which are combined additively in our model equation. The penalities used in the optimisation routines constrain how \"wiggly\" these constructions will be. The number of splines determine how precise our will be. "
       ],
-      "id": "e21b1687"
+      "id": "aa1bfec4"
     },
     {
       "cell_type": "code",
@@ -105,7 +105,7 @@
         "ax.set_xlabel(\"Time Step\")\n",
         "ax.set_title(\"Crash Test Dummy Acceleration \\n Simulated Motorcycle Crash\", fontsize=20);"
       ],
-      "id": "527f2533",
+      "id": "e3e88ba3",
       "execution_count": null,
       "outputs": []
     },
@@ -115,7 +115,7 @@
       "source": [
         "Now we fit a number of different models to account for the herky-jerky nature of the data generating processs. We vary the parameterisations to see how the numbers of splines and strength of the penalty help account for the variation in $y$ over the support of $X$. \n"
       ],
-      "id": "85af47c7"
+      "id": "eb342f20"
     },
     {
       "cell_type": "code",
@@ -148,7 +148,7 @@
         "for ax, g, t in zip(axs, gs, titles):\n",
         "    plot_fit(g, X, y, ax, t)\n"
       ],
-      "id": "6c67ada3",
+      "id": "1be10ec8",
       "execution_count": null,
       "outputs": []
     },
@@ -164,7 +164,7 @@
         "\n",
         "__The manner of the the linear combination achieved by GAMs is constrained by the optimisation goal in their model fit.__ We can see from the model summary what is going on under the hood. For a given model specification the summary will report a number of model-fit statistics such as the log-likelihood and the AIC. \n"
       ],
-      "id": "dbac91e8"
+      "id": "2cee9c9c"
     },
     {
       "cell_type": "code",
@@ -175,7 +175,7 @@
         "print(\"log_likelihood:\", gam_raw.statistics_['loglikelihood'])\n",
         "print(\"AIC:\", gam_raw.statistics_['AIC'])\n"
       ],
-      "id": "b9ab1c5f",
+      "id": "b9c4da02",
       "execution_count": null,
       "outputs": []
     },
@@ -185,7 +185,7 @@
       "source": [
         "The question then becomes what changes are induced in the model as we seek to optimise these model fit statistics. \n"
       ],
-      "id": "c0b65d89"
+      "id": "ebec82d7"
     },
     {
       "cell_type": "code",
@@ -196,7 +196,7 @@
         "gam.gridsearch(X, y)\n",
         "gam.summary()"
       ],
-      "id": "ac50da63",
+      "id": "978395b8",
       "execution_count": null,
       "outputs": []
     },
@@ -208,7 +208,7 @@
         "\n",
         "### Plot the GAM fits\n"
       ],
-      "id": "ce48eb3f"
+      "id": "811754f0"
     },
     {
       "cell_type": "code",
@@ -218,7 +218,7 @@
         "plot_fit(gam_raw, X, y, ax, \"Unoptimised Fit\", c1='orange', c2='green')\n",
         "plot_fit(gam, X, y, ax, \"Optimised Fit\")"
       ],
-      "id": "398d632e",
+      "id": "78f8a737",
       "execution_count": null,
       "outputs": []
     },
@@ -240,7 +240,7 @@
         "\n",
         "Returning to our model we can extract the spline features used in the `PyGAM` by invoking the following commands. We first identify the knot points and create the b-spline basis appropriate for the variable $X$. \n"
       ],
-      "id": "52c6458e"
+      "id": "9beee5c5"
     },
     {
       "cell_type": "code",
@@ -255,7 +255,7 @@
         "\n",
         "splines_df.head(10)"
       ],
-      "id": "596c1e61",
+      "id": "24df78b6",
       "execution_count": null,
       "outputs": []
     },
@@ -269,7 +269,7 @@
         "\n",
         "### Plotting the Weighted Spline"
       ],
-      "id": "e3650f0b"
+      "id": "d15b095b"
     },
     {
       "cell_type": "code",
@@ -280,7 +280,7 @@
         "ax.set_xlabel(\"Time Steps\")\n",
         "ax.legend();"
       ],
-      "id": "6e8601e3",
+      "id": "11666032",
       "execution_count": null,
       "outputs": []
     },
@@ -296,7 +296,7 @@
         "\n",
         "__Spline models can be built and assessed using Bayesian approaches to quantify the uncertainty in the constructed function__. Under the hood `Bambi` makes use of the ['formulae'](github.com/bambinos/formulae) package to allow for formula-like syntax to specify spline basis terms and mixed effect model terms. We leverage this to streamline the specification of spline models and demonstrate different kinds of spline-features. \n"
       ],
-      "id": "767cde8d"
+      "id": "daaf4a25"
     },
     {
       "cell_type": "code",
@@ -319,7 +319,7 @@
         "model_spline5 = bmb.Model(f\"y ~ {formula5}\", df)\n",
         "model_spline5"
       ],
-      "id": "b435a912",
+      "id": "20ebe66a",
       "execution_count": null,
       "outputs": []
     },
@@ -330,7 +330,7 @@
         "As you can see here we are specifying a range of different degrees of spline basis. The different degrees corresspond to the smoothness of the overlapping splines. \n",
         "The `degree=0` splines mean we specify a piecewise constant basis i.e. 0 or 1 within each region of the partition. But we can add more degrees to see more flexible representations of the space. \n"
       ],
-      "id": "69c713d3"
+      "id": "3811c9a9"
     },
     {
       "cell_type": "code",
@@ -339,7 +339,7 @@
         "model_spline5.build()\n",
         "model_spline5.graph()"
       ],
-      "id": "fbe222c1",
+      "id": "2d6cf21d",
       "execution_count": null,
       "outputs": []
     },
@@ -353,7 +353,7 @@
         "\n",
         "The below functions extract the basis specification from each model and plots the basis design for an increasingly complex series of spline basis matrices. \n"
       ],
-      "id": "8772f686"
+      "id": "0e5b8e32"
     },
     {
       "cell_type": "code",
@@ -409,7 +409,7 @@
         "title=\"Cubic Spline Basis (20 Knots)\")\n",
         "plot_knots(knots_20, axs[4]);\n"
       ],
-      "id": "2e41a074",
+      "id": "59ad8e75",
       "execution_count": null,
       "outputs": []
     },
@@ -423,7 +423,7 @@
         "\n",
         "We now combine the spline components within a linear model fit, pulling and tying them together in such a way as to ape the shape of the observed sequence. \n"
       ],
-      "id": "3223d637"
+      "id": "d1b04fb2"
     },
     {
       "cell_type": "code",
@@ -441,7 +441,7 @@
         "\n",
         "idata_spline5 = model_spline5.fit(random_seed=random_seed, idata_kwargs={\"log_likelihood\": True})"
       ],
-      "id": "bc7bc8fd",
+      "id": "a02b9d33",
       "execution_count": null,
       "outputs": []
     },
@@ -453,7 +453,7 @@
         "\n",
         "### Plot the Weighted Mean\n"
       ],
-      "id": "4730f9cb"
+      "id": "964cd7ee"
     },
     {
       "cell_type": "code",
@@ -480,7 +480,7 @@
         "plot_weighted_splines(B4, idata_spline4, formula4, axs[3], knots_10)\n",
         "plot_weighted_splines(B5, idata_spline5, formula5, axs[4], knots_20)"
       ],
-      "id": "d3265cc1",
+      "id": "7d581bb7",
       "execution_count": null,
       "outputs": []
     },
@@ -494,7 +494,7 @@
         "\n",
         "As before we can evaluate these model fits and compare them based on leave-one-out cross validation scores and information theoretic complexity measures. \n"
       ],
-      "id": "81dc56e5"
+      "id": "f8d30e71"
     },
     {
       "cell_type": "code",
@@ -511,7 +511,7 @@
         "axs[1].set_yticklabels([])\n",
         "df_compare\n"
       ],
-      "id": "e509fa95",
+      "id": "ae4a4873",
       "execution_count": null,
       "outputs": []
     },
@@ -521,7 +521,7 @@
       "source": [
         "Here we see that the extra complexity of using 20 splines leads to slightly worse performance measures than the less complex but seemingly adequate 10 splines. In other words, it's starting to overfit to the data at 20. This is the price of flexibility and a sign of a model unlikely to generalise well on out-of-sample data. \n"
       ],
-      "id": "90b9eaad"
+      "id": "270e6bf1"
     },
     {
       "cell_type": "code",
@@ -534,7 +534,7 @@
         "\n",
         "idata_spline4"
       ],
-      "id": "9c63682f",
+      "id": "7e0621ee",
       "execution_count": null,
       "outputs": []
     },
@@ -544,7 +544,7 @@
       "source": [
         "Next we plot the posterior predictive distribution of our observed variable and compare against the observed data. Additionally we plot the 89th and 50% HDI. \n"
       ],
-      "id": "4cf4d5e6"
+      "id": "f3b337e1"
     },
     {
       "cell_type": "code",
@@ -566,7 +566,7 @@
         "\n",
         "ax.set_title(\"Posterior Predictive Distribution \\n Based on 10 Knots\");"
       ],
-      "id": "c5575b4f",
+      "id": "2a486c59",
       "execution_count": null,
       "outputs": []
     },
@@ -582,7 +582,7 @@
         "\n",
         "The gaussian process models can be somewhat interrogated by examining the different combinations of covariance relationships with priors over the parameters governing the covariance of a sequence of points. For example consider the following parameterisations. "
       ],
-      "id": "04a39232"
+      "id": "5a48030a"
     },
     {
       "cell_type": "code",
@@ -611,7 +611,7 @@
         "plot_cov_draws(axs[0], axs[1])\n",
         "plot_cov_draws(axs[2], axs[3], lengthscale=10, sigma=13)"
       ],
-      "id": "d8f9faf0",
+      "id": "06ca5b34",
       "execution_count": null,
       "outputs": []
     },
@@ -629,7 +629,7 @@
         "\n",
         "Consider the following specification for the priors\n"
       ],
-      "id": "30b7ca05"
+      "id": "ab9ae9f6"
     },
     {
       "cell_type": "code",
@@ -642,7 +642,7 @@
         "axs[1].hist(pm.draw(pm.Exponential.dist(lam=1), 1000), ec='black', bins=30);\n",
         "axs[1].set_title(\"Priors for Amplitude \\n in ExpQuad Kernel\")"
       ],
-      "id": "feb399e6",
+      "id": "a9b4b119",
       "execution_count": null,
       "outputs": []
     },
@@ -652,7 +652,7 @@
       "source": [
         "We use these to specify priors on the Hilbert space approximation of gaussian priors available in the `Bambi` package. \n"
       ],
-      "id": "ff0302d6"
+      "id": "128b5bbf"
     },
     {
       "cell_type": "code",
@@ -671,7 +671,7 @@
         "model_hsgp = bmb.Model(\"y ~ 0 + hsgp(X, m=10, c=1)\", df, priors=priors)\n",
         "model_hsgp\n"
       ],
-      "id": "052b6bbb",
+      "id": "a112b424",
       "execution_count": null,
       "outputs": []
     },
@@ -681,7 +681,7 @@
       "source": [
         "Here we've set the `m=10` to determine the number of basis vectors used in the Hilbert space approximation. The idea differs in detail from the spline based approximations we've seen, but it's perhaps useful to think of the process in the same vein. Here again we have a theory of the world expressed as a function of opaque components jerry-rigged for modelling some phenomena. \n"
       ],
-      "id": "5baf893f"
+      "id": "06024b82"
     },
     {
       "cell_type": "code",
@@ -691,7 +691,7 @@
         "idata_kwargs={\"log_likelihood\": True})\n",
         "print(idata_hsgp.sample_stats[\"diverging\"].sum().to_numpy())"
       ],
-      "id": "628cdacd",
+      "id": "b013738c",
       "execution_count": null,
       "outputs": []
     },
@@ -701,7 +701,7 @@
       "source": [
         "This model fits and the sampling seems to have worked well. \n"
       ],
-      "id": "b0ddaeeb"
+      "id": "1fd87ce6"
     },
     {
       "cell_type": "code",
@@ -709,7 +709,7 @@
       "source": [
         "az.plot_trace(idata_hsgp, backend_kwargs={\"layout\": \"constrained\"}, figsize=(9, 15));\n"
       ],
-      "id": "b62b060e",
+      "id": "e0208518",
       "execution_count": null,
       "outputs": []
     },
@@ -719,7 +719,7 @@
       "source": [
         "The lengthscale and sigma parameters we have learned by calibrating our priors against the data. The degree to which these parameters are meaningful depend a little on how familar you are with covariance matrix kernels and their properties, so we won't dwell on the point here. \n"
       ],
-      "id": "0f4c63e3"
+      "id": "a6abbfe3"
     },
     {
       "cell_type": "code",
@@ -727,7 +727,7 @@
       "source": [
         "az.summary(idata_hsgp, var_names=['hsgp(X, m=10, c=1)_ell', 'hsgp(X, m=10, c=1)_sigma', 'y_sigma', 'hsgp(X, m=10, c=1)_weights'])\n"
       ],
-      "id": "a779bec8",
+      "id": "b49b4585",
       "execution_count": null,
       "outputs": []
     },
@@ -737,7 +737,7 @@
       "source": [
         "But again we can sample from the posterior predictive distribution of the outcome variable \n"
       ],
-      "id": "301fe564"
+      "id": "3f97352e"
     },
     {
       "cell_type": "code",
@@ -748,7 +748,7 @@
         "\n",
         "idata_hsgp"
       ],
-      "id": "82eb5435",
+      "id": "51df07b0",
       "execution_count": null,
       "outputs": []
     },
@@ -758,7 +758,7 @@
       "source": [
         "and plot the model fit to see if it can recover the observed data. \n"
       ],
-      "id": "f3252806"
+      "id": "5d052390"
     },
     {
       "cell_type": "code",
@@ -778,7 +778,7 @@
         "\n",
         "ax.set_title(\"Posterior Predictive Distribution \\n Based on HSGP approximation\");\n"
       ],
-      "id": "6d14c893",
+      "id": "55e267d2",
       "execution_count": null,
       "outputs": []
     },
@@ -788,7 +788,7 @@
       "source": [
         "Here again we've allowed the model to extrapolate beyond the observed data but we achieve far more reasonable extrapolation than with the Spline model. And we can compare other performance metrics versus the spline models to see that by the aggregate performance measures our HSGP model seems to come out on top too. \n"
       ],
-      "id": "ce5c73a0"
+      "id": "4b020633"
     },
     {
       "cell_type": "code",
@@ -799,7 +799,7 @@
         "df_compare = az.compare(models_dict)\n",
         "df_compare\n"
       ],
-      "id": "9987d04d",
+      "id": "b24298e1",
       "execution_count": null,
       "outputs": []
     },
@@ -815,7 +815,7 @@
         "\n",
         "Here we fit a two spline models to the speed-test data set but we use 60 knot points to generate our spline features. This is wildy excessive for the data set in question. We show how to use non-centered parameterisation with a \"smoothing\" trick to induce a good fit despite excessive features. In this way we're removing the burden of manually specifying the spline structure. This is akin to penalisation methods used in `PyGam` but with a Bayesian flavour. \n"
       ],
-      "id": "40609246"
+      "id": "83984462"
     },
     {
       "cell_type": "code",
@@ -858,7 +858,7 @@
         "model_raw, idata_raw = penalised_model(Bx, penalised=False)\n",
         "model_penalised, idata_penalised = penalised_model(Bx, penalised=True)"
       ],
-      "id": "80124d01",
+      "id": "f806a021",
       "execution_count": null,
       "outputs": []
     },
@@ -868,7 +868,7 @@
       "source": [
         "The model structure is as follows:\n"
       ],
-      "id": "8ee301c2"
+      "id": "be2ee52f"
     },
     {
       "cell_type": "code",
@@ -876,7 +876,7 @@
       "source": [
         "pm.model_to_graphviz(model_penalised)"
       ],
-      "id": "3f673d41",
+      "id": "c496e242",
       "execution_count": null,
       "outputs": []
     },
@@ -886,7 +886,7 @@
       "source": [
         "This parameterisation trick is owed to work by Austin Rochford and Adrian Seyboldt discussed [here](https://gist.github.com/AustinRochford/d640a240af12f6869a7b9b592485ca15). We can see how the two parameterisations induce quite distinct values on the coefficients for splines. \n"
       ],
-      "id": "a5f9862c"
+      "id": "5c6b4f80"
     },
     {
       "cell_type": "code",
@@ -896,7 +896,7 @@
         "az.plot_forest([idata_raw, idata_penalised], var_names=['a'], combined=True, ax=ax, model_names=['raw', 'penalised'])\n",
         "ax.fill_betweenx(range(160), -25, 25, alpha=0.2, color='red');\n"
       ],
-      "id": "c9eef232",
+      "id": "da22b024",
       "execution_count": null,
       "outputs": []
     },
@@ -906,7 +906,7 @@
       "source": [
         "This results in much different posterior predictive fits. The un-smoothed spline fit overfits to the small partitions of the spline features, whereas the smoothing spline model achieves a reasonable fit recovering the smooth structure of the data generating process. \n"
       ],
-      "id": "ec8fedf8"
+      "id": "4b583f35"
     },
     {
       "cell_type": "code",
@@ -924,7 +924,7 @@
         "ax.set_title(\"Bayesian Automatic Regularisation \\n Smoothing Priors over 60 Knots\")\n",
         "ax.legend();\n"
       ],
-      "id": "611359e4",
+      "id": "00def627",
       "execution_count": null,
       "outputs": []
     },
@@ -934,7 +934,7 @@
       "source": [
         "This is reflected in the model performance measures as well. \n"
       ],
-      "id": "a38d4ad6"
+      "id": "d0b8c045"
     },
     {
       "cell_type": "code",
@@ -945,7 +945,7 @@
         "df_compare = az.compare(models_dict)\n",
         "df_compare\n"
       ],
-      "id": "29e1a823",
+      "id": "d3c6d827",
       "execution_count": null,
       "outputs": []
     },
@@ -969,7 +969,7 @@
         "\n",
         "__Hierarchical models of spline fits allow us to characterise and sample from fits over a family of curves while improving out of sample predictive accuracy.__ We draw on car insurance losses data set discussed in Mick Cooney's Stan case-study, but we simplify things for ourselves considerably by focusing on two types of loss and ensuring that each year under consideration has equal observations of the accruing losses. \n"
       ],
-      "id": "dbd21fac"
+      "id": "f408485e"
     },
     {
       "cell_type": "code",
@@ -994,7 +994,7 @@
         "\n",
         "loss_df.head(12)"
       ],
-      "id": "db9a157b",
+      "id": "376dc1eb",
       "execution_count": null,
       "outputs": []
     },
@@ -1005,7 +1005,7 @@
         "### Plot the Loss Curves\n",
         "Here we have plotted the developing loss curves from two different coded insurance products. \n"
       ],
-      "id": "69bd5c69"
+      "id": "ce70cbbe"
     },
     {
       "cell_type": "code",
@@ -1024,7 +1024,7 @@
         "axs[1].legend()\n",
         "axs[1].set_title(\"Loss Ratio by Group\");\n"
       ],
-      "id": "b2b86b0a",
+      "id": "a3da4386",
       "execution_count": null,
       "outputs": []
     },
@@ -1034,7 +1034,7 @@
       "source": [
         "We want to model these curves collectively as instances of draws from a distribution of loss curves. To do so we will specify a `PyMC` hierarchical (mixed) spline model. To do so we will have a spline basis for the global hyper parameters `beta_g` and the individual parameters for each curve. Here we define a convenience function to generate the basis splines. \n"
       ],
-      "id": "c620d657"
+      "id": "b03804ba"
     },
     {
       "cell_type": "code",
@@ -1059,7 +1059,7 @@
         "Bi, Bg = make_basis_splines()\n",
         "Bg"
       ],
-      "id": "b0f92977",
+      "id": "d660fb39",
       "execution_count": null,
       "outputs": []
     },
@@ -1069,7 +1069,7 @@
       "source": [
         "Next we specify a model maker function to create the various pooled, unpooled and hierarhical (mixed) models of the insurance curve data. Note that even though we're specifying a hierarhical model we have not specified a hierarchy over the insurance codes, instead we have added this as a \"fixed\" effect feature into our regression model. The idea is that this fixed effect will capture the differences in expected baseline per group code of insurance product. \n"
       ],
-      "id": "87ade45b"
+      "id": "8ca98765"
     },
     {
       "cell_type": "code",
@@ -1136,7 +1136,7 @@
         "idata_sp_insur_pooled, sp_insur_pooled = make_model(loss_df, model_type='pooled')\n",
         "idata_sp_insur_mixed, sp_insur_mixed = make_model(loss_df, model_type='mixed')"
       ],
-      "id": "24fb1848",
+      "id": "786b710f",
       "execution_count": null,
       "outputs": []
     },
@@ -1146,7 +1146,7 @@
       "source": [
         "The model structure can be seen more clearly in this graph. The important features to note are the spline components and the manner of their combination. We are postulating a kind of hierarchy of development curves. We specify the \"global\" curve in 7 development steps and allow that each distinct year is a realisation of a curve that can be thought of as modifying the profile of \"global\" curve as `mui` is combined with `mu_g`. These structures are then combined into a more traditional regression and fed into our likelihood term.  \n"
       ],
-      "id": "f1c42bbe"
+      "id": "a7d0522a"
     },
     {
       "cell_type": "code",
@@ -1154,7 +1154,7 @@
       "source": [
         "pm.model_to_graphviz(sp_insur_mixed)\n"
       ],
-      "id": "3f3e7ddc",
+      "id": "7a35956e",
       "execution_count": null,
       "outputs": []
     },
@@ -1164,7 +1164,7 @@
       "source": [
         "We can extract the effect of the differences grcodes and examine the baseline and annual spline related coefficients. \n"
       ],
-      "id": "7eab6836"
+      "id": "6d8b4c79"
     },
     {
       "cell_type": "code",
@@ -1174,7 +1174,7 @@
         "\n",
         "summary"
       ],
-      "id": "9181abdc",
+      "id": "157f2163",
       "execution_count": null,
       "outputs": []
     },
@@ -1184,7 +1184,7 @@
       "source": [
         "Again we can compare the performance metrics of the various models. \n"
       ],
-      "id": "33f35231"
+      "id": "c4e55ecf"
     },
     {
       "cell_type": "code",
@@ -1197,7 +1197,7 @@
         "az.plot_compare(compare_df)\n",
         "compare_df"
       ],
-      "id": "7486739b",
+      "id": "8462786d",
       "execution_count": null,
       "outputs": []
     },
@@ -1211,7 +1211,7 @@
         "\n",
         "We can check how well the model can recapture the observed data.\n"
       ],
-      "id": "9815cc1f"
+      "id": "4d749ba6"
     },
     {
       "cell_type": "code",
@@ -1233,7 +1233,7 @@
         "\n",
         "plot_ppc_splines(idata_sp_insur_mixed);"
       ],
-      "id": "f2962c9f",
+      "id": "34941468",
       "execution_count": null,
       "outputs": []
     },
@@ -1245,7 +1245,7 @@
         "\n",
         "In the following plot we show similarly how to recapture the observed data, but additionally we can decompose the structure of the model in each case and extract baseline forecasts which would be our guide to future loss-ratio development curves in lieu of any other information. \n"
       ],
-      "id": "ac9d0e68"
+      "id": "86f94a04"
     },
     {
       "cell_type": "code",
@@ -1297,7 +1297,7 @@
         "axs[10].set_title(\"Baseline Forecast Loss Ratio\")\n",
         "axs[10].legend();\n"
       ],
-      "id": "bb96e1d7",
+      "id": "68513a44",
       "execution_count": null,
       "outputs": []
     },
@@ -1311,7 +1311,7 @@
         "\n",
         "A better way to interrogate the implications of the model is to \"push\" forward different data through the posterior predictive distribution and derive a kind of ceteris paribus rule for accrual of losses.\n"
       ],
-      "id": "5e7b0751"
+      "id": "755b6661"
     },
     {
       "cell_type": "code",
@@ -1328,7 +1328,7 @@
         "\n",
         "idata_353"
       ],
-      "id": "795f71fb",
+      "id": "32b865ab",
       "execution_count": null,
       "outputs": []
     },
@@ -1338,7 +1338,7 @@
       "source": [
         "Even here though we want to average the curves over the specific years in the data and abstract a view of the model implications under different counterfactual settings. Or put another way, we want a view of the average development curve between years, not within a year. If we want to predict the novel insurance loss for next year we need some way to aggregate between the annual trajectories. Here we define a helper function to effect this step. \n"
       ],
-      "id": "cf86b965"
+      "id": "9b4c5dcd"
     },
     {
       "cell_type": "code",
@@ -1387,7 +1387,7 @@
         "ax.set_xlabel(\"Development Period\")\n",
         "ax.legend();"
       ],
-      "id": "75c0a42f",
+      "id": "bbb0fb5f",
       "execution_count": null,
       "outputs": []
     },
@@ -1403,7 +1403,7 @@
         "\n",
         "The data set has been constructed using average Science scores by country from the Programme for International Student Assessment (PISA) 2006, along with GNI per capita (Purchasing Power Parity, 2005 dollars), Educational Index, Health Index, and Human Development Index from UN data. We want to model the overall outcome score as a function of these broad demographic features. \n"
       ],
-      "id": "a1835ba5"
+      "id": "ef35b8b3"
     },
     {
       "cell_type": "code",
@@ -1413,7 +1413,7 @@
         "\n",
         "pisa_df.head()\n"
       ],
-      "id": "188d2ce7",
+      "id": "60f820a9",
       "execution_count": null,
       "outputs": []
     },
@@ -1423,7 +1423,7 @@
       "source": [
         "The relationships displayed between each of these measures is not obviously linear, and as such could plausibly benefit from being modelled with splines. \n"
       ],
-      "id": "b35059af"
+      "id": "cf541d68"
     },
     {
       "cell_type": "code",
@@ -1432,7 +1432,7 @@
         "g = sns.pairplot(pisa_df[['Overall', 'Income', 'Support', 'Health', 'Edu']],  kind=\"reg\", height=1.5)\n",
         "g.fig.suptitle(\"Pair Plot of Complex Relations\", y=1.05);"
       ],
-      "id": "b1d25942",
+      "id": "909a5fbf",
       "execution_count": null,
       "outputs": []
     },
@@ -1442,7 +1442,7 @@
       "source": [
         "We define three models for contrasting the implications. Note here how we have to define a seperate spline basis for each of the covariates. Here we create the knots for defining our basis on each covariate. \n"
       ],
-      "id": "cfd2de51"
+      "id": "2223f26a"
     },
     {
       "cell_type": "code",
@@ -1460,7 +1460,7 @@
         "\n",
         "knots_health1 = np.linspace(np.min(pisa_df['Health']), np.max(pisa_df['Health']), 3+2)[1:-1]"
       ],
-      "id": "05abf045",
+      "id": "67295fcd",
       "execution_count": null,
       "outputs": []
     },
@@ -1470,7 +1470,7 @@
       "source": [
         "Now we initialise these models\n"
       ],
-      "id": "40ee6953"
+      "id": "a5ab8eed"
     },
     {
       "cell_type": "code",
@@ -1489,7 +1489,7 @@
         "\n",
         "spline_model1"
       ],
-      "id": "d5a6e1e8",
+      "id": "7095aab1",
       "execution_count": null,
       "outputs": []
     },
@@ -1500,7 +1500,7 @@
         "spline_model.build()\n",
         "spline_model.graph()"
       ],
-      "id": "c20d89bd",
+      "id": "5c92d3b2",
       "execution_count": null,
       "outputs": []
     },
@@ -1514,7 +1514,7 @@
         "spline_idata = spline_model.fit(random_seed=random_seed, idata_kwargs={\"log_likelihood\": True}, target_accept=.95)\n",
         "spline_idata1 = spline_model1.fit(random_seed=random_seed, idata_kwargs={\"log_likelihood\": True}, target_accept=.99)"
       ],
-      "id": "807b7e97",
+      "id": "b16e6bdd",
       "execution_count": null,
       "outputs": []
     },
@@ -1524,7 +1524,7 @@
       "source": [
         "We can compare the simple regression approach to the spline based regression in the now usual way. \n"
       ],
-      "id": "8dfba10b"
+      "id": "a1b58325"
     },
     {
       "cell_type": "code",
@@ -1534,7 +1534,7 @@
         "\n",
         "compare_df\n"
       ],
-      "id": "738ec7b5",
+      "id": "7559d92a",
       "execution_count": null,
       "outputs": []
     },
@@ -1544,7 +1544,7 @@
       "source": [
         "The coefficients comparisons are harder\n"
       ],
-      "id": "b2ab0e86"
+      "id": "33701a1e"
     },
     {
       "cell_type": "code",
@@ -1552,7 +1552,7 @@
       "source": [
         "az.summary(base_idata)"
       ],
-      "id": "31fbac1c",
+      "id": "f5efc277",
       "execution_count": null,
       "outputs": []
     },
@@ -1562,7 +1562,7 @@
       "source": [
         "since it's less clear what the spline coefficient terms mean. \n"
       ],
-      "id": "3c6d8065"
+      "id": "e61293d4"
     },
     {
       "cell_type": "code",
@@ -1570,7 +1570,7 @@
       "source": [
         "az.summary(spline_idata)"
       ],
-      "id": "2cda876e",
+      "id": "d8be44fc",
       "execution_count": null,
       "outputs": []
     },
@@ -1582,7 +1582,7 @@
         "\n",
         "### Plotting Posterior Predictive Checks\n"
       ],
-      "id": "fb3a2251"
+      "id": "803cae90"
     },
     {
       "cell_type": "code",
@@ -1603,7 +1603,7 @@
         "axs[0].set_title(\"PPC: Regression Model\");\n",
         "axs[2].set_title(\"PPC: Hierarchical Spline Model\");"
       ],
-      "id": "0f3139d5",
+      "id": "2fbb86f1",
       "execution_count": null,
       "outputs": []
     },
@@ -1617,7 +1617,7 @@
         "\n",
         "We want to highlight the differences between the hierarchical and non-hierarchical multivariable spline models here. The shrinkage effects of hierarchically modelling the country intercepts is clearly evident. They helpfully constrain the poor extrapolation effects of the simpler spline model.\n"
       ],
-      "id": "7f280a8d"
+      "id": "d7c01898"
     },
     {
       "cell_type": "code",
@@ -1659,7 +1659,7 @@
         "    spline_model1, spline_idata1, \"Health\",sample_new_groups=True, ax=axs[5]\n",
         ");\n"
       ],
-      "id": "0fcccc87",
+      "id": "68f0613e",
       "execution_count": null,
       "outputs": []
     },
@@ -1669,7 +1669,7 @@
       "source": [
         "We can pull these types of values out into a table. Note here how we ask for predictions based on varying values of the `Edu` and `Income` variables where we keep the `Health` variable fixed at the mean value. \n"
       ],
-      "id": "16bdc344"
+      "id": "dd93fcc8"
     },
     {
       "cell_type": "code",
@@ -1697,7 +1697,7 @@
         ")\n",
         "summary_df1\n"
       ],
-      "id": "d3bd64f5",
+      "id": "0eb6b302",
       "execution_count": null,
       "outputs": []
     },
@@ -1707,7 +1707,7 @@
       "source": [
         "We can then plot these results based on the conditional realisations and see some interesting behaviour at the implausilble reaslisations. This should make us somewhat wary of using this model to extrapolate too far beyond the observable range of data\n"
       ],
-      "id": "19708b3a"
+      "id": "2b3432b8"
     },
     {
       "cell_type": "code",
@@ -1722,7 +1722,7 @@
         "\n",
         "g.fig.suptitle(\"Hierarchical Marginal Predictions of the Outcome Variable \\n conditional on counterfactual values for Edu and Income\", y=1.05);"
       ],
-      "id": "8d798d03",
+      "id": "e8139eb3",
       "execution_count": null,
       "outputs": []
     },
@@ -1736,7 +1736,7 @@
         "\n",
         "Finally, we'll pull out the component contributions of each variable and see how they combine additively. This will also serve as a kind of posterior predictive check for each country as we can show the degree which posterior draws from each component sum to achieve a plausible mirror of the observed data.  \n"
       ],
-      "id": "76c62876"
+      "id": "355244b6"
     },
     {
       "cell_type": "code",
@@ -1780,7 +1780,7 @@
         "ax.set_ylabel(\"Overall Score\", fontsize=12)\n",
         "ax.set_xticklabels(pisa_df.dropna(axis=0).reset_index()['Country'], fontsize=12);"
       ],
-      "id": "fd29575b",
+      "id": "11200adf",
       "execution_count": null,
       "outputs": []
     },
@@ -1796,7 +1796,7 @@
         "\n",
         "We can, I think, draw a broad moral from this presentation. Observed phenomena admit description with a wide variety of mathematical abstraction. The \"correctness\" of the abstraction is never the right question. The manner in which one abstraction distils the structure of reality is not fundamentally any better than the manner in which an alternative scheme will do so. Predictive success achieved applying one abstraction can be traded off for interpretive tractability in another. What matters is the task at hand - solving the problem. Sometimes problems can be solved with new information, but mostly they're resolved by re-arranging assumptions and phrasing the problem anew - seeing through a different lens, pulling the door handle where we previously pushed. Splines, hierarhical splines and gaussian process models all attempt to approximate an answer by rephrasing the question. The more of these tools we have, the better we are prepared to tackle novel problems and discern the pertinent structure in the world. "
       ],
-      "id": "1911d268"
+      "id": "770289dc"
     }
   ],
   "metadata": {

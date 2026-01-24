@@ -615,7 +615,6 @@ idata_blocked, model_blocked = fit_irt_model(
     votes_blocked, truth_blocked, N_CASES, N_JURORS, block_id=BLOCK_ID, correlated_blocks=True
 )
 
-treatment = np.ones(N_JURORS)
 idata_full, model_full = fit_irt_model(
     votes_full, truth_full, N_CASES, N_JURORS, 
     block_id=BLOCK_ID, treatment=treatment, correlated_blocks=True
@@ -922,7 +921,13 @@ def plot_skill_corr(idata,
 
 ```
 
-To visualise this better, we'll continue to assess each of the three models. 
+In each model we draw out the consequences of the interacting effects of components of competence. It's often useful to plot the tree structure to show how the observable outcome of vote distributions are downstream consequences of the latent skill and difficulty.
+
+```{python}
+pm.model_to_graphviz(model_full)
+```
+
+To visualise the consequences of these interacting components better, we'll continue to assess each of the three models. 
 
 ### The Vanilla IRT model: Skill Difference and Difficulty
 
