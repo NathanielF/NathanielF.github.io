@@ -34,7 +34,7 @@ np.random.seed(42)
 
 You don't have 30 employees. You have three, rehired ten times. This is a paradox of corporate organisation.
 
-On the surface, the organization is a smooth-running machine optimized for "alignment," "velocity," and predictable outcomes. Investors demand a recognizable org chart; executives demand standardized workflows encoded into rigid software platforms; and everyone demands a set of "Core Values" that can be measured on a performance review.
+On the surface, the organisation is a smooth-running machine optimized for "alignment," "velocity," and predictable outcomes. Investors demand a recognizable org chart; executives demand standardized workflows encoded into rigid software platforms; and everyone demands a set of "Core Values" that can be measured on a performance review.
 
 But when familiar process becomes sacred process, something breaks. In our quest for "alignment," we inadvertently destroy the only thing that makes a group smarter than an individual: _the generative friction of our differences._
 
@@ -105,29 +105,29 @@ Let a group of $n$ independent individuals (a "jury") be tasked with choosing be
 
 Conversely, if $p < 0.5$, increasing the size of the jury only increases the probability that the group will arrive at the *wrong* conclusion, with that probability approaching $1$ as $n$ grows.
 
-This is a theorem. We're not showing that it is incorrect, but we are stress-testing it in finite domains to gauge its applicability to practical decision making. 
+This is a theorem. We're not showing that it is incorrect, but we are stress-testing it in finite domains to gauge its applicability to practical decision-making. 
 :::
 
 This mathematical law is the 'efficiency' that the investor class is buying. You might look at this theorem and see a guarantee: as long as we hire 'competent' people ($p > 0.5$) and align them, we can't lose. But the theorem has a hidden poison pill. It relies entirely on independent errors, and scale. But hiring budgets are capped somewhere before infinity and independent thought is rarer than you'd hope.
 
 ### Incentivised Legibility: Modeling "The Block" Effects
 
-Even if individual people were wrong, they were wrong in their own unique ways and this cancels out. Those people wrong today, can be right tomorrow if they remain independent actors. But James C. Scott’s theory of incentivised legibility suggests something darker. Imposed strictures on planning and acting short-circuit our ability to be find signal on hard problems.
+Even if individual people were wrong, they were wrong in their own unique ways and this cancels out. Those people wrong today, can be right tomorrow if they remain independent actors. But James C. Scott’s theory of incentivised legibility suggests something darker. Imposed strictures on planning and acting short-circuit our ability to find signal on hard problems.
 
-When an organization demands "standardization"—standardized training, standardized tools, standardized culture—it is actively working to eliminate unique error. It is trying to make every employee "readable" to the center. In statistical terms, legibility is drives correlation and collapses independence.
+When an organisation demands "standardization"—standardized training, standardized tools, standardized culture—it is actively working to eliminate unique error. It is trying to make every employee "readable" to the center. In statistical terms, legibility is drives correlation and collapses independence.
 
-To model this, we must move to Item Response Theory (IRT), which lets us partition skill, difficulty, and structural correlation—the three forces Condorcet assumes away. We will introduce "Blocks" i.e. groups of voters who have been successfully "aligned" (captured) by a shared framework. We will see that while this alignment makes the organization easier to manage (more legible), it breaks the mathematical engine of collective intelligence.
+To model this, we must move to Item Response Theory (IRT), which lets us partition skill, difficulty, and structural correlation—the three forces Condorcet assumes away. We will introduce "Blocks" i.e. groups of voters who have been successfully "aligned" (captured) by a shared framework. This will show that while this alignment makes the organisation easier to manage (more legible), it breaks the mathematical engine of collective intelligence.
 
-We now model the interaction between the person and the problem:
+The interaction between the person and the problem is modelled as:
 $$V_{ij} \mid T_i, p_j, \delta_i, \beta$$
 
-where $T_{i}$ is the true state of the world, $p_i$ is the individual's competence measure. $delta_{i}$ is the difficulty of the various cases/questions under conideration and $\beta$ is a gauge of conformity among the actors.
+where $T_{i}$ is the true state of the world, $p_i$ is the individual's competence measure. While $\delta_{i}$ is the difficulty of the various cases/questions under consideration and $\beta$ is a gauge of conformity among the actors.
 
 This lets us ask: when case *i* is hard (large $|\delta_i|$), do errors cluster across jurors? If a juror is a member of a "voter block," how does that gravitational pull affect their competence? The IRT model partials out the structural influences on voter competence, revealing exactly where the Condorcet "miracle" dies.
 
 #### Shared Case Difficulty and Shared Thinking: When Everyone Fails Together
 
-The motivation behind IRT models is that some cases are genuinely harder than others. The interaction between individual comptence and case difficulty will cause even competent jurors to fail together if the difficulty is extreme. This is the first structural break in the independence assumption required for CJT.
+The motivation behind IRT models is that some cases are genuinely harder than others. The interaction between individual competence and case difficulty will cause even competent jurors to fail together if the difficulty is extreme. This is the first structural break in the independence assumption required for CJT.
 
 Consider the difference between a routine budget approval and an "Ambiguous Pivot" to a new market. On the pivot, even the most competent jurors will struggle. More importantly, their shared expertise in the current market can drive them to struggle in the same direction. Case difficulty creates correlated signal loss: when the evidence is weak, everyone’s instruments fail simultaneously. 
 
@@ -189,7 +189,7 @@ def simulate_irt_data(
     print("Generated IRT Data:")
 
     # ------------------------------------------------------------------
-    # Parse correlation mode from block_type (no signature change)
+    # Parse correlation mode from block_type 
     # ------------------------------------------------------------------
     use_corr = False
     base_block_type = block_type
@@ -198,15 +198,13 @@ def simulate_irt_data(
         base_block_type = block_type.replace("_corr", "")
 
     # ------------------------------------------------------------------
-    # Block-level social mechanisms (ability shift + scaling, as before)
+    # Block-level social mechanisms
     # ------------------------------------------------------------------
     if block_id is not None:
         block_id = np.asarray(block_id)
 
-        # Remap block labels safely to 0..B-1 (your original code assumed this)
+        # Remap block labels safely to 0..B-1
         uniq_blocks = np.unique(block_id)
-        remap = {b: k for k, b in enumerate(uniq_blocks)}
-        b_idx = np.array([remap[b] for b in block_id], dtype=int)
         n_blocks = len(uniq_blocks)
 
         # Mean competence shifts per block
@@ -225,9 +223,9 @@ def simulate_irt_data(
         else:
             raise ValueError("block_type must be 'expertise', 'groupthink', or 'mixed' (optionally + '_corr').")
 
-        # Apply block effects to theta (same structure as your original)
+        # Apply block effects to theta 
         for b in range(n_blocks):
-            idx = b_idx == b
+            idx = block_id == b
             theta[idx] = (
                 true_mu_theta
                 + u_block[b]
@@ -237,7 +235,7 @@ def simulate_irt_data(
         print(f"  Block type: {block_type}")
 
     else:
-        b_idx = None
+        block_id = None
         n_blocks = 0
         block_types = None
 
@@ -282,7 +280,7 @@ def simulate_irt_data(
 
         if gamma is not None:
             # add the shared case-by-block shock to each juror in its block
-            base_logit = base_logit + gamma[i, b_idx]
+            base_logit = base_logit + gamma[i, block_id]
 
         p_correct = 1 / (1 + np.exp(-base_logit))
 
@@ -333,6 +331,7 @@ N_CASES = 50
 N_JURORS = 30
 np.random.seed(100)
 BLOCK_ID = np.random.choice([1, 0, 2], size=N_JURORS)
+N_BLOCKS = 3
 JURY_SIZES = [3, 5, 7, 10, 15, 20, 30]
 
 # Condorcet Regime
@@ -394,7 +393,7 @@ The reason to stress-test Condorcet under these simulations is not because it is
 
 ### The Mathematical Structure: An Anatomy of Decision-Making
 
-There is a tension between the forces that will determine whether an organization can sustain collective wisdom or succumbs to coordinated failure: block effects ($\beta$) and treatment programmes ($\tau$). These structural additions represent opposing gravitational forces in a delicate equilibrium. Pull too hard in one direction and you get chaos; pull too hard in the other and you get lockstep failure.
+There is a tension between the forces that will determine whether an organisation can sustain collective wisdom or succumbs to coordinated failure: the pull of block effects ($\beta$) and the push of treatment programmes ($\tau$). These structural additions represent opposing gravitational forces in a delicate equilibrium. Move too far in one direction, and you get chaos; pull too hard in the other, and you get lockstep failure.
 
 To move beyond simple vote tallies and into the "Anatomy of a Decision," we implement a **Hierarchical Bayesian Item Response Theory (IRT)** model. In the IRT paradigm, a vote is not just a random event; it is a latent interaction between the characteristics of the person and the characteristics of the problem.
 
@@ -449,7 +448,7 @@ We have the following components:
 | Treatment Shock (Heterogeneity) | $\tau_\sigma z_j$ | Juror-specific deviation from treatment mean | Differential susceptibility to intervention | Restores diversity, weakens correlation |
 | Correlation Scale | $\sigma_\gamma$ | Controls variance of $\gamma_{ib}$ | Strength of social/organizational coupling | Governs transition from CJT to correlated-failure regime |
 
-We now implement these structures in PyMC. The Bayesian setting is apt here. In our modelling, the outcomes are shaped by the interplay between the prior and the likelihood. When data is abundant the likelihood wins out, but when it's scarce the model will fall back on its priors. Similarly, in decision making organisations will fall back frameworks and heuristics driven by block behaviors when the cases are hard. These heuristics are organisationally encoded priors. 
+We now implement these structures in PyMC. The Bayesian setting is apt here. In our modelling, the outcomes are shaped by the interplay between the prior and the likelihood. When data is abundant the likelihood wins out, but when it's scarce the model will fall back on its priors. Similarly, in decision-making, organisations will fall back frameworks and heuristics driven by block behaviors when the cases are hard. These heuristics are organisationally encoded priors. 
 
 ```{python}
 # ============================================================================
@@ -469,7 +468,7 @@ def fit_irt_model(
     known_truth=True,
 ):
     """
-    Fit IRT model conditioned on known ground truth.
+    Fit IRT model conditioned on known ground truth or infer truth based on majority.
     Optionally includes a correlated error term shared within blocks on each case.
 
     correlated_blocks=True reflects the simulator mode where you add gamma[i,b]
@@ -479,16 +478,7 @@ def fit_irt_model(
     # Ensure arrays
     votes = np.asarray(votes)
     true_states = np.asarray(true_states).astype(int)
-
-    if block_id is not None:
-        block_id = np.asarray(block_id)
-        uniq = np.unique(block_id)
-        remap = {b: k for k, b in enumerate(uniq)}
-        block_id_mapped = np.array([remap[b] for b in block_id], dtype=int)
-        n_blocks = len(uniq)
-    else:
-        block_id_mapped = None
-        n_blocks = 0
+    n_blocks = len(np.unique(block_id))
 
     with pm.Model() as model:
         # -----------------------
@@ -508,14 +498,14 @@ def fit_irt_model(
         # -----------------------
         # Block effects (persistent shift in ability)
         # -----------------------
-        if block_id_mapped is not None:
+        if block_id is not None:
             sigma_block = pm.HalfNormal("sigma_block", sigma=sigma_block_prior)
             block_raw = pm.Normal("block_raw", mu=0.0, sigma=1.0, shape=n_blocks)
             block_effect = pm.Deterministic(
                 "block_effect",
                 sigma_block * (block_raw - block_raw.mean())
             )
-            theta_with_blocks = theta_base + block_effect[block_id_mapped]
+            theta_with_blocks = theta_base + block_effect[block_id]
         else:
             theta_with_blocks = theta_base
 
@@ -535,7 +525,7 @@ def fit_irt_model(
         # -----------------------
         # Correlated case-by-block shock gamma[i,b]
         # -----------------------
-        if correlated_blocks and (block_id_mapped is not None):
+        if correlated_blocks and (block_id is not None):
             sigma_block_case = pm.HalfNormal("sigma_block_case", sigma=sigma_block_case_prior)
             gamma_raw = pm.Normal("gamma_raw", mu=0.0, sigma=1.0, shape=(n_cases, n_blocks))
 
@@ -546,11 +536,11 @@ def fit_irt_model(
             else:
                 gamma = pm.Deterministic("gamma", sigma_block_case * gamma_raw)
 
-            gamma_ij = gamma[:, block_id_mapped]   # shape: (n_cases, n_jurors)
+            gamma_ij = gamma[:, block_id]   # shape: (n_cases, n_jurors)
         else:
             gamma_ij = 0.0
 
-              # -----------------------
+        # -----------------------
         # Latent case truth (only if unknown)
         # -----------------------
         if not known_truth:
@@ -638,7 +628,7 @@ In real organizations, people don't arrive at decisions in isolation. They clust
 
 These patterns promote a consolidation of epistemological standards. Members of a block don't just share surface characteristics; they share ways of knowing and hence ways of being wrong. We saw that case difficulty created correlation across the entire jury for specific cases. But block effects create persistent correlation within subgroups across all cases. This is structurally worse. And then when evidence is ambiguous and cases difficult, people fall back on their frameworks, and if everyone shares frameworks, everyone fails together. In this way case-difficulty and group-think interact to drive an organisation to overly simplified, but easily defensible heuristics.
 
-> "Value capture happens when a person or group adopts an externally-sourced value as their own, without adapting it to their particular context... In value capture, we outsource the process of value deliberation. And, as with other forms of outsourcing, there is a trade-off...When we adopt those values, we gain access to readymade methods for justification" - Nguyen
+> "Value capture happens when a person or group adopts an externally-sourced value as their own, without adapting it to their particular context... In value capture, we outsource the process of value deliberation. And, as with other forms of outsourcing, there is a trade-off...When we adopt those values, we gain access to ready-made methods for justification" - Nguyen
 
 The argument here is that the adoption of an external standard or metric can confer legitimacy, but also tends to favour an abstraction that ignores relevant detail. We lose focus on local context when we make our goals legible beyond it. "We did it because everyone else was doing it" works until it doesn't. Nguyen also suggests there is something horrifying about value capture - you adopt the corporate value, but it co-opts you. These effects work together to confound organisational goals and limit our ability to solve collective problems. 
 
@@ -646,8 +636,8 @@ The argument here is that the adoption of an external standard or metric can con
 
 We now fit three IRT models to represent three distinct scenarios:
 
-- The Vanilla Model: Independent agents, shared case difficulty, but no social "blocks.
-- "The Blocked Model: Jurors are captured by "Groupthink" blocks that compress individual skill and introduce massive correlation.
+- The Vanilla Model: Independent agents, shared case difficulty, but no social "blocks".
+- The Blocked Model: Jurors are captured by "Groupthink" blocks that compress individual skill and introduce massive correlation.
 
 - The Full Model: A "Treatment" model where we test if an intervention ($\tau$) can overcome the structural gravity of shared expertise and blocks.
 
@@ -692,7 +682,7 @@ def compute_majority_accuracy_simple(idata, true_states, jury_sizes, block_id, n
     if 'gamma' in idata.posterior:
         gamma_samples = idata.posterior['gamma'].stack(sample=('chain', 'draw'))
     else:
-        gamma_samples = np.zeros((50, 3, 4000))
+        gamma_samples = np.zeros((N_CASES, N_BLOCKS, theta_samples.shape[1]))
     
     n_total = theta_samples.sizes['sample']
     n_cases = len(true_states)
@@ -758,7 +748,7 @@ Separately, we also evaluate accuracy using a post-hoc posterior predictive work
 
 Both accuracy calculations are answering related but distinct questions. The former highlights how accuracy should scale under the model; the latter shows how it does scale when individual votes are explicitly realized. We will use both the posterior predictive checks and the posterior implications below. 
 
-In the code above, the agents are allowed to be sampled as 'random,' but their randomness is constrained by the geometry of the distributions I have chosen. This is the first level of the Legibility Trap: we mistake a high-variance distribution for 'freedom,' forgetting that the agent is still trapped inside the shape of the curve we drew. In an organization, 'innovation' is often just a random sample from a pre-approved prior. We think we are being creative, but we are just exploring the interior of a box designed by the CEO or the Software Architect
+In the code above, the agents are allowed to be sampled as 'random,' but their randomness is constrained by the geometry of the distributions I have chosen. This is the first level of the Legibility Trap: we mistake a high-variance distribution for 'freedom,' forgetting that the agent is still trapped inside the shape of the curve we drew. In an organisation, 'innovation' is often just a random sample from a pre-approved prior. We think we are being creative, but we are just exploring the interior of a box designed by the CEO or the Software Architect
 
 
 ```{python}
@@ -976,7 +966,7 @@ To visualise the consequences of these interacting components better, we'll cont
 
 ### The Vanilla IRT model: Skill Difference and Difficulty
 
-The "Vanilla" model is our baseline. It represents an organization that acknowledges two fundamental truths: Some employees are more skilled than others ($\theta$). Some problems are harder than others ($\delta$). Crucially, however, it assumes that these differences are independent. There are no "Blocks." No one is being coached to think alike.
+The "Vanilla" model is our baseline. It represents an organisation that acknowledges two fundamental truths: Some employees are more skilled than others ($\theta$). Some problems are harder than others ($\delta$). Crucially, however, it assumes that these differences are independent. There are no "Blocks." No one is being coached to think alike.
 
 ```{python}
 
@@ -1014,7 +1004,7 @@ Finally, we look at accuracy. As we scale the jury size from 5 to 30, we see the
 
 ### The Block IRT model: Skill Difference, Difficulty and Block effects
 
-Now we introduce Blocks. We’ve simulated an organization where individuals have been "aligned" into three distinct factions. This might represent departments (Engineering vs. Sales), regional offices, or simply different "schools of thought" within the C-suite.
+Now we introduce Blocks. We’ve simulated an organisation where individuals have been "aligned" into three distinct factions. This might represent departments (Engineering vs. Sales), regional offices, or simply different "schools of thought" within the C-suite.
 
 The management team loves this predictable, legible structure. You can manage three block leaders much more easily than 30 independent jurors. But as we’re about to see, this management convenience comes with a steep epistemic tax.
 
@@ -1039,7 +1029,7 @@ results_blocked = compute_majority_accuracy_simple(
 plot_skill_corr(idata_blocked);
 ```
 
-Unlike the white noise of the Vanilla model, we now see dark red squares along the diagonal. Statistically, this organization doesn't have 30 employees, the signal is diminished through swamping effects of the block.
+Unlike the white noise of the Vanilla model, we now see dark red squares along the diagonal. Statistically, this organisation doesn't have 30 employees, the signal is diminished through swamping effects of the block.
 
 ```{python}
 
@@ -1066,7 +1056,7 @@ print(f"  τ: {idata_full.posterior['tau'].mean():.3f}")
 plot_parameter_recovery(idata_full, t_theta_full, t_delta_full, "Full Case");
 ```
 
-The parameter recovery shows reduced clustering on individual competence around the block effects. Where it seems that $\tau$ dominates $\sigma_{block}$ and represents the decoupling force i.e the specific organizational or individual intervention required to break the 'gravitational pull' of the block and restore independent signal. But we also see a straightline in the lower difficulty parameter plot. This is related to the high level of competence making easier cases almost certainly correctly identified. The organization becomes "stuck in its own success." Because it is so good at the (easy) cases, it stops valuing the "Independent Friction" ($\tau$) needed to solve the hard ones. The flat line represents a state of optimal sub-optimization: you are 100% accurate on the trivial, which masks the fact that you have lost the ability to scale your intelligence on the complex. We can see this further by looking at the correlations. 
+The parameter recovery shows reduced clustering on individual competence around the block effects. Where it seems that $\tau$ dominates $\sigma_{block}$ and represents the decoupling force i.e. the specific organizational or individual intervention required to break the 'gravitational pull' of the block and restore independent signal. But we also see a flat line in the lower difficulty parameter plot. This is related to the high level of competence making easier cases almost certainly correctly identified. The organisation becomes "stuck in its own success." Because it is so good at the (easy) cases, it stops valuing the "Independent Friction" ($\tau$) needed to solve the hard ones. The flat line represents a state of optimal sub-optimization: you are 100% accurate on the trivial, which masks the fact that you have lost the ability to scale your intelligence on the complex. We can see this further by looking at the correlations. 
 
 ```{python}
 print("\nComputing accuracy by jury size...")
@@ -1079,7 +1069,7 @@ plot_skill_corr(idata_full)
 
 ```
 
-The treatment ($\tau$) successfully reduces structural correlation by inducing differential individual competence. We can imagine these treatments as training in radical candour, or similar inducements to challenge the status quo. But shared difficulty  of the problem space and common treatment still drives a consistent error rates which translates to a latent correlation. The heatmap should show that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But we retain a low-grade common correlation. It can be read as tragedy of good intentions. Management aims to decorrelate individual error through better training, but the training is a blunt instrument and just embeds shared methodological truisms and ways of working. Because of this combination of factors, the accuracy curve remains flat. 
+The treatment ($\tau$) successfully reduces structural correlation by inducing differential individual competence. We can imagine these treatments as training in radical candour, or similar inducements to challenge the status quo. But shared difficulty  of the problem space and common treatment still drives a consistent error rates which translates to a latent correlation. The heatmap should show that the dark squares of the Blocked Model have been "shattered" into a lighter, more fragmented pattern. But we retain a low-grade common correlation. It can be read as tragedy of good intentions. Management aims to de-correlate individual error through better training, but the training is a blunt instrument and just embeds shared methodological truisms and ways of working. Because of this combination of factors, the accuracy curve remains flat. 
 
 ```{python}
 
@@ -1096,11 +1086,11 @@ Adding more "experts" from the same block doesn't help because they all fail on 
 az.plot_pair(idata_full, var_names=['expected_jury_accuracy_30', 'tau_mu', 'tau_sigma'], kind='kde');
 ```
 
-The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organization has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit. Indepdence is a necessary but not sufficient condition to drive accuracy gains through aggregation. But here again, the solution is give up or hire more diverse competence.
+The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organisation has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit. Independence is a necessary but not sufficient condition to drive accuracy gains through aggregation. But here again, the solution is give up or hire more diverse competence.
 
 ### Comparing the IRT models: Rate of Learning
 
-One species of fallacy assumes that if you hire A-Players (High $\theta$) and align them into blocks (High $\beta$), you get a perfect organization. Our models shows that to be quite a brittle operating model:
+One species of fallacy assumes that if you hire A-Players (High $\theta$) and align them into blocks (High $\beta$), you get a perfect organisation. Our models show this to be quite a brittle operating model:
 
 - The Vanilla Model shows that Independence is the actual engine of growth.
 
@@ -1108,7 +1098,7 @@ One species of fallacy assumes that if you hire A-Players (High $\theta$) and al
 
 - The Full Model shows that even Expert Alignment creates a "competence trap" where you are too fixated to be truly intelligent. Hard problems still fall beyond the scope of locally convergent competence.
 
-As C. Thi Nguyen might put it: the organization has "captured" the value of expertise so effectively that it has lost the ability to see anything that falls outside of its chosen metrics. The organisation is often "right" in a very legible way, but you are permanently blind to the "illegible" truths that a messy, unorthodox organization might have caught.
+As C. Thi Nguyen might put it: the organisation has "captured" the value of expertise so effectively that it has lost the ability to see anything that falls outside its chosen metrics. The organisation is often "right" in a very legible way, but you are permanently blind to the "illegible" truths that a messy, unorthodox organisation might have caught.
 
 
 ```{python}
@@ -1132,7 +1122,7 @@ plt.show()
 
 ```
 
-However, looking at raw accuracy can be deceptive. A model with high baseline competence (like our Expert Block) might look successful simply because it starts from a higher point. To truly understand if an organization is learning—that is, if it is successfully aggregating independent signal—we must control for these different baselines.
+However, looking at raw accuracy can be deceptive. A model with high baseline competence (like our Expert Block) might look successful simply because it starts from a higher point. To truly understand if an organisation is learning—that is, if it is successfully aggregating independent signal—we must control for these different baselines.
 
 By transforming our results into relative log-odds, we can isolate the Convergence Rate. This tells us how much "work" each additional employee is doing for the collective intelligence.
 
@@ -1174,14 +1164,14 @@ idata_full_false, model_full_false = fit_irt_model(
 
 ```
 
-This model structure cannot be evaluated against the true states within the model as the truth is not baked into the the likelihood as before. 
+This model structure cannot be evaluated against the true states within the model as the truth is not baked into the the likelihood as before. Instead we've anchored the implicit latent judgements to the consensus patterns.
 
 ```{python}
 pm.model_to_graphviz(model_full_false)
 
 ```
 
-We see that the modelling now derives a different profile for the inferred difficulty of each problem case. The differences imply that the model without ground truth generally over estimates some easy cases and under estimates the genuinely hard cases. But there is a good degree of overlap in the cases where majority view is accurate.
+We see that the modelling now derives a different profile for the inferred difficulty of each problem case. The differences imply that the model without ground truth generally overestimates some easy cases and underestimates the genuinely hard cases. But there is a good degree of overlap in the cases where majority view is accurate.
 
 ```{python}
 ax = az.plot_forest([idata_full, idata_full_false], var_names=['delta'], combined=True, model_names=['Full Model with Ground Truth', 'Full Model without Ground Truth'], figsize=(9, 10));
@@ -1234,7 +1224,7 @@ In the model without knowledge of the ground-truth the expertise consensus drive
 
 #### The Role and Locus of Competence
 
-The first line of defense for the "Legible" organization is hiring. The assumption is simple: if the system is failing, the "units" (employees) must be defective. This view assumes that if we just hire "A-Players" with high individual competence ($p > 0.5$), the organization will inevitably succeed. This is often a convenient fantasy. It's a fantasy compounded by annual performance assessment which grade on an artificial curve. It's easier to diagnose failure as limited competence when you regularly orchestrate a system to label a portion of the workforce as incompetent. It aligns with Nguyen's concept of metrics gaming — the belief that maximizing individual scores sums to a maximized collective outcome. It's a failure mode that ignores strucutural aspects of the organisation's problems in lieu of easier proxies. 
+The first line of defense for the "Legible" organisation is hiring. If the system is failing, the "units" (employees) must be defective. This view assumes that if we just hire "A-Players" with high individual competence ($p > 0.5$), the organisation will inevitably succeed. This is often a convenient fantasy. It's a fantasy compounded by annual performance assessment which grade on an artificial curve. Certainly, it's easier to diagnose failure as limited competence when you regularly orchestrate a system to label a portion of the workforce as incompetent. But (a) the technique is generally applied a local rather the population level and (b) enforces a normal-curve calibration on performance. This is a statistical nonsense. A convenient fiction for HR departments. It's common because it aligns with Nguyen's concept of metrics gaming — the belief that maximizing individual scores sums to a maximized collective outcome. It's a failure mode that ignores structural aspects of the organisation's problems in lieu of easier proxies. 
 
 This is not to say that incompetence doesn't exist in a business or political organisation, but variations in competence are less of a threat to organisational competence and execution than the latent determinants of decision accuracy in the business. These determinants are generally structural or institutional; the problems we pick and the structure of decision mechanisms. The process of hiring and firing certainly changes the distribution of competence, it does not, as we've seen, ensure the onset of collective wisdom. 
 
@@ -1244,7 +1234,7 @@ This pulls us in two ways: (1) management panic over hiring standards and (2) an
 
 The statistical breakdown of the Condorcet Jury Theorem is not a bug in corporate planning; it is a feature of the fundamental tension in cooperative work. Our models have mapped a persistent tug-of-war between two opposing gravitational forces:
 
-- **The Pull for Legibility (Scott):** This is the drive to make a complex organization understandable to investors and leaders. It builds the "blocks," the standardized workflows, and the shared cultures that allow thousands of people to move in the same direction. Without it, there is only chaos.
+- **The Pull for Legibility (Scott):** This is the drive to make a complex organisation understandable to investors and leaders. It builds the "blocks," the standardized workflows, and the shared cultures that allow thousands of people to move in the same direction. Without it, there is only chaos.
 
 - **The Push for Autonomy (Nguyen):** This is the individual’s resistance to **Value Capture**. It is the drive to maintain a high-fidelity perspective on reality that hasn't been flattened by a KPI. Without it, there is only lockstep failure.
 
@@ -1252,14 +1242,14 @@ The statistical breakdown of the Condorcet Jury Theorem is not a bug in corporat
 
 We often treat "Alignment" as an unalloyed good. But our simulation of the **Expertise Trap** reveals that when we let the pull for Legibility dominate, we create an **accuracy ceiling**. 
 
-In the pursuit of a "bankable" process, we inadvertently destroy the very thing that makes a group smarter than an individual: the friction of uncorrelated perspectives. When everyone is trained to see the world through the same lens, they share the same blind spots. The organization becomes perfectly legible—it is easy to manage on a spreadsheet—but it becomes epistemically compromised. 
+In the pursuit of a "bankable" process, we inadvertently destroy the very thing that makes a group smarter than an individual: the friction of uncorrelated perspectives. When everyone is trained to see the world through the same lens, they share the same blind spots. The organisation becomes perfectly legible—it is easy to manage on a spreadsheet—but it becomes epistemically compromised. 
 
 #### The Value of Productive Discomfort
 The point is that collective Wisdom is expensive. Its price is the discomfort of discordance. The "Legibility Trap" is seductive because it offers the illusion of control. It is much easier to manage three predictable blocks than thirty "unaligned" individuals. However, as the **Effective Jury Size ($N_{eff}$)** collapses, so does the organization’s ability to solve hard problems.
 
-Solving "Hard" problems (the ones on the steep, unforgiving part of our difficulty curve) requires us to intentionally preserve independence To build a truly intelligent organization, leadership must move beyond the Technocratic Fantasy. It requires a deliberate tolerance for the "messy" and the "unaligned." True collective intelligence depends on **Autonomy**—the courage to let individuals maintain their own maps of the world, even when those maps make the organization harder to read. 
+Solving "Hard" problems (the ones on the steep, unforgiving part of our difficulty curve) requires us to intentionally preserve independence To build a truly intelligent organisation, leadership must move beyond the Technocratic Fantasy. It requires a deliberate tolerance for the "messy" and the "unaligned." True collective intelligence depends on **Autonomy**—the courage to let individuals maintain their own maps of the world, even when those maps make the organisation harder to read. 
 
-In the end, we must choose: do we want an organization that is easy to see, or one that is actually capable of seeing?
+In the end, we must choose: do we want an organisation that is easy to see, or one that is actually capable of seeing?
 
 ---
 
@@ -1278,7 +1268,7 @@ If PowerPoint was a constraint on presenting thought, large language models are 
 
 I used a large language model to critique and help refine the argument here. The need to be legible, the drive to be understood is powerful. Generative AI is a tool that pushes us towards a common diction, and a shared global prior. It is a remarkable technology with innumerable applications that I can't even begin to predict how it will shape our dispositions.
 
-I did not use a large language model to think my thoughts for me. Like other technologies pushing for standardisation and external legibility, LLMs are useful, limiting and horrifying at the same time. Useful, because they encode a library of babel open to the curious. Limiting because consolidation of information drives conformity and diminishes independence of thought within you. Horrifying, because you want the free roaming ideas, speculative whims and jagged singularity of actual thought, not the funneled folly of algorithmic hallucinations. We want to avoid this temptation to group-think and value capture through consensus authority. When even your errors aren't your own, you can't learn and you can barely contribute to the real diversity of opinion that solves actual problems.  
+I did not use a large language model to think my thoughts for me. Like other technologies pushing for standardisation and external legibility, LLMs are useful, limiting and horrifying at the same time. Useful, because they encode a library of babel open to the curious. Limiting because consolidation of information drives conformity and diminishes independence of thought within you. Horrifying, because you want the free roaming ideas, speculative whims and jagged singularity of actual thought, not the funneled folly of algorithmic hallucinations. We want to avoid this temptation to group-think and value capture through consensus authority. When even your errors aren't your own, you can't learn or contribute to the real diversity of opinion that solves actual problems.  
 
 #### Tools for Thinking
 
@@ -1289,7 +1279,7 @@ The risk is when tools replace thought. With AI fact-checkers, or automated perf
 
 #### False Binaries and Stylised Facts
 
-The Condorcet Jury theorem relies on the Stylised fact that the world presents us an array of 0/1 choices. The tension we've been discussing suggests the world pulls us between incentivised legibility and genuine autonomy. While the tension is real, it's a little too crude to pretend this is a binary decision. So while the advent of Generative AI and the proliferation of foundation models weights the scale toward incentivised legibility and starkly standardised process, the world does not exist in the training data. There is a real opportunity to use this technology to scaffold your thoughts, and climb to levels unimagined even six months ago, but there is also a real risk. The frictionless epistemology of LLM aided discovery is the real toy-model. It's a massively scaled and impressively competent toy model, but it still smoothes over the fruitful friction of testing our ideas against the world. The drive for homogeneity, like the push to find answers in the training data represents a retreat from the world and divestment of responsibility when we can least afford it. 
+The Condorcet Jury theorem relies on the stylised fact that the world presents us an array of 0/1 choices. The tension we've been discussing suggests the world pulls us between incentivised legibility and genuine autonomy. While the tension is real, it's a little too crude to pretend this is a binary decision. So while the advent of Generative AI and the proliferation of foundation models weights the scale toward incentivised legibility and starkly standardised process, the world does not exist in the training data. There is a real opportunity to use this technology to scaffold your thoughts, and climb to levels unimagined even six months ago, but there is also a real risk. The frictionless epistemology of LLM aided discovery is the real toy-model. It's a massively scaled and impressively competent toy model, but it still smoothes over the fruitful friction of testing our ideas against the world. The drive for homogeneity, like the push to find answers in the training data represents a retreat from the world and divestment of responsibility when we can least afford it. 
 
 The current ownership of foundation models concentrates a lot of power in the hands of the few. This is not benign. We're already seeing weaponised usage of AI to funnel information, and foment dissent. This is a malicious optimisation of block-effects used to compound division and cloud real signal. Using these tools to "pump out" racist or political content effectively launders past biases into future "facts," creating a feedback loop that drags down voter competence.
 
