@@ -61,8 +61,6 @@ In this post, we move beyond the false rigour of KPI driven decision-making to u
 - Consider the Algorithmic Horizon of Shared Priors and Foundation Models: Reflect on how AI-assisted work may represent a new—and uniquely scalable—mechanism for epistemic homogenization.
 :::
 
-To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, `simulate_jury_data`, is the generative heart of this piece. It creates a laboratory where we can toggle the variables of organizational structure. We'll use this to stress test the Condorcet Jury theorem.
-
 ### The Classical Condorcet Jury Model
 
 Let $T_i \in \{0,1\}$ denote the true state of case $i = 1,\dots,N$, with
@@ -132,7 +130,7 @@ The motivation behind IRT models is that some cases are genuinely harder than ot
 
 Consider the difference between a routine budget approval and an "Ambiguous Pivot" to a new market. On the pivot, even the most competent jurors will struggle. More importantly, their shared expertise in the current market can drive them to struggle in the same direction. Case difficulty creates correlated signal loss: when the evidence is weak, everyone’s instruments fail simultaneously. 
 
-We will simulate these effects now. 
+To understand how legibility short-circuits learning, we need a way to build a "company" from the ground up and stress-test its decision-making. Our simulation function, `simulate_jury_data`, is the generative heart of this piece. It creates a laboratory where we can toggle the variables of organizational structure. We'll use this to stress test the Condorcet Jury theorem.
 
 ```{python}
 
@@ -639,7 +637,6 @@ We now fit three IRT models to represent three distinct scenarios:
 
 - The Vanilla Model: Independent agents, shared case difficulty, but no social "blocks".
 - The Blocked Model: Jurors are captured by "Groupthink" blocks that compress individual skill and introduce massive correlation.
-
 - The Full Model: A "Treatment" model where we test if an intervention ($\tau$) can overcome the structural gravity of shared expertise and blocks.
 
 ```{python}
@@ -1095,7 +1092,7 @@ One species of fallacy assumes that if you hire A-Players (High $\theta$) and al
 
 - The Vanilla Model shows that Independence is the actual engine of growth.
 
-- The Blocked Model shows that Alignment can be an engine of stagnation.
+- The Blocked Model shows that Alignment can be an engine of stagnation, pulling opinions together reducing the effectiveness of aggregation.
 
 - The Full Model shows that even Expert Alignment creates a "competence trap" where you are too fixated to be truly intelligent. Hard problems still fall beyond the scope of locally convergent competence.
 
