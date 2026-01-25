@@ -16,6 +16,7 @@ author:
     - url: https://nathanielf.github.io/
     - affiliation: PyMC dev
 citation: true
+date: "2026-01-25"
 ---
 
 ```{python}
@@ -1179,8 +1180,7 @@ ax[0].set_title("Comparing Implied Case Difficulty")
 
 ```
 
-We can compare how the accuracy of the majority evolves again by using posterior predictive sampling, to gauge the two models. Given the overlap in difficulty estimation we should expect similar cumulative accuracy.
-
+We can compare how the accuracy of the majority evolves again by using posterior predictive sampling, to gauge the two models.
 ```{python}
 
 results_full_false = compute_majority_accuracy_simple(
@@ -1198,7 +1198,7 @@ print_accuracy_table(results_dict, JURY_SIZES)
 
 ```
 
-Interestingly, the accuracy with `full_no_truth` model is slightly higher than we saw with the `full` model. It's not substantially different and likely the `full` model is overfitting to account for idiosyncracies of observed behaviour. However in both cases the accuracy growth plateaus. Diving a bit deeper, we can see how this is driven, oddly, by group based errors _on the easier cases_. 
+Interestingly, the accuracy with `full_no_truth` model is slightly higher than we saw with the `full` model. Likely the `full` model is overfitting to account for idiosyncracies of observed behaviour while, the `full_no_truth` model leans towards the majority heuristic. However, in both cases the accuracy growth plateaus. Diving a bit deeper, we can see how this is driven, oddly, by group based errors _on the easier cases_. 
 
 ```{python}
 
@@ -1215,7 +1215,7 @@ print(f"Avg delta when z correct: {delta_when_correct.mean():.3f}")
 print(f"Avg delta when z wrong: {delta_when_wrong.mean():.3f}")
 ```
 
-The effects of the block have blinded the organisation and locked into error on the objectively easier cases. The easier cases enter into our skill equation as a subtraction effect. 
+The effects of the block have blinded the organisation and locked it into error on the objectively easier cases. The easier cases enter into our skill equation as a subtraction effect. 
 
 - When $\delta$ is negative: `theta - (-0.5) = theta + 0.5` leads to **higher probability of being correct**
 - When $\delta$ is positive: `theta - (+0.5) = theta - 0.5` leads to **lower probability of being correct**
