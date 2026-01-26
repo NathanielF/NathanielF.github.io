@@ -1250,9 +1250,11 @@ In the end, we must choose: do we want an organisation that is easy to see, or o
 
 ---
 
+## Coda: Scaling Alignment with LLMs
+
 ::: {.callout-note collapse="false"}
 
-## Coda: Shared Priors and Foundation Models
+## Shared Priors and Foundation Models
 We've suggested throughout that "block" effects can warp outcomes in undesirable ways. There are endless drives to grouping behavior, but here we'll take a moment to focus on how algorithmic scaffolding shapes information consumption and action. Driving conformity and degrading standards of rigour.
 
 In 2003, Edward Tufte published a quietly cutting critique of PowerPoint titled *The Cognitive Style of PowerPoint*. He argued that software didn't just present information, but that it *structured how people thought*. The hierarchical bullet point list, the pressure to fit complex arguments on a single slide, the aesthetic of "professionalism" over precision. All of it conspired to flatten nuance and discourage rigorous analysis. It killed people. 
