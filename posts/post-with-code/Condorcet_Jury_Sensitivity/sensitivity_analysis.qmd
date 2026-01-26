@@ -11,7 +11,7 @@ execute:
   execute: true
   eval: true
 jupyter: applied-bayesian-regression-modeling-env
-image: 'Independent_voter_errors_correlation.png'
+image: 'legibility_trees.png'
 author:
     - url: https://nathanielf.github.io/
     - affiliation: PyMC dev
@@ -395,6 +395,8 @@ The reason to stress-test Condorcet under these simulations is not because it is
 There is a tension between the forces that will determine whether an organisation can sustain collective wisdom or succumbs to coordinated failure: the pull of block effects ($\beta$) and the push of treatment programmes ($\tau$). These structural additions represent opposing gravitational forces in a delicate equilibrium. Move too far in one direction, and you get chaos; pull too hard in the other, and you get lockstep failure.
 
 To move beyond simple vote tallies and into the "Anatomy of a Decision," we implement a **Hierarchical Bayesian Item Response Theory (IRT)** model. In the IRT paradigm, a vote is not just a random event; it is a latent interaction between the characteristics of the person and the characteristics of the problem.
+
+![](equation_visualised.png)
 
 #### The Core Framework
 
