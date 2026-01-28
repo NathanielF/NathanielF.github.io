@@ -954,6 +954,97 @@ def plot_skill_corr(idata,
     sns.heatmap(skill_corr, cmap='RdBu_r', vmin=-1, vmax=1, annot=False)
     plt.title(title)
 
+from scipy.special import expit
+
+def simulate_treatment_sensitivity(idata, model_structure, tau_grid, block_id, jury_size=30, n_samples=200):
+    """
+    Simulates accuracy across a grid of treatment strengths (tau) 
+    using posterior samples from the fitted model.
+    
+    Includes fix for broadcasting block-level gamma to individual jurors.
+    """
+    
+    # 1. Extract Posterior Samples
+    posterior = idata.posterior.stack(sample=("chain", "draw"))
+    
+    # Subsample
+    rng = np.random.default_rng(42)
+    n_total_samples = posterior.sample.size
+    # Ensure we don't try to sample more than we have
+    n_samples = min(n_samples, n_total_samples)
+    sample_idxs = rng.choice(n_total_samples, size=n_samples, replace=False)
+    
+    # Extract Invariant Parameters
+    # theta shape: (n_jurors, n_samples)
+    theta_total = posterior['theta'].isel(sample=sample_idxs).values
+    
+    # delta shape: (n_cases, n_samples)
+    delta = posterior['delta'].isel(sample=sample_idxs).values
+    
+    # tau shape: (n_jurors, n_samples) (or similar depending on model spec)
+    tau_inferred = posterior['tau'].isel(sample=sample_idxs).values
+    
+    # Treatment vector (n_jurors, 1)
+    treatment_vec = np.asarray(model_structure['treatment'])[:, None]
+
+    # Reconstruct the "Untreated" Juror (Theta_base + Block_effect)
+    # We remove the fitted tau effect so we can swap in our own simulated tau
+    # (n_jurors, n_samples)
+    theta_untreated = theta_total - (tau_inferred * treatment_vec)
+
+    # Extract Gamma (Correlated Shocks)
+    # Shape in trace: (n_cases, n_blocks, n_samples) --> e.g. (50, 3, 200)
+    if 'gamma' in posterior:
+        gamma_blocks = posterior['gamma'].isel(sample=sample_idxs).values
+        
+        # --- THE FIX IS HERE ---
+        # We must map the 3 blocks to the 30 jurors using block_id
+        # block_id should be integers [0, 1, 2...]
+        # Resulting shape: (n_cases, n_jurors, n_samples)
+        gamma_jurors = gamma_blocks[:, block_id, :]
+    else:
+        gamma_jurors = 0
+
+    # 2. The Simulation Loop
+    results = []
+    
+    # Expand delta for broadcasting: (n_cases, 1, n_samples)
+    delta_expanded = delta[:, None, :] 
+    
+    print(f"Simulating {len(tau_grid)} counterfactual scenarios...")
+    
+    for tau_sim in tau_grid:
+        
+        # A. Apply NEW Treatment Effect
+        # (n_jurors, n_samples)
+        treatment_effect = tau_sim * treatment_vec 
+        theta_sim = theta_untreated + treatment_effect 
+        
+        # B. Calculate Logits
+        # (1, n_jurors, n_samples) - (n_cases, 1, n_samples) = (n_cases, n_jurors, n_samples)
+        logit_p = theta_sim[None, :, :] - delta_expanded
+        
+        # Add correlated shock (now correctly shaped (n_cases, n_jurors, n_samples))
+        logit_p += gamma_jurors
+            
+        # C. Probability & Voting
+        p_correct = expit(logit_p)
+        votes = rng.binomial(1, p_correct)
+        
+        # D. Majority Calculation
+        # Randomly select 'jury_size' jurors for every sample
+        n_jurors = votes.shape[1]
+        k_indices = rng.choice(n_jurors, size=jury_size, replace=False)
+        k_votes = votes[:, k_indices, :]
+        
+        # Accuracy: Fraction of cases where majority (>0.5) is correct (assuming Truth=1 alignment)
+        majority_correct = (k_votes.mean(axis=1) > 0.5).astype(int)
+        scenario_accuracy = majority_correct.mean() 
+        results.append(scenario_accuracy)
+
+    return tau_grid, results
+
+
 ```
 
 In each model we draw out the consequences of the interacting effects of components of competence. It's often useful to plot the tree structure to show how the observable outcome of vote distributions are downstream consequences of the latent skill and difficulty.
@@ -1079,14 +1170,49 @@ ax[0].set_title("Full Model - Accuracy of Majority Vote \n With Increasing Juror
 
 ```
 
-Adding more "experts" from the same block doesn't help because they all fail on the same "Hard" cases ($\delta_i$). We have optimized for a specific type of excellence, and in doing so, you have sacrificed the diversity of error required to cross the final threshold to 100% accuracy. We can see how the accuracy doesn't move as we scale the $\tau$ parameter.
+Adding more "experts" from the same block doesn't help because they all fail on the same "Hard" cases ($\delta_i$). We have optimized for a specific type of excellence, and in doing so, you have sacrificed the diversity of error required to cross the final threshold to 100% accuracy. We can see how the accuracy doesn't move as we explore the $\tau$ parameter space.
 
 ```{python}
 
 az.plot_pair(idata_full, var_names=['expected_jury_accuracy_30', 'tau_mu', 'tau_sigma'], kind='kde');
 ```
 
-The pair plot reveals the "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat, it tells us that the organisation has hit diminishing returns on independence. The "Legibility" of the expertise-based block is so dominant that even significant individual effort ($\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit. Independence is a necessary but not sufficient condition to drive accuracy gains through aggregation. But here again, the solution is give up or hire more diverse competence.
+The pair plot reveals the posterior "Exchange Rate" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat i.e. the degree of variation in the posterior for `tau_mu` is insufficient to move the needle, it tells us that the organisation has hit diminishing returns on the empirically gauged independence. However, we can use a posterior predictive analysis to try and impute majority accuracy under different treatment strengths. This is a more brute force counterfactual approach.
+
+```{python}
+
+model_data = {'treatment': treatment} 
+taus = np.linspace(-0.5, 10, 50) 
+
+# Pass block_id_fixed to the function
+tau_vals, accuracies = simulate_treatment_sensitivity(
+    idata_full, 
+    model_data, 
+    taus, 
+    block_id=BLOCK_ID, 
+    jury_size=30
+)
+
+std_deviation_juror_skill = idata_full['posterior']['theta'].mean(dim=('chain', 'draw')).std().item()
+
+# Plotting
+plt.figure(figsize=(10, 6))
+plt.plot(tau_vals, accuracies, lw=3, color='forestgreen')
+# Extract mean tau from posterior for the vertical line
+tau_mu_mean = idata_full.posterior['tau_mu'].mean().item()
+plt.axvline(tau_mu_mean, color='k', linestyle='--', label=f'Inferred Tau ({tau_mu_mean:.2f})')
+plt.title(f"Counterfactual Sensitivity: Impact of Treatment Strength on Accuracy \n Standard Deviation Unit of Skill {np.round(std_deviation_juror_skill, 3)}")
+plt.xlabel("Treatment Strength (Tau)")
+plt.ylabel("Expected Majority Accuracy (N=30)")
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+
+```
+
+What is revealing about this plot is the huge treatment effects required to move the needle. To push majority accuracy above .8, we need a treatment effect ~6. This far and away exceeds a standard deviation unit change in skill within the current employee base. This is implausible in nearly all corporate environments. No amount of "Red team" training is sufficient to boost the skill of the work force, and break out of the group-think gravity well.
+
+The "Legibility" of the expertise-based block is so dominant that significant individual effort ($\tau$) can't provide the missing signal. This is likely due to genuinely extreme difficulty of the cases. The lesson is that while diversity of opinion is necessary for majority accuracy to converge it is not sufficient. If the problem is beyond the competence of the jury pool, accuracy will plateau at their limit. Independence is a necessary but not sufficient condition to drive accuracy gains through aggregation. But here again, the solution is give up or hire more diverse competence.
 
 ### Comparing the IRT models: Rate of Learning
 
