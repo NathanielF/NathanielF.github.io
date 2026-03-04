@@ -2,6 +2,7 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/python_ireland_2026_march/condorcet_agents.html",
       "/talks/scm_with_vs_priors/scm_causalpy.html",
       "/talks/pycon_ireland_2025/bayesian_workflow_sem.html",
       "/talks/pydata_berlin_nested_logit/consumer_choice.html",
@@ -15,7 +16,6 @@
       "/talks/pycon_ireland_recording/pycon_ireland_recording.html",
       "/talks/missing_data/missing_data_causal.html",
       "/talks/bayesian_mixer/bayesian_mixer_london.html",
-      "/talks/utility_and_choice/discrete_choice_and_utility.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
@@ -27,6 +27,7 @@
     "items": [
       "/posts/post-with-code/AalenDynamicPaths/aalen_dynamic_paths.html",
       "/posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html",
+      "/posts/post-with-code/Condorcet_Jury_Sensitivity/talk.html",
       "/posts/post-with-code/Condorcet_Jury_Sensitivity/sensitivity_analysis.html",
       "/posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.html",
       "/posts/post-with-code/multilevel_confounding/multilevel_models.html",
@@ -36,6 +37,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/bambi/survival_analysis_sorites.html",
       "/oss/pymc_marketing/mixed_logit.html",
       "/oss/causalpy/variable_selection_joint_models.html",
       "/oss/pymc/sem_workflow.html",
@@ -62,6 +64,7 @@
     "items": [
       "/posts/post-with-code/AalenDynamicPaths/aalen_dynamic_paths.html",
       "/posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html",
+      "/posts/post-with-code/Condorcet_Jury_Sensitivity/talk.html",
       "/posts/post-with-code/Condorcet_Jury_Sensitivity/sensitivity_analysis.html",
       "/posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.html",
       "/posts/post-with-code/multilevel_confounding/multilevel_models.html",

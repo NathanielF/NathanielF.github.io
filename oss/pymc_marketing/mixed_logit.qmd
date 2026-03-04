@@ -17,14 +17,14 @@ This addition completes the core discrete-choice toolkit, sitting alongside:
 
 The implementation supports:
 
-- ✅ Individual-level preference heterogeneity via hierarchical random coefficients
-- ✅ Panel data with group-level effects
-- ✅ Non-centered parameterizations for better sampling
-- ✅ Control-function correction for price endogeneity using instruments
-- ✅ Full posterior & counterfactual simulation for policy and pricing interventions
-- ✅ Wilikinson Style Formula interface
+- Individual-level preference heterogeneity via hierarchical random coefficients
+- Panel data with group-level effects
+- Non-centered parameterizations for better sampling
+- Control-function correction for price endogeneity using instruments
+- Full posterior & counterfactual simulation for policy and pricing interventions
+- Wilkinson Style Formula interface
 
-Mixed logit is the workhorse model behind modern preference estimation, WTP analysis, and market simulations — and it’s now fully Bayesian, transparent, and extensible in PyMC.
+Mixed logit is the workhorse model behind modern preference estimation, WTP analysis, and market simulations — and it’s now fully Bayesian, transparent, and extensible in PyMC. The model implementation can be found in pymc marketing [here](https://www.pymc-marketing.io/en/stable/notebooks/customer_choice/mixed_logit.html)
 
 The latent utility for alternative $j$ is
 
