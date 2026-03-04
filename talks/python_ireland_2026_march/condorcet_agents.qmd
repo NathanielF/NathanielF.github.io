@@ -109,7 +109,7 @@ This is a theorem — it's mathematically true. The question is whether the assu
 
 ## Independence is the Engine
 
-![](Independent_voter_errors_correlation.png){fig-align="center" width="85%"}
+![](images/Independent_voter_errors_correlation.png){fig-align="center" width="85%"}
 
 When errors are uncorrelated, every new voice adds **new evidence**.
 
@@ -446,6 +446,9 @@ Our model gives precise language for evaluating any collective decision system:
 This is the practical takeaway. Whether you're evaluating human reviewers, model ensembles, or any panel of agents — IRT gives you a decomposition and PyMC gives you the inference engine.
 :::
 
+## Tufte's Warning
+
+![](images/tufte_cognitive_style.png)
 
 ## The Design Principle
 
