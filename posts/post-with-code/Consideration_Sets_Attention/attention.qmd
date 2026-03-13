@@ -1,0 +1,1209 @@
+---
+title: "The Architecture of Focus: Attention in Transformers and Discrete Choice"
+subtitle: "How NLP 'Self-Attention' and Econometric 'Consideration Sets' share a mathematical skeleton"
+date: "2026-03-13"
+author: "Nathaniel Forde"
+categories: ["NLP", "discrete choice", "econometrics", "deep learning", "PyMC"]
+format:
+  html:
+    toc: true
+    code-fold: show
+    fig-width: 8
+    fig-height: 5
+self-contained: true
+draft: true
+execute: 
+  enabled: true
+jupyter: pytorch-env
+---
+
+```{python}
+#| label: setup
+#| echo: false
+#| message: false
+import warnings
+import pandas as pd
+import matplotlib.pyplot as plt
+import pymc as pm
+import pytensor.tensor as pt
+warnings.filterwarnings("ignore")
+```
+
+## Introduction: Two Kinds of Focus
+
+*The fisherman went to the bank.* Somewhere in that sentence, a disambiguation takes place. Whether you are reading it in a language model or choosing how to spend a Saturday, the word **"bank"** triggers a selective weighting of contextual evidence — *fisherman*, *river*, *water*, *mud* — that resolves the ambiguity in favour of the riverbank, not the financial institution.
+
+This process of *selective relevance weighting* is, we will argue, the same mathematical mechanism at work in two very different statistical paradigms:
+
+1. **Transformer self-attention** (from NLP / deep learning), and
+2. **Consideration sets** (from econometric discrete choice modelling).
+
+Both frameworks answer the question: *given a rich candidate space, which elements are worth paying attention to?* Both use a form of scored, normalised weighting to answer it. And both do so in a way that makes them efficient processors of high-dimensional information.
+
+In what follows we will:
+
+- Make the formal analogy precise with mathematics
+- Implement a full $Q$, $K$, $V$ attention head in PyTorch, with a realistic data-generating process that models **graded contextual signal strengths**
+- Contrast **soft attention** (transformer-style) with **hard gating** (consideration set-style)
+- Implement a consideration set model in PyMC, building directly on the `MixedLogit` infrastructure from `pymc-marketing`
+- Explore where the analogy is deep and where it is merely superficial
+
+---
+
+## The Core Analogy
+
+### Transformer Self-Attention
+
+For a sequence of tokens, self-attention computes:
+
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V
+$$
+
+where:
+
+- $Q \in \mathbb{R}^{1 \times d}$ is the **Query** — the target word's projection of "what am I looking for?"
+- $K \in \mathbb{R}^{n \times d}$ is the **Key** — each context word's projection of "what do I signal?"
+- $V \in \mathbb{R}^{n \times d}$ is the **Value** — each context word's "information payload"
+- $\text{softmax}(QK^\top / \sqrt{d_k})$ gives attention weights $w_j \in [0,1]$ with $\sum_j w_j = 1$
+
+The output is a *weighted sum of value payloads*, where the weights are determined by query-key similarity. Crucially, **$K$ and $V$ are separate projections** — the signal that determines what to attend to is decoupled from the content that gets retrieved.
+
+### Consideration Sets in Discrete Choice
+
+In discrete choice, a consumer $n$ does not necessarily evaluate *all* available alternatives. They first form a **consideration set** $\mathcal{C}_n \subseteq \mathcal{J}$, then choose optimally from within it.
+
+The probability of choosing alternative $j$ is:
+
+$$
+P(j \text{ chosen}) = \sum_{\mathcal{C}: j \in \mathcal{C}} P(j \mid \mathcal{C}) \cdot P(\mathcal{C})
+$$
+
+where:
+
+- $\pi_{nj} = \sigma\!\left(\gamma_{0j} + \mathbf{z}_n^\top \boldsymbol{\gamma}_j\right)$ is the **consideration probability** for alternative $j$ — the "propensity to attend" — modelled with a **sigmoid** (independent per alternative, not softmax)
+- $P(\mathcal{C}) = \prod_k \pi_{nk}^{\mathbf{1}[k \in \mathcal{C}]} (1-\pi_{nk})^{\mathbf{1}[k \notin \mathcal{C}]}$ is the probability of a particular set forming
+- $P(j \mid \mathcal{C}) = \text{softmax}(V_{n\mathcal{C}})_j$ is the standard logit choice *within* the consideration set
+
+Using the **log-consideration-adjusted utility** approximation (Sorensen, Rasmussen & Elberg 2000):
+
+$$
+P(j \text{ chosen}) \approx \text{softmax}_j\!\bigl(\log \pi_{nj} + V_{nj}\bigr)
+$$
+
+### The Structural Map
+
+::: {.callout-note icon=false}
+## The Attention–Consideration Analogy
+
+| Transformer Component | Discrete Choice Analogue |
+|---|---|
+| Query $Q$ | Consumer's current **need state** (context $z_n$) |
+| Key $K_j$ | Alternative $j$'s **signalled attributes** |
+| $Q \cdot K_j^\top / \sqrt{d}$ | Alternative $j$'s **relevance score** $\gamma_{0j} + z_n'\gamma_j$ |
+| $\text{softmax}(QK^\top / \sqrt{d})$ | Consideration probability $\pi_{nj} = \sigma(\cdot)$ — note: sigmoid (independent), not softmax (coupled) |
+| Value $V_j$ | Alternative $j$'s **utility payload** $V_{nj}$ |
+| $\sum_j w_j V_j$ (weighted value aggregate) | $\text{softmax}(\log \pi_j + V_j)$ (consideration-weighted choice) |
+
+**How scores and values combine differs.** In transformers, scores produce weights and values are *aggregated* by those weights ($\sum_j w_j V_j$). In consideration models, scores and values are *added* inside a single softmax ($\text{softmax}_j(\log \pi_j + V_j)$). The parallel is structural — both separate a relevance signal from a payload — not algebraic.
+
+The other critical structural difference: transformers use **soft continuous weighting** (every token always contributes something); consideration sets use **hard stochastic gating** (alternatives are in the set or not). The transformer is a *differentiable relaxation* of the consideration set mechanism: replacing the softmax temperature $\tau \to 0$ recovers hard one-hot gating from the soft distribution, connecting the two via the same limit used in Gumbel-Softmax reparameterisation.
+:::
+
+---
+
+## Part I: The Transformer Side
+
+### Demo 1 — Static Soft Attention
+
+Before training anything, we can see the full $Q, K, V$ mechanism at work. The query word `"bank"` computes a scaled dot-product against context word keys. Notice how all three matrices participate: the $Q \cdot K^\top$ score determines *what to attend to*, but it is $V$ that determines *what information is actually retrieved*. These two roles are structurally separated.
+
+```{python}
+#| label: static-attention
+#| message: false
+#| fig-cap: "Static attention: river-sense query for 'bank' attends selectively to river context. The V matrix decouples the signal (K) from the payload (V)."
+
+import torch
+import torch.nn.functional as F
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def static_qkv_attention(Q, K, V):
+    """
+    Full QKV scaled dot-product attention.
+
+    Q : (1, d)  — query  (the target word: "what am I looking for?")
+    K : (n, d)  — keys   (context words: "what do I signal?")
+    V : (n, d)  — values (context words: "what information do I deliver?")
+
+    Returns
+    -------
+    context : (1, d)  — relevance-weighted information payload
+    weights : (1, n)  — attention distribution
+    """
+    d_k = Q.shape[-1]
+    scores  = torch.matmul(Q, K.T) / (d_k ** 0.5)
+    weights = F.softmax(scores, dim=-1)
+    context = torch.matmul(weights, V)   # weighted sum of VALUE payloads
+    return context, weights
+
+
+torch.manual_seed(1)
+d = 8
+
+# Hand-crafted key embeddings — river words project similarly to the river query
+fisherman_K = torch.tensor([1.2, 0.1, 2.1, 0.5, 0.2, 0.0, 1.1, 0.8])
+river_K     = torch.tensor([1.1, 0.0, 2.3, 0.4, 0.1, 0.1, 1.0, 0.9])
+investor_K  = torch.tensor([0.1, 2.5, 0.2, 1.1, 1.5, 2.0, 0.1, 0.2])  # very different
+
+# River-sense query for "bank"
+bank_Q = torch.tensor([1.0, 0.2, 2.0, 0.5, 0.3, 0.1, 1.0, 0.8]).unsqueeze(0)
+
+# Value payloads are separate from keys — they carry semantic content
+V_static = torch.randn(3, d) * 0.5  # arbitrary payloads for illustration
+
+K_static = torch.stack([fisherman_K, river_K, investor_K])
+_, attn_w = static_qkv_attention(bank_Q, K_static, V_static)
+
+words = ["fisherman", "river", "investor"]
+w = attn_w[0].detach().numpy()
+
+fig, ax = plt.subplots(figsize=(6, 3.5))
+colors = ["#4C72B0", "#4C72B0", "#DD8452"]
+bars = ax.bar(words, w, color=colors, alpha=0.85, edgecolor="white", linewidth=1.5)
+ax.set_ylabel("Attention weight $w_j$")
+ax.set_title("Static QKV attention: river-sense 'bank' query")
+ax.set_ylim(0, 1.05)
+for bar, weight in zip(bars, w):
+    ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
+            f"{weight:.3f}", ha="center", va="bottom", fontsize=11)
+plt.tight_layout()
+plt.show()
+```
+
+The river-sense query attends heavily to `fisherman` and `river`, and nearly ignores `investor`. This is attention doing what it does: **selective weighting by relevance**. The output is the weighted sum of the *value* payloads of those relevant words — not just the knowledge that they were relevant.
+
+---
+
+### Demo 2 — Learning to Attend: The Bank Disambiguation Task
+
+A static illustration is instructive but not honest about how transformers work. The $Q$, $K$, $V$ matrices are *learned* from data. To demonstrate this, we construct a toy corpus centred on the word `"bank"`.
+
+#### Data-Generating Process
+
+A naive DGP might assign words to flat clusters: "river words" or "finance words" with equal probability within each cluster. Real language does not work this way.
+
+Words like *"current"* (river current / current account) and *"deposit"* (silt deposit / bank deposit) are **genuine ambiguity carriers**: they provide positive but partial evidence for both senses. Noise words like *"tree"* or *"road"* are informationally near-neutral. And strong signal words like *"vault"* or *"fisherman"* appear almost exclusively in one sense.
+
+We model this with an **explicit signal strength vocabulary**: each word $w$ is assigned weights $(r_w, f_w)$ representing how likely it is to appear as context when "bank" carries its river versus finance sense. Context windows are then sampled proportional to these weights — exactly mimicking how real corpora distribute contextual evidence around ambiguous words under the distributional hypothesis.
+
+```{python}
+#| label: dgp-vocabulary
+#| message: false
+
+import random
+import pandas as pd
+
+random.seed(42)
+np.random.seed(42)
+
+# =============================================================================
+# Vocabulary with graded signal strengths.
+#
+# Format: word -> (river_weight, finance_weight)
+#
+# river_weight  = proportional probability of appearing when bank=river
+# finance_weight = proportional probability of appearing when bank=finance
+#
+# Ambiguous words carry moderate weight in BOTH senses.
+# Noise words carry low weight in either direction.
+# =============================================================================
+
+VOCAB_SIGNALS: dict[str, tuple[float, float]] = {
+    # --- Strong RIVER signals ---
+    "fisherman": (0.90, 0.02),
+    "water":     (0.85, 0.05),
+    "river":     (0.95, 0.01),
+    "shore":     (0.82, 0.04),
+    "flood":     (0.70, 0.12),   # "flood insurance" leaks a mild finance signal
+    "wades":     (0.88, 0.00),
+    "muddy":     (0.80, 0.01),
+    "reed":      (0.75, 0.00),
+    # --- Genuinely AMBIGUOUS words ---
+    "current":   (0.52, 0.45),   # "river current"  vs "current account"
+    "deposit":   (0.22, 0.72),   # "silt deposit"   vs "bank deposit"
+    "run":       (0.32, 0.40),   # "run by the river" vs "bank run"
+    # --- Strong FINANCE signals ---
+    "loan":      (0.01, 0.95),
+    "money":     (0.03, 0.90),
+    "credit":    (0.01, 0.93),
+    "account":   (0.05, 0.88),
+    "vault":     (0.00, 0.98),
+    "interest":  (0.10, 0.82),   # mild river signal: "interested in the scenery"
+    "teller":    (0.00, 0.97),
+    "rate":      (0.03, 0.80),
+    # --- Low-signal NOISE words ---
+    "road":      (0.08, 0.05),
+    "tree":      (0.14, 0.03),
+    "stone":     (0.12, 0.04),
+    "cloud":     (0.05, 0.03),
+    "old":       (0.06, 0.08),
+    "new":       (0.05, 0.09),
+    "busy":      (0.06, 0.12),
+    "near":      (0.08, 0.10),
+}
+
+VOCAB  = list(VOCAB_SIGNALS.keys())
+TARGET = "bank"
+
+
+def generate_context(sense: int, ctx_size: int = 4) -> list[str]:
+    """
+    Sample a context window for 'bank' given its true sense.
+
+    Words are sampled WITHOUT replacement, weighted by their signal strength,
+    mimicking the distributional structure of real corpora. Strong signal
+    words appear more often; ambiguous words appear in both senses; noise
+    words appear rarely in either.
+    """
+    weights = np.array([VOCAB_SIGNALS[w][sense] for w in VOCAB])
+    weights = weights / weights.sum()
+    return list(np.random.choice(VOCAB, size=ctx_size, replace=False, p=weights))
+
+
+def build_corpus(n: int = 1200, ctx_size: int = 4) -> list[tuple]:
+    """Generate a corpus of (context, target, sense) triples."""
+    corpus = []
+    for _ in range(n):
+        sense = random.randint(0, 1)
+        corpus.append((generate_context(sense, ctx_size), TARGET, sense))
+    return corpus
+
+
+corpus = build_corpus(n=1200)
+df     = pd.DataFrame(corpus, columns=["context", "target", "sense"])
+
+# Sanity checks: do signal words appear in the right contexts?
+for word in ["vault", "fisherman", "current", "tree"]:
+    df[f"has_{word}"] = df["context"].apply(lambda x: word in x)
+
+print("Word co-occurrence by sense (0=river, 1=finance):\n")
+for word in ["vault", "fisherman", "current", "tree"]:
+    ct = pd.crosstab(df[f"has_{word}"], df["sense"], normalize="columns")
+    ct.index = [f"{word}=False", f"{word}=True"]
+    print(ct.round(3)); print()
+```
+
+The crosstab confirms the DGP is doing what we intend: `vault` almost never appears in river contexts, `fisherman` almost never appears in finance contexts, and `current` appears in both.
+
+```{python}
+#| label: vocab-log-odds
+#| fig-cap: "Log-odds of each word's river vs finance signal strength. Words near zero are genuine ambiguity carriers; words at the extremes are strong sense-specific signals."
+
+log_odds = {
+    w: np.log((VOCAB_SIGNALS[w][0] + 1e-3) / (VOCAB_SIGNALS[w][1] + 1e-3))
+    for w in VOCAB
+}
+
+sorted_items = sorted(log_odds.items(), key=lambda x: x[1])
+words_sorted = [x[0] for x in sorted_items]
+lo_sorted    = [x[1] for x in sorted_items]
+
+fig, ax = plt.subplots(figsize=(8, 6))
+colors  = ["#4C72B0" if lo > 0 else "#DD8452" for lo in lo_sorted]
+ax.barh(words_sorted, lo_sorted, color=colors, alpha=0.85, edgecolor="white")
+ax.axvline(0, color="black", linewidth=0.9, linestyle="--")
+ax.set_xlabel(r"Log-odds  $\log(r_w / f_w)$")
+ax.set_title("Vocabulary signal structure: river (blue) vs finance (orange)")
+plt.tight_layout()
+plt.show()
+```
+
+The log-odds chart is a useful compass for what we expect the model to learn. Words at the right extreme (`river`, `wades`, `fisherman`) are nearly unambiguous river signals; words at the left extreme (`vault`, `teller`, `loan`) are unambiguous finance signals; words near zero (`current`, `run`, `deposit`, `tree`) carry little or conflicting information. **A well-trained attention head should assign weights that track this structure.**
+
+---
+
+#### Full QKV Attention Head
+
+```{python}
+#| label: attention-model
+
+import torch.nn as nn
+import torch.optim as optim
+
+
+class AttentionHead(nn.Module):
+    """
+    Single self-attention head with full Q, K, V projections.
+
+    The analogy with discrete choice:
+
+        Q  <->  Consumer's current need state (what am I looking for?)
+        K  <->  What each word SIGNALS / advertises
+        V  <->  The information PAYLOAD each word delivers
+
+    The attended context = softmax(QK^T / sqrt(d)) . V is a
+    relevance-weighted extraction from the value space — not the
+    raw embedding space. Without V, the model conflates "what I
+    attend to" with "what I get", exactly as a consideration model
+    that treats consideration probability and utility as the same
+    quantity would.
+    """
+
+    def __init__(self, vocab_size: int, d_model: int = 32):
+        super().__init__()
+        self.d_model = d_model
+        self.embed   = nn.Embedding(vocab_size, d_model)
+        self.q_proj  = nn.Linear(d_model, d_model, bias=False)
+        self.k_proj  = nn.Linear(d_model, d_model, bias=False)
+        self.v_proj  = nn.Linear(d_model, d_model, bias=False)  # the crucial addition
+        self.clf     = nn.Linear(d_model, 2)
+
+    def _attention_weights(
+        self, ctx_idxs: torch.Tensor, tgt_idx: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Compute soft attention weights and context embeddings."""
+        c = self.embed(ctx_idxs)           # (ctx, d)
+        t = self.embed(tgt_idx).unsqueeze(0)  # (1, d)
+        Q = self.q_proj(t)                 # (1, d)  — need-state query
+        K = self.k_proj(c)                 # (ctx, d) — signal projection
+        scores  = torch.matmul(Q, K.T) / (self.d_model ** 0.5)
+        weights = F.softmax(scores, dim=-1)
+        return weights, c
+
+    def forward(
+        self, ctx_idxs: torch.Tensor, tgt_idx: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        weights, c_embs = self._attention_weights(ctx_idxs, tgt_idx)
+        V           = self.v_proj(c_embs)          # (ctx, d) — value/payload projection
+        context_vec = torch.matmul(weights, V)     # (1, d)   — aggregate information
+        logits      = self.clf(context_vec)        # (1, 2)
+        return logits, weights
+```
+
+#### Hard-Gated Attention (the Consideration Set Variant)
+
+```{python}
+#| label: hard-gating-model
+
+
+class HardGatedAttention(AttentionHead):
+    """
+    Consideration-set style attention: hard gating before renormalisation.
+
+    Implements the two-stage logic of a discrete choice consideration model:
+
+      Stage 1 — Gate:   Is this word (alternative) in the consideration set?
+                        Yes if attention score > threshold.
+      Stage 2 — Choose: Given the consideration set, what does the model attend?
+                        Standard softmax over surviving tokens.
+
+    The threshold parameter corresponds to the minimum consideration salience
+    in random utility models: an alternative must exceed some baseline to enter
+    evaluation. Words below threshold are treated as if they were not present.
+    """
+
+    def forward(
+        self,
+        ctx_idxs:  torch.Tensor,
+        tgt_idx:   torch.Tensor,
+        threshold: float = 0.15,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+
+        # Get soft weights from the shared attention computation
+        soft_w, c_embs = self._attention_weights(ctx_idxs, tgt_idx)
+
+        # STAGE 1: Hard gate — zero out sub-threshold tokens
+        gate   = (soft_w > threshold).float()
+        masked = soft_w * gate
+
+        # Renormalise over the surviving consideration set
+        hard_w = masked / (masked.sum(dim=-1, keepdim=True) + 1e-9)
+
+        # STAGE 2: Aggregate values over consideration set only
+        V           = self.v_proj(c_embs)
+        context_vec = torch.matmul(hard_w, V)
+
+        return self.clf(context_vec), hard_w
+```
+
+#### Training
+
+We train with cross-entropy loss only — no entropy penalty. The attention head is forced to focus simply by the task demand: to correctly classify the sense of "bank", it must learn to weight signal words highly and noise words less. Sparsity of attention is *emergent*, not imposed.
+
+```{python}
+#| label: training
+#| message: false
+
+torch.manual_seed(42)
+
+# Build vocabulary (sorted for reproducibility)
+all_words = sorted(set(w for ctx, _, _ in corpus for w in ctx) | {TARGET})
+w2i = {w: i for i, w in enumerate(all_words)}
+i2w = {i: w for w, i in w2i.items()}
+
+train_corpus = corpus[:1000]
+test_corpus  = corpus[1000:]
+
+model     = AttentionHead(len(w2i), d_model=32)
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+criterion = nn.CrossEntropyLoss()
+
+losses = []
+for epoch in range(80):
+    model.train()
+    epoch_loss = 0.0
+    for ctx, tgt, lbl in train_corpus:
+        optimizer.zero_grad()
+        c_idx  = torch.tensor([w2i[w] for w in ctx])
+        t_idx  = torch.tensor(w2i[tgt])
+        logits, _ = model(c_idx, t_idx)
+        loss = criterion(logits, torch.tensor([lbl]))
+        loss.backward()
+        optimizer.step()
+        epoch_loss += loss.item()
+    losses.append(epoch_loss / len(train_corpus))
+
+# Evaluate
+model.eval()
+with torch.no_grad():
+    correct = sum(
+        torch.argmax(
+            model(
+                torch.tensor([w2i[w] for w in ctx]),
+                torch.tensor(w2i[tgt])
+            )[0]
+        ).item() == lbl
+        for ctx, tgt, lbl in test_corpus
+    )
+print(f"Test accuracy : {correct / len(test_corpus):.3f}")
+print(f"Final loss    : {losses[-1]:.4f}")
+```
+
+#### What Has the Model Learned to Attend To?
+
+The crucial test: do the learned attention weights track the *true* signal strengths we built into the DGP?
+
+```{python}
+#| label: attention-by-sense
+#| fig-cap: "Average attention weight per word, by sense. Strong signal words dominate; noise words are suppressed."
+
+attention_records = {0: {}, 1: {}}
+
+model.eval()
+with torch.no_grad():
+    for ctx, tgt, lbl in corpus:
+        c_idx = torch.tensor([w2i[w] for w in ctx])
+        t_idx = torch.tensor(w2i[tgt])
+        _, weights = model(c_idx, t_idx)
+        for w, a in zip(ctx, weights[0].numpy()):
+            attention_records[lbl].setdefault(w, []).append(float(a))
+
+# Words appearing in both senses (all vocabulary words should qualify
+# given graded DGP, but we guard against edge cases)
+common_words  = [
+    w for w in VOCAB
+    if attention_records[0].get(w) and attention_records[1].get(w)
+]
+river_attn    = [np.mean(attention_records[0][w]) for w in common_words]
+finance_attn  = [np.mean(attention_records[1][w]) for w in common_words]
+
+fig, axes = plt.subplots(1, 2, figsize=(13, 6))
+
+for ax, (attn, sense_name, color) in zip(
+    axes,
+    [(river_attn, "River sense (0)", "#4C72B0"),
+     (finance_attn, "Finance sense (1)", "#DD8452")],
+):
+    order = np.argsort(attn)[::-1]
+    ax.barh(
+        [common_words[i] for i in order],
+        [attn[i] for i in order],
+        color=color, alpha=0.85,
+    )
+    baseline = 1 / len(common_words)
+    ax.axvline(
+        baseline, color="k", linestyle="--", alpha=0.5,
+        label=f"Uniform baseline ({baseline:.2f})"
+    )
+    ax.set_xlabel("Average attention weight")
+    ax.set_title(f"Learned attention: {sense_name}")
+    ax.legend(fontsize=8)
+
+plt.suptitle(
+    "Learned attention tracks signal strength — not cluster membership",
+    y=1.02, fontsize=12
+)
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: signal-recovery
+#| fig-cap: "Scatter of true DGP signal strength vs learned average attention weight, by sense. Strong signals are recovered reliably; ambiguous words land midway."
+
+from scipy.stats import spearmanr
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+for ax, (sense_idx, sense_label, attn_list, color) in zip(
+    axes,
+    [(0, "River",   river_attn,   "#4C72B0"),
+     (1, "Finance", finance_attn, "#DD8452")],
+):
+    true_s = [VOCAB_SIGNALS[w][sense_idx] for w in common_words]
+    rho, p = spearmanr(true_s, attn_list)
+
+    ax.scatter(true_s, attn_list, color=color, alpha=0.8, s=55)
+    for w, ts, la in zip(common_words, true_s, attn_list):
+        ax.annotate(w, (ts, la), fontsize=7, alpha=0.75,
+                    xytext=(3, 2), textcoords="offset points")
+
+    # Regression line
+    m, b = np.polyfit(true_s, attn_list, 1)
+    xs = np.linspace(min(true_s), max(true_s), 100)
+    ax.plot(xs, m * xs + b, color=color, linestyle="--", alpha=0.6)
+
+    ax.set_xlabel(f"True DGP signal weight ({sense_label.lower()} sense)")
+    ax.set_ylabel("Learned attention weight")
+    ax.set_title(f"{sense_label} sense  (Spearman ρ = {rho:.2f},  p = {p:.3f})")
+
+plt.suptitle(
+    "Transformer attention ≈ Bayes-optimal signal detection",
+    y=1.02, fontsize=12
+)
+plt.tight_layout()
+plt.show()
+```
+
+The Spearman correlation between true signal strength and learned attention weight quantifies how well the transformer has learned the optimal disambiguation strategy. A high $\rho$ is not a coincidence: backpropagation on a classification objective converges to weights that approximate the posterior probability that a context word is informative — which is precisely what *consideration probability* encodes in the discrete choice framework.
+
+---
+
+### Demo 3 — Soft Attention vs Hard Gating: The Structural Divide
+
+The transformer uses *soft* attention: every context word receives some non-zero weight. Consideration sets use *hard* gating: alternatives are either in or out. We can implement the hard-gating version by zeroing attention weights below a threshold and renormalising — exactly the process of forming a consideration set.
+
+```{python}
+#| label: soft-vs-hard
+#| fig-cap: "Soft attention (transformer) vs hard gating (consideration set) on three test contexts. Hard gating forces a binary inclusion decision; soft attention maintains a graded distribution."
+
+hard_model = HardGatedAttention(len(w2i), d_model=32)
+hard_model.load_state_dict(model.state_dict())   # same weights, different forward pass
+hard_model.eval()
+
+test_cases = [
+    (["fisherman", "muddy", "vault",   "road"],  "River context + finance distractor"),
+    (["loan",      "account", "shore",  "tree"],  "Finance context + river distractor"),
+    (["current",   "deposit", "stone",  "cloud"], "Genuinely ambiguous context"),
+]
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+
+for ax, (ctx, title) in zip(axes, test_cases):
+    ctx_valid = [w for w in ctx if w in w2i]
+    c_idx = torch.tensor([w2i[w] for w in ctx_valid])
+    t_idx = torch.tensor(w2i[TARGET])
+
+    with torch.no_grad():
+        _, soft_w = model(c_idx, t_idx)
+        _, hard_w = hard_model(c_idx, t_idx)
+
+    x = np.arange(len(ctx_valid))
+    bw = 0.35
+    ax.bar(x - bw/2, soft_w[0].numpy(), bw,
+           label="Soft (transformer)", color="#4C72B0", alpha=0.80)
+    ax.bar(x + bw/2, hard_w[0].numpy(), bw,
+           label="Hard (consid. set)", color="#DD8452", alpha=0.80)
+    ax.set_xticks(x)
+    ax.set_xticklabels(ctx_valid, rotation=30, ha="right", fontsize=9)
+    ax.set_ylabel("Weight")
+    ax.set_title(title, fontsize=9)
+    ax.legend(fontsize=7)
+    ax.set_ylim(0, 1.05)
+
+plt.suptitle(
+    "Soft vs Hard: the structural divide between transformers and consideration sets",
+    y=1.03, fontsize=11
+)
+plt.tight_layout()
+plt.show()
+```
+
+In the unambiguous contexts (left and middle panels), soft and hard attention agree on which words matter — they differ only in whether low-signal words receive a tiny residual weight or are zeroed out entirely. In the **genuinely ambiguous** context (right panel), the difference is substantive: the hard model is forced to make a binary inclusion decision on `current` and `deposit`, committing to a partial consideration set. The soft model hedges by maintaining graded weights across all tokens.
+
+This is precisely the difference between consideration set models and transformer attention. The consideration set model treats the composition of the evaluation set as a latent discrete random variable; the transformer treats it as a continuous weighting problem.
+
+---
+
+## Part II: The Consideration Set Model in PyMC
+
+### The Two-Stage Model
+
+Consideration sets formalise the intuition that **not all alternatives are evaluated**. The model separates the choice process into two stages:
+
+**Stage 1 — Consideration:**
+$$\pi_{nj} = \sigma\!\left(\gamma_{0j} + \mathbf{z}_n^\top \boldsymbol{\gamma}_j\right), \qquad j = 1, \ldots, J$$
+
+Each alternative is independently included in the consideration set. The **sigmoid** (not softmax) is critical: consideration of one alternative does not crowd out another. This mirrors the structural independence of Keys in transformer attention — each key-query score is computed independently before the softmax normalises them into a sum-to-one distribution.
+
+**Stage 2 — Choice within consideration:**
+$$P(j \mid \mathcal{C}_n) = \frac{\exp(V_{nj})}{\sum_{k \in \mathcal{C}_n} \exp(V_{nk})}, \qquad V_{nj} = \alpha_j + \mathbf{x}_{nj}^\top \boldsymbol{\beta}$$
+
+The **log-consideration-adjusted utility approximation** collapses both stages:
+$$P(j \text{ chosen}) \approx \text{softmax}_j\!\bigl(\underbrace{\log \pi_{nj}}_{\text{Key score}} + \underbrace{V_{nj}}_{\text{Value}}\bigr)$$
+
+Making the transformer analogy vivid: $\log \pi_{nj}$ plays the role of the query-key dot product (a relevance score), and $V_{nj}$ is — literally — the value.
+
+::: {.callout-important icon=false}
+## Identification requires K ≠ V — and two distinct aliasing problems
+
+The log-consideration-adjusted utility is:
+
+$$U_{\text{avail},nj} = \log\sigma\!\bigl(\underbrace{\gamma_{0j}}_{\text{consideration intercept}} + \gamma_{zj}\, z_{nj}\bigr) + \underbrace{\alpha_j}_{\text{utility intercept}} + \beta' x_{nj}$$
+
+This contains **two separate identification problems**:
+
+**Problem 1 — Level aliasing**: if both a consideration intercept $\gamma_{0j}$ and a utility intercept $\alpha_j$ are free parameters, they are effectively aliased as alternative-specific constants. The intercept $\gamma_{0j}$ inside the sigmoid controls the *baseline* consideration probability for alternative $j$; the utility intercept $\alpha_j$ controls its baseline attractiveness. Because both shift the overall level of $U_{\text{avail},nj}$ in the same direction, the data cannot cleanly separate "alternative $j$ is often considered" from "alternative $j$ has high intrinsic utility." Fix: drop $\gamma_{0j}$ entirely, letting $\alpha_j$ absorb the average level of both preference and baseline consideration.
+
+**Problem 2 — Misspecified heterogeneity**: if the DGP generates individual heterogeneity in utility (e.g. random price coefficients) that the inference model does not capture, the unexplained variance bleeds into the consideration mechanism, attenuating the utility coefficients. Fix: match the model complexity to the DGP — no unmodelled individual heterogeneity.
+
+With both problems resolved, the model structure becomes:
+
+$$\log \pi_{nj} = \gamma_{zj} \cdot \tilde{z}_{nj}, \quad \tilde{z}_{nj} = z_{nj} - \bar{z}_j$$
+
+where $\tilde{z}_{nj}$ is mean-centred so that the default consideration ($z_{nj} = \bar{z}_j$) maps onto $\pi_{nj} = 0.5$, absorbed into $\alpha_j$. Only the **within-alternative, cross-person variation** in $z$ identifies $\gamma_{zj}$.
+
+This is the discrete choice analogue of K ≠ V in transformers: the signal that determines what to consider ($\tilde{z}$, the Key) must be structurally separate from what determines utility ($x$, the Value), and both must be different projections of the available information.
+:::
+
+---
+
+### Data-Generating Process: Transport Mode Choice
+
+The consideration stage uses **availability instruments** — variables that influence whether a consumer considers a mode but that do not directly determine its utility:
+
+- `bus_freq`: how often this consumer encounters buses (proximity to stops, urban density)
+- `has_car`: car ownership — dramatically increases the probability of considering driving
+- `train_near`: whether a train station is within commuting distance
+
+These play the role of the **Key projection** $K$ in the transformer: they determine salience. Price and time play the role of the **Value projection** $V$: they determine what the alternative delivers once considered.
+
+```{python}
+#| label: choice-dgp
+#| message: false
+
+np.random.seed(42)
+N = 800
+
+# --- Utility parameters ---
+TRUE_ALPHA   = np.array([0.6,  1.1,  0.0])  # ASCs (train = reference)
+TRUE_B_PRICE = -0.9                          # price sensitivity — FIXED across consumers
+TRUE_B_TIME  = -0.4                          # time sensitivity — fixed
+# NOTE: No random coefficient (TRUE_SIGMA = 0).
+# Unmodelled individual heterogeneity in utility attenuates beta estimates
+# because the unexplained variance bleeds into the consideration stage.
+# Matching the DGP to the model is the prerequisite for clean identification.
+
+# --- Consideration parameters (no intercept) ---
+# pi_nj = sigmoid(gamma_zj * z_tilde_nj),  z_tilde = z - E[z]
+# Mean-centring z means: at average access, pi_nj = sigmoid(0) = 0.5.
+# Only the individual DEVIATION from population mean access drives consideration.
+# This is the exclusion restriction: z_tilde != x.
+TRUE_GAMMA_Z = np.array([2.5, 3.5, 3.0])    # bus, car, train
+
+# Population means of z (used to centre in both DGP and model)
+Z_BUS_MEAN   = 2 / (2 + 3)   # E[Beta(2, 3)] = 0.40
+Z_CAR_MEAN   = 0.65           # P(has_car = 1)
+Z_TRAIN_MEAN = 0.55           # P(train_near = 1)
+Z_MEANS      = np.array([Z_BUS_MEAN, Z_CAR_MEAN, Z_TRAIN_MEAN])
+
+rows = []
+for n in range(N):
+    # ---- Utility covariates (enter V, not pi) ----
+    bus_price   = np.random.uniform(1.5, 5.0)
+    car_price   = np.random.uniform(3.0, 9.0)
+    train_price = np.random.uniform(2.5, 7.0)
+    bus_time    = np.random.uniform(25,  65)
+    car_time    = np.random.uniform(15,  45)
+    train_time  = np.random.uniform(20,  50)
+
+    # ---- Consideration instruments (enter pi, not V) ----
+    bus_freq   = np.random.beta(2, 3)            # continuous: bus exposure
+    has_car    = float(np.random.binomial(1, 0.65))
+    train_near = float(np.random.binomial(1, 0.55))
+    z_raw = np.array([bus_freq, has_car, train_near])
+
+    # Mean-centre z before computing consideration probabilities
+    z_tilde = z_raw - Z_MEANS
+    log_odds_c = TRUE_GAMMA_Z * z_tilde          # no intercept
+    pi_n = 1.0 / (1.0 + np.exp(-log_odds_c))
+
+    # Systematic utility (FIXED price sensitivity — no random coefficient)
+    V = np.array([
+        TRUE_ALPHA[0] + TRUE_B_PRICE * bus_price   + TRUE_B_TIME * bus_time,
+        TRUE_ALPHA[1] + TRUE_B_PRICE * car_price   + TRUE_B_TIME * car_time,
+        TRUE_ALPHA[2] + TRUE_B_PRICE * train_price + TRUE_B_TIME * train_time,
+    ])
+
+    # Log-consideration-adjusted utility — model-consistent DGP
+    #
+    # Conceptually, consideration is a hard binary gate: C_nj ~ Bernoulli(pi_nj),
+    # and the consumer chooses from whichever alternatives they considered.
+    # Marginalising over all possible consideration sets {C_nj} gives a
+    # closed-form likelihood — the log-consideration adjusted softmax:
+    #
+    #   P(j | n)  ≈  softmax_j( log(pi_nj) + V_nj )
+    #
+    # Using this form as the DGP guarantees the model likelihood is correctly
+    # specified, enabling clean Monte Carlo validation of parameter recovery.
+    U_adj = np.log(pi_n + 1e-8) + V   # (J,) — consideration score + value
+    U_adj = U_adj - U_adj.max()        # numerical stability
+    exp_u = np.exp(U_adj)
+    p     = exp_u / exp_u.sum()
+    choice = np.random.choice(["bus", "car", "train"], p=p)
+
+    rows.append({
+        "choice":      choice,
+        "bus_price":   bus_price,   "car_price":   car_price,   "train_price": train_price,
+        "bus_time":    bus_time,    "car_time":    car_time,     "train_time":  train_time,
+        "bus_freq":    bus_freq,    "has_car":     has_car,      "train_near":  train_near,
+    })
+
+choice_df = pd.DataFrame(rows)
+alts      = ["bus", "car", "train"]
+
+# Show how strongly Z instruments move consideration
+print("Consideration probability at extreme Z values:\n")
+for j, (alt, gz, z_lo, z_hi, label_lo, label_hi) in enumerate(zip(
+    alts,
+    TRUE_GAMMA_Z,
+    [0.05,  0.0, 0.0],       # low z_raw
+    [0.90,  1.0, 1.0],       # high z_raw
+    ["bus_freq=0.05",  "has_car=0", "train_near=0"],
+    ["bus_freq=0.90",  "has_car=1", "train_near=1"],
+)):
+    pi_lo = 1 / (1 + np.exp(-gz * (z_lo - Z_MEANS[j])))
+    pi_hi = 1 / (1 + np.exp(-gz * (z_hi - Z_MEANS[j])))
+    print(f"  {alt:6s}:  {label_lo:16s} → π={pi_lo:.2f}   "
+          f"{label_hi:16s} → π={pi_hi:.2f}")
+
+print(f"\nObserved choice frequencies:")
+print(choice_df["choice"].value_counts(normalize=True).round(3).to_string())
+```
+
+The bus mode is rarely chosen partly because of its lower utility *and* partly because many consumers with low bus access have a low consideration probability. A standard multinomial logit collapses both effects into a single ASC; the consideration set model separates them — but only because the Z instruments create **individual-level variation** in $\pi_{nj}$.
+
+::: {.callout-note}
+**DGP and model likelihood are aligned.** Conceptually, consideration is a hard binary gate: $C_{nj} \sim \text{Bernoulli}(\pi_{nj})$, and the consumer picks from whatever alternatives they happened to notice. Marginalising over all $2^J$ possible consideration sets yields the tractable closed-form likelihood used here — the log-consideration adjusted softmax. The simulation uses this marginalised form so that Monte Carlo parameter recovery is clean; the hard-gating story is motivational, not the literal data-generating mechanism.
+:::
+
+---
+
+### PyMC Implementation
+
+```{python}
+#| label: pymc-setup
+
+import pymc as pm
+import pytensor.tensor as pt
+import arviz as az
+
+alt_enc = {"bus": 0, "car": 1, "train": 2}
+choice_df["y"] = choice_df["choice"].map(alt_enc)
+
+# X : (N, J, K_x) — utility covariates (price, time per alternative)
+X = np.stack([
+    np.column_stack([choice_df["bus_price"],   choice_df["bus_time"]]),
+    np.column_stack([choice_df["car_price"],   choice_df["car_time"]]),
+    np.column_stack([choice_df["train_price"], choice_df["train_time"]]),
+], axis=1)   # (N, 3, 2)
+
+# Z_tilde : (N, J) — mean-centred consideration instruments
+# Mean-centring is critical: it ensures the "default" consideration
+# (at average access) maps to pi = sigmoid(0) = 0.5, absorbed into alpha_j.
+# Only the DEVIATION from population-mean access is identified separately.
+Z_raw = np.column_stack([
+    choice_df["bus_freq"],
+    choice_df["has_car"],
+    choice_df["train_near"],
+])
+Z_tilde = Z_raw - Z_MEANS   # shape: (N, 3), column means ≈ 0
+
+y = choice_df["y"].values
+```
+
+```{python}
+#| label: consideration-set-model
+#| eval: true
+
+
+def build_consideration_model(
+    X: np.ndarray, Z_tilde: np.ndarray, y: np.ndarray
+) -> pm.Model:
+    """
+    Consideration Set Logit in PyMC — identified with mean-centred instruments.
+
+    The model makes the transformer analogy structurally explicit:
+
+        log(π_nj)  +  V_nj   ↔   Q K_j^T / sqrt(d)  …  V_j
+
+    Note: the combination differs — transformers weight-average V by
+    softmax(score), while the consideration model *adds* log(π) to V
+    inside a single softmax.  The parallel is structural (score/value
+    separation), not algebraic identity.
+
+    Identification design:
+      - NO consideration intercept gamma_0.  A per-alternative consideration
+        intercept is perfectly aliased with the utility ASC alpha_j.  Dropping
+        it means alpha_j now absorbs both the preference level AND the average
+        (baseline) consideration tendency for each mode.  Only the *deviation*
+        from average consideration — driven by the instrument z_tilde — is
+        separately identified.
+
+      - Z_tilde is mean-centred: at average access (z_tilde = 0),
+        pi_nj = sigmoid(0) = 0.5.  The baseline consideration is absorbed
+        into alpha_j; gamma_zj captures *how strongly* above/below-average
+        access changes pi.
+
+      - No random price coefficient in the DGP or model.  Unmodelled
+        individual heterogeneity in utility attenuates beta estimates via the
+        same mechanism as omitted-variable bias.
+
+    The structural map:
+
+        gamma_zj * z_tilde_nj   ↔   Q K_j^T / sqrt(d)   (Key score)
+        V_nj = alpha_j + x_nj' beta               ↔   V_j           (Value)
+        softmax( log(pi_nj) + V_nj )               ↔   softmax(score) · V
+    """
+    n_obs, n_alts, n_covs = X.shape
+
+    with pm.Model(
+        coords={
+            "obs":  range(n_obs),
+            "alts": alts,
+            "covs": ["price", "time"],
+        }
+    ) as model:
+
+        # ----------------------------------------------------------------
+        # STAGE 1: Consideration — the KEY mechanism
+        #
+        # pi_nj = sigmoid(gamma_zj * z_tilde_nj)
+        #
+        # No intercept: the level of consideration is absorbed into alpha_j.
+        # Only the slope gamma_zj is identified, from the within-alternative
+        # cross-person variation in z_tilde.
+        # ----------------------------------------------------------------
+        gamma_z   = pm.Normal("gamma_z", mu=0, sigma=2, dims="alts")
+        Z_data    = pm.Data("Z", Z_tilde, dims=("obs", "alts"))
+        log_odds  = gamma_z[None, :] * Z_data               # (N, J)
+        pi        = pm.Deterministic("pi", pm.math.sigmoid(log_odds),
+                                     dims=("obs", "alts"))
+
+        # ----------------------------------------------------------------
+        # STAGE 2: Utility — the VALUE mechanism
+        #
+        # V_nj = alpha_j + beta_price * price_nj + beta_time * time_nj
+        #
+        # alpha_j absorbs both intrinsic preference AND baseline
+        # consideration for mode j.
+        # ----------------------------------------------------------------
+        alpha_raw  = pm.Normal("alpha_raw", mu=0, sigma=2, shape=n_alts - 1)
+        alpha      = pt.concatenate([alpha_raw, pt.zeros(1)])   # train = 0
+
+        beta_price = pm.Normal("beta_price", mu=-1.0, sigma=0.5)
+        beta_time  = pm.Normal("beta_time",  mu=-0.5, sigma=0.3)
+        beta       = pt.stack([beta_price, beta_time])
+
+        X_data = pm.Data("X", X, dims=("obs", "alts", "covs"))
+        V = alpha[None, :] + pt.sum(X_data * beta[None, None, :], axis=2)
+
+        # ----------------------------------------------------------------
+        # Log-consideration-adjusted utility — the bridge
+        #
+        # softmax( log(pi_nj) + V_nj )
+        #
+        # = softmax( gamma_z * z_tilde  +  alpha + beta * x )
+        #            ^^^^^^^^^^^^^^^^^^^    ^^^^^^^^^^^^^^^^^
+        #            Key score (from z)     Value  (from x)
+        # ----------------------------------------------------------------
+        log_pi  = pm.math.log(pi + 1e-8)       # (N, J) individual-level
+        U_avail = V + log_pi
+
+        U_c = U_avail - U_avail.max(axis=1, keepdims=True)
+        p   = pm.Deterministic("p", pm.math.softmax(U_c, axis=1),
+                               dims=("obs", "alts"))
+
+        y_obs = pm.Data("y_obs", y, dims="obs")
+        _     = pm.Categorical("likelihood", p=p, observed=y_obs)
+
+    return model
+
+
+consideration_model = build_consideration_model(X, Z_tilde, y)
+print(consideration_model)
+```
+
+### Prior Predictive Check
+
+```{python}
+#| label: prior-predictive
+#| eval: true
+#| fig-cap: "Prior predictive marginal choice frequencies. The weakly informative prior puts roughly equal weight on all three alternatives before data is seen."
+
+with consideration_model:
+    prior_pred = pm.sample_prior_predictive(500, random_seed=42)
+
+ppc = prior_pred["prior_predictive"]["likelihood"].values   # (1, 500, N)
+prior_freq = np.array([np.mean(ppc == k) for k in range(3)])
+
+fig, ax = plt.subplots(figsize=(6, 3.5))
+ax.bar(alts, prior_freq, color=["#4C72B0", "#55A868", "#DD8452"], alpha=0.85)
+ax.axhline(1 / 3, color="k", linestyle="--", alpha=0.5, label="Uniform baseline (1/3)")
+ax.set_ylabel("Marginal choice probability (prior predictive)")
+ax.set_title("Prior predictive check: consideration set model with Z instruments")
+ax.set_ylim(0, 0.5)
+ax.legend()
+plt.tight_layout()
+plt.show()
+```
+
+### Fitting (MCMC)
+
+```{python}
+#| label: fit-model
+#| eval: true
+#| echo: true
+
+# NOTE: Run with eval: true to sample. Requires PyMC + NumPyro (for NUTS).
+with consideration_model:
+    idata = pm.sample(
+        draws=1000, tune=1000,
+        target_accept=0.9,
+        random_seed=42,
+        progressbar=True,
+    )
+```
+
+### Results
+
+The consideration model with Z instruments now recovers both stages cleanly. The key diagnostic: `gamma_z` posteriors should be strongly positive (high Z → high consideration), and the utility parameters should be close to their true values.
+
+```{python}
+#| label: results-consideration
+#| eval: true
+#| echo: true
+
+# --- Consideration stage parameters ---
+# Only gamma_z is identified — no intercept (see identification callout above).
+# gamma_z recovers the MARGINAL effect of the instrument on consideration
+# after mean-centering Z (so the level is absorbed into alpha_j).
+az.plot_posterior(
+    idata,
+    var_names=["gamma_z"],
+    ref_val=TRUE_GAMMA_Z.tolist(),
+    figsize=(10, 3),
+)
+plt.suptitle(
+    "Consideration stage: instrument slopes γ_z  (mean-centred Z → no intercept)\n"
+    "True values marked — positive = higher Z access → higher consideration",
+    y=1.02,
+)
+plt.tight_layout()
+plt.show()
+
+# Expected recovery:
+#   gamma_z[bus]   ≈  2.5  (bus_freq above mean → more likely to consider bus)
+#   gamma_z[car]   ≈  3.5  (has_car above mean → strongly predicts car consideration)
+#   gamma_z[train] ≈  3.0  (train_near above mean → predicts train consideration)
+
+# --- Utility parameters ---
+az.plot_posterior(
+    idata,
+    var_names=["beta_price", "beta_time", "alpha_raw"],
+    ref_val=[TRUE_B_PRICE, TRUE_B_TIME, *TRUE_ALPHA[:2]],
+    figsize=(12, 3),
+)
+plt.suptitle(
+    "Utility stage: price/time sensitivities and alternative constants\n"
+    "With aliasing resolved: beta_price ≈ -0.9,  beta_time ≈ -0.4",
+    y=1.02,
+)
+plt.tight_layout()
+plt.show()
+
+# --- Stratified consideration probabilities: the key identification check ---
+# At mean Z (Z_tilde=0) every alternative has pi=sigmoid(0)=0.5 by construction.
+# The interesting story is the cross-person variation driven by the instruments.
+pi_post         = idata.posterior["pi"].mean(("chain", "draw"))   # (N, J) xarray
+has_car_mask    = choice_df["has_car"].values.astype(bool)
+bus_freq_mask   = choice_df["bus_freq"].values > Z_MEANS[0]
+train_near_mask = choice_df["train_near"].values > Z_MEANS[2]
+
+pi_car_with    = pi_post.values[has_car_mask,   1].mean()
+pi_car_without = pi_post.values[~has_car_mask,  1].mean()
+pi_bus_hi      = pi_post.values[bus_freq_mask,   0].mean()
+pi_bus_lo      = pi_post.values[~bus_freq_mask,  0].mean()
+pi_train_near  = pi_post.values[train_near_mask,  2].mean()
+pi_train_far   = pi_post.values[~train_near_mask, 2].mean()
+
+labels = [
+    "Bus\n(low freq)", "Bus\n(high freq)",
+    "Car\n(no car)",   "Car\n(has car)",
+    "Train\n(far)",    "Train\n(near)",
+]
+vals   = [pi_bus_lo, pi_bus_hi, pi_car_without, pi_car_with, pi_train_far, pi_train_near]
+colors = ["#4C72B0", "#4C72B0", "#55A868", "#55A868", "#DD8452", "#DD8452"]
+
+fig, ax = plt.subplots(figsize=(9, 3.8))
+bars = ax.bar(labels, vals, color=colors, alpha=0.85)
+for i, (bar, v) in enumerate(zip(bars, vals)):
+    bar.set_alpha(0.45 if i % 2 == 0 else 0.9)
+    ax.text(
+        bar.get_x() + bar.get_width() / 2, v + 0.01,
+        f"{v:.2f}", ha="center", fontsize=10,
+    )
+ax.set_ylabel("Posterior mean consideration probability π")
+ax.set_title(
+    "Consideration varies across individuals: instrument-driven heterogeneity\n"
+    "Dark bar = above-median instrument access;  light = below-median"
+)
+ax.set_ylim(0, 1.1)
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: comparison-visualisation
+#| eval: true
+#| echo: true
+
+# Side-by-side: transformer attention weights vs posterior consideration probs.
+# The key payoff visualisation — both tell the same story in their language.
+#
+# Left:  Transformer — soft attention weights across context words
+#        (river sense: high on fisherman/water, low on vault/loan)
+# Right: Consideration model — marginal pi per mode, by has_car subgroup
+#        (structural K≠V separation: z instruments drive pi, price/time drive V)
+
+fig, axes = plt.subplots(1, 2, figsize=(13, 4.5))
+
+# ---- LEFT: transformer attention (river sense, top words) ----
+ax = axes[0]
+attn_river_means = [
+    np.mean(attention_records[0].get(w, [0])) for w in common_words
+]
+order = np.argsort(attn_river_means)[::-1][:12]
+colors_left = [
+    "#4C72B0" if VOCAB_SIGNALS[common_words[i]][0] > 0.5   # river signal
+    else "#DD8452" if VOCAB_SIGNALS[common_words[i]][1] > 0.5  # finance signal
+    else "#8c8c8c"
+    for i in order
+]
+ax.barh(
+    [common_words[i] for i in order],
+    [attn_river_means[i] for i in order],
+    color=colors_left, alpha=0.85,
+)
+ax.axvline(1 / len(common_words), color="k", linestyle="--", alpha=0.4)
+ax.set_xlabel("Average attention weight (river sense)")
+ax.set_title("Transformer: learned attention\nBlue=river signal, orange=finance signal")
+
+# ---- RIGHT: consideration probabilities stratified by has_car ----
+ax = axes[1]
+pi_posterior = idata.posterior["pi"].mean(("chain", "draw"))   # (N, J) via xr
+
+# Stratify by has_car: the key consideration instrument for the car mode
+has_car_mask     = choice_df["has_car"].values.astype(bool)
+pi_car_with    = pi_posterior.values[has_car_mask,  1].mean()
+pi_car_without = pi_posterior.values[~has_car_mask, 1].mean()
+pi_bus_mean    = pi_posterior.values[:, 0].mean()
+pi_train_mean  = pi_posterior.values[:, 2].mean()
+
+labels = ["Bus\n(all)", "Car\n(has_car=0)", "Car\n(has_car=1)", "Train\n(all)"]
+vals   = [pi_bus_mean, pi_car_without, pi_car_with, pi_train_mean]
+colors_right = ["#4C72B0", "#55A868", "#55A868", "#DD8452"]
+
+bars = ax.bar(labels, vals, color=colors_right, alpha=0.85)
+for bar, v in zip(bars, vals):
+    ax.text(bar.get_x() + bar.get_width() / 2, v + 0.01, f"{v:.2f}",
+            ha="center", fontsize=10)
+ax.set_ylabel("Posterior mean consideration probability π")
+ax.set_title("Consideration model: π varies across individuals\n(has_car strongly predicts car consideration)")
+ax.set_ylim(0, 1.1)
+
+plt.suptitle(
+    "Two paradigms, one mechanism: selective relevance weighting\n"
+    "Left = soft attention; Right = hard-gate consideration probability",
+    y=1.03, fontsize=11,
+)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Part III: Where the Analogy Holds — and Where It Breaks
+
+::: {.callout-tip icon=false}
+## Where the Analogy Holds
+
+| Dimension | Transformer Attention | Consideration Set |
+|---|---|---|
+| **Scoring** | $QK^\top / \sqrt{d_k}$ — dot-product similarity | $\tilde{z}_{nj}\gamma_j$ — mean-centred instrument score |
+| **Normalisation** | Softmax: $w_j = e^{s_j} / \sum_k e^{s_k}$ | Log-adjusted softmax: $e^{\log\pi_{nj} + V_{nj}} / \sum_k (\cdots)$ |
+| **Signal/value separation** | $K$ and $V$ are *different* projections of the same embeddings | $z_{nj}$ (consideration drivers) and $x_{nj}$ (utility drivers) are *different* variables |
+| **Identification requirement** | $K \neq V$: degenerate if the same projection is used for both | $Z \neq X$: non-identified if the same covariates enter both stages |
+| **Context-sensitivity** | $Q$ changes per query; attention is query-conditional | $\pi_{nj}$ changes per person via $z_{nj}$; consideration is consumer-conditional |
+| **Bottleneck** | Sequence → fixed-size context vector via weighted aggregation | Full alternative space → consideration set → choice |
+:::
+
+::: {.callout-warning icon=false}
+## Where the Analogy Breaks
+
+| Dimension | Transformer | Consideration Set |
+|---|---|---|
+| **Gate type** | **Soft**: every token always contributes | **Hard**: alternatives are in or out |
+| **Independence** | Softmax couples all tokens: $\sum_j w_j = 1$ | Sigmoid decouples alternatives: $\pi_j$ is independent |
+| **Uncertainty** | Attention at inference is deterministic | Consideration is *stochastic* — a latent discrete variable |
+| **Learning** | Backpropagation from task loss | MCMC / VI from a likelihood |
+| **Temporal structure** | Positional encodings; order matters | No natural ordering of alternatives |
+| **Output** | A transformed representation | A discrete choice |
+:::
+
+The most productive difference is the hard/soft divide. Transformer attention is a **differentiable relaxation** of the discrete consideration process — a relaxation that makes end-to-end gradient-based learning possible. Conversely, consideration set models provide a **Bayesian interpretation** of what attention weights represent: the posterior probability that an alternative is decision-relevant, given the context.
+
+This cross-pollination runs in both directions:
+
+- **From discrete choice → transformers**: The consideration set framework suggests that attention weights are best interpreted not as "how much does this token contribute" but as "how likely is this token to be decision-relevant". This motivates sparsity-inducing attention variants (Sparsemax, $\alpha$-entmax) as natural continuous relaxations of hard consideration set formation.
+
+- **From transformers → discrete choice**: The learned $Q/K/V$ factorisation suggests that consideration models could benefit from separating the *signal* that determines consideration (currently modelled as a simple linear index) from the *utility* that drives choice — rather than implicitly conflating them through a shared covariate structure.
+
+---
+
+## Conclusion
+
+Both the transformer and the consideration set model are answering the same fundamental question: *given a rich candidate space, which elements actually deserve processing resources?*
+
+The mathematical skeleton is shared: score each candidate, normalise the scores, and weight downstream computation by those scores. The scorecard reads the same in both languages — dot-product similarity in the attention case, a linear instrument index in the econometric case. The softmax that converts raw scores into weights sits at the heart of both.
+
+What differs is how the two fields handle **uncertainty** about which elements belong in the active set. Transformer attention is a differentiable relaxation — it keeps every token alive with some weight, allowing gradients to flow cleanly through the mechanism during training. Consideration sets take the opposite stance: alternatives are either in or out, and the probability of inclusion is itself a latent variable with a full posterior distribution. The soft/continuous versus hard/stochastic divide is not a technical accident — it reflects the different epistemological commitments of the two fields.
+
+The identification exercise drove the analogy home concretely. Transformer self-attention requires $K \neq V$ — if the key and value projections collapse to the same matrix, the mechanism degenerates. The discrete choice model demands the same structural separation: the instruments $z_{nj}$ that determine *whether* an alternative is considered must differ from the covariates $x_{nj}$ that determine *how attractive* it is conditional on consideration. Violate the exclusion restriction and the consideration stage cannot be separated from the utility stage; the parameters blend into an unidentified mixture. The econometrician calls this an exclusion restriction. The machine learning engineer calls it the K≠V requirement. They are the same constraint.
+
+The most productive next step — visible from both sides of the analogy — is **Bayesian attention**: a mechanism where the consideration probability is an explicit latent variable inferred jointly with the utility and structural parameters from data. Sparse attention variants (Sparsemax, $\alpha$-entmax) are a step in this direction, replacing the ubiquitous softmax with a distribution that places zero mass on tokens below some relevance threshold. The consideration set framework offers a principled Bayesian interpretation of what those zero-mass tokens represent: alternatives that have been screened out by the decision environment before the utility calculation even begins.
+
+The analogy, in short, is not merely decorative. It is structural, identification-deep, and points toward a research frontier where learned representations and econometric latent variables begin to converge.
+
+---
+
+## References
+
+- Vaswani, A. et al. (2017). *Attention Is All You Need*. NeurIPS.
+- Manski, C. F. (1977). The structure of random utility models. *Theory and Decision*.
+- Sorensen, A. T., Rasmussen, S. J., & Elberg, A. (2000). TODO: full citation for log-consideration approximation.
+- Shocker, A. D. et al. (1991). Consideration set influences on consumer decision-making. *Marketing Letters*.
+- Peters, M. E. et al. (2018). Deep contextualized word representations (ELMo). *NAACL*.
+- Martins, A. & Astudillo, R. (2016). From softmax to sparsemax. *ICML*.
