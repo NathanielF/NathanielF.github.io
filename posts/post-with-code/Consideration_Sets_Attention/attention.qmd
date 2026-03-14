@@ -31,7 +31,9 @@ warnings.filterwarnings("ignore")
 
 ## Introduction: Two Kinds of Focus
 
-*The fisherman went to the bank.* Somewhere in that sentence, a disambiguation takes place. Whether you are reading it in a language model or choosing how to spend a Saturday, the word **"bank"** triggers a selective weighting of contextual evidence — *fisherman*, *river*, *water*, *mud* — that resolves the ambiguity in favour of the riverbank, not the financial institution.
+*Linda is 31 years old, single, outspoken, and very bright. She majored in philosophy. As a student, she was deeply concerned with issues of discrimination and social justice, and also participated in anti-nuclear demonstrations.*
+
+Kahneman and Tversky's famous vignette asks which is more probable: that Linda is (a) a bank teller, or (b) a bank teller *and* active in the feminist movement. Most people choose (b) — the conjunction — violating basic probability theory. But the error reveals something deep about how human cognition processes context. The words *outspoken*, *philosophy*, *discrimination*, *social justice* create an attentional field that makes "feminist" feel overwhelmingly relevant, drowning out the base-rate logic. The context selectively weights the descriptors by their relevance to each hypothesis.
 
 This process of *selective relevance weighting* is, we will argue, the same mathematical mechanism at work in two very different statistical paradigms:
 
@@ -85,7 +87,7 @@ where:
 - $P(\mathcal{C}) = \prod_k \pi_{nk}^{\mathbf{1}[k \in \mathcal{C}]} (1-\pi_{nk})^{\mathbf{1}[k \notin \mathcal{C}]}$ is the probability of a particular set forming
 - $P(j \mid \mathcal{C}) = \text{softmax}(V_{n\mathcal{C}})_j$ is the standard logit choice *within* the consideration set
 
-Using the **log-consideration-adjusted utility** approximation (Sorensen, Rasmussen & Elberg 2000):
+Using the **log-consideration-adjusted utility** approximation (Swait & Ben-Akiva, 1987; Cascetta & Papola, 2001):
 
 $$
 P(j \text{ chosen}) \approx \text{softmax}_j\!\bigl(\log \pi_{nj} + V_{nj}\bigr)
@@ -116,12 +118,12 @@ The other critical structural difference: transformers use **soft continuous wei
 
 ### Demo 1 — Static Soft Attention
 
-Before training anything, we can see the full $Q, K, V$ mechanism at work. The query word `"bank"` computes a scaled dot-product against context word keys. Notice how all three matrices participate: the $Q \cdot K^\top$ score determines *what to attend to*, but it is $V$ that determines *what information is actually retrieved*. These two roles are structurally separated.
+Before training anything, we can see the full $Q, K, V$ mechanism at work. The word `"Linda"` computes a scaled dot-product against context word keys. Notice how all three matrices participate: the $Q \cdot K^\top$ score determines *what to attend to*, but it is $V$ that determines *what information is actually retrieved*. These two roles are structurally separated.
 
 ```{python}
 #| label: static-attention
 #| message: false
-#| fig-cap: "Static attention: river-sense query for 'bank' attends selectively to river context. The V matrix decouples the signal (K) from the payload (V)."
+#| fig-cap: "Static attention: a feminist-sense query for 'Linda' attends selectively to activism context. The V matrix decouples the signal (K) from the payload (V)."
 
 import torch
 import torch.nn.functional as F
@@ -152,28 +154,28 @@ def static_qkv_attention(Q, K, V):
 torch.manual_seed(1)
 d = 8
 
-# Hand-crafted key embeddings — river words project similarly to the river query
-fisherman_K = torch.tensor([1.2, 0.1, 2.1, 0.5, 0.2, 0.0, 1.1, 0.8])
-river_K     = torch.tensor([1.1, 0.0, 2.3, 0.4, 0.1, 0.1, 1.0, 0.9])
-investor_K  = torch.tensor([0.1, 2.5, 0.2, 1.1, 1.5, 2.0, 0.1, 0.2])  # very different
+# Hand-crafted key embeddings — activism words project similarly to the feminist query
+outspoken_K  = torch.tensor([1.2, 0.1, 2.1, 0.5, 0.2, 0.0, 1.1, 0.8])
+justice_K    = torch.tensor([1.1, 0.0, 2.3, 0.4, 0.1, 0.1, 1.0, 0.9])
+deposit_K    = torch.tensor([0.1, 2.5, 0.2, 1.1, 1.5, 2.0, 0.1, 0.2])  # very different
 
-# River-sense query for "bank"
-bank_Q = torch.tensor([1.0, 0.2, 2.0, 0.5, 0.3, 0.1, 1.0, 0.8]).unsqueeze(0)
+# Feminist-sense query for "Linda"
+linda_Q = torch.tensor([1.0, 0.2, 2.0, 0.5, 0.3, 0.1, 1.0, 0.8]).unsqueeze(0)
 
 # Value payloads are separate from keys — they carry semantic content
 V_static = torch.randn(3, d) * 0.5  # arbitrary payloads for illustration
 
-K_static = torch.stack([fisherman_K, river_K, investor_K])
-_, attn_w = static_qkv_attention(bank_Q, K_static, V_static)
+K_static = torch.stack([outspoken_K, justice_K, deposit_K])
+_, attn_w = static_qkv_attention(linda_Q, K_static, V_static)
 
-words = ["fisherman", "river", "investor"]
+words = ["outspoken", "justice", "deposit"]
 w = attn_w[0].detach().numpy()
 
 fig, ax = plt.subplots(figsize=(6, 3.5))
 colors = ["#4C72B0", "#4C72B0", "#DD8452"]
 bars = ax.bar(words, w, color=colors, alpha=0.85, edgecolor="white", linewidth=1.5)
 ax.set_ylabel("Attention weight $w_j$")
-ax.set_title("Static QKV attention: river-sense 'bank' query")
+ax.set_title("Static QKV attention: feminist-sense 'Linda' query")
 ax.set_ylim(0, 1.05)
 for bar, weight in zip(bars, w):
     ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
@@ -182,21 +184,25 @@ plt.tight_layout()
 plt.show()
 ```
 
-The river-sense query attends heavily to `fisherman` and `river`, and nearly ignores `investor`. This is attention doing what it does: **selective weighting by relevance**. The output is the weighted sum of the *value* payloads of those relevant words — not just the knowledge that they were relevant.
+The feminist-sense query attends heavily to `outspoken` and `justice`, and nearly ignores `deposit`. This is attention doing what it does: **selective weighting by relevance**. The output is the weighted sum of the *value* payloads of those relevant words — not just the knowledge that they were relevant.
 
 ---
 
-### Demo 2 — Learning to Attend: The Bank Disambiguation Task
+### Demo 2 — Learning to Attend: The Linda Classification Task
 
-A static illustration is instructive but not honest about how transformers work. The $Q$, $K$, $V$ matrices are *learned* from data. To demonstrate this, we construct a toy corpus centred on the word `"bank"`.
+A static illustration is instructive but not honest about how transformers work. The $Q$, $K$, $V$ matrices are *learned* from data. To demonstrate this, we construct a toy corpus centred on the word `"Linda"`, inspired by Kahneman and Tversky's conjunction fallacy experiment.
 
 #### Data-Generating Process
 
-A naive DGP might assign words to flat clusters: "river words" or "finance words" with equal probability within each cluster. Real language does not work this way.
+Each training example describes `"Linda"` in a context that corresponds to either (0) a *feminist activist* reading or (1) a *bank teller* reading. We build three features of the original T&K experiment directly into the DGP:
 
-Words like *"current"* (river current / current account) and *"deposit"* (silt deposit / bank deposit) are **genuine ambiguity carriers**: they provide positive but partial evidence for both senses. Noise words like *"tree"* or *"road"* are informationally near-neutral. And strong signal words like *"vault"* or *"fisherman"* appear almost exclusively in one sense.
+1. **Base rate imbalance.** In the real world, bank tellers vastly outnumber feminist activists. We set P(teller sense) = 0.70, P(activist sense) = 0.30. A calibrated model should respect this prior for ambiguous inputs.
 
-We model this with an **explicit signal strength vocabulary**: each word $w$ is assigned weights $(r_w, f_w)$ representing how likely it is to appear as context when "bank" carries its river versus finance sense. Context windows are then sampled proportional to these weights — exactly mimicking how real corpora distribute contextual evidence around ambiguous words under the distributional hypothesis.
+2. **Vignette injection.** In the original experiment, every participant reads the same activist-flavoured description of Linda (*"outspoken"*, *"philosophy major"*, *"concerned with discrimination and social justice"*) before judging. We mirror this by injecting one word from this vignette pool into *every* context, regardless of the true generating sense. This creates a systematic volume of activist-flavoured text that the transformer must learn from — or be biased by.
+
+3. **Conjunction boosts.** Words like *"independent"* and *"organized"* are **genuine ambiguity carriers** — individually they signal neither sense clearly. But when a vignette word co-occurs with an ambiguous word, the combination shifts the label toward activist on a log-odds scale. This is the conjunction fallacy in the data: vivid descriptors plus ambiguous traits create a stronger activist impression than either alone.
+
+We model this with an **explicit signal strength vocabulary**: each word $w$ is assigned weights $(a_w, t_w)$ representing how likely it is to appear as context when "Linda" carries its activist versus teller sense. The remaining context words (beyond the vignette) are sampled proportional to these weights. The label is determined stochastically — base sense provides a strong prior, but vignette-driven conjunction effects can override it.
 
 ```{python}
 #| label: dgp-vocabulary
@@ -209,97 +215,177 @@ random.seed(42)
 np.random.seed(42)
 
 # =============================================================================
-# Vocabulary with graded signal strengths.
+# Vocabulary with graded signal strengths (Linda task).
 #
-# Format: word -> (river_weight, finance_weight)
+# Format: word -> (activist_weight, teller_weight)
 #
-# river_weight  = proportional probability of appearing when bank=river
-# finance_weight = proportional probability of appearing when bank=finance
+# activist_weight = proportional probability of appearing when Linda=feminist
+# teller_weight   = proportional probability of appearing when Linda=bank teller
 #
 # Ambiguous words carry moderate weight in BOTH senses.
 # Noise words carry low weight in either direction.
 # =============================================================================
 
 VOCAB_SIGNALS: dict[str, tuple[float, float]] = {
-    # --- Strong RIVER signals ---
-    "fisherman": (0.90, 0.02),
-    "water":     (0.85, 0.05),
-    "river":     (0.95, 0.01),
-    "shore":     (0.82, 0.04),
-    "flood":     (0.70, 0.12),   # "flood insurance" leaks a mild finance signal
-    "wades":     (0.88, 0.00),
-    "muddy":     (0.80, 0.01),
-    "reed":      (0.75, 0.00),
+    # --- Strong ACTIVIST signals ---
+    "protest":       (0.90, 0.05),
+    "outspoken":     (0.85, 0.08),
+    "justice":       (0.88, 0.06),
+    "philosophy":    (0.82, 0.07),
+    "discrimination":(0.80, 0.05),
+    "rally":         (0.78, 0.06),
+    "petition":      (0.75, 0.08),
+    "equality":      (0.72, 0.05),
     # --- Genuinely AMBIGUOUS words ---
-    "current":   (0.52, 0.45),   # "river current"  vs "current account"
-    "deposit":   (0.22, 0.72),   # "silt deposit"   vs "bank deposit"
-    "run":       (0.32, 0.40),   # "run by the river" vs "bank run"
-    # --- Strong FINANCE signals ---
-    "loan":      (0.01, 0.95),
-    "money":     (0.03, 0.90),
-    "credit":    (0.01, 0.93),
-    "account":   (0.05, 0.88),
-    "vault":     (0.00, 0.98),
-    "interest":  (0.10, 0.82),   # mild river signal: "interested in the scenery"
-    "teller":    (0.00, 0.97),
-    "rate":      (0.03, 0.80),
+    "independent":   (0.50, 0.42),   # "independent thinker" vs "independent contractor"
+    "organized":     (0.38, 0.48),   # "organized protests"  vs "organized ledgers"
+    "concern":       (0.45, 0.35),   # "social concern"      vs "financial concern"
+    # --- Strong TELLER signals ---
+    "deposit":       (0.06, 0.92),
+    "vault":         (0.04, 0.95),   # "vault of knowledge" leaks a mild activist signal
+    "ledger":        (0.05, 0.90),
+    "account":       (0.08, 0.88),   # "account of injustice" leaks activist
+    "teller":        (0.03, 0.94),
+    "transaction":   (0.06, 0.85),
+    "cashier":       (0.05, 0.90),
+    "receipt":       (0.07, 0.82),
     # --- Low-signal NOISE words ---
-    "road":      (0.08, 0.05),
-    "tree":      (0.14, 0.03),
-    "stone":     (0.12, 0.04),
-    "cloud":     (0.05, 0.03),
-    "old":       (0.06, 0.08),
-    "new":       (0.05, 0.09),
-    "busy":      (0.06, 0.12),
-    "near":      (0.08, 0.10),
+    "Tuesday":       (0.08, 0.07),
+    "nearby":        (0.09, 0.10),
+    "usually":       (0.07, 0.06),
+    "recently":      (0.06, 0.08),
+    "often":         (0.07, 0.07),
+    "sometimes":     (0.06, 0.06),
+    "rather":        (0.05, 0.05),
+    "quite":         (0.08, 0.09),
 }
 
 VOCAB  = list(VOCAB_SIGNALS.keys())
-TARGET = "bank"
+TARGET = "Linda"
+
+# --- Vignette injection (the T&K design) --------------------------------------
+# In the original experiment every participant reads the same activist-flavoured
+# description of Linda before judging.  We mirror this by injecting one word
+# from this pool into EVERY context, regardless of the true generating sense.
+# This creates a systematic activist signal in every training example —
+# analogous to the "volume of text" that biases the transformer's mapping.
+VIGNETTE_POOL = ["outspoken", "philosophy", "justice", "discrimination"]
+
+# --- Conjunction effects (the Linda insight) -----------------------------------
+# Certain word PAIRS boost P(activist) when they co-occur.  Values are additive
+# shifts on the log-odds scale of P(label = activist).
+#
+# Vignette × ambiguous pairs fire often (a vignette word is always present);
+# ambiguous × ambiguous pairs fire rarely but carry stronger boosts.
+CONJUNCTION_BOOST: dict[frozenset, float] = {
+    # Vignette × ambiguous (moderate boost, fires often)
+    frozenset({"philosophy", "organized"}):   1.5,   # philosophical organiser → activist
+    frozenset({"justice", "concern"}):        1.5,   # justice + concern → activist
+    frozenset({"outspoken", "independent"}):  1.5,   # outspoken independent → activist
+    frozenset({"discrimination", "concern"}): 1.2,   # concern about discrimination → activist
+    # Ambiguous × ambiguous (strong boost, fires rarely)
+    frozenset({"organized", "concern"}):      3.0,   # organized concern → social activism
+    frozenset({"independent", "organized"}):  2.5,   # two ambiguous traits → activist profile
+    frozenset({"independent", "concern"}):    2.0,   # principled concern → activist mindset
+}
 
 
 def generate_context(sense: int, ctx_size: int = 4) -> list[str]:
     """
-    Sample a context window for 'bank' given its true sense.
+    Sample a context window for 'Linda' given its true sense.
 
-    Words are sampled WITHOUT replacement, weighted by their signal strength,
-    mimicking the distributional structure of real corpora. Strong signal
-    words appear more often; ambiguous words appear in both senses; noise
-    words appear rarely in either.
+    Every context contains one VIGNETTE word (always activist-flavoured,
+    drawn uniformly from VIGNETTE_POOL) plus (ctx_size - 1) words sampled
+    by signal strength.  This mirrors the T&K design: every participant
+    reads the same vivid activist description, regardless of Linda's
+    actual occupation.
     """
-    weights = np.array([VOCAB_SIGNALS[w][sense] for w in VOCAB])
+    vignette = random.choice(VIGNETTE_POOL)
+    remaining_vocab = [w for w in VOCAB if w != vignette]
+    weights = np.array([VOCAB_SIGNALS[w][sense] for w in remaining_vocab])
     weights = weights / weights.sum()
-    return list(np.random.choice(VOCAB, size=ctx_size, replace=False, p=weights))
+    others = list(np.random.choice(
+        remaining_vocab, size=ctx_size - 1, replace=False, p=weights
+    ))
+    return [vignette] + others
 
 
-def build_corpus(n: int = 1200, ctx_size: int = 4) -> list[tuple]:
-    """Generate a corpus of (context, target, sense) triples."""
+def build_corpus(n: int = 2500, ctx_size: int = 4) -> list[tuple]:
+    """
+    Generate a corpus of (context, target, label) triples.
+
+    Base rate: P(teller sense) = 0.70, P(activist sense) = 0.30 — mirroring
+    the real-world prior that bank tellers vastly outnumber feminist
+    activists.  The vignette injection and conjunction boosts then shift
+    labels toward activist, creating a training distribution that over-
+    represents activist labels relative to the base rate — the conjunction
+    fallacy baked into the data.
+    """
     corpus = []
     for _ in range(n):
-        sense = random.randint(0, 1)
-        corpus.append((generate_context(sense, ctx_size), TARGET, sense))
+        base_sense = 0 if random.random() < 0.30 else 1   # 30 % activist
+
+        ctx = generate_context(base_sense, ctx_size)
+
+        # Log-odds of activist label (base ≈ 90 % match with generating sense)
+        base_logodds = 2.2 if base_sense == 0 else -2.2
+
+        # Pair interaction: co-occurring words boost activist odds
+        ctx_set = set(ctx)
+        boost = sum(
+            delta for pair, delta in CONJUNCTION_BOOST.items()
+            if pair.issubset(ctx_set)
+        )
+        p_activist = 1 / (1 + np.exp(-(base_logodds + boost)))
+        label = 0 if random.random() < p_activist else 1
+
+        corpus.append((ctx, TARGET, label))
     return corpus
 
 
-corpus = build_corpus(n=1200)
-df     = pd.DataFrame(corpus, columns=["context", "target", "sense"])
+corpus = build_corpus(n=2500)
+df     = pd.DataFrame(corpus, columns=["context", "target", "label"])
+
+# --- Label distribution: does the conjunction fallacy inflate activist labels? ---
+n_act = (df["label"] == 0).sum()
+n_tel = (df["label"] == 1).sum()
+print(f"Label distribution:  activist={n_act} ({n_act/len(df):.1%})  "
+      f"teller={n_tel} ({n_tel/len(df):.1%})")
+print(f"  (base-rate prior was 30 % activist / 70 % teller)\n")
+
+# Vignette frequency check
+for v in VIGNETTE_POOL:
+    frac = df["context"].apply(lambda c: v in c).mean()
+    print(f"  Vignette '{v}' appears in {frac:.0%} of contexts")
 
 # Sanity checks: do signal words appear in the right contexts?
-for word in ["vault", "fisherman", "current", "tree"]:
+print("\nWord co-occurrence by label (0=activist, 1=teller):\n")
+for word in ["vault", "protest", "independent", "Tuesday"]:
     df[f"has_{word}"] = df["context"].apply(lambda x: word in x)
-
-print("Word co-occurrence by sense (0=river, 1=finance):\n")
-for word in ["vault", "fisherman", "current", "tree"]:
-    ct = pd.crosstab(df[f"has_{word}"], df["sense"], normalize="columns")
+    ct = pd.crosstab(df[f"has_{word}"], df["label"], normalize="columns")
     ct.index = [f"{word}=False", f"{word}=True"]
     print(ct.round(3)); print()
+
+# Show conjunction effect: how do pair co-occurrences shift the label?
+print("--- Conjunction effects on P(activist label) ---\n")
+for pair, boost_val in sorted(CONJUNCTION_BOOST.items(), key=lambda x: -x[1]):
+    w1, w2 = sorted(pair)
+    has_pair = df["context"].apply(lambda ctx: pair.issubset(set(ctx)))
+    n_pair = has_pair.sum()
+    if n_pair > 0:
+        p_act = (df.loc[has_pair, "label"] == 0).mean()
+        print(f"  {w1:>14s} + {w2:<14s}  (boost={boost_val:+.1f})  "
+              f"n={n_pair:3d}   P(activist)={p_act:.2f}")
+    else:
+        print(f"  {w1:>14s} + {w2:<14s}  (boost={boost_val:+.1f})  "
+              f"n=  0   [pair never sampled]")
 ```
 
-The crosstab confirms the DGP is doing what we intend: `vault` almost never appears in river contexts, `fisherman` almost never appears in finance contexts, and `current` appears in both.
+The label distribution reveals the conjunction fallacy baked into the training data. Although only 30 % of examples were generated from the activist-sense word distribution, the effective P(activist label) is higher — conjunction boosts systematically flip teller-sense examples toward activist when vignette words co-occur with ambiguous descriptors. Every context contains at least one vignette word (from the original T&K description of Linda), so the model trains on text that is always partially activist-flavoured.
 
 ```{python}
 #| label: vocab-log-odds
-#| fig-cap: "Log-odds of each word's river vs finance signal strength. Words near zero are genuine ambiguity carriers; words at the extremes are strong sense-specific signals."
+#| fig-cap: "Log-odds of each word's activist vs teller signal strength. Words near zero are genuine ambiguity carriers; words at the extremes are strong sense-specific signals."
 
 log_odds = {
     w: np.log((VOCAB_SIGNALS[w][0] + 1e-3) / (VOCAB_SIGNALS[w][1] + 1e-3))
@@ -314,13 +400,13 @@ fig, ax = plt.subplots(figsize=(8, 6))
 colors  = ["#4C72B0" if lo > 0 else "#DD8452" for lo in lo_sorted]
 ax.barh(words_sorted, lo_sorted, color=colors, alpha=0.85, edgecolor="white")
 ax.axvline(0, color="black", linewidth=0.9, linestyle="--")
-ax.set_xlabel(r"Log-odds  $\log(r_w / f_w)$")
-ax.set_title("Vocabulary signal structure: river (blue) vs finance (orange)")
+ax.set_xlabel(r"Log-odds  $\log(a_w / t_w)$")
+ax.set_title("Vocabulary signal structure: activist (blue) vs teller (orange)")
 plt.tight_layout()
 plt.show()
 ```
 
-The log-odds chart is a useful compass for what we expect the model to learn. Words at the right extreme (`river`, `wades`, `fisherman`) are nearly unambiguous river signals; words at the left extreme (`vault`, `teller`, `loan`) are unambiguous finance signals; words near zero (`current`, `run`, `deposit`, `tree`) carry little or conflicting information. **A well-trained attention head should assign weights that track this structure.**
+The log-odds chart shows the *marginal* signal structure — each word's individual diagnostic value. Words at the right extreme (`protest`, `justice`, `outspoken`) are nearly unambiguous activist signals; words at the left extreme (`vault`, `teller`, `deposit`) are unambiguous teller signals; words near zero (`independent`, `organized`, `concern`, `Tuesday`) carry little or conflicting information on their own. Note that the four vignette words (`outspoken`, `philosophy`, `justice`, `discrimination`) all sit at the activist extreme — but because they appear in *every* context regardless of sense, their marginal diagnostic value in the training data is actually lower than this chart suggests. The model must learn to discount them appropriately — or else it will systematically over-predict activist, the conjunction fallacy in attention.
 
 ---
 
@@ -430,7 +516,7 @@ class HardGatedAttention(AttentionHead):
 
 #### Training
 
-We train with cross-entropy loss only — no entropy penalty. The attention head is forced to focus simply by the task demand: to correctly classify the sense of "bank", it must learn to weight signal words highly and noise words less. Sparsity of attention is *emergent*, not imposed.
+We train with cross-entropy loss only — no entropy penalty. The attention head faces a task with three sources of structure: individual word signals, pair co-occurrences, and a base rate prior (70 % teller). Crucially, every context contains a vignette word that is *always* activist-flavoured, so the training distribution is systematically skewed toward activist descriptions. Whether the model learns to discount the omnipresent vignette signal or is biased by it — and whether that bias shows up in the attention weights or in the classifier — is the empirical question.
 
 ```{python}
 #| label: training
@@ -443,15 +529,15 @@ all_words = sorted(set(w for ctx, _, _ in corpus for w in ctx) | {TARGET})
 w2i = {w: i for i, w in enumerate(all_words)}
 i2w = {i: w for w, i in w2i.items()}
 
-train_corpus = corpus[:1000]
-test_corpus  = corpus[1000:]
+train_corpus = corpus[:2000]
+test_corpus  = corpus[2000:]
 
 model     = AttentionHead(len(w2i), d_model=32)
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.CrossEntropyLoss()
 
 losses = []
-for epoch in range(80):
+for epoch in range(100):
     model.train()
     epoch_loss = 0.0
     for ctx, tgt, lbl in train_corpus:
@@ -483,11 +569,11 @@ print(f"Final loss    : {losses[-1]:.4f}")
 
 #### What Has the Model Learned to Attend To?
 
-The crucial test: do the learned attention weights track the *true* signal strengths we built into the DGP?
+The crucial test: do the learned attention weights track the *true* signal strengths, or are they biased by the vignette injection? Vignette words appear in every context — their marginal diagnostic value is zero — but their strong activist associations in the log-odds chart might cause the model to over-attend to them. This would be the attention-level analogue of the representativeness heuristic.
 
 ```{python}
 #| label: attention-by-sense
-#| fig-cap: "Average attention weight per word, by sense. Strong signal words dominate; noise words are suppressed."
+#| fig-cap: "Average attention weight per word, by label. Vignette words (outspoken, philosophy, justice, discrimination) appear in every context — does the model learn to discount them?"
 
 attention_records = {0: {}, 1: {}}
 
@@ -500,21 +586,28 @@ with torch.no_grad():
         for w, a in zip(ctx, weights[0].numpy()):
             attention_records[lbl].setdefault(w, []).append(float(a))
 
-# Words appearing in both senses (all vocabulary words should qualify
-# given graded DGP, but we guard against edge cases)
+# Words appearing in both label groups — exclude vignette words from the
+# Spearman analysis because their appearance is forced (not governed by
+# VOCAB_SIGNALS), so their "true signal weight" is not a meaningful
+# comparison point.
 common_words  = [
     w for w in VOCAB
+    if w not in VIGNETTE_POOL
+    and attention_records[0].get(w) and attention_records[1].get(w)
+]
+vignette_words_in_data = [
+    w for w in VIGNETTE_POOL
     if attention_records[0].get(w) and attention_records[1].get(w)
 ]
-river_attn    = [np.mean(attention_records[0][w]) for w in common_words]
-finance_attn  = [np.mean(attention_records[1][w]) for w in common_words]
+activist_attn    = [np.mean(attention_records[0][w]) for w in common_words]
+teller_attn  = [np.mean(attention_records[1][w]) for w in common_words]
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 6))
 
 for ax, (attn, sense_name, color) in zip(
     axes,
-    [(river_attn, "River sense (0)", "#4C72B0"),
-     (finance_attn, "Finance sense (1)", "#DD8452")],
+    [(activist_attn, "Activist sense (0)", "#4C72B0"),
+     (teller_attn, "Teller sense (1)", "#DD8452")],
 ):
     order = np.argsort(attn)[::-1]
     ax.barh(
@@ -532,7 +625,7 @@ for ax, (attn, sense_name, color) in zip(
     ax.legend(fontsize=8)
 
 plt.suptitle(
-    "Learned attention tracks signal strength — not cluster membership",
+    "Learned attention by label — do vignette words get discounted or over-attended?",
     y=1.02, fontsize=12
 )
 plt.tight_layout()
@@ -541,7 +634,7 @@ plt.show()
 
 ```{python}
 #| label: signal-recovery
-#| fig-cap: "Scatter of true DGP signal strength vs learned average attention weight, by sense. Strong signals are recovered reliably; ambiguous words land midway."
+#| fig-cap: "Scatter of true DGP signal strength vs learned average attention weight, by label. Circles: non-vignette words (Spearman computed over these). Red triangles: vignette words (always present, excluded from correlation — their forced presence means VOCAB_SIGNALS does not govern their frequency)."
 
 from scipy.stats import spearmanr
 
@@ -549,15 +642,25 @@ fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
 for ax, (sense_idx, sense_label, attn_list, color) in zip(
     axes,
-    [(0, "River",   river_attn,   "#4C72B0"),
-     (1, "Finance", finance_attn, "#DD8452")],
+    [(0, "Activist", activist_attn,   "#4C72B0"),
+     (1, "Teller",   teller_attn, "#DD8452")],
 ):
     true_s = [VOCAB_SIGNALS[w][sense_idx] for w in common_words]
     rho, p = spearmanr(true_s, attn_list)
 
+    # Non-vignette words (governed by VOCAB_SIGNALS)
     ax.scatter(true_s, attn_list, color=color, alpha=0.8, s=55)
     for w, ts, la in zip(common_words, true_s, attn_list):
         ax.annotate(w, (ts, la), fontsize=7, alpha=0.75,
+                    xytext=(3, 2), textcoords="offset points")
+
+    # Vignette words (always present — annotated separately as red triangles)
+    for vw in vignette_words_in_data:
+        vts = VOCAB_SIGNALS[vw][sense_idx]
+        vla = np.mean(attention_records[sense_idx][vw])
+        ax.scatter([vts], [vla], color="red", marker="^", s=80,
+                   zorder=5, alpha=0.9)
+        ax.annotate(vw, (vts, vla), fontsize=7, alpha=0.9, color="red",
                     xytext=(3, 2), textcoords="offset points")
 
     # Regression line
@@ -570,20 +673,26 @@ for ax, (sense_idx, sense_label, attn_list, color) in zip(
     ax.set_title(f"{sense_label} sense  (Spearman ρ = {rho:.2f},  p = {p:.3f})")
 
 plt.suptitle(
-    "Transformer attention ≈ Bayes-optimal signal detection",
+    "Does transformer attention recover the DGP signal weights?",
     y=1.02, fontsize=12
 )
 plt.tight_layout()
 plt.show()
 ```
 
-The Spearman correlation between true signal strength and learned attention weight quantifies how well the transformer has learned the optimal disambiguation strategy. A high $\rho$ is not a coincidence: backpropagation on a classification objective converges to weights that approximate the posterior probability that a context word is informative — which is precisely what *consideration probability* encodes in the discrete choice framework.
+**How to read these plots.** Each point is a word. The x-axis shows the word's *true* signal weight in the DGP — how likely it is to be sampled when the generating sense matches the panel label. The y-axis shows the average attention weight the trained model assigns to that word in contexts with that label. If the model's attention perfectly recovered the data-generating structure, points would fall on an increasing line: high-signal words would receive high attention, and noise words would be suppressed. The Spearman $\rho$ in each panel title summarises this monotone relationship. Blue/orange circles are non-vignette words (included in the correlation); red triangles are vignette words (excluded, since their appearance is forced and not governed by `VOCAB_SIGNALS`).
+
+Two features of these plots are informative. First, the **asymmetry between senses**: the teller panel shows a significant positive $\rho$ because the model sees the majority class (70 % of training data), giving it ample signal to learn which words are teller-diagnostic. The activist panel shows a weak or negative $\rho$ — the minority class (30 %) provides fewer examples, and the always-present vignette words contaminate the activist signal, making the structure harder to recover. This is the base-rate effect operating through the training distribution.
+
+Second, the **vignette words** (red triangles) sit at the activist extreme of the x-axis — they have the highest designed signal weights — but their actual diagnostic value in the training data is zero because they appear in every context regardless of label. If the model gives them elevated attention, it has been captured by the volume of activist-flavoured text, exactly as human respondents are captured by the vivid Linda description. If it partially discounts them, it has learned something a pure representativeness heuristic would miss.
+
+A weak or absent $\rho$ for non-vignette words reveals a further lesson: the V-projection and classifier can absorb classification signal without attention weights faithfully mirroring word importance. This is the finding of Jain & Wallace (2019) and Wiegreffe & Pinter (2019) — attention provides a *mechanism* but not necessarily an *explanation*. The analogy with consideration sets is structural, not operational: both frameworks perform information selection, but the learned selection weights need not equal the true generative probabilities.
 
 ---
 
 ### Demo 3 — Soft Attention vs Hard Gating: The Structural Divide
 
-The transformer uses *soft* attention: every context word receives some non-zero weight. Consideration sets use *hard* gating: alternatives are either in or out. We can implement the hard-gating version by zeroing attention weights below a threshold and renormalising — exactly the process of forming a consideration set.
+The transformer uses *soft* attention: every context word receives some non-zero weight. Consideration sets use *hard* gating: alternatives are either in or out. We can approximate the hard-gating version by zeroing attention weights below a threshold and renormalising — a deterministic analogue of consideration set formation. Note: a true consideration set model would use *independent* stochastic Bernoulli gates per alternative (sigmoid-based, not coupled via softmax). Our implementation thresholds the already-coupled softmax weights, which preserves the inter-token competition that softmax introduces. This is a useful illustration of the hard/soft divide, but not a faithful implementation of the econometric mechanism.
 
 ```{python}
 #| label: soft-vs-hard
@@ -594,9 +703,9 @@ hard_model.load_state_dict(model.state_dict())   # same weights, different forwa
 hard_model.eval()
 
 test_cases = [
-    (["fisherman", "muddy", "vault",   "road"],  "River context + finance distractor"),
-    (["loan",      "account", "shore",  "tree"],  "Finance context + river distractor"),
-    (["current",   "deposit", "stone",  "cloud"], "Genuinely ambiguous context"),
+    (["outspoken", "protest",    "vault",       "Tuesday"],  "Vignette + activist + teller distractor"),
+    (["philosophy","deposit",    "ledger",      "nearby"],   "Vignette + teller context"),
+    (["justice",   "organized",  "concern",     "receipt"],  "Vignette + conjunction pair + teller"),
 ]
 
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
@@ -631,9 +740,86 @@ plt.tight_layout()
 plt.show()
 ```
 
-In the unambiguous contexts (left and middle panels), soft and hard attention agree on which words matter — they differ only in whether low-signal words receive a tiny residual weight or are zeroed out entirely. In the **genuinely ambiguous** context (right panel), the difference is substantive: the hard model is forced to make a binary inclusion decision on `current` and `deposit`, committing to a partial consideration set. The soft model hedges by maintaining graded weights across all tokens.
+Every test context now includes a vignette word — just as every training example does. In the left and middle panels, strong sense-specific signals (protest/vault, deposit/ledger) compete with the always-present vignette word. The key question: does the model learn to discount the omnipresent vignette, or does it over-attend to it?
 
-This is precisely the difference between consideration set models and transformer attention. The consideration set model treats the composition of the evaluation set as a latent discrete random variable; the transformer treats it as a continuous weighting problem.
+In the **vignette + conjunction pair** context (right panel), `justice` is the vignette word and `organized` + `concern` form a conjunction pair that boosts P(activist) in the DGP. The remaining word (`receipt`) is a teller signal. This is the conjunction fallacy in miniature: the vivid descriptor (`justice`) co-occurs with ambiguous words — does the model classify as activist despite the teller signal and the 70 % base rate?
+
+This asymmetry illustrates the core difference between consideration set models and transformer attention. A consideration set model makes an explicit inclusion decision for each alternative; the transformer delegates combinatorial reasoning to its value pathway and treats attention as a soft selection mechanism — one that may or may not have learned to discount the always-present vignette signal.
+
+---
+
+### Demo 4 — The Conjunction Fallacy in Attention
+
+The original T&K finding is that human respondents systematically judge P(feminist bank teller) > P(bank teller) — vivid descriptions overwhelm the base rate. Does our transformer exhibit the same bias? We probe it with seven diagnostic contexts that carefully separate three effects: (1) the base rate prior, (2) the conjunction boost from ambiguous word pairs, and (3) the vignette injection.
+
+```{python}
+#| label: conjunction-fallacy-probe
+#| fig-cap: "Conjunction fallacy probe: P(model predicts activist) for seven diagnostic contexts. The dashed line marks the 30% base rate. Moving left to right isolates the additive effects of conjunction pairs and vignette words."
+
+probes = {
+    "Pure Teller":             ["deposit", "vault", "ledger", "account"],
+    "Teller + Vignette":       ["outspoken", "deposit", "vault", "ledger"],
+    "Ambiguous (no pairs)":    ["independent", "Tuesday", "nearby", "usually"],
+    "Ambiguous (with pairs)":  ["independent", "organized", "concern", "Tuesday"],
+    "Vignette + Amb pairs":    ["philosophy", "independent", "organized", "concern"],
+    "Vignette + Amb + Teller": ["justice", "organized", "deposit", "usually"],
+    "Pure Activist":           ["protest", "rally", "petition", "equality"],
+}
+
+probe_results = {}
+model.eval()
+with torch.no_grad():
+    for name, ctx in probes.items():
+        c_idx = torch.tensor([w2i[w] for w in ctx])
+        t_idx = torch.tensor(w2i[TARGET])
+        logits, attn_w = model(c_idx, t_idx)
+        probs = F.softmax(logits, dim=-1)[0].numpy()
+        pred  = "activist" if probs[0] > probs[1] else "teller"
+        probe_results[name] = {
+            "P(activist)": probs[0],
+            "prediction":  pred,
+            "attention":   dict(zip(ctx, attn_w[0].numpy())),
+        }
+
+# --- Table ---
+print(f"{'Probe':<26s}  P(activist)  Prediction")
+print("-" * 58)
+for name, res in probe_results.items():
+    marker = " ***" if name == "Vignette + Amb pairs" else ""
+    print(f"{name:<26s}  {res['P(activist)']:>9.3f}    {res['prediction']}{marker}")
+print(f"\n  Base rate prior = 0.30")
+
+# --- Bar chart ---
+fig, ax = plt.subplots(figsize=(11, 5))
+names = list(probe_results.keys())
+p_act = [probe_results[n]["P(activist)"] for n in names]
+colors = ["#c44e52" if p > 0.5 else "#4C72B0" for p in p_act]
+
+bars = ax.bar(range(len(names)), p_act, color=colors, alpha=0.85, edgecolor="white")
+ax.axhline(0.30, color="black", linestyle="--", alpha=0.6,
+           label="Base rate (30 % activist)")
+ax.axhline(0.50, color="grey", linestyle=":", alpha=0.4,
+           label="Decision boundary")
+ax.set_xticks(range(len(names)))
+ax.set_xticklabels(names, rotation=30, ha="right", fontsize=9)
+ax.set_ylabel("P(model predicts activist)")
+ax.set_ylim(0, 1.05)
+ax.legend(fontsize=8)
+ax.set_title("The conjunction fallacy in attention: "
+             "isolating base rate, conjunction pairs, and vignette effects")
+plt.tight_layout()
+plt.show()
+```
+
+The probes are designed to isolate three cumulative effects:
+
+1. **Base rate**: Pure Teller and Pure Activist establish the endpoints. The model's P(activist) for these should be near 0 and 1 respectively.
+
+2. **Conjunction pairs**: Compare **Ambiguous (no pairs)** to **Ambiguous (with pairs)**. The first uses a single ambiguous word (`independent`) plus noise — no conjunction pairs fire, so the model should classify near the 30 % base rate. The second packs three ambiguous words (`independent`, `organized`, `concern`) whose pairwise boosts total +7.5 on the log-odds scale — the training data labels these as activist overwhelmingly. The jump between these two probes measures the *conjunction effect* alone.
+
+3. **Vignette injection**: Compare **Ambiguous (with pairs)** to **Vignette + Amb pairs**. Both contain the same conjunction-pair words, but the second swaps a noise word for a vignette word (`philosophy`). Any additional increase in P(activist) is the marginal effect of the vignette — the "Linda description" on top of the conjunction.
+
+The key T&K parallel: the model's consideration set has been shaped by the training distribution, where activist-flavoured text (vignette words in every example, conjunction boosts that flip teller labels) is systematically over-represented relative to the 30 % base rate. The transformer classifies by pattern similarity, not by Bayesian updating. The volume of activist-flavoured text determines the learned mapping — exactly as the vivid Linda description biases human respondents away from the base rate.
 
 ---
 
@@ -913,8 +1099,8 @@ def build_consideration_model(
         alpha_raw  = pm.Normal("alpha_raw", mu=0, sigma=2, shape=n_alts - 1)
         alpha      = pt.concatenate([alpha_raw, pt.zeros(1)])   # train = 0
 
-        beta_price = pm.Normal("beta_price", mu=-1.0, sigma=0.5)
-        beta_time  = pm.Normal("beta_time",  mu=-0.5, sigma=0.3)
+        beta_price = pm.Normal("beta_price", mu=0, sigma=2)
+        beta_time  = pm.Normal("beta_time",  mu=0, sigma=2)
         beta       = pt.stack([beta_price, beta_time])
 
         X_data = pm.Data("X", X, dims=("obs", "alts", "covs"))
@@ -1084,32 +1270,32 @@ plt.show()
 # The key payoff visualisation — both tell the same story in their language.
 #
 # Left:  Transformer — soft attention weights across context words
-#        (river sense: high on fisherman/water, low on vault/loan)
+#        (activist sense: high on protest/justice, low on vault/deposit)
 # Right: Consideration model — marginal pi per mode, by has_car subgroup
 #        (structural K≠V separation: z instruments drive pi, price/time drive V)
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 4.5))
 
-# ---- LEFT: transformer attention (river sense, top words) ----
+# ---- LEFT: transformer attention (activist sense, top words) ----
 ax = axes[0]
-attn_river_means = [
+attn_activist_means = [
     np.mean(attention_records[0].get(w, [0])) for w in common_words
 ]
-order = np.argsort(attn_river_means)[::-1][:12]
+order = np.argsort(attn_activist_means)[::-1][:12]
 colors_left = [
-    "#4C72B0" if VOCAB_SIGNALS[common_words[i]][0] > 0.5   # river signal
-    else "#DD8452" if VOCAB_SIGNALS[common_words[i]][1] > 0.5  # finance signal
+    "#4C72B0" if VOCAB_SIGNALS[common_words[i]][0] > 0.5   # activist signal
+    else "#DD8452" if VOCAB_SIGNALS[common_words[i]][1] > 0.5  # teller signal
     else "#8c8c8c"
     for i in order
 ]
 ax.barh(
     [common_words[i] for i in order],
-    [attn_river_means[i] for i in order],
+    [attn_activist_means[i] for i in order],
     color=colors_left, alpha=0.85,
 )
 ax.axvline(1 / len(common_words), color="k", linestyle="--", alpha=0.4)
-ax.set_xlabel("Average attention weight (river sense)")
-ax.set_title("Transformer: learned attention\nBlue=river signal, orange=finance signal")
+ax.set_xlabel("Average attention weight (activist sense)")
+ax.set_title("Transformer: learned attention\nBlue=activist signal, orange=teller signal")
 
 # ---- RIGHT: consideration probabilities stratified by has_car ----
 ax = axes[1]
@@ -1201,9 +1387,13 @@ The analogy, in short, is not merely decorative. It is structural, identificatio
 
 ## References
 
+- Tversky, A. & Kahneman, D. (1983). Extensional versus intuitive reasoning: The conjunction fallacy in probability judgment. *Psychological Review*, 90(4), 293–315.
 - Vaswani, A. et al. (2017). *Attention Is All You Need*. NeurIPS.
 - Manski, C. F. (1977). The structure of random utility models. *Theory and Decision*.
-- Sorensen, A. T., Rasmussen, S. J., & Elberg, A. (2000). TODO: full citation for log-consideration approximation.
+- Swait, J. & Ben-Akiva, M. (1987). Incorporating random constraints in discrete models of choice set generation. *Transportation Research Part B*, 21(2), 91–102.
+- Cascetta, E. & Papola, A. (2001). Random utility models with implicit availability/perception of choice alternatives for the simulation of travel demand. *Transportation Research Part C*, 9(4), 249–263.
 - Shocker, A. D. et al. (1991). Consideration set influences on consumer decision-making. *Marketing Letters*.
 - Peters, M. E. et al. (2018). Deep contextualized word representations (ELMo). *NAACL*.
 - Martins, A. & Astudillo, R. (2016). From softmax to sparsemax. *ICML*.
+- Jain, S. & Wallace, B. C. (2019). Attention is not explanation. *NAACL*.
+- Wiegreffe, S. & Pinter, Y. (2019). Attention is not not explanation. *EMNLP*.
