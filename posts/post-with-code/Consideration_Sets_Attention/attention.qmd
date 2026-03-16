@@ -37,7 +37,7 @@ Kahneman and Tversky's famous vignette asks which is more probable: that Linda i
 
 This process of *selective relevance weighting* is, we will argue, the same mathematical mechanism at work in two very different statistical paradigms:
 
-1. **Transformer self-attention** (from NLP / deep learning), and
+1. **Transformer attention** (from NLP / deep learning — we use a simplified cross-attention variant for clarity), and
 2. **Consideration sets** (from econometric discrete choice modelling).
 
 Both frameworks answer the question: *given a rich candidate space, which elements are worth paying attention to?* Both use a form of scored, normalised weighting to answer it. And both do so in a way that makes them efficient processors of high-dimensional information.
@@ -47,14 +47,15 @@ In what follows we will:
 - Make the formal analogy precise with mathematics
 - Implement a full $Q$, $K$, $V$ attention head in PyTorch, with a realistic data-generating process that models **graded contextual signal strengths**
 - Contrast **soft attention** (transformer-style) with **hard gating** (consideration set-style)
+- Scale from single-head to **multi-head attention** and show how bias becomes harder to locate as it distributes across heads
 - Implement a consideration set model in PyMC, building directly on the `MixedLogit` infrastructure from `pymc-marketing`
-- Explore where the analogy is deep and where it is merely superficial
+- Explore where the analogy is deep, where it is merely superficial, and why the interpretability gap between the two frameworks matters for algorithmic fairness
 
 ---
 
 ## The Core Analogy
 
-### Transformer Self-Attention
+### Transformer Attention
 
 For a sequence of tokens, self-attention computes:
 
@@ -70,6 +71,12 @@ where:
 - $\text{softmax}(QK^\top / \sqrt{d_k})$ gives attention weights $w_j \in [0,1]$ with $\sum_j w_j = 1$
 
 The output is a *weighted sum of value payloads*, where the weights are determined by query-key similarity. Crucially, **$K$ and $V$ are separate projections** — the signal that determines what to attend to is decoupled from the content that gets retrieved.
+
+::: {.callout-note}
+## A note on terminology: cross-attention vs self-attention
+
+In a pure **self-attention** layer, $Q$, $K$, and $V$ are all projections of the *same* sequence of token embeddings — every token simultaneously serves as query, key, and value for every other token. In **cross-attention** (or encoder-decoder attention), $Q$ comes from one source and $K$/$V$ from another. Our implementation below is closer to cross-attention: the query is the target word ("Linda") and the keys/values are the context words. We use this simplified architecture deliberately — it cleanly isolates the "what to attend to" mechanism without the additional complexity of full self-attention. Real transformer architectures stack multiple self-attention layers with multi-head attention, residual connections, layer normalisation, and feedforward sublayers. We strip all of this away to make the analogy with consideration sets as transparent as possible, and then progressively add back multi-head structure in Demo 5 to show how interpretability degrades as the architecture scales.
+:::
 
 ### Consideration Sets in Discrete Choice
 
@@ -421,7 +428,7 @@ import torch.optim as optim
 
 class AttentionHead(nn.Module):
     """
-    Single self-attention head with full Q, K, V projections.
+    Single attention head (cross-attention style: Q from target, K/V from context).
 
     The analogy with discrete choice:
 
@@ -823,6 +830,368 @@ The key T&K parallel: the model's consideration set has been shaped by the train
 
 ---
 
+### Demo 5 — Multi-Head Attention: Where Does the Bias Live?
+
+The single-head model above gives us a transparent window into the conjunction fallacy: one attention map, one set of weights, and a direct correspondence between what the model attends to and what it predicts. We can inspect the attention distribution over context words and ask, for each one, "is this word getting more attention than its true diagnostic value warrants?"
+
+But real transformer architectures do not use a single attention head. They distribute the attention computation across **multiple heads**, each operating in a low-dimensional subspace, and then recombine the results through a learned output projection. This raises two questions with direct implications for algorithmic fairness:
+
+1. When the same bias signal is distributed across multiple heads, **does it become harder to detect**?
+2. Does the recombination **amplify or attenuate** the conjunction fallacy?
+
+These questions have a direct analogue in the consideration set framework we build in Part II. There, each screening variable gets a named parameter $\gamma_z$ with a full posterior distribution — a single coefficient you can inspect, test, and explain. Multi-head attention offers no such guarantee.
+
+::: {.callout-note}
+## Why multi-head attention matters for interpretability
+
+In multi-head attention, each head independently computes Q, K, V projections over a low-dimensional subspace ($d_{\text{head}} = d_{\text{model}} / n_{\text{heads}}$). The heads' outputs are concatenated and passed through a learned **output projection** before classification. This output projection is where the heads' signals get blended — and it is precisely this blending that makes it impossible to attribute the final classification to any single head's attention pattern. The bias is *everywhere and nowhere*: distributed across heads and recombined nonlinearly.
+:::
+
+#### The Multi-Head Architecture
+
+```{python}
+#| label: multihead-model
+
+
+class MultiHeadAttention(nn.Module):
+    """
+    Multi-head attention for the Linda classification task.
+
+    Each head independently computes Q, K, V projections over a
+    d_head-dimensional subspace (d_head = d_model // n_heads).
+    Head outputs are concatenated and passed through a final
+    linear projection before classification.
+
+    The key question: does distributing the attention computation
+    across multiple heads amplify, attenuate, or merely redistribute
+    the vignette bias visible in the single-head case?
+    """
+
+    def __init__(self, vocab_size: int, d_model: int = 32, n_heads: int = 2):
+        super().__init__()
+        assert d_model % n_heads == 0, "d_model must be divisible by n_heads"
+        self.d_model = d_model
+        self.n_heads = n_heads
+        self.d_head  = d_model // n_heads
+
+        self.embed = nn.Embedding(vocab_size, d_model)
+
+        # Per-head Q, K, V projections (d_model -> d_head each)
+        self.q_projs = nn.ModuleList([
+            nn.Linear(d_model, self.d_head, bias=False) for _ in range(n_heads)
+        ])
+        self.k_projs = nn.ModuleList([
+            nn.Linear(d_model, self.d_head, bias=False) for _ in range(n_heads)
+        ])
+        self.v_projs = nn.ModuleList([
+            nn.Linear(d_model, self.d_head, bias=False) for _ in range(n_heads)
+        ])
+
+        # Output projection: concatenated head outputs -> d_model
+        self.out_proj = nn.Linear(d_model, d_model, bias=False)
+        self.clf      = nn.Linear(d_model, 2)
+
+    def _head_attention(self, head_idx, c_embs, t_emb):
+        """Compute attention weights and output for a single head."""
+        Q = self.q_projs[head_idx](t_emb.unsqueeze(0))   # (1, d_head)
+        K = self.k_projs[head_idx](c_embs)                # (ctx, d_head)
+        V = self.v_projs[head_idx](c_embs)                # (ctx, d_head)
+
+        scores  = torch.matmul(Q, K.T) / (self.d_head ** 0.5)
+        weights = F.softmax(scores, dim=-1)                # (1, ctx)
+        out     = torch.matmul(weights, V)                 # (1, d_head)
+        return weights, out
+
+    def forward(self, ctx_idxs, tgt_idx):
+        c_embs = self.embed(ctx_idxs)          # (ctx, d_model)
+        t_emb  = self.embed(tgt_idx)           # (d_model,)
+
+        all_weights  = []
+        head_outputs = []
+        for h in range(self.n_heads):
+            w_h, out_h = self._head_attention(h, c_embs, t_emb)
+            all_weights.append(w_h)
+            head_outputs.append(out_h)
+
+        # Concatenate head outputs along feature dimension
+        concat    = torch.cat(head_outputs, dim=-1)   # (1, d_model)
+        projected = self.out_proj(concat)              # (1, d_model)
+        logits    = self.clf(projected)                # (1, 2)
+
+        return logits, all_weights  # all_weights: list of n_heads tensors
+```
+
+Note the structural parallel with the single-head model: the same embedding, the same Q/K/V projection pattern, the same classifier. The only additions are (i) replication across heads in lower-dimensional subspaces, and (ii) the output projection that recombines them. The total parameter count for Q, K, V is identical — $n_{\text{heads}} \times d_{\text{model}} \times d_{\text{head}} = d_{\text{model}}^2$ per projection type — but the output projection adds an extra $d_{\text{model}}^2$ parameters. The model is slightly larger, and the bias has more places to hide.
+
+#### Training
+
+We train with the same hyperparameters and data as the single-head model — the only difference is the architecture. This ensures any change in bias behaviour is attributable to the multi-head structure, not to differences in optimisation or data.
+
+```{python}
+#| label: multihead-training
+
+torch.manual_seed(42)
+
+n_heads  = 2
+mh_model = MultiHeadAttention(len(w2i), d_model=32, n_heads=n_heads)
+mh_opt   = optim.Adam(mh_model.parameters(), lr=1e-3)
+
+mh_losses = []
+for epoch in range(100):
+    mh_model.train()
+    epoch_loss = 0.0
+    for ctx, tgt, lbl in train_corpus:
+        mh_opt.zero_grad()
+        c_idx  = torch.tensor([w2i[w] for w in ctx])
+        t_idx  = torch.tensor(w2i[tgt])
+        logits, _ = mh_model(c_idx, t_idx)
+        loss = criterion(logits, torch.tensor([lbl]))
+        loss.backward()
+        mh_opt.step()
+        epoch_loss += loss.item()
+    mh_losses.append(epoch_loss / len(train_corpus))
+
+# Evaluate
+mh_model.eval()
+with torch.no_grad():
+    mh_correct = sum(
+        torch.argmax(
+            mh_model(
+                torch.tensor([w2i[w] for w in ctx]),
+                torch.tensor(w2i[tgt])
+            )[0]
+        ).item() == lbl
+        for ctx, tgt, lbl in test_corpus
+    )
+
+print(f"Single-head test accuracy : {correct / len(test_corpus):.3f}")
+print(f"Multi-head  test accuracy : {mh_correct / len(test_corpus):.3f}")
+print(f"Single-head final loss    : {losses[-1]:.4f}")
+print(f"Multi-head  final loss    : {mh_losses[-1]:.4f}")
+```
+
+#### Head Specialisation: Who Attends to What?
+
+The first question is whether the two heads learn to specialise — does one head attend primarily to activist-flavoured words while the other tracks teller signals? Or do both heads learn diffuse, overlapping attention patterns? If the former, multi-head attention would preserve some interpretability; if the latter, the bias is truly distributed.
+
+We categorise the vocabulary into five groups and collect per-head, per-category mean attention weights across the entire corpus.
+
+```{python}
+#| label: head-category-heatmap
+#| fig-cap: "Mean attention by head and word category, averaged over the full corpus. If heads specialise cleanly, each row should have a distinct column peak. If bias is distributed, the pattern will be diffuse — and no single head will cleanly capture the vignette effect."
+
+WORD_CATEGORIES = {
+    "activist":  [w for w, (a, t) in VOCAB_SIGNALS.items()
+                  if a > 0.70 and w not in VIGNETTE_POOL],
+    "vignette":  VIGNETTE_POOL,
+    "teller":    [w for w, (a, t) in VOCAB_SIGNALS.items() if t > 0.80],
+    "ambiguous":  ["independent", "organized", "concern"],
+    "noise":     [w for w, (a, t) in VOCAB_SIGNALS.items()
+                  if a < 0.10 and t < 0.15],
+}
+
+# Collect per-head attention by word category
+head_cat_attn = {
+    h: {cat: [] for cat in WORD_CATEGORIES}
+    for h in range(n_heads)
+}
+
+# Also collect per-word for later use
+head_word_attn = {h: {} for h in range(n_heads)}
+
+mh_model.eval()
+with torch.no_grad():
+    for ctx, tgt, lbl in corpus:
+        c_idx = torch.tensor([w2i[w] for w in ctx])
+        t_idx = torch.tensor(w2i[tgt])
+        _, all_weights = mh_model(c_idx, t_idx)
+        for h in range(n_heads):
+            for w, a in zip(ctx, all_weights[h][0].numpy()):
+                # Per-category
+                for cat, words in WORD_CATEGORIES.items():
+                    if w in words:
+                        head_cat_attn[h][cat].append(float(a))
+                        break
+                # Per-word
+                head_word_attn[h].setdefault(w, []).append(float(a))
+
+# Build heatmap
+categories = list(WORD_CATEGORIES.keys())
+heatmap_data = np.array([
+    [np.mean(head_cat_attn[h][cat]) if head_cat_attn[h][cat] else 0.0
+     for cat in categories]
+    for h in range(n_heads)
+])
+
+fig, ax = plt.subplots(figsize=(8, 3))
+im = ax.imshow(heatmap_data, cmap="YlOrRd", aspect="auto")
+ax.set_xticks(range(len(categories)))
+ax.set_xticklabels(categories, fontsize=10)
+ax.set_yticks(range(n_heads))
+ax.set_yticklabels([f"Head {h}" for h in range(n_heads)], fontsize=10)
+for i in range(n_heads):
+    for j in range(len(categories)):
+        ax.text(j, i, f"{heatmap_data[i, j]:.3f}",
+                ha="center", va="center", fontsize=9,
+                color="white" if heatmap_data[i, j] > heatmap_data.max() * 0.6
+                else "black")
+plt.colorbar(im, ax=ax, label="Mean attention weight")
+ax.set_title("Head specialisation: which heads attend to which word types?")
+plt.tight_layout()
+plt.show()
+```
+
+If both heads show similar attention profiles across categories — elevated attention to activist and vignette words, lower attention to teller and noise — then the bias is not factored into interpretable subcomponents. It is distributed. Contrast this with the consideration set model we build in Part II, where each screening variable gets a single, named parameter whose posterior you can inspect and whose effect you can isolate.
+
+#### Vignette Bias: Concentrated or Distributed?
+
+The vignette words (outspoken, philosophy, justice, discrimination) appear in every context — their marginal diagnostic value is zero, yet the single-head model may over-attend to them. Does multi-head attention concentrate this over-attention in one head, or spread it across both?
+
+```{python}
+#| label: vignette-attention-comparison
+#| fig-cap: "Vignette word attention: single-head vs multi-head decomposition. The single-head bar shows total learned attention to each vignette word. The multi-head bars show per-head contributions. The dashed line marks uniform attention (1/4 for context size 4)."
+
+vignette_words = VIGNETTE_POOL
+
+# Collect single-head attention for vignette words
+sh_vignette_attn = {}
+for lbl in [0, 1]:
+    for w in vignette_words:
+        vals = attention_records[lbl].get(w, [])
+        sh_vignette_attn.setdefault(w, []).extend(vals)
+
+n_groups  = len(vignette_words)
+bar_width = 0.25
+x = np.arange(n_groups)
+
+fig, ax = plt.subplots(figsize=(10, 5))
+
+# Single-head bars
+sh_means = [np.mean(sh_vignette_attn.get(w, [0.0])) for w in vignette_words]
+ax.bar(x - bar_width, sh_means, bar_width, label="Single head",
+       color="#4C72B0", alpha=0.85)
+
+# Multi-head per-head bars
+colors_mh = ["#DD8452", "#55A868", "#C44E52"]
+for h in range(n_heads):
+    mh_means = [np.mean(head_word_attn[h].get(w, [0.0]))
+                for w in vignette_words]
+    ax.bar(x + h * bar_width, mh_means, bar_width,
+           label=f"Head {h}", color=colors_mh[h], alpha=0.85)
+
+ax.axhline(1.0 / 4, color="black", linestyle="--", alpha=0.5,
+           label="Uniform baseline (1/ctx_size)")
+ax.set_xticks(x + bar_width * (n_heads - 1) / 2)
+ax.set_xticklabels(vignette_words, fontsize=10)
+ax.set_ylabel("Mean attention weight")
+ax.set_title("Vignette word attention: single head vs per-head decomposition")
+ax.legend(fontsize=9)
+plt.tight_layout()
+plt.show()
+```
+
+The key observation is not whether individual heads assign more or less attention to vignette words than the single-head model — it is that **no single head's attention map tells the full story**. The final classification depends on the *concatenated value vectors* from both heads, passed through the output projection and classifier. Even if one head assigns low attention to vignette words, the other head's value representation may carry the vignette signal through to the output. The bias is not in the weights; it is in the interaction between weights, values, and the output projection.
+
+#### Does Multi-Head Attention Amplify the Conjunction Fallacy?
+
+We run the same seven diagnostic probes from Demo 4 through the multi-head model and compare P(activist) side by side. We also compute calibration curves on the test set to see whether the extra heads improve probability estimates or simply redistribute the same bias.
+
+```{python}
+#| label: calibration-comparison
+#| fig-cap: "Left: Conjunction fallacy probe comparison — single-head vs multi-head P(activist) for seven diagnostic contexts. Right: Calibration curves on the test set — does multi-head attention produce better-calibrated probabilities, or does it simply learn a more confident version of the same bias?"
+
+# --- Multi-head probes ---
+mh_probe_results = {}
+mh_model.eval()
+with torch.no_grad():
+    for name, ctx in probes.items():
+        c_idx = torch.tensor([w2i[w] for w in ctx])
+        t_idx = torch.tensor(w2i[TARGET])
+        logits, all_weights = mh_model(c_idx, t_idx)
+        probs = F.softmax(logits, dim=-1)[0].numpy()
+        mh_probe_results[name] = {
+            "P(activist)": probs[0],
+            "head_weights": {
+                h: dict(zip(ctx, all_weights[h][0].numpy()))
+                for h in range(n_heads)
+            },
+        }
+
+# --- Calibration helper ---
+def calibration_curve(mdl, test_data, n_bins=6):
+    mdl.eval()
+    preds, labels = [], []
+    with torch.no_grad():
+        for ctx, tgt, lbl in test_data:
+            c_idx = torch.tensor([w2i[w] for w in ctx])
+            t_idx = torch.tensor(w2i[tgt])
+            logits, _ = mdl(c_idx, t_idx)
+            p = F.softmax(logits, dim=-1)[0][0].item()  # P(activist)
+            preds.append(p)
+            labels.append(1 if lbl == 0 else 0)  # 1 = activist
+    preds, labels = np.array(preds), np.array(labels)
+    bin_edges = np.linspace(0, 1, n_bins + 1)
+    mean_pred, mean_obs = [], []
+    for lo, hi in zip(bin_edges[:-1], bin_edges[1:]):
+        mask = (preds >= lo) & (preds < hi)
+        if mask.sum() >= 5:  # require minimum bin size
+            mean_pred.append(preds[mask].mean())
+            mean_obs.append(labels[mask].mean())
+    return mean_pred, mean_obs
+
+# --- Two-panel figure ---
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+# Left: probe comparison
+probe_names = list(probes.keys())
+sh_pact = [probe_results[n]["P(activist)"] for n in probe_names]
+mh_pact = [mh_probe_results[n]["P(activist)"] for n in probe_names]
+
+x = np.arange(len(probe_names))
+bw = 0.35
+ax1.bar(x - bw / 2, sh_pact, bw, label="Single head", color="#4C72B0", alpha=0.85)
+ax1.bar(x + bw / 2, mh_pact, bw, label="Multi-head",  color="#DD8452", alpha=0.85)
+ax1.axhline(0.30, color="black", linestyle="--", alpha=0.5, label="Base rate (30%)")
+ax1.axhline(0.50, color="grey",  linestyle=":",  alpha=0.4, label="Decision boundary")
+ax1.set_xticks(x)
+ax1.set_xticklabels(probe_names, rotation=35, ha="right", fontsize=8)
+ax1.set_ylabel("P(activist)")
+ax1.set_title("Conjunction fallacy probes: single vs multi-head")
+ax1.legend(fontsize=8)
+ax1.set_ylim(0, 1.05)
+
+# Right: calibration
+sh_pred, sh_obs = calibration_curve(model, test_corpus)
+mh_pred, mh_obs = calibration_curve(mh_model, test_corpus)
+
+ax2.plot([0, 1], [0, 1], "k--", alpha=0.5, label="Perfect calibration")
+ax2.plot(sh_pred, sh_obs, "o-", color="#4C72B0", label="Single head", alpha=0.85)
+ax2.plot(mh_pred, mh_obs, "s-", color="#DD8452", label="Multi-head",  alpha=0.85)
+ax2.set_xlabel("Mean predicted P(activist)")
+ax2.set_ylabel("Observed fraction activist")
+ax2.set_title("Calibration: do extra heads improve probability estimates?")
+ax2.legend(fontsize=8)
+ax2.set_xlim(0, 1)
+ax2.set_ylim(0, 1)
+
+plt.tight_layout()
+plt.show()
+```
+
+The probe comparison (left panel) reveals whether multi-head attention amplifies or attenuates the conjunction fallacy for each diagnostic context. The calibration plot (right panel) shows whether the additional architectural capacity translates into better-calibrated probability estimates — or whether the model simply learns a more confident version of the same data-encoded bias.
+
+::: {.callout-important}
+## The interpretability cost of distribution
+
+In the single-head model, we could inspect *one* attention map and ask: "is the model over-attending to vignette words?" The answer was legible — one set of weights, one signal-recovery scatter plot.
+
+In multi-head attention, that question has no clean answer. The bias lives in the *interaction* between heads — in how per-head value vectors are concatenated and recombined through the output projection. You cannot decompose the final P(activist) into additive per-head contributions because the output projection and classifier operate nonlinearly on the concatenated representation.
+
+This is the central contrast with the consideration set framework we develop in Part II. As we will see, the econometric model keeps each screening variable as a **named, interpretable coefficient** $\gamma_z$ with a full posterior distribution. You can compute $P(\gamma_z > 0 \mid \text{data})$ and make a falsifiable claim about whether a specific variable gates consideration. The transformer distributes the same information across **anonymous computational subspaces** and offers no such decomposition. The bias is real — the model discriminates — but the mechanism resists the kind of audit that fairness requires.
+:::
+
+---
+
 ## Part II: The Consideration Set Model in PyMC
 
 ### The Two-Stage Model
@@ -853,7 +1222,7 @@ This contains **two separate identification problems**:
 
 **Problem 1 — Level aliasing**: if both a consideration intercept $\gamma_{0j}$ and a utility intercept $\alpha_j$ are free parameters, they are effectively aliased as alternative-specific constants. The intercept $\gamma_{0j}$ inside the sigmoid controls the *baseline* consideration probability for alternative $j$; the utility intercept $\alpha_j$ controls its baseline attractiveness. Because both shift the overall level of $U_{\text{avail},nj}$ in the same direction, the data cannot cleanly separate "alternative $j$ is often considered" from "alternative $j$ has high intrinsic utility." Fix: drop $\gamma_{0j}$ entirely, letting $\alpha_j$ absorb the average level of both preference and baseline consideration.
 
-**Problem 2 — Misspecified heterogeneity**: if the DGP generates individual heterogeneity in utility (e.g. random price coefficients) that the inference model does not capture, the unexplained variance bleeds into the consideration mechanism, attenuating the utility coefficients. Fix: match the model complexity to the DGP — no unmodelled individual heterogeneity.
+**Problem 2 — Misspecified heterogeneity**: if the DGP generates individual heterogeneity in utility (e.g. random coefficients on age or experience) that the inference model does not capture, the unexplained variance bleeds into the consideration mechanism, attenuating the utility coefficients. Fix: match the model complexity to the DGP — no unmodelled individual heterogeneity.
 
 With both problems resolved, the model structure becomes:
 
@@ -866,15 +1235,17 @@ This is the discrete choice analogue of K ≠ V in transformers: the signal that
 
 ---
 
-### Data-Generating Process: Transport Mode Choice
+### Data-Generating Process: Hiring Decisions
 
-The consideration stage uses **availability instruments** — variables that influence whether a consumer considers a mode but that do not directly determine its utility:
+The consideration stage uses **screening instruments** — variables that influence whether a firm considers a candidate but that do not directly determine job utility:
 
-- `bus_freq`: how often this consumer encounters buses (proximity to stops, urban density)
-- `has_car`: car ownership — dramatically increases the probability of considering driving
-- `train_near`: whether a train station is within commuting distance
+- `is_college_grad`: whether the candidate holds a college degree — a legitimate screening criterion
+- `is_white`: whether the candidate is white — an illegitimate but empirically documented screening criterion
+- `is_under_40`: whether the candidate is under 40 — an age-based screening criterion
 
-These play the role of the **Key projection** $K$ in the transformer: they determine salience. Price and time play the role of the **Value projection** $V$: they determine what the alternative delivers once considered.
+These play the role of the **Key projection** $K$ in the transformer: they determine which candidates pass the initial filter. Age and experience play the role of the **Value projection** $V$: they determine how attractive a candidate is once considered.
+
+Note the deliberate provocation: `is_white` and `is_under_40` are protected characteristics. Including them as consideration instruments makes the structural bias *visible* in the model — the point is not to endorse such screening but to show that consideration set models can *detect and quantify* gatekeeping biases that a standard utility model would absorb into unexplained alternative-specific constants.
 
 ```{python}
 #| label: choice-dgp
@@ -884,9 +1255,9 @@ np.random.seed(42)
 N = 800
 
 # --- Utility parameters ---
-TRUE_ALPHA   = np.array([0.6,  1.1,  0.0])  # ASCs (train = reference)
-TRUE_B_PRICE = -0.9                          # price sensitivity — FIXED across consumers
-TRUE_B_TIME  = -0.4                          # time sensitivity — fixed
+TRUE_ALPHA  = np.array([0.6,  1.1,  0.0])  # ASCs (Firm C = reference)
+TRUE_B_AGE  = -0.9                          # age sensitivity — FIXED across firms
+TRUE_B_EXP  =  0.4                          # experience sensitivity — fixed (positive: more exp → higher utility)
 # NOTE: No random coefficient (TRUE_SIGMA = 0).
 # Unmodelled individual heterogeneity in utility attenuates beta estimates
 # because the unexplained variance bleeds into the consideration stage.
@@ -894,49 +1265,45 @@ TRUE_B_TIME  = -0.4                          # time sensitivity — fixed
 
 # --- Consideration parameters (no intercept) ---
 # pi_nj = sigmoid(gamma_zj * z_tilde_nj),  z_tilde = z - E[z]
-# Mean-centring z means: at average access, pi_nj = sigmoid(0) = 0.5.
-# Only the individual DEVIATION from population mean access drives consideration.
+# Mean-centring z means: at average screening, pi_nj = sigmoid(0) = 0.5.
+# Only the individual DEVIATION from population mean screening drives consideration.
 # This is the exclusion restriction: z_tilde != x.
-TRUE_GAMMA_Z = np.array([2.5, 3.5, 3.0])    # bus, car, train
+TRUE_GAMMA_Z = np.array([2.5, 3.5, 3.0])    # Firm A, Firm B, Firm C
 
 # Population means of z (used to centre in both DGP and model)
-Z_BUS_MEAN   = 2 / (2 + 3)   # E[Beta(2, 3)] = 0.40
-Z_CAR_MEAN   = 0.65           # P(has_car = 1)
-Z_TRAIN_MEAN = 0.55           # P(train_near = 1)
-Z_MEANS      = np.array([Z_BUS_MEAN, Z_CAR_MEAN, Z_TRAIN_MEAN])
+Z_GRAD_MEAN  = 2 / (2 + 3)   # E[Beta(2, 3)] = 0.40 — fraction with degrees
+Z_WHITE_MEAN = 0.65           # P(is_white = 1)
+Z_YOUNG_MEAN = 0.55           # P(is_under_40 = 1)
+Z_MEANS      = np.array([Z_GRAD_MEAN, Z_WHITE_MEAN, Z_YOUNG_MEAN])
 
 rows = []
 for n in range(N):
     # ---- Utility covariates (enter V, not pi) ----
-    bus_price   = np.random.uniform(1.5, 5.0)
-    car_price   = np.random.uniform(3.0, 9.0)
-    train_price = np.random.uniform(2.5, 7.0)
-    bus_time    = np.random.uniform(25,  65)
-    car_time    = np.random.uniform(15,  45)
-    train_time  = np.random.uniform(20,  50)
+    age_A = np.random.uniform(22, 60);  age_B = np.random.uniform(22, 60);  age_C = np.random.uniform(22, 60)
+    exp_A = np.random.uniform(0,  30);  exp_B = np.random.uniform(0,  30);  exp_C = np.random.uniform(0,  30)
 
     # ---- Consideration instruments (enter pi, not V) ----
-    bus_freq   = np.random.beta(2, 3)            # continuous: bus exposure
-    has_car    = float(np.random.binomial(1, 0.65))
-    train_near = float(np.random.binomial(1, 0.55))
-    z_raw = np.array([bus_freq, has_car, train_near])
+    is_college_grad = np.random.beta(2, 3)               # continuous proxy: degree strength
+    is_white        = float(np.random.binomial(1, 0.65))
+    is_under_40     = float(np.random.binomial(1, 0.55))
+    z_raw = np.array([is_college_grad, is_white, is_under_40])
 
     # Mean-centre z before computing consideration probabilities
     z_tilde = z_raw - Z_MEANS
     log_odds_c = TRUE_GAMMA_Z * z_tilde          # no intercept
     pi_n = 1.0 / (1.0 + np.exp(-log_odds_c))
 
-    # Systematic utility (FIXED price sensitivity — no random coefficient)
+    # Systematic utility (FIXED coefficients — no random coefficient)
     V = np.array([
-        TRUE_ALPHA[0] + TRUE_B_PRICE * bus_price   + TRUE_B_TIME * bus_time,
-        TRUE_ALPHA[1] + TRUE_B_PRICE * car_price   + TRUE_B_TIME * car_time,
-        TRUE_ALPHA[2] + TRUE_B_PRICE * train_price + TRUE_B_TIME * train_time,
+        TRUE_ALPHA[0] + TRUE_B_AGE * age_A + TRUE_B_EXP * exp_A,
+        TRUE_ALPHA[1] + TRUE_B_AGE * age_B + TRUE_B_EXP * exp_B,
+        TRUE_ALPHA[2] + TRUE_B_AGE * age_C + TRUE_B_EXP * exp_C,
     ])
 
     # Log-consideration-adjusted utility — model-consistent DGP
     #
     # Conceptually, consideration is a hard binary gate: C_nj ~ Bernoulli(pi_nj),
-    # and the consumer chooses from whichever alternatives they considered.
+    # and the firm hires from whichever candidates they considered.
     # Marginalising over all possible consideration sets {C_nj} gives a
     # closed-form likelihood — the log-consideration adjusted softmax:
     #
@@ -948,17 +1315,19 @@ for n in range(N):
     U_adj = U_adj - U_adj.max()        # numerical stability
     exp_u = np.exp(U_adj)
     p     = exp_u / exp_u.sum()
-    choice = np.random.choice(["bus", "car", "train"], p=p)
+    choice = np.random.choice(["Firm A", "Firm B", "Firm C"], p=p)
 
     rows.append({
-        "choice":      choice,
-        "bus_price":   bus_price,   "car_price":   car_price,   "train_price": train_price,
-        "bus_time":    bus_time,    "car_time":    car_time,     "train_time":  train_time,
-        "bus_freq":    bus_freq,    "has_car":     has_car,      "train_near":  train_near,
+        "choice":         choice,
+        "age_A": age_A,  "age_B": age_B,  "age_C": age_C,
+        "exp_A": exp_A,  "exp_B": exp_B,  "exp_C": exp_C,
+        "is_college_grad": is_college_grad,
+        "is_white":        is_white,
+        "is_under_40":     is_under_40,
     })
 
 choice_df = pd.DataFrame(rows)
-alts      = ["bus", "car", "train"]
+alts      = ["Firm A", "Firm B", "Firm C"]
 
 # Show how strongly Z instruments move consideration
 print("Consideration probability at extreme Z values:\n")
@@ -967,22 +1336,22 @@ for j, (alt, gz, z_lo, z_hi, label_lo, label_hi) in enumerate(zip(
     TRUE_GAMMA_Z,
     [0.05,  0.0, 0.0],       # low z_raw
     [0.90,  1.0, 1.0],       # high z_raw
-    ["bus_freq=0.05",  "has_car=0", "train_near=0"],
-    ["bus_freq=0.90",  "has_car=1", "train_near=1"],
+    ["college=0.05",  "is_white=0", "under_40=0"],
+    ["college=0.90",  "is_white=1", "under_40=1"],
 )):
     pi_lo = 1 / (1 + np.exp(-gz * (z_lo - Z_MEANS[j])))
     pi_hi = 1 / (1 + np.exp(-gz * (z_hi - Z_MEANS[j])))
-    print(f"  {alt:6s}:  {label_lo:16s} → π={pi_lo:.2f}   "
+    print(f"  {alt:8s}:  {label_lo:16s} → π={pi_lo:.2f}   "
           f"{label_hi:16s} → π={pi_hi:.2f}")
 
-print(f"\nObserved choice frequencies:")
+print(f"\nObserved hiring frequencies:")
 print(choice_df["choice"].value_counts(normalize=True).round(3).to_string())
 ```
 
-The bus mode is rarely chosen partly because of its lower utility *and* partly because many consumers with low bus access have a low consideration probability. A standard multinomial logit collapses both effects into a single ASC; the consideration set model separates them — but only because the Z instruments create **individual-level variation** in $\pi_{nj}$.
+Firm A hires less frequently partly because of its lower baseline utility *and* partly because candidates without college degrees have a low consideration probability at that firm. A standard multinomial logit collapses both effects into a single ASC; the consideration set model separates them — but only because the Z instruments create **individual-level variation** in $\pi_{nj}$. Critically, the model treats `is_white` and `is_under_40` symmetrically with `is_college_grad` — all three are screening instruments. The posterior will reveal *how strongly* each instrument gates consideration, making structural discrimination legible in the parameter estimates rather than hidden inside an alternative-specific constant.
 
 ::: {.callout-note}
-**DGP and model likelihood are aligned.** Conceptually, consideration is a hard binary gate: $C_{nj} \sim \text{Bernoulli}(\pi_{nj})$, and the consumer picks from whatever alternatives they happened to notice. Marginalising over all $2^J$ possible consideration sets yields the tractable closed-form likelihood used here — the log-consideration adjusted softmax. The simulation uses this marginalised form so that Monte Carlo parameter recovery is clean; the hard-gating story is motivational, not the literal data-generating mechanism.
+**DGP and model likelihood are aligned.** Conceptually, consideration is a hard binary gate: $C_{nj} \sim \text{Bernoulli}(\pi_{nj})$, and the firm hires from whatever candidates passed the initial screen. Marginalising over all $2^J$ possible consideration sets yields the tractable closed-form likelihood used here — the log-consideration adjusted softmax. The simulation uses this marginalised form so that Monte Carlo parameter recovery is clean; the hard-gating story is motivational, not the literal data-generating mechanism.
 :::
 
 ---
@@ -996,24 +1365,24 @@ import pymc as pm
 import pytensor.tensor as pt
 import arviz as az
 
-alt_enc = {"bus": 0, "car": 1, "train": 2}
+alt_enc = {"Firm A": 0, "Firm B": 1, "Firm C": 2}
 choice_df["y"] = choice_df["choice"].map(alt_enc)
 
-# X : (N, J, K_x) — utility covariates (price, time per alternative)
+# X : (N, J, K_x) — utility covariates (age, experience per firm)
 X = np.stack([
-    np.column_stack([choice_df["bus_price"],   choice_df["bus_time"]]),
-    np.column_stack([choice_df["car_price"],   choice_df["car_time"]]),
-    np.column_stack([choice_df["train_price"], choice_df["train_time"]]),
+    np.column_stack([choice_df["age_A"], choice_df["exp_A"]]),
+    np.column_stack([choice_df["age_B"], choice_df["exp_B"]]),
+    np.column_stack([choice_df["age_C"], choice_df["exp_C"]]),
 ], axis=1)   # (N, 3, 2)
 
 # Z_tilde : (N, J) — mean-centred consideration instruments
 # Mean-centring is critical: it ensures the "default" consideration
-# (at average access) maps to pi = sigmoid(0) = 0.5, absorbed into alpha_j.
-# Only the DEVIATION from population-mean access is identified separately.
+# (at average screening) maps to pi = sigmoid(0) = 0.5, absorbed into alpha_j.
+# Only the DEVIATION from population-mean screening is identified separately.
 Z_raw = np.column_stack([
-    choice_df["bus_freq"],
-    choice_df["has_car"],
-    choice_df["train_near"],
+    choice_df["is_college_grad"],
+    choice_df["is_white"],
+    choice_df["is_under_40"],
 ])
 Z_tilde = Z_raw - Z_MEANS   # shape: (N, 3), column means ≈ 0
 
@@ -1043,17 +1412,17 @@ def build_consideration_model(
     Identification design:
       - NO consideration intercept gamma_0.  A per-alternative consideration
         intercept is perfectly aliased with the utility ASC alpha_j.  Dropping
-        it means alpha_j now absorbs both the preference level AND the average
-        (baseline) consideration tendency for each mode.  Only the *deviation*
-        from average consideration — driven by the instrument z_tilde — is
-        separately identified.
+        it means alpha_j now absorbs both the firm's baseline attractiveness
+        AND the average (baseline) consideration tendency for each firm.
+        Only the *deviation* from average consideration — driven by the
+        instrument z_tilde — is separately identified.
 
-      - Z_tilde is mean-centred: at average access (z_tilde = 0),
+      - Z_tilde is mean-centred: at average screening (z_tilde = 0),
         pi_nj = sigmoid(0) = 0.5.  The baseline consideration is absorbed
         into alpha_j; gamma_zj captures *how strongly* above/below-average
-        access changes pi.
+        screening characteristics change pi.
 
-      - No random price coefficient in the DGP or model.  Unmodelled
+      - No random coefficient in the DGP or model.  Unmodelled
         individual heterogeneity in utility attenuates beta estimates via the
         same mechanism as omitted-variable bias.
 
@@ -1069,7 +1438,7 @@ def build_consideration_model(
         coords={
             "obs":  range(n_obs),
             "alts": alts,
-            "covs": ["price", "time"],
+            "covs": ["age", "experience"],
         }
     ) as model:
 
@@ -1091,17 +1460,17 @@ def build_consideration_model(
         # ----------------------------------------------------------------
         # STAGE 2: Utility — the VALUE mechanism
         #
-        # V_nj = alpha_j + beta_price * price_nj + beta_time * time_nj
+        # V_nj = alpha_j + beta_age * age_nj + beta_exp * exp_nj
         #
-        # alpha_j absorbs both intrinsic preference AND baseline
-        # consideration for mode j.
+        # alpha_j absorbs both intrinsic firm attractiveness AND baseline
+        # consideration for firm j.
         # ----------------------------------------------------------------
-        alpha_raw  = pm.Normal("alpha_raw", mu=0, sigma=2, shape=n_alts - 1)
-        alpha      = pt.concatenate([alpha_raw, pt.zeros(1)])   # train = 0
+        alpha_raw = pm.Normal("alpha_raw", mu=0, sigma=2, shape=n_alts - 1)
+        alpha     = pt.concatenate([alpha_raw, pt.zeros(1)])   # Firm C = 0
 
-        beta_price = pm.Normal("beta_price", mu=0, sigma=2)
-        beta_time  = pm.Normal("beta_time",  mu=0, sigma=2)
-        beta       = pt.stack([beta_price, beta_time])
+        beta_age = pm.Normal("beta_age", mu=0, sigma=2)
+        beta_exp = pm.Normal("beta_exp", mu=0, sigma=2)
+        beta     = pt.stack([beta_age, beta_exp])
 
         X_data = pm.Data("X", X, dims=("obs", "alts", "covs"))
         V = alpha[None, :] + pt.sum(X_data * beta[None, None, :], axis=2)
@@ -1137,7 +1506,7 @@ print(consideration_model)
 ```{python}
 #| label: prior-predictive
 #| eval: true
-#| fig-cap: "Prior predictive marginal choice frequencies. The weakly informative prior puts roughly equal weight on all three alternatives before data is seen."
+#| fig-cap: "Prior predictive marginal hiring frequencies. The weakly informative prior puts roughly equal weight on all three firms before data is seen."
 
 with consideration_model:
     prior_pred = pm.sample_prior_predictive(500, random_seed=42)
@@ -1148,8 +1517,8 @@ prior_freq = np.array([np.mean(ppc == k) for k in range(3)])
 fig, ax = plt.subplots(figsize=(6, 3.5))
 ax.bar(alts, prior_freq, color=["#4C72B0", "#55A868", "#DD8452"], alpha=0.85)
 ax.axhline(1 / 3, color="k", linestyle="--", alpha=0.5, label="Uniform baseline (1/3)")
-ax.set_ylabel("Marginal choice probability (prior predictive)")
-ax.set_title("Prior predictive check: consideration set model with Z instruments")
+ax.set_ylabel("Marginal hiring probability (prior predictive)")
+ax.set_title("Prior predictive check: consideration set model with screening instruments")
 ax.set_ylim(0, 0.5)
 ax.legend()
 plt.tight_layout()
@@ -1175,7 +1544,7 @@ with consideration_model:
 
 ### Results
 
-The consideration model with Z instruments now recovers both stages cleanly. The key diagnostic: `gamma_z` posteriors should be strongly positive (high Z → high consideration), and the utility parameters should be close to their true values.
+The consideration model with Z instruments now recovers both stages cleanly. The key diagnostic: `gamma_z` posteriors should be strongly positive (high Z → high consideration), and the utility parameters should be close to their true values. Note that `gamma_z[Firm B]` captures the effect of `is_white` on consideration — a large positive posterior here is the model surfacing racial bias in the screening process.
 
 ```{python}
 #| label: results-consideration
@@ -1193,54 +1562,54 @@ az.plot_posterior(
     figsize=(10, 3),
 )
 plt.suptitle(
-    "Consideration stage: instrument slopes γ_z  (mean-centred Z → no intercept)\n"
-    "True values marked — positive = higher Z access → higher consideration",
+    "Consideration stage: screening instrument slopes γ_z  (mean-centred Z → no intercept)\n"
+    "True values marked — positive = higher Z → higher consideration probability",
     y=1.02,
 )
 plt.tight_layout()
 plt.show()
 
 # Expected recovery:
-#   gamma_z[bus]   ≈  2.5  (bus_freq above mean → more likely to consider bus)
-#   gamma_z[car]   ≈  3.5  (has_car above mean → strongly predicts car consideration)
-#   gamma_z[train] ≈  3.0  (train_near above mean → predicts train consideration)
+#   gamma_z[Firm A] ≈  2.5  (is_college_grad above mean → more likely to be considered)
+#   gamma_z[Firm B] ≈  3.5  (is_white above mean → strongly predicts consideration — bias!)
+#   gamma_z[Firm C] ≈  3.0  (is_under_40 above mean → predicts consideration — age bias)
 
 # --- Utility parameters ---
 az.plot_posterior(
     idata,
-    var_names=["beta_price", "beta_time", "alpha_raw"],
-    ref_val=[TRUE_B_PRICE, TRUE_B_TIME, *TRUE_ALPHA[:2]],
+    var_names=["beta_age", "beta_exp", "alpha_raw"],
+    ref_val=[TRUE_B_AGE, TRUE_B_EXP, *TRUE_ALPHA[:2]],
     figsize=(12, 3),
 )
 plt.suptitle(
-    "Utility stage: price/time sensitivities and alternative constants\n"
-    "With aliasing resolved: beta_price ≈ -0.9,  beta_time ≈ -0.4",
+    "Utility stage: age/experience sensitivities and firm constants\n"
+    "With aliasing resolved: beta_age ≈ -0.9,  beta_exp ≈ 0.4",
     y=1.02,
 )
 plt.tight_layout()
 plt.show()
 
 # --- Stratified consideration probabilities: the key identification check ---
-# At mean Z (Z_tilde=0) every alternative has pi=sigmoid(0)=0.5 by construction.
-# The interesting story is the cross-person variation driven by the instruments.
-pi_post         = idata.posterior["pi"].mean(("chain", "draw"))   # (N, J) xarray
-has_car_mask    = choice_df["has_car"].values.astype(bool)
-bus_freq_mask   = choice_df["bus_freq"].values > Z_MEANS[0]
-train_near_mask = choice_df["train_near"].values > Z_MEANS[2]
+# At mean Z (Z_tilde=0) every firm has pi=sigmoid(0)=0.5 by construction.
+# The interesting story is the cross-candidate variation driven by the instruments.
+pi_post        = idata.posterior["pi"].mean(("chain", "draw"))   # (N, J) xarray
+white_mask     = choice_df["is_white"].values.astype(bool)
+grad_mask      = choice_df["is_college_grad"].values > Z_MEANS[0]
+young_mask     = choice_df["is_under_40"].values.astype(bool)
 
-pi_car_with    = pi_post.values[has_car_mask,   1].mean()
-pi_car_without = pi_post.values[~has_car_mask,  1].mean()
-pi_bus_hi      = pi_post.values[bus_freq_mask,   0].mean()
-pi_bus_lo      = pi_post.values[~bus_freq_mask,  0].mean()
-pi_train_near  = pi_post.values[train_near_mask,  2].mean()
-pi_train_far   = pi_post.values[~train_near_mask, 2].mean()
+pi_grad_hi     = pi_post.values[grad_mask,    0].mean()
+pi_grad_lo     = pi_post.values[~grad_mask,   0].mean()
+pi_white_yes   = pi_post.values[white_mask,   1].mean()
+pi_white_no    = pi_post.values[~white_mask,  1].mean()
+pi_young_yes   = pi_post.values[young_mask,   2].mean()
+pi_young_no    = pi_post.values[~young_mask,  2].mean()
 
 labels = [
-    "Bus\n(low freq)", "Bus\n(high freq)",
-    "Car\n(no car)",   "Car\n(has car)",
-    "Train\n(far)",    "Train\n(near)",
+    "Firm A\n(no degree)", "Firm A\n(degree)",
+    "Firm B\n(non-white)",  "Firm B\n(white)",
+    "Firm C\n(over 40)",    "Firm C\n(under 40)",
 ]
-vals   = [pi_bus_lo, pi_bus_hi, pi_car_without, pi_car_with, pi_train_far, pi_train_near]
+vals   = [pi_grad_lo, pi_grad_hi, pi_white_no, pi_white_yes, pi_young_no, pi_young_yes]
 colors = ["#4C72B0", "#4C72B0", "#55A868", "#55A868", "#DD8452", "#DD8452"]
 
 fig, ax = plt.subplots(figsize=(9, 3.8))
@@ -1253,13 +1622,17 @@ for i, (bar, v) in enumerate(zip(bars, vals)):
     )
 ax.set_ylabel("Posterior mean consideration probability π")
 ax.set_title(
-    "Consideration varies across individuals: instrument-driven heterogeneity\n"
-    "Dark bar = above-median instrument access;  light = below-median"
+    "Consideration varies across candidates: screening-instrument-driven heterogeneity\n"
+    "Dark bar = protected characteristic present;  light = absent"
 )
 ax.set_ylim(0, 1.1)
 plt.tight_layout()
 plt.show()
 ```
+
+::: {.callout-warning}
+**The model surfaces structural discrimination.** The stratification plot above makes the hiring bias legible: `is_white` and `is_under_40` shift consideration probabilities just as strongly as `is_college_grad`. A standard multinomial logit would absorb these effects into firm-level constants, making the discrimination invisible. The consideration set model separates *who gets screened in* from *who is attractive once screened* — and the screening stage is exactly where protected characteristics exert their gatekeeping force. This is the payoff of the K $\neq$ V separation: it makes the bias identifiable rather than aliased.
+:::
 
 ```{python}
 #| label: comparison-visualisation
@@ -1271,8 +1644,8 @@ plt.show()
 #
 # Left:  Transformer — soft attention weights across context words
 #        (activist sense: high on protest/justice, low on vault/deposit)
-# Right: Consideration model — marginal pi per mode, by has_car subgroup
-#        (structural K≠V separation: z instruments drive pi, price/time drive V)
+# Right: Consideration model — marginal pi per firm, by is_white subgroup
+#        (structural K≠V separation: z instruments drive pi, age/experience drive V)
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 4.5))
 
@@ -1297,19 +1670,19 @@ ax.axvline(1 / len(common_words), color="k", linestyle="--", alpha=0.4)
 ax.set_xlabel("Average attention weight (activist sense)")
 ax.set_title("Transformer: learned attention\nBlue=activist signal, orange=teller signal")
 
-# ---- RIGHT: consideration probabilities stratified by has_car ----
+# ---- RIGHT: consideration probabilities stratified by is_white ----
 ax = axes[1]
 pi_posterior = idata.posterior["pi"].mean(("chain", "draw"))   # (N, J) via xr
 
-# Stratify by has_car: the key consideration instrument for the car mode
-has_car_mask     = choice_df["has_car"].values.astype(bool)
-pi_car_with    = pi_posterior.values[has_car_mask,  1].mean()
-pi_car_without = pi_posterior.values[~has_car_mask, 1].mean()
-pi_bus_mean    = pi_posterior.values[:, 0].mean()
-pi_train_mean  = pi_posterior.values[:, 2].mean()
+# Stratify by is_white: the key (biased) consideration instrument for Firm B
+white_mask      = choice_df["is_white"].values.astype(bool)
+pi_B_white    = pi_posterior.values[white_mask,  1].mean()
+pi_B_nonwhite = pi_posterior.values[~white_mask, 1].mean()
+pi_A_mean     = pi_posterior.values[:, 0].mean()
+pi_C_mean     = pi_posterior.values[:, 2].mean()
 
-labels = ["Bus\n(all)", "Car\n(has_car=0)", "Car\n(has_car=1)", "Train\n(all)"]
-vals   = [pi_bus_mean, pi_car_without, pi_car_with, pi_train_mean]
+labels = ["Firm A\n(all)", "Firm B\n(non-white)", "Firm B\n(white)", "Firm C\n(all)"]
+vals   = [pi_A_mean, pi_B_nonwhite, pi_B_white, pi_C_mean]
 colors_right = ["#4C72B0", "#55A868", "#55A868", "#DD8452"]
 
 bars = ax.bar(labels, vals, color=colors_right, alpha=0.85)
@@ -1317,12 +1690,12 @@ for bar, v in zip(bars, vals):
     ax.text(bar.get_x() + bar.get_width() / 2, v + 0.01, f"{v:.2f}",
             ha="center", fontsize=10)
 ax.set_ylabel("Posterior mean consideration probability π")
-ax.set_title("Consideration model: π varies across individuals\n(has_car strongly predicts car consideration)")
+ax.set_title("Consideration model: π varies across candidates\n(is_white strongly predicts Firm B consideration — bias)")
 ax.set_ylim(0, 1.1)
 
 plt.suptitle(
     "Two paradigms, one mechanism: selective relevance weighting\n"
-    "Left = soft attention; Right = hard-gate consideration probability",
+    "Left = soft attention (transformer); Right = hard-gate consideration (hiring model)",
     y=1.03, fontsize=11,
 )
 plt.tight_layout()
@@ -1357,6 +1730,7 @@ plt.show()
 | **Learning** | Backpropagation from task loss | MCMC / VI from a likelihood |
 | **Temporal structure** | Positional encodings; order matters | No natural ordering of alternatives |
 | **Output** | A transformed representation | A discrete choice |
+| **Interpretability of bias** | Multi-head: bias distributed across anonymous heads; no single attention map captures it | Each screening variable $\gamma_{zj}$ is a named, interpretable parameter with a posterior |
 :::
 
 The most productive difference is the hard/soft divide. Transformer attention is a **differentiable relaxation** of the discrete consideration process — a relaxation that makes end-to-end gradient-based learning possible. Conversely, consideration set models provide a **Bayesian interpretation** of what attention weights represent: the posterior probability that an alternative is decision-relevant, given the context.
@@ -1366,6 +1740,8 @@ This cross-pollination runs in both directions:
 - **From discrete choice → transformers**: The consideration set framework suggests that attention weights are best interpreted not as "how much does this token contribute" but as "how likely is this token to be decision-relevant". This motivates sparsity-inducing attention variants (Sparsemax, $\alpha$-entmax) as natural continuous relaxations of hard consideration set formation.
 
 - **From transformers → discrete choice**: The learned $Q/K/V$ factorisation suggests that consideration models could benefit from separating the *signal* that determines consideration (currently modelled as a simple linear index) from the *utility* that drives choice — rather than implicitly conflating them through a shared covariate structure.
+
+- **The interpretability gap as a policy problem**: Demo 5 showed that distributing attention across heads obscures bias attribution. When a consideration set model reveals $\gamma_z = 3.5$ for `is_white`, you can name the discriminatory gate, quantify it with a credible interval, and intervene. When a multi-head transformer achieves the same discriminatory outcome, the bias is distributed across head subspaces and recombined through a learned output projection — there is no single parameter to point at. This is not a limitation that more heads or more data will solve; it is a structural property of the architecture itself. The econometric tradition of *naming* what you model — and providing uncertainty about each named quantity — is not merely a stylistic preference. It is an audit infrastructure that distributed attention mechanisms lack by design.
 
 ---
 
@@ -1377,11 +1753,35 @@ The mathematical skeleton is shared: score each candidate, normalise the scores,
 
 What differs is how the two fields handle **uncertainty** about which elements belong in the active set. Transformer attention is a differentiable relaxation — it keeps every token alive with some weight, allowing gradients to flow cleanly through the mechanism during training. Consideration sets take the opposite stance: alternatives are either in or out, and the probability of inclusion is itself a latent variable with a full posterior distribution. The soft/continuous versus hard/stochastic divide is not a technical accident — it reflects the different epistemological commitments of the two fields.
 
-The identification exercise drove the analogy home concretely. Transformer self-attention requires $K \neq V$ — if the key and value projections collapse to the same matrix, the mechanism degenerates. The discrete choice model demands the same structural separation: the instruments $z_{nj}$ that determine *whether* an alternative is considered must differ from the covariates $x_{nj}$ that determine *how attractive* it is conditional on consideration. Violate the exclusion restriction and the consideration stage cannot be separated from the utility stage; the parameters blend into an unidentified mixture. The econometrician calls this an exclusion restriction. The machine learning engineer calls it the K≠V requirement. They are the same constraint.
+The identification exercise drove the analogy home concretely. Transformer attention requires $K \neq V$ — if the key and value projections collapse to the same matrix, the mechanism degenerates. The discrete choice model demands the same structural separation: the instruments $z_{nj}$ that determine *whether* an alternative is considered must differ from the covariates $x_{nj}$ that determine *how attractive* it is conditional on consideration. Violate the exclusion restriction and the consideration stage cannot be separated from the utility stage; the parameters blend into an unidentified mixture. The econometrician calls this an exclusion restriction. The machine learning engineer calls it the K≠V requirement. They are the same constraint.
+
+### The Escalation of Opacity
+
+But the analogy also reveals something troubling. We demonstrated three levels of attention in this post, and each level made the bias harder to locate:
+
+1. **Human attention** (Kahneman & Tversky): biased by the conjunction fallacy, but the bias is experimentally probbable. You can construct diagnostic vignettes, measure the deviation from base rates, and publish the result. The mechanism is opaque (it lives in neural wetware) but the *effect* is measurable.
+
+2. **Single-head attention**: replicates the conjunction fallacy from training data, but the bias is visible. One attention map, one set of weights, a signal-recovery scatter plot. You can ask "which words did the model over-attend to?" and get a legible answer. The vignette injection shows up as elevated attention to words that should carry zero marginal diagnostic value.
+
+3. **Multi-head attention**: distributes the same bias across anonymous heads and recombines it through a learned output projection. No single attention map tells the full story. The heatmap shows diffuse patterns; the per-head vignette bars show fragmented attention that no longer maps cleanly to the single-head story. The bias lives in the *interaction* between heads — in the concatenation, the output projection, and the classifier — and cannot be cleanly decomposed into per-head contributions.
+
+### The Consideration Set as Counterfactual
+
+The econometric model provides a structural contrast that makes the interpretability gap concrete. Each screening variable — `is_white`, `is_under_40`, `is_college_grad` — has a named parameter $\gamma_z$ with a full posterior distribution. You can compute $P(\gamma_z > 0 \mid \text{data})$ and make a falsifiable claim: "race gates hiring consideration with probability 0.98." The parameter has a name, a sign, a magnitude, and an uncertainty interval. You can show it to a regulator.
+
+The transformer has no such decomposition. The bias is real — the model discriminates, as the probe comparison demonstrates — but the *mechanism* is distributed across thousands of weight interactions. There is no $\gamma_{\text{race}}$ to point at. There are only attention heads, value projections, and an output layer that jointly encode the same discriminatory pattern in a form that resists the kind of decomposition fairness audits require.
+
+### Algorithmic Attention as Proxy for Human Judgment
+
+These attention mechanisms are increasingly deployed as proxies for human decision-making: content recommendation, hiring screening, risk assessment, medical triage, credit scoring. In each domain, the system performs *selective relevance weighting* — deciding which inputs deserve processing resources — in a manner structurally analogous to the consideration sets that govern human choice.
+
+The conjunction fallacy that Kahneman and Tversky could probe with a carefully constructed vignette becomes harder to probe in a multi-head transformer. The very architectural features that make transformers powerful — distributed representation, end-to-end differentiability, the capacity to learn subtle interaction effects from large corpora — make their biases opaque to the kind of audit that the consideration set framework enables by design. The danger is not that these systems are biased (all learned systems inherit the biases of their training distributions). The danger is that the bias becomes **structurally unlocatable** — distributed across anonymous subspaces in a way that no single parameter, no single attention map, and no single head can account for.
+
+### Toward Interpretable Attention
 
 The most productive next step — visible from both sides of the analogy — is **Bayesian attention**: a mechanism where the consideration probability is an explicit latent variable inferred jointly with the utility and structural parameters from data. Sparse attention variants (Sparsemax, $\alpha$-entmax) are a step in this direction, replacing the ubiquitous softmax with a distribution that places zero mass on tokens below some relevance threshold. The consideration set framework offers a principled Bayesian interpretation of what those zero-mass tokens represent: alternatives that have been screened out by the decision environment before the utility calculation even begins.
 
-The analogy, in short, is not merely decorative. It is structural, identification-deep, and points toward a research frontier where learned representations and econometric latent variables begin to converge.
+But this convergence is not just a research frontier — it is a governance necessity. If attention mechanisms are going to serve as algorithmic proxies for human judgment in consequential domains, they need the interpretive infrastructure that econometrics provides: named parameters, posterior uncertainty, and falsifiable exclusion restrictions. The analogy between attention and consideration sets is not merely structural. It points toward what responsible deployment of learned attention mechanisms would require — and how far current architectures fall short of that standard.
 
 ---
 
@@ -1397,3 +1797,5 @@ The analogy, in short, is not merely decorative. It is structural, identificatio
 - Martins, A. & Astudillo, R. (2016). From softmax to sparsemax. *ICML*.
 - Jain, S. & Wallace, B. C. (2019). Attention is not explanation. *NAACL*.
 - Wiegreffe, S. & Pinter, Y. (2019). Attention is not not explanation. *EMNLP*.
+- Barocas, S. & Selbst, A. D. (2016). Big data's disparate impact. *California Law Review*, 104, 671–732.
+- Rudin, C. (2019). Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead. *Nature Machine Intelligence*, 1(5), 206–215.
