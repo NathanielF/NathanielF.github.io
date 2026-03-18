@@ -84,7 +84,7 @@ The output is a *weighted sum of value payloads*, where the weights are determin
 ::: {.callout-note}
 ## A note on terminology: cross-attention vs self-attention
 
-In a pure **self-attention** layer, $Q$, $K$, and $V$ are all projections of the *same* sequence of token embeddings — every token simultaneously serves as query, key, and value for every other token. In **cross-attention** (or encoder-decoder attention), $Q$ comes from one source and $K$/$V$ from another. Our implementation below is closer to cross-attention: the query is the target word ("Linda") and the keys/values are the context words. We use this simplified architecture deliberately — it cleanly isolates the "what to attend to" mechanism without the additional complexity of full self-attention. Real transformer architectures stack multiple self-attention layers with multi-head attention, residual connections, layer normalisation, and feedforward sublayers. We strip all of this away to make the analogy with consideration sets as transparent as possible, and then progressively add back multi-head structure in Demo 5 to show how interpretability degrades as the architecture scales.
+In a pure **self-attention** layer, $Q$, $K$, and $V$ are all projections of the *same* sequence of token embeddings — every token simultaneously serves as query, key, and value for every other token. In **cross-attention** (or encoder-decoder attention), $Q$ comes from one source and $K$/$V$ from another. Our implementation below is closer to cross-attention: the query is the target word ("Linda") and the keys/values are the context words. We use this simplified architecture deliberately — it cleanly isolates the "what to attend to" mechanism without the additional complexity of full self-attention. Real transformer architectures stack multiple self-attention layers with multi-head attention, residual connections, layer normalisation, and feedforward sublayers. We strip all of this away to make the analogy with consideration sets as transparent as possible, and then progressively add back multi-head structure in Demo 4 to show how interpretability degrades as the architecture scales.
 :::
 
 ### Consideration Sets in Discrete Choice
@@ -488,50 +488,6 @@ class AttentionHead(nn.Module):
 
 #### Hard-Gated Attention (the Consideration Set Variant)
 
-```{python}
-#| label: hard-gating-model
-
-
-class HardGatedAttention(AttentionHead):
-    """
-    Consideration-set style attention: hard gating before renormalisation.
-
-    Implements the two-stage logic of a discrete choice consideration model:
-
-      Stage 1 — Gate:   Is this word (alternative) in the consideration set?
-                        Yes if attention score > threshold.
-      Stage 2 — Choose: Given the consideration set, what does the model attend?
-                        Standard softmax over surviving tokens.
-
-    The threshold parameter corresponds to the minimum consideration salience
-    in random utility models: an alternative must exceed some baseline to enter
-    evaluation. Words below threshold are treated as if they were not present.
-    """
-
-    def forward(
-        self,
-        ctx_idxs:  torch.Tensor,
-        tgt_idx:   torch.Tensor,
-        threshold: float = 0.15,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-
-        # Get soft weights from the shared attention computation
-        soft_w, c_embs = self._attention_weights(ctx_idxs, tgt_idx)
-
-        # STAGE 1: Hard gate — zero out sub-threshold tokens
-        gate   = (soft_w > threshold).float()
-        masked = soft_w * gate
-
-        # Renormalise over the surviving consideration set
-        hard_w = masked / (masked.sum(dim=-1, keepdim=True) + 1e-9)
-
-        # STAGE 2: Aggregate values over consideration set only
-        V           = self.v_proj(c_embs)
-        context_vec = torch.matmul(hard_w, V)
-
-        return self.clf(context_vec), hard_w
-```
-
 #### Training
 
 We train with cross-entropy loss only — no entropy penalty. The attention head faces a task with three sources of structure: individual word signals, pair co-occurrences, and a base rate prior (70 % teller). Crucially, every context contains a vignette word that is *always* activist-flavoured, so the training distribution is systematically skewed toward activist descriptions. Whether the model learns to discount the omnipresent vignette signal or is biased by it — and whether that bias shows up in the attention weights or in the classifier — is the empirical question.
@@ -708,65 +664,7 @@ A weak $\rho$ for non-vignette words teaches a further lesson: the V-projection 
 
 ---
 
-### Demo 3 — Soft Attention vs Hard Gating: The Structural Divide
-
-Transformers use *soft* attention: every word gets some weight. Consideration sets use *hard* gating: in or out. We approximate hard gating by zeroing weights below a threshold and renormalising. A true consideration model would use independent sigmoid gates per alternative, not coupled softmax — our implementation preserves the inter-token competition that softmax introduces. Useful for illustrating the divide, not a faithful econometric mechanism.
-
-```{python}
-#| label: soft-vs-hard
-#| fig-cap: "Soft attention (transformer) vs hard gating (consideration set) on three test contexts. Hard gating forces a binary inclusion decision; soft attention maintains a graded distribution."
-
-hard_model = HardGatedAttention(len(w2i), d_model=32)
-hard_model.load_state_dict(model.state_dict())   # same weights, different forward pass
-hard_model.eval()
-
-test_cases = [
-    (["outspoken", "protest",    "vault",       "Tuesday"],  "Vignette + activist + teller distractor"),
-    (["philosophy","deposit",    "ledger",      "nearby"],   "Vignette + teller context"),
-    (["justice",   "organized",  "concern",     "receipt"],  "Vignette + conjunction pair + teller"),
-]
-
-fig, axes = plt.subplots(1, 3, figsize=(15, 4))
-
-for ax, (ctx, title) in zip(axes, test_cases):
-    ctx_valid = [w for w in ctx if w in w2i]
-    c_idx = torch.tensor([w2i[w] for w in ctx_valid])
-    t_idx = torch.tensor(w2i[TARGET])
-
-    with torch.no_grad():
-        _, soft_w = model(c_idx, t_idx)
-        _, hard_w = hard_model(c_idx, t_idx)
-
-    x = np.arange(len(ctx_valid))
-    bw = 0.35
-    ax.bar(x - bw/2, soft_w[0].numpy(), bw,
-           label="Soft (transformer)", color="#4C72B0", alpha=0.80)
-    ax.bar(x + bw/2, hard_w[0].numpy(), bw,
-           label="Hard (consid. set)", color="#DD8452", alpha=0.80)
-    ax.set_xticks(x)
-    ax.set_xticklabels(ctx_valid, rotation=30, ha="right", fontsize=9)
-    ax.set_ylabel("Weight")
-    ax.set_title(title, fontsize=9)
-    ax.legend(fontsize=7)
-    ax.set_ylim(0, 1.05)
-
-plt.suptitle(
-    "Soft vs Hard: the structural divide between transformers and consideration sets",
-    y=1.03, fontsize=11
-)
-plt.tight_layout()
-plt.show()
-```
-
-Every test context includes a vignette word, just as every training example does. Strong sense-specific signals (protest/vault, deposit/ledger) compete with the omnipresent vignette. Does the model discount it?
-
-The right panel is the conjunction fallacy in miniature: `justice` (vignette) co-occurs with `organized` + `concern` (conjunction pair), while `receipt` signals teller. The vivid descriptor plus ambiguous words — does the model classify activist despite the teller signal and 70 % base rate?
-
-A consideration set model makes an explicit inclusion decision per alternative. The transformer delegates this to its value pathway — soft selection that may or may not have learned to discount the vignette.
-
----
-
-### Demo 4 — The Conjunction Fallacy in Attention
+### Demo 3 — The Conjunction Fallacy in Attention
 
 The original T&K finding is that human respondents systematically judge P(feminist bank teller) > P(bank teller) — vivid descriptions overwhelm the base rate. Does our transformer exhibit the same bias? We probe it with seven diagnostic contexts that carefully separate three effects: (1) the base rate prior, (2) the conjunction boost from ambiguous word pairs, and (3) the vignette injection.
 
@@ -841,9 +739,9 @@ The transformer classifies by pattern similarity, not by Bayesian updating. The 
 
 ---
 
-### Demo 5 — Multi-Head Attention: Where Does the Bias Live?
+### Demo 4 — Multi-Head Attention: Where Does the Bias Live?
 
-The single-head model gives us a transparent window: one attention map, one set of weights, a direct link between what the model attends to and what it predicts. Real transformers use **multiple heads**, each in a low-dimensional subspace, recombined through a learned output projection. Two questions:
+The single-head model gives us a transparent window: one attention map, one set of weights, a direct link between what the model attends to and what it predicts. Real transformers use **multiple heads**, each in a low-dimensional subspace, recombined through nonlinear projections. Two questions:
 
 1. When bias is distributed across heads, **does it become harder to detect**?
 2. Does recombination **amplify or attenuate** the conjunction fallacy?
@@ -853,9 +751,9 @@ In the consideration set framework of Part II, each screening variable gets a na
 ::: {.callout-note}
 ## Why multi-head attention matters for interpretability
 
-In multi-head attention, each head independently computes Q, K, V projections over a low-dimensional subspace ($d_{\text{head}} = d_{\text{model}} / n_{\text{heads}}$). The heads' outputs are concatenated and passed through a learned **output projection** before classification. This output projection is where the heads' signals get blended — and it is precisely this blending that makes it impossible to attribute the final classification to any single head's attention pattern. The bias is *everywhere and nowhere*: distributed across heads and recombined nonlinearly.
+Each of four heads computes Q, K, V projections in an 8-dimensional subspace ($d_{\text{head}} = 32 / 4 = 8$). Head outputs are concatenated and passed through a **two-layer MLP with GELU activation** before classification. The nonlinear recombination is what destroys decomposability: you cannot express the final logit as a sum of per-head contributions. The bias is *everywhere and nowhere*.
 
-We use a single-layer, two-head architecture here — still deliberately simple. Production transformers stack multiple such layers, creating feedback loops where one layer's output becomes the next layer's input and bias can compound across depth. Even without this stacking, the distribution effect is already observable at the single-layer level, which makes the interpretability problem all the more concerning: it emerges from the architectural primitive itself, not just from scale.
+We use a single-layer, four-head architecture — still simple. Production transformers stack many such layers, compounding the problem across depth. That the distribution effect is already stark at the single-layer level makes the interpretability challenge architectural, not a matter of scale.
 :::
 
 #### The Multi-Head Architecture
@@ -866,19 +764,16 @@ We use a single-layer, two-head architecture here — still deliberately simple.
 
 class MultiHeadAttention(nn.Module):
     """
-    Multi-head attention for the Linda classification task.
+    Multi-head attention with nonlinear recombination.
 
-    Each head independently computes Q, K, V projections over a
-    d_head-dimensional subspace (d_head = d_model // n_heads).
-    Head outputs are concatenated and passed through a final
-    linear projection before classification.
-
-    The key question: does distributing the attention computation
-    across multiple heads amplify, attenuate, or merely redistribute
-    the vignette bias visible in the single-head case?
+    Four heads, each in a d_head-dimensional subspace, recombined
+    through a two-layer MLP (GELU activation) before classification.
+    The nonlinear recombination is the key: it makes the mapping from
+    per-head attention to output non-decomposable — you cannot attribute
+    the final prediction to any single head's attention pattern.
     """
 
-    def __init__(self, vocab_size: int, d_model: int = 32, n_heads: int = 2):
+    def __init__(self, vocab_size: int, d_model: int = 32, n_heads: int = 4):
         super().__init__()
         assert d_model % n_heads == 0, "d_model must be divisible by n_heads"
         self.d_model = d_model
@@ -898,9 +793,13 @@ class MultiHeadAttention(nn.Module):
             nn.Linear(d_model, self.d_head, bias=False) for _ in range(n_heads)
         ])
 
-        # Output projection: concatenated head outputs -> d_model
-        self.out_proj = nn.Linear(d_model, d_model, bias=False)
-        self.clf      = nn.Linear(d_model, 2)
+        # Nonlinear output MLP: concat -> GELU -> projection -> classifier
+        self.out_mlp = nn.Sequential(
+            nn.Linear(d_model, d_model),
+            nn.GELU(),
+            nn.Linear(d_model, d_model),
+        )
+        self.clf = nn.Linear(d_model, 2)
 
     def _head_attention(self, head_idx, c_embs, t_emb):
         """Compute attention weights and output for a single head."""
@@ -924,15 +823,15 @@ class MultiHeadAttention(nn.Module):
             all_weights.append(w_h)
             head_outputs.append(out_h)
 
-        # Concatenate head outputs along feature dimension
+        # Nonlinear recombination: concat -> MLP -> classifier
         concat    = torch.cat(head_outputs, dim=-1)   # (1, d_model)
-        projected = self.out_proj(concat)              # (1, d_model)
+        projected = self.out_mlp(concat)               # (1, d_model)
         logits    = self.clf(projected)                # (1, 2)
 
         return logits, all_weights  # all_weights: list of n_heads tensors
 ```
 
-Note the structural parallel with the single-head model: the same embedding, the same Q/K/V projection pattern, the same classifier. The only additions are (i) replication across heads in lower-dimensional subspaces, and (ii) the output projection that recombines them. The total parameter count for Q, K, V is identical — $n_{\text{heads}} \times d_{\text{model}} \times d_{\text{head}} = d_{\text{model}}^2$ per projection type — but the output projection adds an extra $d_{\text{model}}^2$ parameters. The model is slightly larger, and the bias has more places to hide.
+Same embedding, same Q/K/V pattern, same classifier. Two additions: (i) four heads in 8-dimensional subspaces instead of one head in 32, and (ii) a two-layer MLP with GELU activation that recombines head outputs *nonlinearly* before classification. The nonlinearity matters: a linear output projection preserves additive decomposability — you could in principle attribute the output to a weighted sum of head contributions. The GELU layer destroys this. The mapping from per-head attention patterns to the final logit is now non-decomposable, just as it is in production transformers with their layer-norm and FFN blocks.
 
 #### Training
 
@@ -943,7 +842,7 @@ We train with the same hyperparameters and data as the single-head model — the
 
 torch.manual_seed(42)
 
-n_heads  = 2
+n_heads  = 4
 mh_model = MultiHeadAttention(len(w2i), d_model=32, n_heads=n_heads)
 mh_opt   = optim.Adam(mh_model.parameters(), lr=1e-3)
 
@@ -981,13 +880,13 @@ print(f"Single-head final loss    : {losses[-1]:.4f}")
 print(f"Multi-head  final loss    : {mh_losses[-1]:.4f}")
 ```
 
-The multi-head model converges to a lower training loss but achieves slightly lower test accuracy. Lower loss with lower accuracy suggests the additional parameters fit the training distribution more tightly without generalising better — the model has more capacity to memorise patterns, including the vignette-injection bias, without improving its ability to distinguish the underlying signals. This is the first hint that multi-head attention may be redistributing the bias rather than resolving it.
+More parameters, lower training loss, no better generalisation — the multi-head model memorises the training distribution more tightly without distinguishing the underlying signals. Four heads and a nonlinear MLP give the bias more places to hide.
 
 #### Head Specialisation: Who Attends to What?
 
-The first question is whether the two heads learn to specialise — does one head attend primarily to activist-flavoured words while the other tracks teller signals? Or do both heads learn diffuse, overlapping attention patterns? If the former, multi-head attention would preserve some interpretability; if the latter, the bias is truly distributed.
+Do the four heads specialise — does each attend to a distinct word class? Or do they learn diffuse, overlapping patterns? Specialisation would preserve some interpretability; diffusion would mean the bias is truly distributed.
 
-We categorise the vocabulary into five groups and collect per-head, per-category mean attention weights across the entire corpus.
+We categorise the vocabulary into five groups and collect per-head, per-category mean attention weights across the corpus.
 
 ```{python}
 #| label: head-category-heatmap
@@ -1054,13 +953,11 @@ plt.tight_layout()
 plt.show()
 ```
 
-Partial specialisation: Head 0 tracks signal magnitude regardless of direction; Head 1 concentrates on teller words. The heads specialise along the *strong-signal axis* (activist vs teller), not along the *bias axis* (vignette vs non-vignette).
-
-Vignette attention is distributed across both heads at similar levels — neither head isolates the bias dimension. The model *has* factored attention into subcomponents, but the factorisation is orthogonal to the axis that matters for the conjunction fallacy. In Part II, each screening variable gets a single named parameter whose posterior you can inspect. Here, the bias has no address.
+Four heads, partial specialisation — but along the *strong-signal axis* (activist vs teller), not the *bias axis* (vignette vs non-vignette). Vignette attention is spread across all heads. No single head isolates the bias dimension. The model has factored attention into subcomponents, but the factorisation is orthogonal to the axis that matters for the conjunction fallacy. In Part II, each screening variable gets a named parameter with a posterior. Here, the bias has no address.
 
 #### Vignette Bias: Concentrated or Distributed?
 
-The vignette words (outspoken, philosophy, justice, discrimination) appear in every context — their marginal diagnostic value is zero, yet the single-head model may over-attend to them. Does multi-head attention concentrate this over-attention in one head, or spread it across both?
+The vignette words appear in every context — zero diagnostic value. Does multi-head attention concentrate the over-attention in one head, or spread it across all four?
 
 ```{python}
 #| label: vignette-attention-comparison
@@ -1087,7 +984,7 @@ ax.bar(x - bar_width, sh_means, bar_width, label="Single head",
        color="#4C72B0", alpha=0.85)
 
 # Multi-head per-head bars
-colors_mh = ["#DD8452", "#55A868", "#C44E52"]
+colors_mh = ["#DD8452", "#55A868", "#C44E52", "#8172B3"]
 for h in range(n_heads):
     mh_means = [np.mean(head_word_attn[h].get(w, [0.0]))
                 for w in vignette_words]
@@ -1105,11 +1002,11 @@ plt.tight_layout()
 plt.show()
 ```
 
-The key observation is not whether individual heads assign more or less attention to vignette words than the single-head model — it is that **no single head's attention map tells the full story**. The final classification depends on the *concatenated value vectors* from both heads, passed through the output projection and classifier. Even if one head assigns low attention to vignette words, the other head's value representation may carry the vignette signal through to the output. The bias is not in the weights; it is in the interaction between weights, values, and the output projection.
+**No single head's attention map tells the full story.** The classification depends on concatenated value vectors from all four heads, passed through the nonlinear MLP and classifier. Even if three heads suppress vignette attention, the fourth head's value representation — transformed nonlinearly — may carry the signal to the output. The bias is not in any one set of weights. It is in the interaction between weights, values, and the GELU bottleneck.
 
 #### Does Multi-Head Attention Amplify the Conjunction Fallacy?
 
-We run the same seven diagnostic probes from Demo 4 through the multi-head model and compare P(activist) side by side. We also compute calibration curves on the test set to see whether the extra heads improve probability estimates or simply redistribute the same bias.
+We run the same seven diagnostic probes from Demo 3 through the multi-head model and compare P(activist) side by side, with calibration curves on the test set.
 
 ```{python}
 #| label: calibration-comparison
@@ -1195,16 +1092,16 @@ plt.show()
 
 The conjunction fallacy persists across both architectures. Multi-head attention does not eliminate the bias. Calibration does not improve. The multi-head model achieved lower training loss but slightly lower test accuracy — more capacity to memorise the training distribution without generalising better.
 
-The finding is not about amplification. It is about **locatability**. In Demo 4, we traced the bias to specific attention weights on specific words. Here, the same discriminatory outcome is distributed across anonymous subspaces. It resists the inspection that Demo 4 made possible.
+The finding is not about amplification. It is about **locatability**. In Demo 3, we traced the bias to specific attention weights on specific words. Here, the same discriminatory outcome is distributed across anonymous subspaces. It resists the inspection that Demo 3 made possible.
 
 ::: {.callout-important}
 ## The interpretability cost of distribution
 
 Single head: inspect one attention map, ask "is the model over-attending to vignette words?", get a legible answer.
 
-Multi-head: no clean answer. The bias lives in the *interaction* — concatenated value vectors, output projection, classifier — and cannot be decomposed into additive per-head contributions.
+Four heads + GELU MLP: no clean answer. The bias lives in the *interaction* — concatenated value vectors, nonlinear recombination, classifier — and cannot be decomposed into additive per-head contributions. The GELU activation means that even *linear* probing of individual heads misses the interaction terms that drive the output.
 
-The consideration set framework of Part II keeps each screening variable as a **named coefficient** $\gamma_z$ with a full posterior. You can compute $P(\gamma_z > 0 \mid \text{data})$ and make a falsifiable claim. The transformer distributes the same information across **anonymous subspaces** and offers no such decomposition.
+The consideration set framework of Part II keeps each screening variable as a **named coefficient** $\gamma_z$ with a full posterior. You can compute $P(\gamma_z > 0 \mid \text{data})$ and make a falsifiable claim. The transformer distributes the same information across **four anonymous subspaces**, recombines them nonlinearly, and offers no such decomposition.
 :::
 
 ---
@@ -1766,13 +1663,13 @@ Cross-pollination runs both ways:
 
 - **From transformers → discrete choice**: The $Q/K/V$ factorisation suggests consideration models could separate the *signal* that determines consideration from the *utility* that drives choice — rather than conflating them through shared covariates.
 
-- **The interpretability gap**: When a consideration model reveals $\gamma_z = 3.5$ for `is_white`, you can name the gate, quantify it, and intervene. When a multi-head transformer achieves the same discriminatory outcome, the bias is distributed across subspaces and recombined through a learned projection — no single parameter to point at. This is architectural, not a matter of scale. Naming what you model is not a stylistic preference. It is audit infrastructure.
+- **The interpretability gap**: When a consideration model reveals $\gamma_z = 3.5$ for `is_white`, you can name the gate, quantify it, and intervene. When a multi-head transformer achieves the same discriminatory outcome, the bias is distributed across subspaces and recombined through a nonlinear MLP — no single parameter to point at. This is architectural, not a matter of scale. Naming what you model is not a stylistic preference. It is audit infrastructure.
 
 ---
 
 ## Conclusion
 
-The arc of this post moved through three levels of attention, each making bias harder to locate. **Human attention** (Kahneman & Tversky) is biased by the conjunction fallacy, but the bias is experimentally detectable — construct a vignette, measure the deviation from base rates. **Single-head attention** replicates the fallacy from training data, but the bias is visible in one attention map: you can point at which words were over-weighted. **Multi-head attention** distributes the same bias across anonymous heads and recombines it through a learned output projection. No single attention map tells the full story. The bias is real — the model discriminates — but the mechanism resists decomposition.
+Three levels of attention, each making bias harder to locate. **Human attention** (Kahneman & Tversky): biased by the conjunction fallacy, but experimentally detectable. **Single-head attention**: replicates the fallacy from training data, bias visible in one attention map. **Multi-head attention with nonlinear recombination**: distributes the same bias across four anonymous heads, recombines it through a GELU MLP. No single attention map tells the full story. The bias is real — the mechanism resists decomposition.
 
 The consideration set model provides the structural contrast. Each screening variable gets a named parameter $\gamma_z$ with a full posterior. You can compute $P(\gamma_z > 0 \mid \text{data})$ and make a falsifiable claim about whether race or age gates consideration. The parameter has a name, a sign, a magnitude, and a credible interval. You can show it to a regulator.
 
