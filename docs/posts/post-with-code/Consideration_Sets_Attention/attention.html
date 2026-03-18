@@ -5111,7 +5111,7 @@ border-radius: 0.25rem;
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">The Architecture of Focus: Attention in Transformers and Discrete Choice</h1>
-            <p class="subtitle lead">How NLP ‘Self-Attention’ and Econometric ‘Consideration Sets’ share a mathematical skeleton</p>
+            <p class="subtitle lead">How Transformer Attention and Econometric ‘Consideration Sets’ share a mathematical skeleton</p>
                                 <div class="quarto-categories">
                 <div class="quarto-category">NLP</div>
                 <div class="quarto-category">discrete choice</div>
@@ -5151,14 +5151,18 @@ border-radius: 0.25rem;
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction-two-kinds-of-focus" id="toc-introduction-two-kinds-of-focus" class="nav-link active" data-scroll-target="#introduction-two-kinds-of-focus">Introduction: Two Kinds of Focus</a></li>
+  <li><a href="#introduction-attention-is-bias" id="toc-introduction-attention-is-bias" class="nav-link active" data-scroll-target="#introduction-attention-is-bias">Introduction: Attention is Bias</a>
+  <ul class="collapse">
+  <li><a href="#the-linda-problem-where-attention-bias-begins" id="toc-the-linda-problem-where-attention-bias-begins" class="nav-link" data-scroll-target="#the-linda-problem-where-attention-bias-begins">The Linda Problem: Where Attention Bias Begins</a></li>
+  <li><a href="#the-thread-of-this-post" id="toc-the-thread-of-this-post" class="nav-link" data-scroll-target="#the-thread-of-this-post">The Thread of This Post</a></li>
+  </ul></li>
   <li><a href="#the-core-analogy" id="toc-the-core-analogy" class="nav-link" data-scroll-target="#the-core-analogy">The Core Analogy</a>
   <ul class="collapse">
   <li><a href="#transformer-attention" id="toc-transformer-attention" class="nav-link" data-scroll-target="#transformer-attention">Transformer Attention</a></li>
   <li><a href="#consideration-sets-in-discrete-choice" id="toc-consideration-sets-in-discrete-choice" class="nav-link" data-scroll-target="#consideration-sets-in-discrete-choice">Consideration Sets in Discrete Choice</a></li>
   <li><a href="#the-structural-map" id="toc-the-structural-map" class="nav-link" data-scroll-target="#the-structural-map">The Structural Map</a></li>
   </ul></li>
-  <li><a href="#part-i-the-transformer-side" id="toc-part-i-the-transformer-side" class="nav-link" data-scroll-target="#part-i-the-transformer-side">Part I: The Transformer Side</a>
+  <li><a href="#part-i-the-transformer-side-learning-to-filter" id="toc-part-i-the-transformer-side-learning-to-filter" class="nav-link" data-scroll-target="#part-i-the-transformer-side-learning-to-filter">Part I: The Transformer Side — Learning to Filter</a>
   <ul class="collapse">
   <li><a href="#demo-1-static-soft-attention" id="toc-demo-1-static-soft-attention" class="nav-link" data-scroll-target="#demo-1-static-soft-attention">Demo 1 — Static Soft Attention</a></li>
   <li><a href="#demo-2-learning-to-attend-the-linda-classification-task" id="toc-demo-2-learning-to-attend-the-linda-classification-task" class="nav-link" data-scroll-target="#demo-2-learning-to-attend-the-linda-classification-task">Demo 2 — Learning to Attend: The Linda Classification Task</a></li>
@@ -5166,7 +5170,7 @@ border-radius: 0.25rem;
   <li><a href="#demo-4-the-conjunction-fallacy-in-attention" id="toc-demo-4-the-conjunction-fallacy-in-attention" class="nav-link" data-scroll-target="#demo-4-the-conjunction-fallacy-in-attention">Demo 4 — The Conjunction Fallacy in Attention</a></li>
   <li><a href="#demo-5-multi-head-attention-where-does-the-bias-live" id="toc-demo-5-multi-head-attention-where-does-the-bias-live" class="nav-link" data-scroll-target="#demo-5-multi-head-attention-where-does-the-bias-live">Demo 5 — Multi-Head Attention: Where Does the Bias Live?</a></li>
   </ul></li>
-  <li><a href="#part-ii-the-consideration-set-model-in-pymc" id="toc-part-ii-the-consideration-set-model-in-pymc" class="nav-link" data-scroll-target="#part-ii-the-consideration-set-model-in-pymc">Part II: The Consideration Set Model in PyMC</a>
+  <li><a href="#part-ii-from-cognitive-bias-to-institutional-bias" id="toc-part-ii-from-cognitive-bias-to-institutional-bias" class="nav-link" data-scroll-target="#part-ii-from-cognitive-bias-to-institutional-bias">Part II: From Cognitive Bias to Institutional Bias</a>
   <ul class="collapse">
   <li><a href="#the-two-stage-model" id="toc-the-two-stage-model" class="nav-link" data-scroll-target="#the-two-stage-model">The Two-Stage Model</a></li>
   <li><a href="#data-generating-process-hiring-decisions" id="toc-data-generating-process-hiring-decisions" class="nav-link" data-scroll-target="#data-generating-process-hiring-decisions">Data-Generating Process: Hiring Decisions</a></li>
@@ -5178,10 +5182,7 @@ border-radius: 0.25rem;
   <li><a href="#part-iii-where-the-analogy-holds-and-where-it-breaks" id="toc-part-iii-where-the-analogy-holds-and-where-it-breaks" class="nav-link" data-scroll-target="#part-iii-where-the-analogy-holds-and-where-it-breaks">Part III: Where the Analogy Holds — and Where It Breaks</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a>
   <ul class="collapse">
-  <li><a href="#the-escalation-of-opacity" id="toc-the-escalation-of-opacity" class="nav-link" data-scroll-target="#the-escalation-of-opacity">The Escalation of Opacity</a></li>
-  <li><a href="#the-consideration-set-as-counterfactual" id="toc-the-consideration-set-as-counterfactual" class="nav-link" data-scroll-target="#the-consideration-set-as-counterfactual">The Consideration Set as Counterfactual</a></li>
-  <li><a href="#algorithmic-attention-as-proxy-for-human-judgment" id="toc-algorithmic-attention-as-proxy-for-human-judgment" class="nav-link" data-scroll-target="#algorithmic-attention-as-proxy-for-human-judgment">Algorithmic Attention as Proxy for Human Judgment</a></li>
-  <li><a href="#toward-interpretable-attention" id="toc-toward-interpretable-attention" class="nav-link" data-scroll-target="#toward-interpretable-attention">Toward Interpretable Attention</a></li>
+  <li><a href="#external-audit-via-consideration-sets" id="toc-external-audit-via-consideration-sets" class="nav-link" data-scroll-target="#external-audit-via-consideration-sets">External Audit via Consideration Sets</a></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -5194,32 +5195,38 @@ border-radius: 0.25rem;
 
 
 
-<section id="introduction-two-kinds-of-focus" class="level2">
-<h2 class="anchored" data-anchor-id="introduction-two-kinds-of-focus">Introduction: Two Kinds of Focus</h2>
+<section id="introduction-attention-is-bias" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-attention-is-bias">Introduction: Attention is Bias</h2>
+<p>Every act of attention is an act of exclusion. To focus on one thing is to ignore another. This is not a flaw — it is how finite minds and finite models navigate large possibility spaces. But when the mechanism operates invisibly, in systems that make consequential decisions about people, it becomes unaccountable bias.</p>
+<p>Large language models now serve as first-pass filters in hiring — screening résumés, ranking candidates, shortlisting applicants before a human sees them. These systems perform <em>selective relevance weighting</em>: given candidates and a job description, they decide which features deserve processing resources. That is attention. And attention, as we will show, is structurally identical to the consideration set formation that econometricians have studied for decades in consumer choice and hiring discrimination.</p>
+<p>The question is not whether these systems encode bias. They do — they learn from data generated by biased human decisions. The question is whether we can <em>detect, locate, and quantify</em> the bias they encode. Consideration set models — designed to separate “who gets noticed” from “who gets chosen” — provide the audit infrastructure that transformer attention lacks.</p>
+<section id="the-linda-problem-where-attention-bias-begins" class="level3">
+<h3 class="anchored" data-anchor-id="the-linda-problem-where-attention-bias-begins">The Linda Problem: Where Attention Bias Begins</h3>
 <p><em>Linda is 31 years old, single, outspoken, and very bright. She majored in philosophy. As a student, she was deeply concerned with issues of discrimination and social justice, and also participated in anti-nuclear demonstrations.</em></p>
-<p>Kahneman and Tversky’s famous vignette asks which is more probable: that Linda is (a) a bank teller, or (b) a bank teller <em>and</em> active in the feminist movement. Most people choose (b) — the conjunction — violating basic probability theory. But the error reveals something deep about how human cognition processes context. The words <em>outspoken</em>, <em>philosophy</em>, <em>discrimination</em>, <em>social justice</em> create an attentional field that makes “feminist” feel overwhelmingly relevant, drowning out the base-rate logic. The context selectively weights the descriptors by their relevance to each hypothesis.</p>
-<p>This process of <em>selective relevance weighting</em> is, we will argue, the same mathematical mechanism at work in two very different statistical paradigms:</p>
+<p>Kahneman and Tversky’s famous vignette asks which is more probable: that Linda is (a) a bank teller, or (b) a bank teller <em>and</em> active in the feminist movement. Most people choose (b) — the conjunction — violating basic probability. The error is instructive. The words <em>outspoken</em>, <em>philosophy</em>, <em>discrimination</em>, <em>social justice</em> create an attentional field that makes “feminist” overwhelmingly salient, drowning out the base rate. Context selectively weights descriptors by relevance to each hypothesis.</p>
+<p>This <em>selective relevance weighting</em> is the same mathematical mechanism at work in two different paradigms:</p>
 <ol type="1">
-<li><strong>Transformer attention</strong> (from NLP / deep learning — we use a simplified cross-attention variant for clarity), and</li>
+<li><strong>Transformer attention</strong> (from deep learning — we use a simplified cross-attention variant for clarity), and</li>
 <li><strong>Consideration sets</strong> (from econometric discrete choice modelling).</li>
 </ol>
-<p>Both frameworks answer the question: <em>given a rich candidate space, which elements are worth paying attention to?</em> Both use a form of scored, normalised weighting to answer it. And both do so in a way that makes them efficient processors of high-dimensional information.</p>
-<p>In what follows we will:</p>
-<ul>
-<li>Make the formal analogy precise with mathematics</li>
-<li>Implement a full <span class="math inline">\(Q\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(V\)</span> attention head in PyTorch, with a realistic data-generating process that models <strong>graded contextual signal strengths</strong></li>
-<li>Contrast <strong>soft attention</strong> (transformer-style) with <strong>hard gating</strong> (consideration set-style)</li>
-<li>Scale from single-head to <strong>multi-head attention</strong> and show how bias becomes harder to locate as it distributes across heads</li>
-<li>Implement a consideration set model in PyMC, building directly on the <code>MixedLogit</code> infrastructure from <code>pymc-marketing</code></li>
-<li>Explore where the analogy is deep, where it is merely superficial, and why the interpretability gap between the two frameworks matters for algorithmic fairness</li>
-</ul>
+<p>Both answer the question: <em>given a rich candidate space, which elements deserve attention?</em> Both score, normalise, and weight. The difference that matters for fairness: one framework names its biases, the other distributes them across anonymous subspaces where they resist audit.</p>
+</section>
+<section id="the-thread-of-this-post" class="level3">
+<h3 class="anchored" data-anchor-id="the-thread-of-this-post">The Thread of This Post</h3>
+<p>Three parts, each escalating the stakes:</p>
+<ol type="1">
+<li><p><strong>Part I</strong> builds a toy transformer that replicates the conjunction fallacy from training data. Attention learns to weight context by relevance — and scaling from one head to many makes the resulting bias harder to locate.</p></li>
+<li><p><strong>Part II</strong> pivots from cognitive bias to institutional bias. A consideration set model of hiring in PyMC separates <em>who gets considered</em> from <em>who gets hired</em>, surfacing discrimination as named parameters with posterior uncertainty.</p></li>
+<li><p><strong>Part III</strong> maps the two frameworks onto each other. The <strong>Conclusion</strong> draws the practical payoff: consideration set models as external audit tools for LLMs, and the exclusion restriction as an identification discipline that <em>any</em> bias attribution method must confront.</p></li>
+</ol>
 <hr>
+</section>
 </section>
 <section id="the-core-analogy" class="level2">
 <h2 class="anchored" data-anchor-id="the-core-analogy">The Core Analogy</h2>
 <section id="transformer-attention" class="level3">
 <h3 class="anchored" data-anchor-id="transformer-attention">Transformer Attention</h3>
-<p>For a sequence of tokens, self-attention computes:</p>
+<p>For a sequence of tokens, attention computes:</p>
 <p><span class="math display">\[
 \text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V
 \]</span></p>
@@ -5320,8 +5327,9 @@ The Attention–Consideration Analogy
 <hr>
 </section>
 </section>
-<section id="part-i-the-transformer-side" class="level2">
-<h2 class="anchored" data-anchor-id="part-i-the-transformer-side">Part I: The Transformer Side</h2>
+<section id="part-i-the-transformer-side-learning-to-filter" class="level2">
+<h2 class="anchored" data-anchor-id="part-i-the-transformer-side-learning-to-filter">Part I: The Transformer Side — Learning to Filter</h2>
+<p>Before we can audit a hiring system’s attention, we need to understand how attention works. We build a toy transformer that classifies “Linda” by attending to context — a controlled laboratory for bias in learned attention weights. The conjunction fallacy that Kahneman and Tversky found in human cognition has a precise analogue in attention head training dynamics. Watch a single head learn to over-weight vivid but non-diagnostic words, then watch that signal fragment across multiple heads until it becomes unlocatable. That is the interpretability problem in miniature.</p>
 <section id="demo-1-static-soft-attention" class="level3">
 <h3 class="anchored" data-anchor-id="demo-1-static-soft-attention">Demo 1 — Static Soft Attention</h3>
 <p>Before training anything, we can see the full <span class="math inline">\(Q, K, V\)</span> mechanism at work. The word <code>&quot;Linda&quot;</code> computes a scaled dot-product against context word keys. Notice how all three matrices participate: the <span class="math inline">\(Q \cdot K^\top\)</span> score determines <em>what to attend to</em>, but it is <span class="math inline">\(V\)</span> that determines <em>what information is actually retrieved</em>. These two roles are structurally separated.</p>
@@ -5944,16 +5952,16 @@ Final loss    : 0.3654</code></pre>
 </div>
 </div>
 </div>
-<p><strong>How to read these plots.</strong> Each point is a word. The x-axis shows the word’s <em>true</em> signal weight in the DGP — how likely it is to be sampled when the generating sense matches the panel label. The y-axis shows the average attention weight the trained model assigns to that word in contexts with that label. If the model’s attention perfectly recovered the data-generating structure, points would fall on an increasing line: high-signal words would receive high attention, and noise words would be suppressed. The Spearman <span class="math inline">\(\rho\)</span> in each panel title summarises this monotone relationship. Blue/orange circles are non-vignette words (included in the correlation); red triangles are vignette words (excluded, since their appearance is forced and not governed by <code>VOCAB_SIGNALS</code>).</p>
-<p>Two features of these plots are informative. First, the <strong>asymmetry between senses</strong>: the teller panel shows a significant positive <span class="math inline">\(\rho\)</span> because the model sees the majority class (70 % of training data), giving it ample signal to learn which words are teller-diagnostic. The activist panel shows a weak or negative <span class="math inline">\(\rho\)</span> — the minority class (30 %) provides fewer examples, and the always-present vignette words contaminate the activist signal, making the structure harder to recover. This is the base-rate effect operating through the training distribution.</p>
-<p>Second, the <strong>vignette words</strong> (red triangles) sit at the activist extreme of the x-axis — they have the highest designed signal weights — but their actual diagnostic value in the training data is zero because they appear in every context regardless of label. If the model gives them elevated attention, it has been captured by the volume of activist-flavoured text, exactly as human respondents are captured by the vivid Linda description. If it partially discounts them, it has learned something a pure representativeness heuristic would miss.</p>
-<p>A weak or absent <span class="math inline">\(\rho\)</span> for non-vignette words reveals a further lesson: the V-projection and classifier can absorb classification signal without attention weights faithfully mirroring word importance. This is the finding of Jain &amp; Wallace (2019) and Wiegreffe &amp; Pinter (2019) — attention provides a <em>mechanism</em> but not necessarily an <em>explanation</em>. The analogy with consideration sets is structural, not operational: both frameworks perform information selection, but the learned selection weights need not equal the true generative probabilities.</p>
+<p><strong>How to read these plots.</strong> Each point is a word. The x-axis is the true DGP signal weight; the y-axis is the average learned attention weight. Perfect recovery would place points on an increasing line. Spearman <span class="math inline">\(\rho\)</span> summarises this. Blue/orange circles are non-vignette words; red triangles are vignette words (excluded from the correlation — their appearance is forced, not governed by <code>VOCAB_SIGNALS</code>).</p>
+<p>Two features stand out. First, <strong>asymmetry between senses</strong>: the teller panel shows significant positive <span class="math inline">\(\rho\)</span> — the majority class (70 %) gives the model enough data to learn which words are teller-diagnostic. The activist panel shows weak or negative <span class="math inline">\(\rho\)</span> — fewer examples, and the always-present vignette words contaminate the signal. The base rate operates through the training distribution.</p>
+<p>Second, <strong>vignette words</strong> (red triangles) have the highest designed signal weights but zero actual diagnostic value — they appear in every context regardless of label. Elevated attention to them is the conjunction fallacy in learned weights: the model has been captured by the volume of activist-flavoured text, exactly as human respondents are captured by the vivid Linda description.</p>
+<p>A weak <span class="math inline">\(\rho\)</span> for non-vignette words teaches a further lesson: the V-projection and classifier can absorb classification signal without attention weights faithfully mirroring word importance. Jain &amp; Wallace (2019) and Wiegreffe &amp; Pinter (2019) made this point — attention provides a <em>mechanism</em> but not necessarily an <em>explanation</em>.</p>
 <hr>
 </section>
 </section>
 <section id="demo-3-soft-attention-vs-hard-gating-the-structural-divide" class="level3">
 <h3 class="anchored" data-anchor-id="demo-3-soft-attention-vs-hard-gating-the-structural-divide">Demo 3 — Soft Attention vs Hard Gating: The Structural Divide</h3>
-<p>The transformer uses <em>soft</em> attention: every context word receives some non-zero weight. Consideration sets use <em>hard</em> gating: alternatives are either in or out. We can approximate the hard-gating version by zeroing attention weights below a threshold and renormalising — a deterministic analogue of consideration set formation. Note: a true consideration set model would use <em>independent</em> stochastic Bernoulli gates per alternative (sigmoid-based, not coupled via softmax). Our implementation thresholds the already-coupled softmax weights, which preserves the inter-token competition that softmax introduces. This is a useful illustration of the hard/soft divide, but not a faithful implementation of the econometric mechanism.</p>
+<p>Transformers use <em>soft</em> attention: every word gets some weight. Consideration sets use <em>hard</em> gating: in or out. We approximate hard gating by zeroing weights below a threshold and renormalising. A true consideration model would use independent sigmoid gates per alternative, not coupled softmax — our implementation preserves the inter-token competition that softmax introduces. Useful for illustrating the divide, not a faithful econometric mechanism.</p>
 <div id="cell-soft-vs-hard" class="cell" data-execution_count="10">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -6007,9 +6015,9 @@ Final loss    : 0.3654</code></pre>
 </div>
 </div>
 </div>
-<p>Every test context now includes a vignette word — just as every training example does. In the left and middle panels, strong sense-specific signals (protest/vault, deposit/ledger) compete with the always-present vignette word. The key question: does the model learn to discount the omnipresent vignette, or does it over-attend to it?</p>
-<p>In the <strong>vignette + conjunction pair</strong> context (right panel), <code>justice</code> is the vignette word and <code>organized</code> + <code>concern</code> form a conjunction pair that boosts P(activist) in the DGP. The remaining word (<code>receipt</code>) is a teller signal. This is the conjunction fallacy in miniature: the vivid descriptor (<code>justice</code>) co-occurs with ambiguous words — does the model classify as activist despite the teller signal and the 70 % base rate?</p>
-<p>This asymmetry illustrates the core difference between consideration set models and transformer attention. A consideration set model makes an explicit inclusion decision for each alternative; the transformer delegates combinatorial reasoning to its value pathway and treats attention as a soft selection mechanism — one that may or may not have learned to discount the always-present vignette signal.</p>
+<p>Every test context includes a vignette word, just as every training example does. Strong sense-specific signals (protest/vault, deposit/ledger) compete with the omnipresent vignette. Does the model discount it?</p>
+<p>The right panel is the conjunction fallacy in miniature: <code>justice</code> (vignette) co-occurs with <code>organized</code> + <code>concern</code> (conjunction pair), while <code>receipt</code> signals teller. The vivid descriptor plus ambiguous words — does the model classify activist despite the teller signal and 70 % base rate?</p>
+<p>A consideration set model makes an explicit inclusion decision per alternative. The transformer delegates this to its value pathway — soft selection that may or may not have learned to discount the vignette.</p>
 <hr>
 </section>
 <section id="demo-4-the-conjunction-fallacy-in-attention" class="level3">
@@ -6094,24 +6102,23 @@ Pure Activist                   0.972    activist
 </div>
 </div>
 </div>
-<p>The probes are designed to isolate three cumulative effects:</p>
+<p>The probes isolate three cumulative effects:</p>
 <ol type="1">
-<li><p><strong>Base rate</strong>: Pure Teller and Pure Activist establish the endpoints. The model’s P(activist) for these should be near 0 and 1 respectively.</p></li>
-<li><p><strong>Conjunction pairs</strong>: Compare <strong>Ambiguous (no pairs)</strong> to <strong>Ambiguous (with pairs)</strong>. The first uses a single ambiguous word (<code>independent</code>) plus noise — no conjunction pairs fire, so the model should classify near the 30 % base rate. The second packs three ambiguous words (<code>independent</code>, <code>organized</code>, <code>concern</code>) whose pairwise boosts total +7.5 on the log-odds scale — the training data labels these as activist overwhelmingly. The jump between these two probes measures the <em>conjunction effect</em> alone.</p></li>
-<li><p><strong>Vignette injection</strong>: Compare <strong>Ambiguous (with pairs)</strong> to <strong>Vignette + Amb pairs</strong>. Both contain the same conjunction-pair words, but the second swaps a noise word for a vignette word (<code>philosophy</code>). Any additional increase in P(activist) is the marginal effect of the vignette — the “Linda description” on top of the conjunction.</p></li>
+<li><p><strong>Base rate</strong>: Pure Teller and Pure Activist establish the endpoints.</p></li>
+<li><p><strong>Conjunction pairs</strong>: Compare <strong>Ambiguous (no pairs)</strong> to <strong>Ambiguous (with pairs)</strong>. The first has no conjunction pairs — the model should classify near the 30 % base rate. The second packs three ambiguous words whose pairwise boosts total +7.5 on the log-odds scale. The jump measures the <em>conjunction effect</em> alone.</p></li>
+<li><p><strong>Vignette injection</strong>: Compare <strong>Ambiguous (with pairs)</strong> to <strong>Vignette + Amb pairs</strong>. Same conjunction words, but a noise word is swapped for a vignette word (<code>philosophy</code>). Any additional increase in P(activist) is the marginal vignette effect.</p></li>
 </ol>
-<p>The key T&amp;K parallel: the model’s consideration set has been shaped by the training distribution, where activist-flavoured text (vignette words in every example, conjunction boosts that flip teller labels) is systematically over-represented relative to the 30 % base rate. The transformer classifies by pattern similarity, not by Bayesian updating. The volume of activist-flavoured text determines the learned mapping — exactly as the vivid Linda description biases human respondents away from the base rate.</p>
+<p>The transformer classifies by pattern similarity, not by Bayesian updating. The volume of activist-flavoured text shapes the learned mapping — exactly as the vivid Linda description biases human respondents away from the base rate.</p>
 <hr>
 </section>
 <section id="demo-5-multi-head-attention-where-does-the-bias-live" class="level3">
 <h3 class="anchored" data-anchor-id="demo-5-multi-head-attention-where-does-the-bias-live">Demo 5 — Multi-Head Attention: Where Does the Bias Live?</h3>
-<p>The single-head model above gives us a transparent window into the conjunction fallacy: one attention map, one set of weights, and a direct correspondence between what the model attends to and what it predicts. We can inspect the attention distribution over context words and ask, for each one, “is this word getting more attention than its true diagnostic value warrants?”</p>
-<p>But real transformer architectures do not use a single attention head. They distribute the attention computation across <strong>multiple heads</strong>, each operating in a low-dimensional subspace, and then recombine the results through a learned output projection. This raises two questions with direct implications for algorithmic fairness:</p>
+<p>The single-head model gives us a transparent window: one attention map, one set of weights, a direct link between what the model attends to and what it predicts. Real transformers use <strong>multiple heads</strong>, each in a low-dimensional subspace, recombined through a learned output projection. Two questions:</p>
 <ol type="1">
-<li>When the same bias signal is distributed across multiple heads, <strong>does it become harder to detect</strong>?</li>
-<li>Does the recombination <strong>amplify or attenuate</strong> the conjunction fallacy?</li>
+<li>When bias is distributed across heads, <strong>does it become harder to detect</strong>?</li>
+<li>Does recombination <strong>amplify or attenuate</strong> the conjunction fallacy?</li>
 </ol>
-<p>These questions have a direct analogue in the consideration set framework we build in Part II. There, each screening variable gets a named parameter <span class="math inline">\(\gamma_z\)</span> with a full posterior distribution — a single coefficient you can inspect, test, and explain. Multi-head attention offers no such guarantee.</p>
+<p>In the consideration set framework of Part II, each screening variable gets a named parameter <span class="math inline">\(\gamma_z\)</span> with a full posterior — a single coefficient you can inspect and test. Multi-head attention offers no such guarantee.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -6123,6 +6130,7 @@ Why multi-head attention matters for interpretability
 </div>
 <div class="callout-body-container callout-body">
 <p>In multi-head attention, each head independently computes Q, K, V projections over a low-dimensional subspace (<span class="math inline">\(d_{\text{head}} = d_{\text{model}} / n_{\text{heads}}\)</span>). The heads’ outputs are concatenated and passed through a learned <strong>output projection</strong> before classification. This output projection is where the heads’ signals get blended — and it is precisely this blending that makes it impossible to attribute the final classification to any single head’s attention pattern. The bias is <em>everywhere and nowhere</em>: distributed across heads and recombined nonlinearly.</p>
+<p>We use a single-layer, two-head architecture here — still deliberately simple. Production transformers stack multiple such layers, creating feedback loops where one layer’s output becomes the next layer’s input and bias can compound across depth. Even without this stacking, the distribution effect is already observable at the single-layer level, which makes the interpretability problem all the more concerning: it emerges from the architectural primitive itself, not just from scale.</p>
 </div>
 </div>
 <section id="the-multi-head-architecture" class="level4">
@@ -6252,6 +6260,7 @@ Single-head final loss    : 0.3654
 Multi-head  final loss    : 0.3531</code></pre>
 </div>
 </div>
+<p>The multi-head model converges to a lower training loss but achieves slightly lower test accuracy. Lower loss with lower accuracy suggests the additional parameters fit the training distribution more tightly without generalising better — the model has more capacity to memorise patterns, including the vignette-injection bias, without improving its ability to distinguish the underlying signals. This is the first hint that multi-head attention may be redistributing the bias rather than resolving it.</p>
 </section>
 <section id="head-specialisation-who-attends-to-what" class="level4">
 <h4 class="anchored" data-anchor-id="head-specialisation-who-attends-to-what">Head Specialisation: Who Attends to What?</h4>
@@ -6329,7 +6338,8 @@ Multi-head  final loss    : 0.3531</code></pre>
 </div>
 </div>
 </div>
-<p>If both heads show similar attention profiles across categories — elevated attention to activist and vignette words, lower attention to teller and noise — then the bias is not factored into interpretable subcomponents. It is distributed. Contrast this with the consideration set model we build in Part II, where each screening variable gets a single, named parameter whose posterior you can inspect and whose effect you can isolate.</p>
+<p>Partial specialisation: Head 0 tracks signal magnitude regardless of direction; Head 1 concentrates on teller words. The heads specialise along the <em>strong-signal axis</em> (activist vs teller), not along the <em>bias axis</em> (vignette vs non-vignette).</p>
+<p>Vignette attention is distributed across both heads at similar levels — neither head isolates the bias dimension. The model <em>has</em> factored attention into subcomponents, but the factorisation is orthogonal to the axis that matters for the conjunction fallacy. In Part II, each screening variable gets a single named parameter whose posterior you can inspect. Here, the bias has no address.</p>
 </section>
 <section id="vignette-bias-concentrated-or-distributed" class="level4">
 <h4 class="anchored" data-anchor-id="vignette-bias-concentrated-or-distributed">Vignette Bias: Concentrated or Distributed?</h4>
@@ -6478,7 +6488,8 @@ Multi-head  final loss    : 0.3531</code></pre>
 </div>
 </div>
 </div>
-<p>The probe comparison (left panel) reveals whether multi-head attention amplifies or attenuates the conjunction fallacy for each diagnostic context. The calibration plot (right panel) shows whether the additional architectural capacity translates into better-calibrated probability estimates — or whether the model simply learns a more confident version of the same data-encoded bias.</p>
+<p>The conjunction fallacy persists across both architectures. Multi-head attention does not eliminate the bias. Calibration does not improve. The multi-head model achieved lower training loss but slightly lower test accuracy — more capacity to memorise the training distribution without generalising better.</p>
+<p>The finding is not about amplification. It is about <strong>locatability</strong>. In Demo 4, we traced the bias to specific attention weights on specific words. Here, the same discriminatory outcome is distributed across anonymous subspaces. It resists the inspection that Demo 4 made possible.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -6489,17 +6500,20 @@ The interpretability cost of distribution
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>In the single-head model, we could inspect <em>one</em> attention map and ask: “is the model over-attending to vignette words?” The answer was legible — one set of weights, one signal-recovery scatter plot.</p>
-<p>In multi-head attention, that question has no clean answer. The bias lives in the <em>interaction</em> between heads — in how per-head value vectors are concatenated and recombined through the output projection. You cannot decompose the final P(activist) into additive per-head contributions because the output projection and classifier operate nonlinearly on the concatenated representation.</p>
-<p>This is the central contrast with the consideration set framework we develop in Part II. As we will see, the econometric model keeps each screening variable as a <strong>named, interpretable coefficient</strong> <span class="math inline">\(\gamma_z\)</span> with a full posterior distribution. You can compute <span class="math inline">\(P(\gamma_z &gt; 0 \mid \text{data})\)</span> and make a falsifiable claim about whether a specific variable gates consideration. The transformer distributes the same information across <strong>anonymous computational subspaces</strong> and offers no such decomposition. The bias is real — the model discriminates — but the mechanism resists the kind of audit that fairness requires.</p>
+<p>Single head: inspect one attention map, ask “is the model over-attending to vignette words?”, get a legible answer.</p>
+<p>Multi-head: no clean answer. The bias lives in the <em>interaction</em> — concatenated value vectors, output projection, classifier — and cannot be decomposed into additive per-head contributions.</p>
+<p>The consideration set framework of Part II keeps each screening variable as a <strong>named coefficient</strong> <span class="math inline">\(\gamma_z\)</span> with a full posterior. You can compute <span class="math inline">\(P(\gamma_z &gt; 0 \mid \text{data})\)</span> and make a falsifiable claim. The transformer distributes the same information across <strong>anonymous subspaces</strong> and offers no such decomposition.</p>
 </div>
 </div>
 <hr>
 </section>
 </section>
 </section>
-<section id="part-ii-the-consideration-set-model-in-pymc" class="level2">
-<h2 class="anchored" data-anchor-id="part-ii-the-consideration-set-model-in-pymc">Part II: The Consideration Set Model in PyMC</h2>
+<section id="part-ii-from-cognitive-bias-to-institutional-bias" class="level2">
+<h2 class="anchored" data-anchor-id="part-ii-from-cognitive-bias-to-institutional-bias">Part II: From Cognitive Bias to Institutional Bias</h2>
+<p>Part I showed that attention learns biases from training data, and that multi-head distribution makes those biases harder to locate. But the Linda task is a thought experiment. The real world is worse.</p>
+<p>In the conjunction fallacy, the priming signal is a paragraph of text. In hiring, the priming signals are protected characteristics — race, age, gender — operating through structural patterns baked into decades of historical decisions. This is a graduation in both the complexity and the damage of the bias. The conjunction fallacy demonstrates that attention can be captured by irrelevant salience. Hiring bias demonstrates that attention can be captured by <em>systematically</em> irrelevant salience — features that predict screening decisions but should not predict job performance.</p>
+<p>We now build a consideration set model of hiring. The key move: model screening as an explicit two-stage process with named parameters. <em>Who gets considered?</em> is separate from <em>who gets hired?</em>, and the variables driving each stage are structurally distinct. This is the econometric <span class="math inline">\(K \neq V\)</span> — and what makes bias auditable.</p>
 <section id="the-two-stage-model" class="level3">
 <h3 class="anchored" data-anchor-id="the-two-stage-model">The Two-Stage Model</h3>
 <p>Consideration sets formalise the intuition that <strong>not all alternatives are evaluated</strong>. The model separates the choice process into two stages:</p>
@@ -6813,7 +6827,7 @@ Note
 <span id="cb23-105"><a href="#cb23-105" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(consideration_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;pymc.model.core.Model object at 0x28c9a04f0&gt;</code></pre>
+<pre><code>&lt;pymc.model.core.Model object at 0x16b5ac310&gt;</code></pre>
 </div>
 </div>
 </section>
@@ -6872,14 +6886,14 @@ NUTS: [gamma_z, alpha_raw, beta_age, beta_exp]</code></pre>
 </div>
 <div id="fit-model-1" class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ad4b7260b7ce4a72a4078cf041f57219","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"b0ea8c5b45f847088dd7505be2f60e3e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div id="fit-model-2" class="cell-output cell-output-display">
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,&#39;DejaVu Sans Mono&#39;,consolas,&#39;Courier New&#39;,monospace"></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 10 seconds.</code></pre>
+<pre><code>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 9 seconds.</code></pre>
 </div>
 </div>
 </section>
@@ -7080,6 +7094,7 @@ Warning
 </section>
 <section id="part-iii-where-the-analogy-holds-and-where-it-breaks" class="level2">
 <h2 class="anchored" data-anchor-id="part-iii-where-the-analogy-holds-and-where-it-breaks">Part III: Where the Analogy Holds — and Where It Breaks</h2>
+<p>Two angles on the same filtering mechanism: a transformer that distributes bias across uninterpretable subspaces, and a consideration set model that names its screening variables with full posterior uncertainty. The structural parallels are deep. The practical divergence is what matters.</p>
 <div class="callout callout-style-default callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -7201,44 +7216,26 @@ Where the Analogy Breaks
 </table>
 </div>
 </div>
-<p>The most productive difference is the hard/soft divide. Transformer attention is a <strong>differentiable relaxation</strong> of the discrete consideration process — a relaxation that makes end-to-end gradient-based learning possible. Conversely, consideration set models provide a <strong>Bayesian interpretation</strong> of what attention weights represent: the posterior probability that an alternative is decision-relevant, given the context.</p>
-<p>This cross-pollination runs in both directions:</p>
+<p>The most productive difference is the hard/soft divide. Transformer attention is a <strong>differentiable relaxation</strong> of discrete consideration — enabling gradient-based learning. Consideration sets provide a <strong>Bayesian interpretation</strong> of what attention weights represent: the posterior probability that an alternative is decision-relevant.</p>
+<p>Cross-pollination runs both ways:</p>
 <ul>
-<li><p><strong>From discrete choice → transformers</strong>: The consideration set framework suggests that attention weights are best interpreted not as “how much does this token contribute” but as “how likely is this token to be decision-relevant”. This motivates sparsity-inducing attention variants (Sparsemax, <span class="math inline">\(\alpha\)</span>-entmax) as natural continuous relaxations of hard consideration set formation.</p></li>
-<li><p><strong>From transformers → discrete choice</strong>: The learned <span class="math inline">\(Q/K/V\)</span> factorisation suggests that consideration models could benefit from separating the <em>signal</em> that determines consideration (currently modelled as a simple linear index) from the <em>utility</em> that drives choice — rather than implicitly conflating them through a shared covariate structure.</p></li>
-<li><p><strong>The interpretability gap as a policy problem</strong>: Demo 5 showed that distributing attention across heads obscures bias attribution. When a consideration set model reveals <span class="math inline">\(\gamma_z = 3.5\)</span> for <code>is_white</code>, you can name the discriminatory gate, quantify it with a credible interval, and intervene. When a multi-head transformer achieves the same discriminatory outcome, the bias is distributed across head subspaces and recombined through a learned output projection — there is no single parameter to point at. This is not a limitation that more heads or more data will solve; it is a structural property of the architecture itself. The econometric tradition of <em>naming</em> what you model — and providing uncertainty about each named quantity — is not merely a stylistic preference. It is an audit infrastructure that distributed attention mechanisms lack by design.</p></li>
+<li><p><strong>From discrete choice → transformers</strong>: Attention weights are better read as “how likely is this token to be decision-relevant” than “how much does this token contribute.” This motivates sparsity-inducing variants (Sparsemax, <span class="math inline">\(\alpha\)</span>-entmax) as continuous relaxations of hard consideration.</p></li>
+<li><p><strong>From transformers → discrete choice</strong>: The <span class="math inline">\(Q/K/V\)</span> factorisation suggests consideration models could separate the <em>signal</em> that determines consideration from the <em>utility</em> that drives choice — rather than conflating them through shared covariates.</p></li>
+<li><p><strong>The interpretability gap</strong>: When a consideration model reveals <span class="math inline">\(\gamma_z = 3.5\)</span> for <code>is_white</code>, you can name the gate, quantify it, and intervene. When a multi-head transformer achieves the same discriminatory outcome, the bias is distributed across subspaces and recombined through a learned projection — no single parameter to point at. This is architectural, not a matter of scale. Naming what you model is not a stylistic preference. It is audit infrastructure.</p></li>
 </ul>
 <hr>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Both the transformer and the consideration set model are answering the same fundamental question: <em>given a rich candidate space, which elements actually deserve processing resources?</em></p>
-<p>The mathematical skeleton is shared: score each candidate, normalise the scores, and weight downstream computation by those scores. The scorecard reads the same in both languages — dot-product similarity in the attention case, a linear instrument index in the econometric case. The softmax that converts raw scores into weights sits at the heart of both.</p>
-<p>What differs is how the two fields handle <strong>uncertainty</strong> about which elements belong in the active set. Transformer attention is a differentiable relaxation — it keeps every token alive with some weight, allowing gradients to flow cleanly through the mechanism during training. Consideration sets take the opposite stance: alternatives are either in or out, and the probability of inclusion is itself a latent variable with a full posterior distribution. The soft/continuous versus hard/stochastic divide is not a technical accident — it reflects the different epistemological commitments of the two fields.</p>
-<p>The identification exercise drove the analogy home concretely. Transformer attention requires <span class="math inline">\(K \neq V\)</span> — if the key and value projections collapse to the same matrix, the mechanism degenerates. The discrete choice model demands the same structural separation: the instruments <span class="math inline">\(z_{nj}\)</span> that determine <em>whether</em> an alternative is considered must differ from the covariates <span class="math inline">\(x_{nj}\)</span> that determine <em>how attractive</em> it is conditional on consideration. Violate the exclusion restriction and the consideration stage cannot be separated from the utility stage; the parameters blend into an unidentified mixture. The econometrician calls this an exclusion restriction. The machine learning engineer calls it the K≠V requirement. They are the same constraint.</p>
-<section id="the-escalation-of-opacity" class="level3">
-<h3 class="anchored" data-anchor-id="the-escalation-of-opacity">The Escalation of Opacity</h3>
-<p>But the analogy also reveals something troubling. We demonstrated three levels of attention in this post, and each level made the bias harder to locate:</p>
-<ol type="1">
-<li><p><strong>Human attention</strong> (Kahneman &amp; Tversky): biased by the conjunction fallacy, but the bias is experimentally probbable. You can construct diagnostic vignettes, measure the deviation from base rates, and publish the result. The mechanism is opaque (it lives in neural wetware) but the <em>effect</em> is measurable.</p></li>
-<li><p><strong>Single-head attention</strong>: replicates the conjunction fallacy from training data, but the bias is visible. One attention map, one set of weights, a signal-recovery scatter plot. You can ask “which words did the model over-attend to?” and get a legible answer. The vignette injection shows up as elevated attention to words that should carry zero marginal diagnostic value.</p></li>
-<li><p><strong>Multi-head attention</strong>: distributes the same bias across anonymous heads and recombines it through a learned output projection. No single attention map tells the full story. The heatmap shows diffuse patterns; the per-head vignette bars show fragmented attention that no longer maps cleanly to the single-head story. The bias lives in the <em>interaction</em> between heads — in the concatenation, the output projection, and the classifier — and cannot be cleanly decomposed into per-head contributions.</p></li>
-</ol>
-</section>
-<section id="the-consideration-set-as-counterfactual" class="level3">
-<h3 class="anchored" data-anchor-id="the-consideration-set-as-counterfactual">The Consideration Set as Counterfactual</h3>
-<p>The econometric model provides a structural contrast that makes the interpretability gap concrete. Each screening variable — <code>is_white</code>, <code>is_under_40</code>, <code>is_college_grad</code> — has a named parameter <span class="math inline">\(\gamma_z\)</span> with a full posterior distribution. You can compute <span class="math inline">\(P(\gamma_z &gt; 0 \mid \text{data})\)</span> and make a falsifiable claim: “race gates hiring consideration with probability 0.98.” The parameter has a name, a sign, a magnitude, and an uncertainty interval. You can show it to a regulator.</p>
-<p>The transformer has no such decomposition. The bias is real — the model discriminates, as the probe comparison demonstrates — but the <em>mechanism</em> is distributed across thousands of weight interactions. There is no <span class="math inline">\(\gamma_{\text{race}}\)</span> to point at. There are only attention heads, value projections, and an output layer that jointly encode the same discriminatory pattern in a form that resists the kind of decomposition fairness audits require.</p>
-</section>
-<section id="algorithmic-attention-as-proxy-for-human-judgment" class="level3">
-<h3 class="anchored" data-anchor-id="algorithmic-attention-as-proxy-for-human-judgment">Algorithmic Attention as Proxy for Human Judgment</h3>
-<p>These attention mechanisms are increasingly deployed as proxies for human decision-making: content recommendation, hiring screening, risk assessment, medical triage, credit scoring. In each domain, the system performs <em>selective relevance weighting</em> — deciding which inputs deserve processing resources — in a manner structurally analogous to the consideration sets that govern human choice.</p>
-<p>The conjunction fallacy that Kahneman and Tversky could probe with a carefully constructed vignette becomes harder to probe in a multi-head transformer. The very architectural features that make transformers powerful — distributed representation, end-to-end differentiability, the capacity to learn subtle interaction effects from large corpora — make their biases opaque to the kind of audit that the consideration set framework enables by design. The danger is not that these systems are biased (all learned systems inherit the biases of their training distributions). The danger is that the bias becomes <strong>structurally unlocatable</strong> — distributed across anonymous subspaces in a way that no single parameter, no single attention map, and no single head can account for.</p>
-</section>
-<section id="toward-interpretable-attention" class="level3">
-<h3 class="anchored" data-anchor-id="toward-interpretable-attention">Toward Interpretable Attention</h3>
-<p>The most productive next step — visible from both sides of the analogy — is <strong>Bayesian attention</strong>: a mechanism where the consideration probability is an explicit latent variable inferred jointly with the utility and structural parameters from data. Sparse attention variants (Sparsemax, <span class="math inline">\(\alpha\)</span>-entmax) are a step in this direction, replacing the ubiquitous softmax with a distribution that places zero mass on tokens below some relevance threshold. The consideration set framework offers a principled Bayesian interpretation of what those zero-mass tokens represent: alternatives that have been screened out by the decision environment before the utility calculation even begins.</p>
-<p>But this convergence is not just a research frontier — it is a governance necessity. If attention mechanisms are going to serve as algorithmic proxies for human judgment in consequential domains, they need the interpretive infrastructure that econometrics provides: named parameters, posterior uncertainty, and falsifiable exclusion restrictions. The analogy between attention and consideration sets is not merely structural. It points toward what responsible deployment of learned attention mechanisms would require — and how far current architectures fall short of that standard.</p>
+<p>The arc of this post moved through three levels of attention, each making bias harder to locate. <strong>Human attention</strong> (Kahneman &amp; Tversky) is biased by the conjunction fallacy, but the bias is experimentally detectable — construct a vignette, measure the deviation from base rates. <strong>Single-head attention</strong> replicates the fallacy from training data, but the bias is visible in one attention map: you can point at which words were over-weighted. <strong>Multi-head attention</strong> distributes the same bias across anonymous heads and recombines it through a learned output projection. No single attention map tells the full story. The bias is real — the model discriminates — but the mechanism resists decomposition.</p>
+<p>The consideration set model provides the structural contrast. Each screening variable gets a named parameter <span class="math inline">\(\gamma_z\)</span> with a full posterior. You can compute <span class="math inline">\(P(\gamma_z &gt; 0 \mid \text{data})\)</span> and make a falsifiable claim about whether race or age gates consideration. The parameter has a name, a sign, a magnitude, and a credible interval. You can show it to a regulator.</p>
+<section id="external-audit-via-consideration-sets" class="level3">
+<h3 class="anchored" data-anchor-id="external-audit-via-consideration-sets">External Audit via Consideration Sets</h3>
+<p>Mechanistic interpretability — probing classifiers, causal tracing, activation patching — asks: <em>where inside the model does the bias live?</em> The consideration set approach asks a different question: <em>does the system’s observable screening behaviour exhibit bias, and on which variables?</em> It applies to any screener — human, logistic regression, or transformer — without access to weights or architecture.</p>
+<p>A clarification on what the audit recovers. Fitting a consideration set model to an LLM’s screening decisions does not estimate the transformer’s internal mechanism. It estimates a <strong>behavioural model</strong>: <em>if</em> the system’s input-output mapping were generated by a two-stage process — gating then evaluation — what would the gating parameters look like? The <span class="math inline">\(\gamma_z\)</span> posteriors tell you that the system’s decisions are <em>consistent with</em> a process where race gates consideration with a given magnitude and uncertainty. This is a functional claim, not a mechanistic one — the same epistemic status as Bertrand &amp; Mullainathan’s résumé audit studies, which surface discrimination without locating it inside the hiring pipeline. The consideration model adds structure beyond a simple disparity test: it decomposes screening from conditional-on-screening evaluation, and the exclusion restriction is what makes the decomposition identified.</p>
+<p>That brings us to the <strong>identification discipline</strong>. The exclusion restriction — <span class="math inline">\(Z \neq X\)</span> — requires <em>exogenous variation</em> that shifts who gets considered without shifting how attractive they are conditional on consideration. Without it, screening and evaluation are aliased. A candidate’s name, race, or age plausibly satisfies this: these features may determine whether a résumé is read, but should not determine job performance conditional on reading. The consideration model formalises this as a testable structural assumption.</p>
+<p>The instrument design is domain-specific and non-trivial. In hiring, protected characteristics are natural instruments. In content recommendation, the exclusion restriction is harder: what feature shifts whether an item is <em>considered</em> without shifting its quality? The framework does not pretend this is easy. It makes the difficulty <em>visible</em> as a modelling choice that must be defended, rather than hiding it inside an end-to-end loss. Named instruments and justified exclusion restrictions are the price of identified causal claims — a price that purely correlational tools avoid only by making weaker claims.</p>
+<p>The same identification problem applies <em>inside</em> the model. Is a given attention head encoding screening bias, or a legitimate feature correlation, or both? Without exogenous variation that isolates the bias channel, internal attribution is underdetermined — for the same reason that a consideration model without <span class="math inline">\(Z \neq X\)</span> is unidentified. The econometric tradition offers not just a different audit methodology but an identification framework that clarifies what any bias attribution method — internal or external — requires to make causal claims.</p>
 <hr>
 </section>
 </section>
@@ -7257,6 +7254,10 @@ Where the Analogy Breaks
 <li>Wiegreffe, S. &amp; Pinter, Y. (2019). Attention is not not explanation. <em>EMNLP</em>.</li>
 <li>Barocas, S. &amp; Selbst, A. D. (2016). Big data’s disparate impact. <em>California Law Review</em>, 104, 671–732.</li>
 <li>Rudin, C. (2019). Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead. <em>Nature Machine Intelligence</em>, 1(5), 206–215.</li>
+<li>Elhage, N. et al. (2021). A mathematical framework for transformer circuits. <em>Anthropic</em>.</li>
+<li>Conmy, A. et al. (2023). Towards automated circuit discovery for mechanistic interpretability. <em>NeurIPS</em>.</li>
+<li>Raji, I. D. et al. (2020). Closing the AI accountability gap: Defining an end-to-end framework for internal algorithmic auditing. <em>FAT</em>.</li>
+<li>Bertrand, M. &amp; Mullainathan, S. (2004). Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination. <em>American Economic Review</em>, 94(4), 991–1013.</li>
 </ul>
 
 
@@ -7283,7 +7284,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   </script>
 <script type="application/vnd.jupyter.widget-state+json">
-{"state":{"ad4b7260b7ce4a72a4078cf041f57219":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_f817a472efd94941962566df0a3ce627","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\"> Progress                  </span> <span style=\"font-weight: bold\"> Draws </span> <span style=\"font-weight: bold\"> Divergences </span> <span style=\"font-weight: bold\"> Step size </span> <span style=\"font-weight: bold\"> Grad evals </span> <span style=\"font-weight: bold\"> Sampling Speed </span> <span style=\"font-weight: bold\"> Elapsed </span> <span style=\"font-weight: bold\"> Remaining </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━━━━━━━━━━━━━━</span>   2000    0             0.36        7            218.67 draws/s   0:00:09   0:00:00    \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━━━━━━━━━━━━━━</span>   2000    0             0.31        15           212.83 draws/s   0:00:09   0:00:00    \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━━━━━━━━━━━━━━</span>   2000    0             0.27        15           210.07 draws/s   0:00:09   0:00:00    \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━━━━━━━━━━━━━━</span>   2000    0             0.29        3            231.22 draws/s   0:00:08   0:00:00    \n                                                                                                                   \n</pre>\n","text/plain":"                                                                                                                   \n \u001b[1m \u001b[0m\u001b[1mProgress                 \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraws\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDivergences\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep size\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad evals\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSampling Speed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaining\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  \u001b[38;2;31;119;180m━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m   2000    0             0.36        7            218.67 draws/s   0:00:09   0:00:00    \n  \u001b[38;2;31;119;180m━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m   2000    0             0.31        15           212.83 draws/s   0:00:09   0:00:00    \n  \u001b[38;2;31;119;180m━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m   2000    0             0.27        15           210.07 draws/s   0:00:09   0:00:00    \n  \u001b[38;2;31;119;180m━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m   2000    0             0.29        3            231.22 draws/s   0:00:08   0:00:00    \n                                                                                                                   \n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}},"f817a472efd94941962566df0a3ce627":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}}},"version_major":2,"version_minor":0}
+{"state":{"b0ea8c5b45f847088dd7505be2f60e3e":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_b6efad10dad24138b084426f62d53d7d","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\"> Progress                  </span> <span style=\"font-weight: bold\"> Draws </span> <span style=\"font-weight: bold\"> Divergences </span> <span style=\"font-weight: bold\"> Step size </span> <span style=\"font-weight: bold\"> Grad evals </span> <span style=\"font-weight: bold\"> Sampling Speed </span> <span style=\"font-weight: bold\"> Elapsed </span> <span style=\"font-weight: bold\"> Remaining </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━━━━━━━━━━━━━━</span>   2000    0             0.36        7            231.57 draws/s   0:00:08   0:00:00    \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━━━━━━━━━━━━━━</span>   2000    0             0.31        15           225.46 draws/s   0:00:08   0:00:00    \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━━━━━━━━━━━━━━</span>   2000    0             0.27        15           222.95 draws/s   0:00:08   0:00:00    \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━━━━━━━━━━━━━━</span>   2000    0             0.29        3            244.20 draws/s   0:00:08   0:00:00    \n                                                                                                                   \n</pre>\n","text/plain":"                                                                                                                   \n \u001b[1m \u001b[0m\u001b[1mProgress                 \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraws\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDivergences\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep size\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad evals\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSampling Speed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaining\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  \u001b[38;2;31;119;180m━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m   2000    0             0.36        7            231.57 draws/s   0:00:08   0:00:00    \n  \u001b[38;2;31;119;180m━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m   2000    0             0.31        15           225.46 draws/s   0:00:08   0:00:00    \n  \u001b[38;2;31;119;180m━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m   2000    0             0.27        15           222.95 draws/s   0:00:08   0:00:00    \n  \u001b[38;2;31;119;180m━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m   2000    0             0.29        3            244.20 draws/s   0:00:08   0:00:00    \n                                                                                                                   \n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}},"b6efad10dad24138b084426f62d53d7d":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}}},"version_major":2,"version_minor":0}
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
