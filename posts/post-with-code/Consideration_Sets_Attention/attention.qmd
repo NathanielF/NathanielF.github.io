@@ -84,7 +84,17 @@ The output is a *weighted sum of value payloads*, where the weights are determin
 ::: {.callout-note}
 ## A note on terminology: cross-attention vs self-attention
 
-In a pure **self-attention** layer, $Q$, $K$, and $V$ are all projections of the *same* sequence of token embeddings — every token simultaneously serves as query, key, and value for every other token. In **cross-attention** (or encoder-decoder attention), $Q$ comes from one source and $K$/$V$ from another. Our implementation below is closer to cross-attention: the query is the target word ("Linda") and the keys/values are the context words. We use this simplified architecture deliberately — it cleanly isolates the "what to attend to" mechanism without the additional complexity of full self-attention. Real transformer architectures stack multiple self-attention layers with multi-head attention, residual connections, layer normalisation, and feedforward sublayers. We strip all of this away to make the analogy with consideration sets as transparent as possible, and then progressively add back multi-head structure in Demo 4 to show how interpretability degrades as the architecture scales.
+In a pure **self-attention** layer, $Q$, $K$, and $V$ are all projections of the *same* sequence of token embeddings — every token simultaneously serves as query, key, and value for every other token. In **cross-attention** (or encoder-decoder attention), $Q$ comes from one source and $K$/$V$ from another. Our implementation is closer to cross-attention: the query is the target word ("Linda") and the keys/values are the context words. We use this deliberately — it isolates the "what to attend to" mechanism without the complexity of full self-attention. We then add back multi-head structure in Demo 4 to show how interpretability degrades as the architecture scales.
+:::
+
+::: {.callout-warning}
+## What cross-attention cannot represent
+
+Our cross-attention architecture computes each context word's relevance to "Linda" independently. Words do not attend to *each other* — so the model cannot learn that "organized" + "concern" together signal activist more than either word alone. The conjunction effect in our demos lives entirely in the training labels, not in compositional attention. The model absorbs word-label correlations from biased data; it does not discover conjunction structure through architectural composition.
+
+Full self-attention would let context words interact before classification, building composed representations that capture word-pair effects. This is how production transformers handle conjunction-like reasoning — through multi-layer self-attention across the sequence.
+
+This limitation is conservative. It means our conjunction fallacy results are a **lower bound** on the interpretability problem: pure single-word correlations from biased training data suffice to reproduce the bias. Self-attention with word-word interactions would make the bias *harder* to locate, not easier — more interaction terms, more compositional subspaces, more places for discrimination to hide.
 :::
 
 ### Consideration Sets in Discrete Choice
@@ -953,7 +963,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-Four heads, partial specialisation — but along the *strong-signal axis* (activist vs teller), not the *bias axis* (vignette vs non-vignette). Vignette attention is spread across all heads. No single head isolates the bias dimension. The model has factored attention into subcomponents, but the factorisation is orthogonal to the axis that matters for the conjunction fallacy. In Part II, each screening variable gets a named parameter with a posterior. Here, the bias has no address.
+Partial specialisation, but not along the axis that matters for bias. Head 0 tracks strong diagnostic signals (teller, activist) and suppresses vignette. Head 1 picks up ambiguous and teller words. Head 2 is diffuse — near-uniform across categories. Head 3 concentrates on vignette and activist words. Some structure exists, but it does not cleanly isolate the bias: Head 3 attends to vignette words more than any other head, yet conflates them with the activist category. No single head gives you "the vignette effect" in isolation. In Part II, each screening variable gets a named parameter with a posterior. Here, the bias has no address.
 
 #### Vignette Bias: Concentrated or Distributed?
 
