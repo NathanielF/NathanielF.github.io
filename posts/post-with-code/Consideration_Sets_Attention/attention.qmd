@@ -110,11 +110,13 @@ where:
 - $P(\mathcal{C}) = \prod_k \pi_{nk}^{\mathbf{1}[k \in \mathcal{C}]} (1-\pi_{nk})^{\mathbf{1}[k \notin \mathcal{C}]}$ is the probability of a particular set forming
 - $P(j \mid \mathcal{C}) = \text{softmax}(V_{n\mathcal{C}})_j$ is the standard logit choice *within* the consideration set
 
-Using the **log-consideration-adjusted utility** approximation (Swait & Ben-Akiva, 1987; Cascetta & Papola, 2001):
+Marginalising over all $2^J$ possible consideration sets is combinatorially expensive. The **log-consideration-adjusted utility** approximation (Swait & Ben-Akiva, 1987; Cascetta & Papola, 2001) collapses both stages into a single reduced-form softmax:
 
 $$
 P(j \text{ chosen}) \approx \text{softmax}_j\!\bigl(\log \pi_{nj} + V_{nj}\bigr)
 $$
+
+This is a surrogate likelihood, not the structural model. The hard-gating story — each alternative is in or out — motivates the decomposition. The log-adjusted form makes it estimable. We use it throughout because it is tractable, identified under the exclusion restriction, and sufficient for the audit question: *which variables gate consideration, and how strongly?*
 
 ### The Structural Map
 
@@ -1115,7 +1117,7 @@ We build a consideration set model of hiring. *Who gets considered?* is separate
 
 ### The Two-Stage Model
 
-Consideration sets formalise the intuition that **not all alternatives are evaluated**. The model separates the choice process into two stages:
+Not all alternatives are evaluated. The consideration set model separates the choice process into two stages:
 
 **Stage 1 — Consideration:**
 $$\pi_{nj} = \sigma\!\left(\gamma_{0j} + \mathbf{z}_n^\top \boldsymbol{\gamma}_j\right), \qquad j = 1, \ldots, J$$
@@ -1125,8 +1127,10 @@ Each alternative is independently included in the consideration set. The **sigmo
 **Stage 2 — Choice within consideration:**
 $$P(j \mid \mathcal{C}_n) = \frac{\exp(V_{nj})}{\sum_{k \in \mathcal{C}_n} \exp(V_{nk})}, \qquad V_{nj} = \alpha_j + \mathbf{x}_{nj}^\top \boldsymbol{\beta}$$
 
-The **log-consideration-adjusted utility approximation** collapses both stages:
+As before, the **log-consideration-adjusted utility** collapses both stages into a reduced-form surrogate:
 $$P(j \text{ chosen}) \approx \text{softmax}_j\!\bigl(\underbrace{\log \pi_{nj}}_{\text{Key score}} + \underbrace{V_{nj}}_{\text{Value}}\bigr)$$
+
+Why "surrogate"? The structural story is hard gating: each alternative is in the consideration set or not, generating $2^J$ possible subsets. The log-adjusted form marginalises over those subsets analytically, yielding a single softmax that is cheap to evaluate and differentiable. We estimate this reduced form, not the latent binary gates. The decomposition is still identified — provided the exclusion restriction holds — because the screening instruments $z$ create cross-person variation in $\log \pi_{nj}$ that is absent from $V_{nj}$.
 
 In the transformer analogy: $\log \pi_{nj}$ plays the role of the query-key dot product, and $V_{nj}$ is, literally, the value.
 
@@ -1156,7 +1160,7 @@ This is the discrete choice analogue of K ≠ V in transformers: the signal that
 
 ### Data-Generating Process: Hiring Decisions
 
-The consideration stage uses **screening instruments**, i.e. variables that influence whether a firm considers a candidate but do not directly determine job utility:
+The consideration stage uses **screening instruments**: variables that shift whether a firm considers a candidate but do not directly determine job utility. Finding good instruments is the central modelling challenge. In hiring, the candidates are relatively obvious:
 
 - `is_college_grad`: a legitimate screening criterion
 - `is_white`: an illegitimate but empirically documented screening criterion
@@ -1270,7 +1274,7 @@ print(choice_df["choice"].value_counts(normalize=True).round(3).to_string())
 Firm A hires less frequently partly because of lower baseline utility and partly because candidates without college degrees have low consideration probability there. A standard multinomial logit collapses both effects into a single ASC; the consideration set model separates them because the Z instruments create **individual-level variation** in $\pi_{nj}$. The posterior will reveal *how strongly* each instrument gates consideration.
 
 ::: {.callout-note}
-**DGP and model likelihood are aligned.** Consideration is conceptually a hard binary gate: $C_{nj} \sim \text{Bernoulli}(\pi_{nj})$. Marginalising over all $2^J$ possible consideration sets yields the log-consideration adjusted softmax used here. The simulation uses this marginalised form so that parameter recovery is clean; the hard-gating story is motivational, not the literal data-generating mechanism.
+**DGP and model likelihood are aligned.** The simulation generates choices directly from the log-consideration-adjusted softmax, i.e. the same reduced-form surrogate we estimate. This is deliberate: it ensures clean parameter recovery. The hard binary gate $C_{nj} \sim \text{Bernoulli}(\pi_{nj})$ motivates the decomposition, but neither the DGP nor the estimator instantiates it. Both work with the marginalised form. The structural claim is not "firms literally flip coins." It is "the system's screening behaviour is *as if* gated, and we can estimate the gate parameters."
 :::
 
 ---
@@ -1661,23 +1665,29 @@ Cross-pollination runs both ways:
 
 ---
 
-## Conclusion
+## What the Consideration Set Model Buys You
 
 Three levels of attention, each making bias harder to locate. **Human attention**: biased by the conjunction fallacy, but experimentally detectable. **Single-head attention**: replicates the fallacy from training data, bias visible in one attention map. **Multi-head attention**: distributes the same bias across four anonymous heads, recombines through a GELU MLP. No single attention map tells the full story.
 
 The consideration set model provides the structural contrast. Each screening variable gets a named parameter $\gamma_z$ with a full posterior. You can compute $P(\gamma_z > 0 \mid \text{data})$ and make a falsifiable claim about whether race or age gates consideration. The parameter has a name, a sign, a magnitude, and a credible interval. You can show it to a regulator.
 
-### External Audit via Consideration Sets
+### Behavioural Audit, Not Mechanistic Explanation
 
-Mechanistic interpretability (probing classifiers, causal tracing, activation patching) asks: *where inside the model does the bias live?* This is the streetlight question. It searches where the representations are visible. The consideration set approach asks something different: *does the system's observable screening behaviour exhibit bias, and on which variables?* It does not need to find the keys under the lamppost. It applies to any screener, whether human, logistic regression, or transformer, without access to weights or architecture.
+Mechanistic interpretability (probing classifiers, causal tracing, activation patching) asks: *where inside the model does the bias live?* This is the streetlight question. It searches where the representations are visible. The consideration set approach asks something different: *does the system's observable screening behaviour exhibit bias, and on which variables?* It does not need to find the keys under the lamppost. It applies to any screener — human, logistic regression, or transformer — without access to weights or architecture.
 
-A clarification on what the audit recovers. Fitting a consideration set model to an LLM's screening decisions does not estimate the transformer's internal mechanism. It estimates a **behavioural model**: if the system's input-output mapping were generated by a two-stage process (gating then evaluation), what would the gating parameters look like? The $\gamma_z$ posteriors tell you the system's decisions are *consistent with* a process where race gates consideration with a given magnitude and uncertainty. This is a functional claim, not a mechanistic one. It has the same epistemic status as Bertrand & Mullainathan's résumé audit studies, which surface discrimination without locating it inside the hiring pipeline. The consideration model adds structure beyond a simple disparity test: it decomposes screening from conditional-on-screening evaluation, and the exclusion restriction makes the decomposition identified.
+A clarification on what the audit recovers. Fitting a consideration set model to an LLM's screening decisions does not estimate the transformer's internal mechanism. It estimates a **behavioural model**, a reduced-form surrogate: if the system's input-output mapping were generated by a two-stage process (gating then evaluation), what would the gating parameters look like?
 
-The **exclusion restriction** $Z \neq X$ requires *exogenous variation* that shifts who gets considered without shifting how attractive they are conditional on consideration. Without it, screening and evaluation are aliased. A candidate's name, race, or age plausibly satisfies this: these features may determine whether a résumé is read, but should not determine job performance conditional on reading.
+The $\gamma_z$ posteriors tell you the system's decisions are *consistent with* a process where race gates consideration with a given magnitude and uncertainty. This is a functional claim, not a mechanistic one. It has the same epistemic status as Bertrand & Mullainathan's résumé audit studies, which surface discrimination without opening the hiring pipeline. The consideration model adds structure beyond a simple disparity test: it decomposes screening from conditional-on-screening evaluation. The exclusion restriction makes the decomposition identified.
 
-Instrument design is domain-specific and non-trivial. In hiring, protected characteristics are natural instruments. In content recommendation, it is harder: what feature shifts whether an item is *considered* without shifting its quality? The framework does not pretend this is easy. It makes the difficulty *visible* as a modelling choice that must be defended, rather than hiding it inside an end-to-end loss.
+### The Hard Part: Finding Instruments
 
-The same identification problem applies *inside* the model. Is a given attention head encoding screening bias, or a legitimate feature correlation, or both? Without exogenous variation that isolates the bias channel, internal attribution is underdetermined, for the same reason that a consideration model without $Z \neq X$ is unidentified.
+Everything rests on the **exclusion restriction** $Z \neq X$: you need variation that shifts who gets considered without shifting who is attractive conditional on consideration. Without it, screening and evaluation are aliased and the model is unidentified.
+
+Hiring is the exemplary domain, not just a convenient one. Protected characteristics — name, race, age — satisfy the exclusion restriction almost by definition. They plausibly gate whether a résumé is read but should not determine job performance conditional on reading. The "should not" is not a pious hope; it is the content of anti-discrimination law. When the exclusion restriction and the legal standard say the same thing, the modelling assumption is as defensible as it gets.
+
+Other domains are harder. In content recommendation, what feature shifts whether an item is *considered* without shifting its quality? In credit scoring? In triage? The framework does not pretend instrument discovery is easy. It makes the difficulty *visible* as a modelling assumption that must be defended, rather than hiding it inside an end-to-end loss. The same identification problem applies inside the transformer. Is a given attention head encoding screening bias, or a legitimate feature correlation, or both? Without exogenous variation that isolates the bias channel, internal attribution is underdetermined — for the same reason that a consideration model without valid instruments is unidentified.
+
+## Conclusion
 
 The streetlight effect is not just a parable about lazy searching. It is a description of the interpretability status quo: we probe attention heads because they are legible, not because they are where the bias lives. Consideration set models offer a way out. They do not search under the lamppost. They name the variables that gate access, estimate how strongly each one operates, and report their uncertainty. Naming what you model is not a stylistic preference. It is audit infrastructure.
 
