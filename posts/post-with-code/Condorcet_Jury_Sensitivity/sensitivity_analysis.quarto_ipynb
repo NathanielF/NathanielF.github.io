@@ -25,7 +25,7 @@
         "date: \"2026-01-25\"\n",
         "---"
       ],
-      "id": "4349c3df"
+      "id": "e38e524b"
     },
     {
       "cell_type": "code",
@@ -40,7 +40,7 @@
         "\n",
         "np.random.seed(42)"
       ],
-      "id": "a263cba2",
+      "id": "7db6f078",
       "execution_count": null,
       "outputs": []
     },
@@ -149,7 +149,7 @@
         "\n",
         "To understand how legibility short-circuits learning, we need a way to build a \"company\" from the ground up and stress-test its decision-making. Our simulation function, `simulate_jury_data`, is the generative heart of this piece. It creates a laboratory where we can toggle the variables of organizational structure. We'll use this to stress test the Condorcet Jury theorem.\n"
       ],
-      "id": "a507f5e5"
+      "id": "51fbf9e1"
     },
     {
       "cell_type": "code",
@@ -335,7 +335,7 @@
         "\n",
         "    return votes, theta, delta, true_states"
       ],
-      "id": "e25d4907",
+      "id": "9f1b17a5",
       "execution_count": null,
       "outputs": []
     },
@@ -350,7 +350,7 @@
         "\n",
         "Now we generate three varieties of voting data where the drivers of voting outcomes are more or less variously effected by: individual competence, case difficulty, effects of block voting. \n"
       ],
-      "id": "eb574258"
+      "id": "8ace6d9f"
     },
     {
       "cell_type": "code",
@@ -402,7 +402,7 @@
         "    print_majority_k=False\n",
         ")\n"
       ],
-      "id": "f5f7be92",
+      "id": "6c53cf92",
       "execution_count": null,
       "outputs": []
     },
@@ -487,7 +487,7 @@
         "\n",
         "We now implement these structures in PyMC. The Bayesian setting is apt here. In our modelling, the outcomes are shaped by the interplay between the prior and the likelihood. When data is abundant the likelihood wins out, but when it's scarce the model will fall back on its priors. Similarly, in decision-making, organisations will fall back frameworks and heuristics driven by block behaviors when the cases are hard. These heuristics are organisationally encoded priors. \n"
       ],
-      "id": "af2c26b4"
+      "id": "67a654fd"
     },
     {
       "cell_type": "code",
@@ -655,7 +655,7 @@
         "\n",
         "    return idata, model\n"
       ],
-      "id": "37ea8b42",
+      "id": "8c7c6319",
       "execution_count": null,
       "outputs": []
     },
@@ -687,7 +687,7 @@
         "- The Blocked Model: Jurors are captured by \"Groupthink\" blocks that compress individual skill and introduce massive correlation.\n",
         "- The Full Model: A \"Treatment\" model where we test if an intervention ($\\tau$) can overcome the structural gravity of shared expertise and blocks.\n"
       ],
-      "id": "4d785ff5"
+      "id": "671294c8"
     },
     {
       "cell_type": "code",
@@ -706,7 +706,7 @@
         "    block_id=BLOCK_ID, treatment=treatment, correlated_blocks=True\n",
         ")"
       ],
-      "id": "dd9e1a41",
+      "id": "941ea61e",
       "execution_count": null,
       "outputs": []
     },
@@ -716,7 +716,7 @@
       "source": [
         "We will now define a helper function to sample the posterior predictive distribution of these models to estimate the individual votes on each issue of randomly selected subsets of the jurors. \n"
       ],
-      "id": "41b545a6"
+      "id": "8b4ab9cb"
     },
     {
       "cell_type": "code",
@@ -799,7 +799,7 @@
         "    \n",
         "    return results"
       ],
-      "id": "621bd7d8",
+      "id": "f43bfd2b",
       "execution_count": null,
       "outputs": []
     },
@@ -817,7 +817,7 @@
         "\n",
         "In the code above, the agents are allowed to be sampled as 'random,' but their randomness is constrained by the geometry of the distributions I have chosen. This is the first level of the Legibility Trap: we mistake a high-variance distribution for 'freedom,' forgetting that the agent is still trapped inside the shape of the curve we drew. In an organisation, 'innovation' is often just a random sample from a pre-approved prior. We think we are being creative, but we are just exploring the interior of a box designed by the CEO or the Software Architect\n"
       ],
-      "id": "3e7adc07"
+      "id": "d55c2c1e"
     },
     {
       "cell_type": "code",
@@ -1114,7 +1114,7 @@
         "\n",
         "    return tau_grid, results\n"
       ],
-      "id": "c2c169c0",
+      "id": "f8519c45",
       "execution_count": null,
       "outputs": []
     },
@@ -1124,7 +1124,7 @@
       "source": [
         "In each model we draw out the consequences of the interacting effects of components of competence. It's often useful to plot the tree structure to show how the observable outcome of vote distributions are downstream consequences of the latent skill and difficulty.\n"
       ],
-      "id": "131aca8d"
+      "id": "382c9bf8"
     },
     {
       "cell_type": "code",
@@ -1132,7 +1132,7 @@
       "source": [
         "pm.model_to_graphviz(model_full)"
       ],
-      "id": "708d7da9",
+      "id": "73eb4a45",
       "execution_count": null,
       "outputs": []
     },
@@ -1146,7 +1146,7 @@
         "\n",
         "The \"Vanilla\" model is our baseline. It represents an organisation that acknowledges two fundamental truths: Some employees are more skilled than others ($\\theta$). Some problems are harder than others ($\\delta$). Crucially, however, it assumes that these differences are independent. There are no \"Blocks.\" No one is being coached to think alike.\n"
       ],
-      "id": "708310db"
+      "id": "d42b7c78"
     },
     {
       "cell_type": "code",
@@ -1157,7 +1157,7 @@
         "print(f\"  σ_δ: {idata_vanilla.posterior['sigma_delta'].mean():.3f}\")\n",
         "plot_parameter_recovery(idata_vanilla, t_theta, t_delta, \"Vanilla Case\");"
       ],
-      "id": "7a260e82",
+      "id": "bad94038",
       "execution_count": null,
       "outputs": []
     },
@@ -1167,7 +1167,7 @@
       "source": [
         "Here we check the model's vision. The recovery plots compare the model’s estimated values for juror skill and case difficulty against the actual \"ground truth\" we programmed into the simulation. The recovery looks good. Next we want to ensure errors are independent.\n"
       ],
-      "id": "e66a39af"
+      "id": "292b571f"
     },
     {
       "cell_type": "code",
@@ -1179,7 +1179,7 @@
         "\n",
         "plot_skill_corr(idata_vanilla);"
       ],
-      "id": "377074f0",
+      "id": "80a0efea",
       "execution_count": null,
       "outputs": []
     },
@@ -1189,7 +1189,7 @@
       "source": [
         "The heatmap for the Vanilla model is a field of blue-white \"static.\" There are no dark clusters. In this environment, every person added to the room is a \"Whole Person.\" Because their errors are uncorrelated, their individual perspectives provide additive value. If you have 30 people, you have the collective power of 30 people.\n"
       ],
-      "id": "2c9ef9bf"
+      "id": "36d9283a"
     },
     {
       "cell_type": "code",
@@ -1199,7 +1199,7 @@
         "ax[0].axvline(1, linestyle='--', color='k')\n",
         "ax[0].set_title(\"Vanilla Model - Accuracy of Majority Vote \\n With Increasing Juror Pool\");\n"
       ],
-      "id": "d7e73b79",
+      "id": "cfd6d4e5",
       "execution_count": null,
       "outputs": []
     },
@@ -1216,7 +1216,7 @@
         "\n",
         "The management team loves this predictable, legible structure. You can manage three block leaders much more easily than 30 independent jurors. But as we’re about to see, this management convenience comes with a steep epistemic tax.\n"
       ],
-      "id": "87827afa"
+      "id": "29d6e16f"
     },
     {
       "cell_type": "code",
@@ -1229,7 +1229,7 @@
         "\n",
         "plot_parameter_recovery(idata_blocked, t_theta_blocked, t_delta_blocked, \"Blocked Case\");\n"
       ],
-      "id": "7db485cb",
+      "id": "9ff9547d",
       "execution_count": null,
       "outputs": []
     },
@@ -1239,7 +1239,7 @@
       "source": [
         "The parameter Recovery shows the erosion of the individual. In the Blocked Case, the recovery plot for Juror Skill ($\\theta$) pulls all individual towards block competence. Because $\\sigma_{block}$ is so high, the individual’s own talent is being physically \"drowned out\" by the group identity. In a high-alignment culture, it becomes nearly impossible to tell who is actually talented and who is just a \"culture fit.\" The \"Block Gravity\" pull is so strong that individual brilliance is indistinguishable from group adherence.\n"
       ],
-      "id": "63a5e335"
+      "id": "50bffdd5"
     },
     {
       "cell_type": "code",
@@ -1251,7 +1251,7 @@
         ")\n",
         "plot_skill_corr(idata_blocked);"
       ],
-      "id": "27135456",
+      "id": "2bf8c40f",
       "execution_count": null,
       "outputs": []
     },
@@ -1261,7 +1261,7 @@
       "source": [
         "Unlike the white noise of the Vanilla model, we now see dark red squares along the diagonal. Statistically, this organisation doesn't have 30 employees, the signal is diminished through swamping effects of the block.\n"
       ],
-      "id": "92a70b50"
+      "id": "a387903d"
     },
     {
       "cell_type": "code",
@@ -1271,7 +1271,7 @@
         "ax[0].axvline(1, linestyle='--', color='k')\n",
         "ax[0].set_title(\"Block Model - Accuracy of Majority Vote \\n With Increasing Juror Pool\");"
       ],
-      "id": "2647d03a",
+      "id": "a6084178",
       "execution_count": null,
       "outputs": []
     },
@@ -1285,7 +1285,7 @@
         "\n",
         "In the Full Model, we see a more subtle flavour of the Legibility Trap. Here, the blocks aren't \"Groupthink\" (negative/error-prone); they are \"Expertise\" (positive/competent). But despite the block effects we see a range of juror skills unlike in the previous model.\n"
       ],
-      "id": "2eccc1d7"
+      "id": "466ad526"
     },
     {
       "cell_type": "code",
@@ -1299,7 +1299,7 @@
         "\n",
         "plot_parameter_recovery(idata_full, t_theta_full, t_delta_full, \"Full Case\");"
       ],
-      "id": "69bb40d0",
+      "id": "3dd75cb4",
       "execution_count": null,
       "outputs": []
     },
@@ -1309,7 +1309,7 @@
       "source": [
         "The parameter recovery shows reduced clustering on individual competence around the block effects. Where it seems that $\\tau$ dominates $\\sigma_{block}$ and represents the decoupling force i.e. the specific organizational or individual intervention required to break the 'gravitational pull' of the block and restore independent signal. But we also see a flat line in the lower difficulty parameter plot. This is related to the high level of competence making easier cases almost certainly correctly identified. The organisation becomes \"stuck in its own success.\" Because it is so good at the (easy) cases, it stops valuing the \"Independent Friction\" ($\\tau$) needed to solve the hard ones. The flat line represents a state of optimal sub-optimization: you are 100% accurate on the trivial, which masks the fact that you have lost the ability to scale your intelligence on the complex. We can see this further by looking at the correlations. \n"
       ],
-      "id": "528c4b05"
+      "id": "6f8d16cd"
     },
     {
       "cell_type": "code",
@@ -1322,7 +1322,7 @@
         "\n",
         "plot_skill_corr(idata_full)\n"
       ],
-      "id": "e133a7c0",
+      "id": "ab10bfa5",
       "execution_count": null,
       "outputs": []
     },
@@ -1332,7 +1332,7 @@
       "source": [
         "The treatment ($\\tau$) successfully reduces structural correlation by inducing differential individual competence. We can imagine these treatments as training in radical candour, or similar inducements to challenge the status quo. But shared difficulty  of the problem space and common treatment still drives a consistent error rates which translates to a latent correlation. The heatmap should show that the dark squares of the Blocked Model have been \"shattered\" into a lighter, more fragmented pattern. But we retain a low-grade common correlation. It can be read as tragedy of good intentions. Management aims to de-correlate individual error through better training, but the training is a blunt instrument and just embeds shared methodological truisms and ways of working. Because of this combination of factors, the accuracy curve remains flat. \n"
       ],
-      "id": "0aec20f2"
+      "id": "ea1efcf8"
     },
     {
       "cell_type": "code",
@@ -1342,7 +1342,7 @@
         "ax[0].axvline(1, linestyle='--', color='k')\n",
         "ax[0].set_title(\"Full Model - Accuracy of Majority Vote \\n With Increasing Juror Pool\");"
       ],
-      "id": "a2de9c4e",
+      "id": "4a237b17",
       "execution_count": null,
       "outputs": []
     },
@@ -1352,7 +1352,7 @@
       "source": [
         "Adding more \"experts\" from the same block doesn't help because they all fail on the same \"Hard\" cases ($\\delta_i$). We have optimized for a specific type of excellence, and in doing so, you have sacrificed the diversity of error required to cross the final threshold to 100% accuracy. We can see how the accuracy doesn't move as we explore the $\\tau$ parameter space.\n"
       ],
-      "id": "761f9262"
+      "id": "d4bd08f3"
     },
     {
       "cell_type": "code",
@@ -1360,7 +1360,7 @@
       "source": [
         "az.plot_pair(idata_full, var_names=['expected_jury_accuracy_30', 'tau_mu', 'tau_sigma'], kind='kde');"
       ],
-      "id": "42fe27e7",
+      "id": "4fdef701",
       "execution_count": null,
       "outputs": []
     },
@@ -1370,7 +1370,7 @@
       "source": [
         "The pair plot reveals the posterior \"Exchange Rate\" between independence and performance. If `tau_mu` is high but `expected_jury_accuracy` is flat i.e. the degree of variation in the posterior for `tau_mu` is insufficient to move the needle, it tells us that the organisation has hit diminishing returns on the empirically gauged independence. However, we can use a posterior predictive analysis to try and impute majority accuracy under different treatment strengths. This is a more brute force counterfactual approach.\n"
       ],
-      "id": "8e060243"
+      "id": "182d8945"
     },
     {
       "cell_type": "code",
@@ -1403,7 +1403,7 @@
         "plt.grid(True, alpha=0.3)\n",
         "plt.show()"
       ],
-      "id": "a9e04cc3",
+      "id": "d5dcd77f",
       "execution_count": null,
       "outputs": []
     },
@@ -1427,7 +1427,7 @@
         "\n",
         "As C. Thi Nguyen might put it: the organisation has \"captured\" the value of expertise so effectively that it has lost the ability to see anything that falls outside its chosen metrics. The organisation is often \"right\" in a very legible way, but you are permanently blind to the \"illegible\" truths that a messy, unorthodox organisation might have caught.\n"
       ],
-      "id": "04479c92"
+      "id": "03054723"
     },
     {
       "cell_type": "code",
@@ -1441,7 +1441,7 @@
         "    \n",
         "print_accuracy_table(results_dict, JURY_SIZES)\n"
       ],
-      "id": "d1beae92",
+      "id": "0ae07cb1",
       "execution_count": null,
       "outputs": []
     },
@@ -1451,7 +1451,7 @@
       "source": [
         "We can plot the achieved accuracy by jury size.\n"
       ],
-      "id": "80405775"
+      "id": "9fb8b865"
     },
     {
       "cell_type": "code",
@@ -1460,7 +1460,7 @@
         "fig, ax = plot_accuracy_comparison(results_dict, JURY_SIZES)\n",
         "plt.show()\n"
       ],
-      "id": "1c0f4184",
+      "id": "bd26d5e1",
       "execution_count": null,
       "outputs": []
     },
@@ -1472,7 +1472,7 @@
         "\n",
         "By transforming our results into relative log-odds, we can isolate the Convergence Rate. This tells us how much \"work\" each additional employee is doing for the collective intelligence.\n"
       ],
-      "id": "f3a345ee"
+      "id": "efeb29cf"
     },
     {
       "cell_type": "code",
@@ -1487,7 +1487,7 @@
         "# Now call the efficiency plotter\n",
         "plot_condorcet_efficiency(JURY_SIZES, accuracy_dict);\n"
       ],
-      "id": "ecf6b1f9",
+      "id": "336a7c1d",
       "execution_count": null,
       "outputs": []
     },
@@ -1509,7 +1509,7 @@
         "\n",
         "Thus far, learning has been measured against a known ground truth. This is a generous assumption. It allows disagreement to be penalized and convergence to be rewarded. Most real-world epistemic systems do not operate under these conditions. They observe only votes, endorsements, or judgments—never correctness itself. The next section removes this external anchor to known truth and examines what the same IRT machinery infers when consensus replaces truth as the only available signal.\n"
       ],
-      "id": "5718ac92"
+      "id": "1dff1baa"
     },
     {
       "cell_type": "code",
@@ -1522,7 +1522,7 @@
         "    correlated_blocks=True, known_truth=False,\n",
         ")"
       ],
-      "id": "efb6cbf6",
+      "id": "6b811f2f",
       "execution_count": null,
       "outputs": []
     },
@@ -1532,7 +1532,7 @@
       "source": [
         "This model structure cannot be evaluated against the true states within the model as the truth is not baked into the the likelihood as before. Instead we've anchored the implicit latent judgements to the consensus patterns.\n"
       ],
-      "id": "ede7868b"
+      "id": "69c83a18"
     },
     {
       "cell_type": "code",
@@ -1540,7 +1540,7 @@
       "source": [
         "pm.model_to_graphviz(model_full_false)"
       ],
-      "id": "2c7d7dda",
+      "id": "85ade2ed",
       "execution_count": null,
       "outputs": []
     },
@@ -1550,7 +1550,7 @@
       "source": [
         "We see that the modelling now derives a different profile for the inferred difficulty of each problem case. The differences imply that the model without ground truth generally overestimates some easy cases and underestimates the genuinely hard cases. But there is a good degree of overlap in the cases where majority view is accurate.\n"
       ],
-      "id": "5865abb0"
+      "id": "6caac26a"
     },
     {
       "cell_type": "code",
@@ -1559,7 +1559,7 @@
         "ax = az.plot_forest([idata_full, idata_full_false], var_names=['delta'], combined=True, model_names=['Full Model with Ground Truth', 'Full Model without Ground Truth'], figsize=(9, 10));\n",
         "ax[0].set_title(\"Comparing Implied Case Difficulty\")"
       ],
-      "id": "60c47116",
+      "id": "c2cc67b2",
       "execution_count": null,
       "outputs": []
     },
@@ -1569,7 +1569,7 @@
       "source": [
         "We can compare how the accuracy of the majority evolves again by using posterior predictive sampling, to gauge the two models."
       ],
-      "id": "572112ca"
+      "id": "00762c42"
     },
     {
       "cell_type": "code",
@@ -1588,7 +1588,7 @@
         "    \n",
         "print_accuracy_table(results_dict, JURY_SIZES)"
       ],
-      "id": "05f19b5c",
+      "id": "a464bbcc",
       "execution_count": null,
       "outputs": []
     },
@@ -1598,7 +1598,7 @@
       "source": [
         "Interestingly, the accuracy with `full_no_truth` model is slightly higher than we saw with the `full` model. Likely the `full` model is overfitting to account for idiosyncracies of observed behaviour while, the `full_no_truth` model leans towards the majority heuristic. However, in both cases the accuracy growth plateaus. Diving a bit deeper, we can see how this is driven, oddly, by group based errors _on the easier cases_. \n"
       ],
-      "id": "3ec24cb1"
+      "id": "e8db8348"
     },
     {
       "cell_type": "code",
@@ -1616,7 +1616,7 @@
         "print(f\"Avg delta when z correct: {delta_when_correct.mean():.3f}\")\n",
         "print(f\"Avg delta when z wrong: {delta_when_wrong.mean():.3f}\")"
       ],
-      "id": "2fa7d9d1",
+      "id": "c3e30759",
       "execution_count": null,
       "outputs": []
     },
@@ -1702,7 +1702,7 @@
         "\n",
         ":::"
       ],
-      "id": "78311dc0"
+      "id": "6f522234"
     }
   ],
   "metadata": {
