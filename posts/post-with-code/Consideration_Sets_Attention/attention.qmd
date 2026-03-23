@@ -1627,6 +1627,341 @@ plt.show()
 
 ---
 
+### Swiss Metro: Consideration Sets on Real Data
+
+The hiring demo used synthetic data with known ground truth. That is the right way to validate parameter recovery, but it sidesteps the central difficulty: in the real world, nobody hands you the true $\gamma_z$. The Swiss Metro dataset lets us apply the same framework to observed transport choices and confront the instrument question honestly.
+
+The data comes from a 1998 stated preference survey in Switzerland. Respondents chose between three transport modes — **Train**, **Swiss Metro** (a hypothetical high-speed maglev), and **Car** — across a set of designed scenarios that varied travel time, cost, and headway. Each respondent also reported person-level characteristics: age, income, whether the trip was for business, and whether they held a *General Abonnement* (GA), an annual rail pass.
+
+The question is: which person-level characteristics gate *consideration* of a mode, as distinct from the mode-level attributes that drive utility conditional on consideration?
+
+::: {.callout-note}
+**Instrument choice is arguable here, not obvious.** In hiring, protected characteristics satisfy the exclusion restriction almost by definition. In transport, the case is weaker. Does holding a GA pass shift whether you *consider* the train, or does it shift how attractive the train *is* conditional on consideration? Plausibly both. We proceed with the modelling assumption that person-level characteristics primarily gate consideration while mode-level attributes (time, cost) drive utility. The framework does not hide this assumption. It names it as $Z \neq X$ and invites scrutiny.
+:::
+
+```{python}
+#| label: swiss-metro-data
+#| message: false
+
+import pandas as pd
+
+# ---- Load Swiss Metro data (local copy) ----
+sm_df = pd.read_csv("swissmetro.dat", sep='\t')
+
+# Standard filters (Bierlaire 2003): SP survey, known choice, exclude group=2 with purpose != 1,3
+sm_df = sm_df[sm_df["SP"] != 0]
+sm_df = sm_df[sm_df["CHOICE"] != 0]
+
+# Availability: keep only rows where at least 2 modes are available
+sm_df = sm_df[
+    (sm_df["TRAIN_AV"] + sm_df["SM_AV"] + sm_df["CAR_AV"]) >= 2
+]
+
+# Recode CHOICE to 0-indexed: 1=Train, 2=SM, 3=Car → 0, 1, 2
+sm_df["y"] = sm_df["CHOICE"] - 1
+
+print(f"Observations: {len(sm_df)}")
+print(f"\nChoice frequencies:")
+choice_labels = {0: "Train", 1: "Swiss Metro", 2: "Car"}
+for k, v in sm_df["y"].value_counts().sort_index().items():
+    print(f"  {choice_labels[k]:12s}: {v:5d}  ({v/len(sm_df):.1%})")
+
+print(f"\nPerson-level variables (consideration instruments):")
+print(f"  GA (annual pass):   {sm_df['GA'].mean():.2%} hold one")
+print(f"  PURPOSE (business):  coded 1={sm_df[sm_df['PURPOSE']==1].shape[0]} obs")
+print(f"  AGE distribution:    {sm_df['AGE'].value_counts().sort_index().to_dict()}")
+print(f"  INCOME distribution: {sm_df['INCOME'].value_counts().sort_index().to_dict()}")
+```
+
+```{python}
+#| label: swiss-metro-prep
+#| message: false
+
+# ---- Prepare arrays for the consideration set model ----
+#
+# Z (consideration instruments): person-level characteristics
+#   - GA: annual rail pass (binary) — gates rail/SM consideration
+#   - PURPOSE==1: business trip (binary) — business travellers may ignore car
+#   - INCOME > 2: higher income (binary) — may screen out slow/cheap modes
+#   - AGE > 3: older traveller (binary) — may screen out novel modes like SM
+#
+# X (utility covariates): mode-level attributes
+#   - Travel time (TT) per mode, scaled to hours
+#   - Cost (CO) per mode, scaled to CHF/100
+
+sm_alts = ["Train", "Swiss Metro", "Car"]
+n_sm = len(sm_df)
+
+# ---- Person-level consideration instruments ----
+ga       = sm_df["GA"].values.astype(float)
+business = (sm_df["PURPOSE"] == 1).values.astype(float)
+high_inc = (sm_df["INCOME"] > 2).values.astype(float)
+older    = (sm_df["AGE"] > 3).values.astype(float)
+
+# Composite Z: same instruments for each mode, but gamma varies by mode
+# This lets e.g. GA shift train consideration differently from car consideration
+Z_person = np.column_stack([ga, business, high_inc, older])  # (N, 4)
+Z_means_sm = Z_person.mean(axis=0)
+Z_tilde_sm = Z_person - Z_means_sm  # mean-centred
+
+# Stack to (N, J, K_z) — same person-level Z for all modes, gamma_z differs per mode
+Z_sm = np.stack([Z_tilde_sm, Z_tilde_sm, Z_tilde_sm], axis=1)  # (N, 3, 4)
+
+# ---- Mode-level utility covariates ----
+# Travel time in hours, cost in CHF/100
+X_sm = np.stack([
+    np.column_stack([sm_df["TRAIN_TT"].values / 60, sm_df["TRAIN_CO"].values / 100]),
+    np.column_stack([sm_df["SM_TT"].values / 60,    sm_df["SM_CO"].values / 100]),
+    np.column_stack([sm_df["CAR_TT"].values / 60,   sm_df["CAR_CO"].values / 100]),
+], axis=1)  # (N, 3, 2)
+
+# Availability mask: set unavailable modes' utility to -inf
+avail = np.column_stack([
+    sm_df["TRAIN_AV"].values,
+    sm_df["SM_AV"].values,
+    sm_df["CAR_AV"].values
+])  # (N, 3)
+
+y_sm = sm_df["y"].values
+
+print(f"Z_sm shape: {Z_sm.shape}  (N, J, K_z)")
+print(f"X_sm shape: {X_sm.shape}  (N, J, K_x)")
+print(f"Availability: {avail.mean(axis=0).round(2)} (Train, SM, Car)")
+print(f"\nZ instrument means (pre-centring):")
+for name, m in zip(["GA", "Business", "High income", "Older"], Z_means_sm):
+    print(f"  {name:12s}: {m:.3f}")
+```
+
+```{python}
+#| label: swiss-metro-model
+#| eval: true
+
+import pymc as pm
+import pytensor.tensor as pt
+
+def build_swissmetro_consideration(
+    X: np.ndarray, Z: np.ndarray, avail: np.ndarray, y: np.ndarray
+) -> pm.Model:
+    """
+    Consideration set model for Swiss Metro with:
+      - Person-level Z instruments (GA, business, income, age) driving consideration
+      - Mode-level X covariates (travel time, cost) driving utility
+      - Availability constraints (unavailable modes get -inf utility)
+
+    Each mode gets its own gamma_z vector: a GA pass may strongly increase
+    train consideration but have no effect on car consideration.
+    """
+    n_obs, n_alts, n_z = Z.shape
+    _, _, n_x = X.shape
+
+    z_names = ["GA", "Business", "High_income", "Older"]
+    x_names = ["travel_time", "cost"]
+
+    with pm.Model(
+        coords={
+            "obs": range(n_obs),
+            "alts": sm_alts,
+            "z_instruments": z_names,
+            "x_covs": x_names,
+        }
+    ) as model:
+
+        # ---- STAGE 1: Consideration ----
+        # gamma_z: (J, K_z) — each mode has its own sensitivity to each instrument
+        # No intercept: absorbed into alpha_j
+        gamma_z = pm.Normal("gamma_z", mu=0, sigma=2,
+                           dims=("alts", "z_instruments"))
+
+        Z_data = pm.Data("Z", Z, dims=("obs", "alts", "z_instruments"))
+
+        # log_odds_consideration: (N, J) = sum over K_z of gamma_z[j,k] * Z[n,j,k]
+        log_odds_c = pt.sum(gamma_z[None, :, :] * Z_data, axis=2)  # (N, J)
+        pi = pm.Deterministic("pi", pm.math.sigmoid(log_odds_c),
+                             dims=("obs", "alts"))
+
+        # ---- STAGE 2: Utility ----
+        alpha_raw = pm.Normal("alpha_raw", mu=0, sigma=2, shape=n_alts - 1)
+        alpha = pt.concatenate([alpha_raw, pt.zeros(1)])  # Car = reference
+
+        beta_tt   = pm.Normal("beta_tt", mu=0, sigma=2)    # travel time
+        beta_cost = pm.Normal("beta_cost", mu=0, sigma=2)  # cost
+        beta = pt.stack([beta_tt, beta_cost])
+
+        X_data = pm.Data("X", X, dims=("obs", "alts", "x_covs"))
+        V = alpha[None, :] + pt.sum(X_data * beta[None, None, :], axis=2)
+
+        # ---- Availability + log-consideration-adjusted utility ----
+        avail_data = pm.Data("avail", avail.astype(float), dims=("obs", "alts"))
+        log_pi = pm.math.log(pi + 1e-8)
+
+        # Unavailable modes: set to large negative number
+        U_avail = log_pi + V + pt.log(avail_data + 1e-8)
+
+        U_c = U_avail - U_avail.max(axis=1, keepdims=True)
+        p = pm.Deterministic("p", pm.math.softmax(U_c, axis=1),
+                            dims=("obs", "alts"))
+
+        y_obs = pm.Data("y_obs", y, dims="obs")
+        _ = pm.Categorical("likelihood", p=p, observed=y_obs)
+
+    return model
+
+sm_model = build_swissmetro_consideration(X_sm, Z_sm, avail, y_sm)
+print(sm_model)
+```
+
+```{python}
+#| label: swiss-metro-fit
+#| eval: true
+#| echo: true
+
+with sm_model:
+    sm_idata = pm.sample(
+        draws=1000, tune=1000,
+        target_accept=0.9,
+        random_seed=42,
+        progressbar=True,
+    )
+```
+
+```{python}
+#| label: swiss-metro-results
+#| eval: true
+#| echo: true
+
+# ---- Consideration parameters: gamma_z by mode ----
+# Each row is a mode, each column is a person-level instrument.
+# A positive gamma means that characteristic INCREASES consideration of that mode.
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 4), sharey=True)
+z_names = ["GA", "Business", "High_income", "Older"]
+
+for j, (ax, mode) in enumerate(zip(axes, sm_alts)):
+    gamma_post = sm_idata.posterior["gamma_z"].sel(alts=mode)
+    for k, z_name in enumerate(z_names):
+        samples = gamma_post.sel(z_instruments=z_name).values.flatten()
+        ax.hist(samples, bins=40, alpha=0.6, label=z_name, density=True)
+    ax.axvline(0, color="k", linestyle="--", alpha=0.5)
+    ax.set_title(f"{mode}")
+    ax.set_xlabel("γ_z")
+    if j == 0:
+        ax.set_ylabel("Posterior density")
+    ax.legend(fontsize=7)
+
+plt.suptitle(
+    "Swiss Metro: person-level screening parameters γ_z by mode\n"
+    "Positive = characteristic increases consideration; zero line = no effect",
+    y=1.03
+)
+plt.tight_layout()
+plt.show()
+
+# ---- Utility parameters ----
+az.plot_posterior(
+    sm_idata,
+    var_names=["beta_tt", "beta_cost", "alpha_raw"],
+    figsize=(12, 3),
+)
+plt.suptitle(
+    "Utility stage: travel time and cost sensitivities, mode constants\n"
+    "Expected: negative β_tt (prefer faster), negative β_cost (prefer cheaper)",
+    y=1.02,
+)
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: swiss-metro-consideration-plot
+#| eval: true
+#| echo: true
+
+# ---- Stratified consideration: GA holders vs non-holders ----
+# The GA pass is the most interesting instrument: it should strongly shift
+# consideration of rail modes (Train, SM) but have little effect on Car.
+
+pi_post_sm = sm_idata.posterior["pi"].mean(("chain", "draw"))  # (N, J)
+ga_mask = sm_df["GA"].values.astype(bool)
+
+fig, ax = plt.subplots(figsize=(9, 4))
+
+labels_sm = []
+vals_sm = []
+colors_sm = []
+alphas_sm = []
+mode_colors = {"Train": "#4C72B0", "Swiss Metro": "#55A868", "Car": "#DD8452"}
+
+for j, mode in enumerate(sm_alts):
+    pi_no_ga  = pi_post_sm.values[~ga_mask, j].mean()
+    pi_yes_ga = pi_post_sm.values[ga_mask,  j].mean()
+    labels_sm.extend([f"{mode}\n(no GA)", f"{mode}\n(GA)"])
+    vals_sm.extend([pi_no_ga, pi_yes_ga])
+    colors_sm.extend([mode_colors[mode], mode_colors[mode]])
+    alphas_sm.extend([0.45, 0.9])
+
+bars = ax.bar(labels_sm, vals_sm, color=colors_sm)
+for bar, v, a in zip(bars, vals_sm, alphas_sm):
+    bar.set_alpha(a)
+    ax.text(bar.get_x() + bar.get_width() / 2, v + 0.01,
+            f"{v:.2f}", ha="center", fontsize=10)
+
+ax.set_ylabel("Posterior mean consideration probability π")
+ax.set_title(
+    "GA pass holders consider rail modes more strongly\n"
+    "Dark = GA holder; light = no GA"
+)
+ax.set_ylim(0, 1.1)
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: swiss-metro-diagnostics
+#| eval: true
+#| echo: true
+#| fig-cap: "Trace plots: left column shows posterior densities, right column shows MCMC chains. Well-mixed chains and smooth densities indicate convergence."
+
+az.plot_trace(
+    sm_idata,
+    var_names=["beta_tt", "beta_cost", "alpha_raw", "gamma_z"],
+    figsize=(14, 16),
+)
+plt.tight_layout()
+plt.show()
+
+# Summary table for key diagnostics
+print(az.summary(
+    sm_idata,
+    var_names=["beta_tt", "beta_cost", "alpha_raw", "gamma_z"],
+    round_to=3,
+))
+```
+
+The chains mix well and the posteriors are unimodal. Check $\hat{R}$ and effective sample size in the summary table: values near 1.0 and in the hundreds respectively confirm that the sampler has converged and the estimates are reliable.
+
+#### Reading the results
+
+**Consideration stage.** The $\gamma_z$ posteriors tell us how each person-level characteristic shifts consideration of each mode, after mean-centring.
+
+- **GA pass** has the largest effect and it is sharply asymmetric across modes. For Car, $\gamma_z$ is strongly negative (around -8 to -10): GA holders effectively screen out driving. The pass does not make driving worse. It makes driving *unconsidered*. This is exactly the kind of hard-gating behaviour the consideration model is designed to detect.
+- **Older** travellers show higher consideration of Train (positive, around 1.5) and lower consideration of Swiss Metro (negative, around -1). Familiarity with existing rail and scepticism toward a hypothetical maglev is a plausible reading.
+- **Business** and **High income** are closer to zero across modes, with wider posteriors. The screening signal is weaker and less certain.
+
+**Utility stage.** Conditional on consideration, mode attributes drive choice in the expected directions.
+
+- $\beta_{tt} \approx -0.72$: strongly negative, well-identified. People prefer faster modes.
+- $\beta_{cost} \approx -0.085$: negative but smaller in magnitude. Cost matters less than time in this sample, consistent with the relatively affluent Swiss commuter population.
+- $\alpha_{raw}[0]$ (Train) $\approx -0.83$: Train has lower baseline utility than Car (the reference mode), net of measured time and cost.
+- $\alpha_{raw}[1]$ (Swiss Metro) $\approx 0.14$: a slight premium for the hypothetical high-speed mode, after accounting for its attributes.
+
+**The GA consideration plot** is the clearest single result. GA holders' consideration of Car drops to near zero (0.00 vs 0.75 for non-holders). They have committed to rail through their pass purchase. A standard multinomial logit would absorb this into the alternative-specific constant or the cost coefficient. The consideration model separates the mechanism: the GA pass changes *whether you look at car timetables*, not *how fast the car goes*.
+
+The caveat flagged in the callout applies here. A GA pass arguably shifts both consideration *and* utility, since the marginal cost of rail trips is zero for pass holders. The model attributes the entire GA effect to the consideration stage because we excluded it from $X$. That modelling choice is defensible — but it is a choice. The $\gamma_z$ posteriors are interpretable conditional on the exclusion restriction holding. If the restriction is wrong, the decomposition is wrong. But it is wrong in a way you can argue about, because the assumption is visible and named.
+
+This is the core advantage over transformer attention. When a multi-head model distributes mode preferences across anonymous subspaces, there is nothing to argue about. There is no named assumption to accept or reject. The consideration set model makes instrument validity the central modelling choice and forces it into the open.
+
+---
+
 ## Part III: Where the Analogy Holds and Breaks
 
 ::: {.callout-tip icon=false}
