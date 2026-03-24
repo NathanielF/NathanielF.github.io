@@ -2012,44 +2012,13 @@ This is the core advantage over transformer attention. When a multi-head model d
 
 ---
 
-## Part III: Where the Analogy Holds and Breaks
+## Part III: What the Analogy Buys You
 
-We've argued that the structural analogies between these two technologies is deep and meaningful. Yet, the analogy is not perfect. The consideration set model is a stylised abstraction of discrete choice, just as transformer attention is a stylised abstraction of selective relevance weighting. Both are simplified models that capture key features while omitting others. We propose to use consideration set methologies to audit transformer attention. The differences are fruitful. 
+The structural map between transformer attention and consideration sets was laid out early (see the analogy table above). The demos have shown it in action. The question now is not whether the analogy holds but what it *buys*.
 
-::: {.callout-tip icon=false}
-## Where the Analogy Holds
+The most productive difference is the hard/soft divide. Transformer attention is a **differentiable relaxation** of discrete consideration. Consideration sets provide a **Bayesian interpretation** of what attention weights represent: the posterior probability that an alternative is decision-relevant. Cross-pollination runs both ways. Attention weights are better read as "how likely is this token to be decision-relevant" than "how much does this token contribute," motivating sparsity-inducing variants (Sparsemax, $\alpha$-entmax) as continuous relaxations of hard consideration. In the other direction, the $Q/K/V$ factorisation suggests consideration models could separate the *signal* that determines consideration from the *utility* that drives choice. Our Swiss Metro model takes a step in this direction.
 
-| Dimension | Transformer Attention | Consideration Set |
-|---|---|---|
-| **Scoring** | $QK^\top / \sqrt{d_k}$ | $\tilde{z}_{nj}\gamma_j$ |
-| **Normalisation** | Softmax: $w_j = e^{s_j} / \sum_k e^{s_k}$ | Log-adjusted softmax: $e^{\log\pi_{nj} + V_{nj}} / \sum_k (\cdots)$ |
-| **Signal/value separation** | $K$ and $V$ are *different* projections of the same embeddings | $z_{nj}$ (consideration) and $x_{nj}$ (utility) are *different* variables |
-| **Identification requirement** | $K \neq V$: degenerate if the same projection is used for both | $Z \neq X$: non-identified if the same covariates enter both stages |
-| **Context-sensitivity** | $Q$ changes per query | $\pi_{nj}$ changes per person via $z_{nj}$ |
-| **Bottleneck** | Sequence → fixed-size context vector | Full alternative space → consideration set → choice |
-:::
-
-::: {.callout-warning icon=false}
-## Where the Analogy Breaks
-
-| Dimension | Transformer | Consideration Set |
-|---|---|---|
-| **Gate type** | **Soft**: every token always contributes | **Hard**: alternatives are in or out |
-| **Independence** | Softmax couples all tokens: $\sum_j w_j = 1$ | Sigmoid decouples: $\pi_j$ is independent |
-| **Uncertainty** | Deterministic at inference | Stochastic: a latent discrete variable |
-| **Learning** | Backpropagation from task loss | MCMC / VI from a likelihood |
-| **Output** | A transformed representation | A discrete choice |
-| **Interpretability** | Bias distributed across anonymous heads | Each $\gamma_{zj}$ is named with a posterior |
-:::
-
-The most productive difference is the hard/soft divide. Transformer attention is a **differentiable relaxation** of discrete consideration. Consideration sets provide a **Bayesian interpretation** of what attention weights represent: the posterior probability that an alternative is decision-relevant.
-
-Cross-pollination runs both ways:
-
-- **From discrete choice to transformers**: Attention weights are better read as "how likely is this token to be decision-relevant" than "how much does this token contribute." This motivates sparsity-inducing variants (Sparsemax, $\alpha$-entmax) as continuous relaxations of hard consideration.
-
-- **From transformers to discrete choice**: The $Q/K/V$ factorisation suggests consideration models could separate the *signal* that determines consideration from the *utility* that drives choice, rather than conflating them through shared covariates. Our Swiss Metro model takes a step in this direction.
-
+But the deepest difference is not mathematical. It is about what each framework makes *arguable*.
 
 ### Behavioural Audit, Not Mechanistic Explanation
 

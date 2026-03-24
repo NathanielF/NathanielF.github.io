@@ -5177,7 +5177,7 @@ border-radius: 0.25rem;
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
   <li><a href="#consideration-sets-on-real-data-transport-mode-choice" id="toc-consideration-sets-on-real-data-transport-mode-choice" class="nav-link" data-scroll-target="#consideration-sets-on-real-data-transport-mode-choice">Consideration Sets on Real Data: Transport Mode Choice</a></li>
   </ul></li>
-  <li><a href="#part-iii-where-the-analogy-holds-and-breaks" id="toc-part-iii-where-the-analogy-holds-and-breaks" class="nav-link" data-scroll-target="#part-iii-where-the-analogy-holds-and-breaks">Part III: Where the Analogy Holds and Breaks</a>
+  <li><a href="#part-iii-what-the-analogy-buys-you" id="toc-part-iii-what-the-analogy-buys-you" class="nav-link" data-scroll-target="#part-iii-what-the-analogy-buys-you">Part III: What the Analogy Buys You</a>
   <ul class="collapse">
   <li><a href="#behavioural-audit-not-mechanistic-explanation" id="toc-behavioural-audit-not-mechanistic-explanation" class="nav-link" data-scroll-target="#behavioural-audit-not-mechanistic-explanation">Behavioural Audit, Not Mechanistic Explanation</a></li>
   </ul></li>
@@ -7702,131 +7702,11 @@ NUTS: [gamma_0, gamma_z, alpha_raw, beta_tt, beta_cost]</code></pre>
 </section>
 </section>
 </section>
-<section id="part-iii-where-the-analogy-holds-and-breaks" class="level2">
-<h2 class="anchored" data-anchor-id="part-iii-where-the-analogy-holds-and-breaks">Part III: Where the Analogy Holds and Breaks</h2>
-<p>We’ve argued that the structural analogies between these two technologies is deep and meaningful. Yet, the analogy is not perfect. The consideration set model is a stylised abstraction of discrete choice, just as transformer attention is a stylised abstraction of selective relevance weighting. Both are simplified models that capture key features while omitting others. We propose to use consideration set methologies to audit transformer attention. The differences are fruitful.</p>
-<div class="callout callout-style-default callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Where the Analogy Holds
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Dimension</th>
-<th>Transformer Attention</th>
-<th>Consideration Set</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Scoring</strong></td>
-<td><span class="math inline">\(QK^\top / \sqrt{d_k}\)</span></td>
-<td><span class="math inline">\(\tilde{z}_{nj}\gamma_j\)</span></td>
-</tr>
-<tr class="even">
-<td><strong>Normalisation</strong></td>
-<td>Softmax: <span class="math inline">\(w_j = e^{s_j} / \sum_k e^{s_k}\)</span></td>
-<td>Log-adjusted softmax: <span class="math inline">\(e^{\log\pi_{nj} + V_{nj}} / \sum_k (\cdots)\)</span></td>
-</tr>
-<tr class="odd">
-<td><strong>Signal/value separation</strong></td>
-<td><span class="math inline">\(K\)</span> and <span class="math inline">\(V\)</span> are <em>different</em> projections of the same embeddings</td>
-<td><span class="math inline">\(z_{nj}\)</span> (consideration) and <span class="math inline">\(x_{nj}\)</span> (utility) are <em>different</em> variables</td>
-</tr>
-<tr class="even">
-<td><strong>Identification requirement</strong></td>
-<td><span class="math inline">\(K \neq V\)</span>: degenerate if the same projection is used for both</td>
-<td><span class="math inline">\(Z \neq X\)</span>: non-identified if the same covariates enter both stages</td>
-</tr>
-<tr class="odd">
-<td><strong>Context-sensitivity</strong></td>
-<td><span class="math inline">\(Q\)</span> changes per query</td>
-<td><span class="math inline">\(\pi_{nj}\)</span> changes per person via <span class="math inline">\(z_{nj}\)</span></td>
-</tr>
-<tr class="even">
-<td><strong>Bottleneck</strong></td>
-<td>Sequence → fixed-size context vector</td>
-<td>Full alternative space → consideration set → choice</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="callout callout-style-default callout-warning no-icon callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Where the Analogy Breaks
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Dimension</th>
-<th>Transformer</th>
-<th>Consideration Set</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Gate type</strong></td>
-<td><strong>Soft</strong>: every token always contributes</td>
-<td><strong>Hard</strong>: alternatives are in or out</td>
-</tr>
-<tr class="even">
-<td><strong>Independence</strong></td>
-<td>Softmax couples all tokens: <span class="math inline">\(\sum_j w_j = 1\)</span></td>
-<td>Sigmoid decouples: <span class="math inline">\(\pi_j\)</span> is independent</td>
-</tr>
-<tr class="odd">
-<td><strong>Uncertainty</strong></td>
-<td>Deterministic at inference</td>
-<td>Stochastic: a latent discrete variable</td>
-</tr>
-<tr class="even">
-<td><strong>Learning</strong></td>
-<td>Backpropagation from task loss</td>
-<td>MCMC / VI from a likelihood</td>
-</tr>
-<tr class="odd">
-<td><strong>Output</strong></td>
-<td>A transformed representation</td>
-<td>A discrete choice</td>
-</tr>
-<tr class="even">
-<td><strong>Interpretability</strong></td>
-<td>Bias distributed across anonymous heads</td>
-<td>Each <span class="math inline">\(\gamma_{zj}\)</span> is named with a posterior</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>The most productive difference is the hard/soft divide. Transformer attention is a <strong>differentiable relaxation</strong> of discrete consideration. Consideration sets provide a <strong>Bayesian interpretation</strong> of what attention weights represent: the posterior probability that an alternative is decision-relevant.</p>
-<p>Cross-pollination runs both ways:</p>
-<ul>
-<li><p><strong>From discrete choice to transformers</strong>: Attention weights are better read as “how likely is this token to be decision-relevant” than “how much does this token contribute.” This motivates sparsity-inducing variants (Sparsemax, <span class="math inline">\(\alpha\)</span>-entmax) as continuous relaxations of hard consideration.</p></li>
-<li><p><strong>From transformers to discrete choice</strong>: The <span class="math inline">\(Q/K/V\)</span> factorisation suggests consideration models could separate the <em>signal</em> that determines consideration from the <em>utility</em> that drives choice, rather than conflating them through shared covariates. Our Swiss Metro model takes a step in this direction.</p></li>
-</ul>
+<section id="part-iii-what-the-analogy-buys-you" class="level2">
+<h2 class="anchored" data-anchor-id="part-iii-what-the-analogy-buys-you">Part III: What the Analogy Buys You</h2>
+<p>The structural map between transformer attention and consideration sets was laid out early (see the analogy table above). The demos have shown it in action. The question now is not whether the analogy holds but what it <em>buys</em>.</p>
+<p>The most productive difference is the hard/soft divide. Transformer attention is a <strong>differentiable relaxation</strong> of discrete consideration. Consideration sets provide a <strong>Bayesian interpretation</strong> of what attention weights represent: the posterior probability that an alternative is decision-relevant. Cross-pollination runs both ways. Attention weights are better read as “how likely is this token to be decision-relevant” than “how much does this token contribute,” motivating sparsity-inducing variants (Sparsemax, <span class="math inline">\(\alpha\)</span>-entmax) as continuous relaxations of hard consideration. In the other direction, the <span class="math inline">\(Q/K/V\)</span> factorisation suggests consideration models could separate the <em>signal</em> that determines consideration from the <em>utility</em> that drives choice. Our Swiss Metro model takes a step in this direction.</p>
+<p>But the deepest difference is not mathematical. It is about what each framework makes <em>arguable</em>.</p>
 <section id="behavioural-audit-not-mechanistic-explanation" class="level3">
 <h3 class="anchored" data-anchor-id="behavioural-audit-not-mechanistic-explanation">Behavioural Audit, Not Mechanistic Explanation</h3>
 <p>Mechanistic interpretability (probing classifiers, causal tracing, activation patching) asks: <em>where inside the model does the bias live?</em> This is the streetlight question. It searches where the representations are visible. The consideration set approach asks something different: <em>does the system’s observable screening behaviour exhibit bias, and on which variables?</em> It does not need to find the keys under the lamppost. It applies to any screener, whether human, logistic regression, or transformer, without access to weights or architecture.</p>
