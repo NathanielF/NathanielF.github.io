@@ -7,13 +7,12 @@ categories: ["NLP", "discrete choice", "econometrics", "deep learning", "PyMC"]
 format:
   html:
     toc: true
-    code-fold: show
+    code-fold: true
     fig-width: 8
     fig-height: 5
 self-contained: true
 draft: false
 cache: true
-code-fold: true
 execute: 
   enabled: true
 jupyter: pytorch-env
@@ -30,6 +29,32 @@ import matplotlib.pyplot as plt
 import pymc as pm
 import pytensor.tensor as pt
 warnings.filterwarnings("ignore")
+
+# ---- Unified palette ----
+# Muted base tones; focal colours used sparingly for emphasis.
+PAL = {
+    "grey1":     "#a8a0a0",   # warm light grey — default bars, non-focal
+    "grey2":     "#7a7170",   # warm mid grey — secondary
+    "taupe":     "#b5a99a",   # muted taupe — tertiary / background bars
+    "brown":     "#8c7a6b",   # muted brown — secondary emphasis
+    "focal1":    "#c25a3c",   # terracotta — primary focal (bias, activist, etc.)
+    "focal2":    "#4a6d8c",   # steel blue — secondary focal (teller, baseline)
+    "focal3":    "#6b8f6b",   # sage green — tertiary focal (Swiss Metro)
+    "ref_line":  "#3d3535",   # near-black — reference lines, axes
+    "ref_dash":  "#6b6060",   # dark grey — dashed reference lines
+}
+
+plt.rcParams.update({
+    "figure.facecolor":  "white",
+    "axes.facecolor":    "white",
+    "axes.edgecolor":    PAL["ref_dash"],
+    "axes.labelcolor":   PAL["ref_line"],
+    "text.color":        PAL["ref_line"],
+    "xtick.color":       PAL["ref_dash"],
+    "ytick.color":       PAL["ref_dash"],
+    "axes.grid":         False,
+    "font.size":         10,
+})
 ```
 
 !!!!!THIS IS A DRAFT!!!!!!
@@ -163,6 +188,7 @@ Before training anything, we can see the $Q, K, V$ mechanism at work. The word `
 
 ```{python}
 #| label: static-attention
+#| code-fold: true
 #| message: false
 #| fig-cap: "Static attention: a feminist-sense query for 'Linda' attends selectively to activism context. The V matrix decouples the signal (K) from the payload (V)."
 
@@ -213,7 +239,7 @@ words = ["outspoken", "justice", "deposit"]
 w = attn_w[0].detach().numpy()
 
 fig, ax = plt.subplots(figsize=(6, 3.5))
-colors = ["#4C72B0", "#4C72B0", "#DD8452"]
+colors = [PAL["focal2"], PAL["focal2"], PAL["focal1"]]
 bars = ax.bar(words, w, color=colors, alpha=0.85, edgecolor="white", linewidth=1.5)
 ax.set_ylabel("Attention weight $w_j$")
 ax.set_title("Static QKV attention: feminist-sense 'Linda' query")
@@ -426,6 +452,7 @@ Although only 30% of examples were generated from the activist-sense distributio
 
 ```{python}
 #| label: vocab-log-odds
+#| code-fold: true
 #| fig-cap: "Log-odds of each word's activist vs teller signal strength. Words near zero are genuine ambiguity carriers; words at the extremes are strong sense-specific signals."
 
 log_odds = {
@@ -438,9 +465,9 @@ words_sorted = [x[0] for x in sorted_items]
 lo_sorted    = [x[1] for x in sorted_items]
 
 fig, ax = plt.subplots(figsize=(8, 6))
-colors  = ["#4C72B0" if lo > 0 else "#DD8452" for lo in lo_sorted]
+colors  = [PAL["focal2"] if lo > 0 else PAL["focal1"] for lo in lo_sorted]
 ax.barh(words_sorted, lo_sorted, color=colors, alpha=0.85, edgecolor="white")
-ax.axvline(0, color="black", linewidth=0.9, linestyle="--")
+ax.axvline(0, color=PAL["ref_line"], linewidth=0.9, linestyle="--")
 ax.set_xlabel(r"Log-odds  $\log(a_w / t_w)$")
 ax.set_title("Vocabulary signal structure: activist (blue) vs teller (orange)")
 plt.tight_layout()
@@ -570,6 +597,7 @@ Do the learned attention weights track the *true* signal strengths, or are they 
 
 ```{python}
 #| label: attention-by-sense
+#| code-fold: true
 #| fig-cap: "Average attention weight per word, by label. Vignette words (outspoken, philosophy, justice, discrimination) appear in every context — does the model learn to discount them?"
 
 attention_records = {0: {}, 1: {}}
@@ -603,8 +631,8 @@ fig, axes = plt.subplots(1, 2, figsize=(13, 6))
 
 for ax, (attn, sense_name, color) in zip(
     axes,
-    [(activist_attn, "Activist sense (0)", "#4C72B0"),
-     (teller_attn, "Teller sense (1)", "#DD8452")],
+    [(activist_attn, "Activist sense (0)", PAL["focal2"]),
+     (teller_attn, "Teller sense (1)", PAL["focal1"])],
 ):
     order = np.argsort(attn)[::-1]
     ax.barh(
@@ -614,7 +642,7 @@ for ax, (attn, sense_name, color) in zip(
     )
     baseline = 1 / len(common_words)
     ax.axvline(
-        baseline, color="k", linestyle="--", alpha=0.5,
+        baseline, color=PAL["ref_line"], linestyle="--", alpha=0.5,
         label=f"Uniform baseline ({baseline:.2f})"
     )
     ax.set_xlabel("Average attention weight")
@@ -631,6 +659,7 @@ plt.show()
 
 ```{python}
 #| label: signal-recovery
+#| code-fold: true
 #| fig-cap: "Scatter of true DGP signal strength vs learned average attention weight, by label. Circles: non-vignette words (Spearman computed over these). Red triangles: vignette words (always present, excluded from correlation — their forced presence means VOCAB_SIGNALS does not govern their frequency)."
 
 from scipy.stats import spearmanr
@@ -639,8 +668,8 @@ fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
 for ax, (sense_idx, sense_label, attn_list, color) in zip(
     axes,
-    [(0, "Activist", activist_attn,   "#4C72B0"),
-     (1, "Teller",   teller_attn, "#DD8452")],
+    [(0, "Activist", activist_attn,   PAL["focal2"]),
+     (1, "Teller",   teller_attn, PAL["focal1"])],
 ):
     true_s = [VOCAB_SIGNALS[w][sense_idx] for w in common_words]
     rho, p = spearmanr(true_s, attn_list)
@@ -655,9 +684,9 @@ for ax, (sense_idx, sense_label, attn_list, color) in zip(
     for vw in vignette_words_in_data:
         vts = VOCAB_SIGNALS[vw][sense_idx]
         vla = np.mean(attention_records[sense_idx][vw])
-        ax.scatter([vts], [vla], color="red", marker="^", s=80,
+        ax.scatter([vts], [vla], color=PAL["focal1"], marker="^", s=80,
                    zorder=5, alpha=0.9)
-        ax.annotate(vw, (vts, vla), fontsize=7, alpha=0.9, color="red",
+        ax.annotate(vw, (vts, vla), fontsize=7, alpha=0.9, color=PAL["focal1"],
                     xytext=(3, 2), textcoords="offset points")
 
     # Regression line
@@ -693,6 +722,7 @@ Human respondents systematically judge P(feminist bank teller) > P(bank teller).
 
 ```{python}
 #| label: conjunction-fallacy-probe
+#| code-fold: true
 #| fig-cap: "Conjunction fallacy probe: P(model predicts activist) for seven diagnostic contexts. The dashed line marks the 30% base rate. Moving left to right isolates the additive effects of conjunction pairs and vignette words."
 
 probes = {
@@ -732,12 +762,12 @@ print(f"\n  Base rate prior = 0.30")
 fig, ax = plt.subplots(figsize=(11, 5))
 names = list(probe_results.keys())
 p_act = [probe_results[n]["P(activist)"] for n in names]
-colors = ["#c44e52" if p > 0.5 else "#4C72B0" for p in p_act]
+colors = [PAL["focal1"] if p > 0.5 else PAL["focal2"] for p in p_act]
 
 bars = ax.bar(range(len(names)), p_act, color=colors, alpha=0.85, edgecolor="white")
-ax.axhline(0.30, color="black", linestyle="--", alpha=0.6,
+ax.axhline(0.30, color=PAL["ref_line"], linestyle="--", alpha=0.6,
            label="Base rate (30 % activist)")
-ax.axhline(0.50, color="grey", linestyle=":", alpha=0.4,
+ax.axhline(0.50, color=PAL["ref_dash"], linestyle=":", alpha=0.4,
            label="Decision boundary")
 ax.set_xticks(range(len(names)))
 ax.set_xticklabels(names, rotation=30, ha="right", fontsize=9)
@@ -778,7 +808,7 @@ We use a single-layer, four-head architecture. Production transformers stack man
 
 ```{python}
 #| label: multihead-model
-
+#| code-fold: false
 
 class MultiHeadAttention(nn.Module):
     """
@@ -857,6 +887,7 @@ Same hyperparameters and data as the single-head model. The only difference is t
 
 ```{python}
 #| label: multihead-training
+#| code-fold: false
 
 torch.manual_seed(42)
 
@@ -906,6 +937,7 @@ Do the four heads specialise, each attending to a distinct word class? Or do the
 
 ```{python}
 #| label: head-category-heatmap
+#| code-fold: true
 #| fig-cap: "Mean attention by head and word category, averaged over the full corpus. If heads specialise cleanly, each row should have a distinct column peak. If bias is distributed, the pattern will be diffuse — and no single head will cleanly capture the vignette effect."
 
 WORD_CATEGORIES = {
@@ -952,7 +984,7 @@ heatmap_data = np.array([
 ])
 
 fig, ax = plt.subplots(figsize=(8, 3))
-im = ax.imshow(heatmap_data, cmap="YlOrRd", aspect="auto")
+im = ax.imshow(heatmap_data, cmap="bone_r", aspect="auto")
 ax.set_xticks(range(len(categories)))
 ax.set_xticklabels(categories, fontsize=10)
 ax.set_yticks(range(n_heads))
@@ -962,7 +994,7 @@ for i in range(n_heads):
         ax.text(j, i, f"{heatmap_data[i, j]:.3f}",
                 ha="center", va="center", fontsize=9,
                 color="white" if heatmap_data[i, j] > heatmap_data.max() * 0.6
-                else "black")
+                else PAL["ref_line"])
 plt.colorbar(im, ax=ax, label="Mean attention weight")
 ax.set_title("Head specialisation: which heads attend to which word types?")
 plt.tight_layout()
@@ -977,6 +1009,7 @@ Vignette words appear in every context with zero diagnostic value. Does multi-he
 
 ```{python}
 #| label: vignette-attention-comparison
+#| code-fold: true
 #| fig-cap: "Vignette word attention: single-head vs multi-head decomposition. The single-head bar shows total learned attention to each vignette word. The multi-head bars show per-head contributions. The dashed line marks uniform attention (1/4 for context size 4)."
 
 vignette_words = VIGNETTE_POOL
@@ -997,17 +1030,17 @@ fig, ax = plt.subplots(figsize=(10, 5))
 # Single-head bars
 sh_means = [np.mean(sh_vignette_attn.get(w, [0.0])) for w in vignette_words]
 ax.bar(x - bar_width, sh_means, bar_width, label="Single head",
-       color="#4C72B0", alpha=0.85)
+       color=PAL["focal2"], alpha=0.85)
 
 # Multi-head per-head bars
-colors_mh = ["#DD8452", "#55A868", "#C44E52", "#8172B3"]
+colors_mh = [PAL["focal1"], PAL["focal3"], PAL["taupe"], PAL["brown"]]
 for h in range(n_heads):
     mh_means = [np.mean(head_word_attn[h].get(w, [0.0]))
                 for w in vignette_words]
     ax.bar(x + h * bar_width, mh_means, bar_width,
            label=f"Head {h}", color=colors_mh[h], alpha=0.85)
 
-ax.axhline(1.0 / 4, color="black", linestyle="--", alpha=0.5,
+ax.axhline(1.0 / 4, color=PAL["ref_line"], linestyle="--", alpha=0.5,
            label="Uniform baseline (1/ctx_size)")
 ax.set_xticks(x + bar_width * (n_heads - 1) / 2)
 ax.set_xticklabels(vignette_words, fontsize=10)
@@ -1026,6 +1059,7 @@ We run the same seven diagnostic probes from Demo 3 through the multi-head model
 
 ```{python}
 #| label: calibration-comparison
+#| code-fold: true
 #| fig-cap: "Left: Conjunction fallacy probe comparison — single-head vs multi-head P(activist) for seven diagnostic contexts. Right: Calibration curves on the test set — does multi-head attention produce better-calibrated probabilities, or does it simply learn a more confident version of the same bias?"
 
 # --- Multi-head probes ---
@@ -1077,10 +1111,10 @@ mh_pact = [mh_probe_results[n]["P(activist)"] for n in probe_names]
 
 x = np.arange(len(probe_names))
 bw = 0.35
-ax1.bar(x - bw / 2, sh_pact, bw, label="Single head", color="#4C72B0", alpha=0.85)
-ax1.bar(x + bw / 2, mh_pact, bw, label="Multi-head",  color="#DD8452", alpha=0.85)
-ax1.axhline(0.30, color="black", linestyle="--", alpha=0.5, label="Base rate (30%)")
-ax1.axhline(0.50, color="grey",  linestyle=":",  alpha=0.4, label="Decision boundary")
+ax1.bar(x - bw / 2, sh_pact, bw, label="Single head", color=PAL["focal2"], alpha=0.85)
+ax1.bar(x + bw / 2, mh_pact, bw, label="Multi-head",  color=PAL["focal1"], alpha=0.85)
+ax1.axhline(0.30, color=PAL["ref_line"], linestyle="--", alpha=0.5, label="Base rate (30%)")
+ax1.axhline(0.50, color=PAL["ref_dash"],  linestyle=":",  alpha=0.4, label="Decision boundary")
 ax1.set_xticks(x)
 ax1.set_xticklabels(probe_names, rotation=35, ha="right", fontsize=8)
 ax1.set_ylabel("P(activist)")
@@ -1092,9 +1126,9 @@ ax1.set_ylim(0, 1.05)
 sh_pred, sh_obs = calibration_curve(model, test_corpus)
 mh_pred, mh_obs = calibration_curve(mh_model, test_corpus)
 
-ax2.plot([0, 1], [0, 1], "k--", alpha=0.5, label="Perfect calibration")
-ax2.plot(sh_pred, sh_obs, "o-", color="#4C72B0", label="Single head", alpha=0.85)
-ax2.plot(mh_pred, mh_obs, "s-", color="#DD8452", label="Multi-head",  alpha=0.85)
+ax2.plot([0, 1], [0, 1], "--", color=PAL["ref_line"], alpha=0.5, label="Perfect calibration")
+ax2.plot(sh_pred, sh_obs, "o-", color=PAL["focal2"], label="Single head", alpha=0.85)
+ax2.plot(mh_pred, mh_obs, "s-", color=PAL["focal1"], label="Multi-head",  alpha=0.85)
 ax2.set_xlabel("Mean predicted P(activist)")
 ax2.set_ylabel("Observed fraction activist")
 ax2.set_title("Calibration: do extra heads improve probability estimates?")
@@ -1330,6 +1364,7 @@ y = choice_df["y"].values
 ```{python}
 #| label: consideration-set-model
 #| eval: true
+#| code-fold: false
 
 
 def build_consideration_model(
@@ -1443,6 +1478,7 @@ print(consideration_model)
 
 ```{python}
 #| label: prior-predictive
+#| code-fold: true
 #| eval: true
 #| fig-cap: "Prior predictive marginal hiring frequencies. The weakly informative prior puts roughly equal weight on all three firms before data is seen."
 
@@ -1453,8 +1489,8 @@ ppc = prior_pred["prior_predictive"]["likelihood"].values   # (1, 500, N)
 prior_freq = np.array([np.mean(ppc == k) for k in range(3)])
 
 fig, ax = plt.subplots(figsize=(6, 3.5))
-ax.bar(alts, prior_freq, color=["#4C72B0", "#55A868", "#DD8452"], alpha=0.85)
-ax.axhline(1 / 3, color="k", linestyle="--", alpha=0.5, label="Uniform baseline (1/3)")
+ax.bar(alts, prior_freq, color=[PAL["focal2"], PAL["focal3"], PAL["focal1"]], alpha=0.85)
+ax.axhline(1 / 3, color=PAL["ref_line"], linestyle="--", alpha=0.5, label="Uniform baseline (1/3)")
 ax.set_ylabel("Marginal hiring probability (prior predictive)")
 ax.set_title("Prior predictive check: consideration set model with screening instruments")
 ax.set_ylim(0, 0.5)
@@ -1486,6 +1522,7 @@ The key diagnostic: `gamma_z` posteriors should be strongly positive, and utilit
 
 ```{python}
 #| label: results-consideration
+#| code-fold: true
 #| eval: true
 #| echo: true
 
@@ -1548,7 +1585,7 @@ labels = [
     "Firm C\n(over 40)",    "Firm C\n(under 40)",
 ]
 vals   = [pi_grad_lo, pi_grad_hi, pi_white_no, pi_white_yes, pi_young_no, pi_young_yes]
-colors = ["#4C72B0", "#4C72B0", "#55A868", "#55A868", "#DD8452", "#DD8452"]
+colors = [PAL["focal2"], PAL["focal2"], PAL["focal3"], PAL["focal3"], PAL["focal1"], PAL["focal1"]]
 
 fig, ax = plt.subplots(figsize=(9, 3.8))
 bars = ax.bar(labels, vals, color=colors, alpha=0.85)
@@ -1574,6 +1611,7 @@ plt.show()
 
 ```{python}
 #| label: comparison-visualisation
+#| code-fold: true
 #| eval: true
 #| echo: true
 
@@ -1594,9 +1632,9 @@ attn_activist_means = [
 ]
 order = np.argsort(attn_activist_means)[::-1][:12]
 colors_left = [
-    "#4C72B0" if VOCAB_SIGNALS[common_words[i]][0] > 0.5   # activist signal
-    else "#DD8452" if VOCAB_SIGNALS[common_words[i]][1] > 0.5  # teller signal
-    else "#8c8c8c"
+    PAL["focal2"] if VOCAB_SIGNALS[common_words[i]][0] > 0.5   # activist signal
+    else PAL["focal1"] if VOCAB_SIGNALS[common_words[i]][1] > 0.5  # teller signal
+    else PAL["grey1"]
     for i in order
 ]
 ax.barh(
@@ -1604,7 +1642,7 @@ ax.barh(
     [attn_activist_means[i] for i in order],
     color=colors_left, alpha=0.85,
 )
-ax.axvline(1 / len(common_words), color="k", linestyle="--", alpha=0.4)
+ax.axvline(1 / len(common_words), color=PAL["ref_line"], linestyle="--", alpha=0.4)
 ax.set_xlabel("Average attention weight (activist sense)")
 ax.set_title("Transformer: learned attention\nBlue=activist signal, orange=teller signal")
 
@@ -1621,7 +1659,7 @@ pi_C_mean     = pi_posterior.values[:, 2].mean()
 
 labels = ["Firm A\n(all)", "Firm B\n(non-white)", "Firm B\n(white)", "Firm C\n(all)"]
 vals   = [pi_A_mean, pi_B_nonwhite, pi_B_white, pi_C_mean]
-colors_right = ["#4C72B0", "#55A868", "#55A868", "#DD8452"]
+colors_right = [PAL["focal2"], PAL["focal3"], PAL["focal3"], PAL["focal1"]]
 
 bars = ax.bar(labels, vals, color=colors_right, alpha=0.85)
 for bar, v in zip(bars, vals):
@@ -1750,6 +1788,7 @@ for name, m in zip(["GA", "Business", "High income", "Older"], Z_means_sm):
 ```{python}
 #| label: swiss-metro-model
 #| eval: true
+#| code-fold: false
 
 import pymc as pm
 import pytensor.tensor as pt
@@ -1854,6 +1893,7 @@ with sm_model:
 
 ```{python}
 #| label: swiss-metro-results
+#| code-fold: true
 #| eval: true
 #| echo: true
 
@@ -1864,12 +1904,14 @@ with sm_model:
 fig, axes = plt.subplots(1, 3, figsize=(14, 4), sharey=True)
 z_names = ["GA", "Business", "High_income", "Older"]
 
+z_colors = [PAL["focal2"], PAL["focal1"], PAL["focal3"], PAL["brown"]]
 for j, (ax, mode) in enumerate(zip(axes, sm_alts)):
     gamma_post = sm_idata.posterior["gamma_z"].sel(alts=mode)
     for k, z_name in enumerate(z_names):
         samples = gamma_post.sel(z_instruments=z_name).values.flatten()
-        ax.hist(samples, bins=40, alpha=0.6, label=z_name, density=True)
-    ax.axvline(0, color="k", linestyle="--", alpha=0.5)
+        ax.hist(samples, bins=40, alpha=0.6, label=z_name, density=True,
+                color=z_colors[k])
+    ax.axvline(0, color=PAL["ref_line"], linestyle="--", alpha=0.5)
     ax.set_title(f"{mode}")
     ax.set_xlabel("γ_z")
     if j == 0:
@@ -1915,6 +1957,7 @@ plt.show()
 
 ```{python}
 #| label: swiss-metro-consideration-plot
+#| code-fold: true
 #| eval: true
 #| echo: true
 
@@ -1931,7 +1974,7 @@ labels_sm = []
 vals_sm = []
 colors_sm = []
 alphas_sm = []
-mode_colors = {"Train": "#4C72B0", "Swiss Metro": "#55A868", "Car": "#DD8452"}
+mode_colors = {"Train": PAL["focal2"], "Swiss Metro": PAL["focal3"], "Car": PAL["focal1"]}
 
 for j, mode in enumerate(sm_alts):
     pi_no_ga  = pi_post_sm.values[~ga_mask, j].mean()
@@ -1961,6 +2004,7 @@ Before interpreting any posterior, check convergence. A Bayesian model that has 
 
 ```{python}
 #| label: swiss-metro-diagnostics
+#| code-fold: true
 #| eval: true
 #| echo: true
 #| fig-cap: "Trace plots: left column shows posterior densities, right column shows MCMC chains. Well-mixed chains and smooth densities indicate convergence."
