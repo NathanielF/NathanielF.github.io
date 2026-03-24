@@ -5209,7 +5209,7 @@ Road map
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This post makes one argument in three movements. <strong>Part I</strong> builds a toy transformer that replicates the conjunction fallacy. A single attention head learns to over-weight vivid but non-diagnostic words. We can see the bias in the attention map. Then we add heads: the same bias persists, but now it is distributed across anonymous subspaces. No single head is “the biased one.” The architecture has become what Dan Davies calls an <em>accountability sink</em>: a structure that absorbs blame without assigning it.</p>
+<p>This post makes one argument in three movements. <strong>Part I</strong> builds a toy transformer that replicates the conjunction fallacy. A single attention head learns to over-weight vivid but non-diagnostic words. We can see the bias in the attention map. Then we add heads: the same bias persists, but now it is distributed across anonymous subspaces. No single head is “the biased one.” The architecture has become what Dan Davies calls an <em>accountability sink</em>: a structure that absorbs blame without assigning it. Wrap it in a vendor API and the sink deepens: the firm points to the model, the vendor points to the data, the data points to history.</p>
 <p><strong>Part II</strong> introduces the econometric alternative. Consideration set models separate screening from evaluation, with named parameters, posteriors, and an exclusion restriction that forces instrument validity into the open. We fit the model to synthetic hiring data (where the ground truth is known) and then to the Swiss Metro transport dataset (where it is not). The GA pass result shows what happens when instruments are impure and the model has to earn its decomposition.</p>
 <p><strong>Part III</strong> draws the structural comparison and asks what each framework buys you. The streetlight effect and the accountability sink are two sides of the same problem. We search where the light is; the architecture ensures there is no light where the bias lives. Consideration set models bring their own lamp.</p>
 </div>
@@ -5361,7 +5361,7 @@ The Attention–Consideration Analogy
 <section id="demo-1-static-soft-attention" class="level3">
 <h3 class="anchored" data-anchor-id="demo-1-static-soft-attention">Demo 1 — Static Soft Attention</h3>
 <p>Before training anything, we can see the <span class="math inline">\(Q, K, V\)</span> mechanism at work. The word <code>&quot;Linda&quot;</code> computes a scaled dot-product against context word keys. The <span class="math inline">\(Q \cdot K^\top\)</span> score determines <em>what to attend to</em>, but <span class="math inline">\(V\)</span> determines <em>what information is retrieved</em>.</p>
-<div id="cell-static-attention" class="cell" data-message="false" data-execution_count="2">
+<div id="cell-static-attention" class="cell" data-message="false" data-execution_count="3">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
@@ -5446,7 +5446,7 @@ The Attention–Consideration Analogy
 <li><p><strong>Conjunction boosts.</strong> Words like <em>“independent”</em> and <em>“organized”</em> are genuinely ambiguous. Individually they signal neither sense clearly. But when a vignette word co-occurs with an ambiguous word, the combination shifts the label toward activist on a log-odds scale. Vivid descriptors plus ambiguous traits create a stronger activist impression than either alone.</p></li>
 </ol>
 <p>Each word <span class="math inline">\(w\)</span> is assigned signal weights <span class="math inline">\((a_w, t_w)\)</span> representing how likely it is to appear when “Linda” carries its activist versus teller sense. Context words are sampled proportional to these weights. The label is determined stochastically: base sense provides a strong prior, but conjunction effects can override it.</p>
-<div id="dgp-vocabulary" class="cell" data-message="false" data-execution_count="3">
+<div id="dgp-vocabulary" class="cell" data-message="false" data-execution_count="4">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -5660,7 +5660,7 @@ Tuesday=True   0.019  0.028
 </div>
 </div>
 <p>Although only 30% of examples were generated from the activist-sense distribution, the effective P(activist label) is higher. Conjunction boosts systematically flip teller-sense examples toward activist when vignette words co-occur with ambiguous descriptors. Every context contains at least one vignette word, so the model trains on text that is always partially activist-flavoured.</p>
-<div id="cell-vocab-log-odds" class="cell" data-execution_count="4">
+<div id="cell-vocab-log-odds" class="cell" data-execution_count="5">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>log_odds <span class="op">=</span> {</span>
@@ -5695,7 +5695,7 @@ Tuesday=True   0.019  0.028
 </section>
 <section id="full-qkv-attention-head" class="level4">
 <h4 class="anchored" data-anchor-id="full-qkv-attention-head">Full QKV Attention Head</h4>
-<div id="attention-model" class="cell" data-execution_count="5">
+<div id="attention-model" class="cell" data-execution_count="6">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
@@ -5758,7 +5758,7 @@ Tuesday=True   0.019  0.028
 <section id="training" class="level4">
 <h4 class="anchored" data-anchor-id="training">Training</h4>
 <p>We train with cross-entropy loss only, no entropy penalty. The task has three sources of structure: individual word signals, pair co-occurrences, and a base rate prior (70% teller). Every context contains an activist-flavoured vignette word. Whether the model learns to discount this omnipresent signal or is captured by it is the empirical question.</p>
-<div id="training" class="cell" data-message="false" data-execution_count="6">
+<div id="training" class="cell" data-message="false" data-execution_count="7">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">42</span>)</span>
@@ -5814,7 +5814,7 @@ Final loss    : 0.3654</code></pre>
 <section id="what-has-the-model-learned-to-attend-to" class="level4">
 <h4 class="anchored" data-anchor-id="what-has-the-model-learned-to-attend-to">What Has the Model Learned to Attend To?</h4>
 <p>Do the learned attention weights track the <em>true</em> signal strengths, or are they biased by the vignette injection? Vignette words appear in every context, so their marginal diagnostic value is zero. Yet their strong activist associations might cause the model to over-attend to them.</p>
-<div id="cell-attention-by-sense" class="cell" data-execution_count="7">
+<div id="cell-attention-by-sense" class="cell" data-execution_count="8">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>attention_records <span class="op">=</span> {<span class="dv">0</span>: {}, <span class="dv">1</span>: {}}</span>
@@ -5882,7 +5882,7 @@ Final loss    : 0.3654</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-signal-recovery" class="cell" data-execution_count="8">
+<div id="cell-signal-recovery" class="cell" data-execution_count="9">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> spearmanr</span>
@@ -5947,7 +5947,7 @@ Final loss    : 0.3654</code></pre>
 <section id="demo-3-the-conjunction-fallacy-in-attention" class="level3">
 <h3 class="anchored" data-anchor-id="demo-3-the-conjunction-fallacy-in-attention">Demo 3 — The Conjunction Fallacy in Attention</h3>
 <p>Human respondents systematically judge P(feminist bank teller) &gt; P(bank teller). Vivid descriptions overwhelm the base rate. Does our transformer exhibit the same bias? Seven diagnostic contexts separate three effects: the base rate prior, the conjunction boost, and the vignette injection.</p>
-<div id="cell-conjunction-fallacy-probe" class="cell" data-execution_count="9">
+<div id="cell-conjunction-fallacy-probe" class="cell" data-execution_count="10">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>probes <span class="op">=</span> {</span>
@@ -6054,7 +6054,7 @@ Why multi-head attention matters for interpretability
 </div>
 <section id="the-multi-head-architecture" class="level4">
 <h4 class="anchored" data-anchor-id="the-multi-head-architecture">The Multi-Head Architecture</h4>
-<div id="multihead-model" class="cell" data-execution_count="10">
+<div id="multihead-model" class="cell" data-execution_count="11">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MultiHeadAttention(nn.Module):</span>
@@ -6131,7 +6131,7 @@ Why multi-head attention matters for interpretability
 <section id="training-1" class="level4">
 <h4 class="anchored" data-anchor-id="training-1">Training</h4>
 <p>Same hyperparameters and data as the single-head model. The only difference is the architecture.</p>
-<div id="multihead-training" class="cell" data-execution_count="11">
+<div id="multihead-training" class="cell" data-execution_count="12">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">42</span>)</span>
@@ -6185,7 +6185,7 @@ Multi-head  final loss    : 0.2230</code></pre>
 <section id="head-specialisation-who-attends-to-what" class="level4">
 <h4 class="anchored" data-anchor-id="head-specialisation-who-attends-to-what">Head Specialisation: Who Attends to What?</h4>
 <p>Do the four heads specialise, each attending to a distinct word class? Or do they learn diffuse, overlapping patterns? Specialisation would preserve some interpretability; diffusion would mean the bias is truly distributed.</p>
-<div id="cell-head-category-heatmap" class="cell" data-execution_count="12">
+<div id="cell-head-category-heatmap" class="cell" data-execution_count="13">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>WORD_CATEGORIES <span class="op">=</span> {</span>
@@ -6262,7 +6262,7 @@ Multi-head  final loss    : 0.2230</code></pre>
 <section id="vignette-bias-concentrated-or-distributed" class="level4">
 <h4 class="anchored" data-anchor-id="vignette-bias-concentrated-or-distributed">Vignette Bias: Concentrated or Distributed?</h4>
 <p>Vignette words appear in every context with zero diagnostic value. Does multi-head attention concentrate the over-attention in one head, or spread it across all four?</p>
-<div id="cell-vignette-attention-comparison" class="cell" data-execution_count="13">
+<div id="cell-vignette-attention-comparison" class="cell" data-execution_count="14">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>vignette_words <span class="op">=</span> VIGNETTE_POOL</span>
@@ -6317,7 +6317,7 @@ Multi-head  final loss    : 0.2230</code></pre>
 <section id="does-multi-head-attention-amplify-the-conjunction-fallacy" class="level4">
 <h4 class="anchored" data-anchor-id="does-multi-head-attention-amplify-the-conjunction-fallacy">Does Multi-Head Attention Amplify the Conjunction Fallacy?</h4>
 <p>We run the same seven diagnostic probes from Demo 3 through the multi-head model and compare P(activist) side by side, with calibration curves on the test set.</p>
-<div id="cell-calibration-comparison" class="cell" data-execution_count="14">
+<div id="cell-calibration-comparison" class="cell" data-execution_count="15">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Multi-head probes ---</span></span>
@@ -6430,6 +6430,7 @@ The interpretability cost of distribution
 <section id="part-ii-from-cognitive-bias-to-institutional-bias" class="level2">
 <h2 class="anchored" data-anchor-id="part-ii-from-cognitive-bias-to-institutional-bias">Part II: From Cognitive Bias to Institutional Bias</h2>
 <p>The Linda task is a thought experiment. The real world is worse. In hiring, the priming signals are protected characteristics: race, age, gender. The conjunction fallacy shows that attention can be captured by irrelevant salience. Hiring bias shows that attention can be captured by <em>systematically</em> irrelevant salience, i.e. features that predict screening decisions but should not predict job performance. And when the screening system is a multi-head transformer, the accountability sink swallows the evidence.</p>
+<p>The sink has an outer layer too. When a firm replaces its screening committee with an API call to a vendor LLM, it outsources the decision <em>and</em> the accountability. The vendor says: “we provide a tool, not a decision.” The firm says: “we used the best available technology.” The candidate has no one to appeal to. The architecture distributes blame internally across anonymous heads. The procurement structure distributes it externally across organisations. Nobody chose multi-head attention to hide bias. They chose it because it was SOTA and cheap. The opacity is a side effect that happens to be convenient.</p>
 <p>The consideration set model is the counter-architecture. Every screening variable gets a name, a coefficient, and a posterior. <em>Who gets considered?</em> is separate from <em>who gets hired?</em> The variables driving each stage are structurally distinct.</p>
 <section id="the-two-stage-model" class="level3">
 <h3 class="anchored" data-anchor-id="the-two-stage-model">The Two-Stage Model</h3>
@@ -6473,7 +6474,7 @@ Identification requires K ≠ V: two aliasing problems
 </ul>
 <p>These are the <strong>Keys</strong>: they determine which candidates pass the initial filter. Age and experience are the <strong>Values</strong>: they determine how attractive a candidate is once considered.</p>
 <p><code>is_white</code> and <code>is_under_40</code> are protected characteristics. The point is not to endorse such screening but to show that consideration set models can <em>detect and quantify</em> gatekeeping biases that a standard logit would absorb into unexplained constants.</p>
-<div id="choice-dgp" class="cell" data-message="false" data-execution_count="15">
+<div id="choice-dgp" class="cell" data-message="false" data-execution_count="16">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
@@ -6604,7 +6605,7 @@ Note
 </section>
 <section id="pymc-implementation" class="level3">
 <h3 class="anchored" data-anchor-id="pymc-implementation">PyMC Implementation</h3>
-<div id="pymc-setup" class="cell" data-execution_count="16">
+<div id="pymc-setup" class="cell" data-execution_count="17">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pymc <span class="im">as</span> pm</span>
@@ -6635,7 +6636,7 @@ Note
 <span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> choice_df[<span class="st">&quot;y&quot;</span>].values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="consideration-set-model" class="cell" data-execution_count="17">
+<div id="consideration-set-model" class="cell" data-execution_count="18">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_consideration_model(</span>
@@ -6751,7 +6752,7 @@ Note
 </section>
 <section id="prior-predictive-check" class="level3">
 <h3 class="anchored" data-anchor-id="prior-predictive-check">Prior Predictive Check</h3>
-<div id="cell-prior-predictive" class="cell" data-execution_count="18">
+<div id="cell-prior-predictive" class="cell" data-execution_count="19">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> consideration_model:</span>
@@ -6785,7 +6786,7 @@ Note
 </section>
 <section id="fitting-mcmc" class="level3">
 <h3 class="anchored" data-anchor-id="fitting-mcmc">Fitting (MCMC)</h3>
-<div id="fit-model" class="cell" data-execution_count="19">
+<div id="fit-model" class="cell" data-execution_count="20">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: Run with eval: true to sample. Requires PyMC + NumPyro (for NUTS).</span></span>
@@ -6818,7 +6819,7 @@ NUTS: [gamma_z, alpha_raw, beta_age, beta_exp]</code></pre>
 <section id="results" class="level3">
 <h3 class="anchored" data-anchor-id="results">Results</h3>
 <p>The key diagnostic: <code>gamma_z</code> posteriors should be strongly positive, and utility parameters close to their true values. <code>gamma_z[Firm B]</code> captures the effect of <code>is_white</code> on consideration. A large positive posterior means the model has surfaced racial bias in screening.</p>
-<div id="results-consideration" class="cell" data-execution_count="20">
+<div id="results-consideration" class="cell" data-execution_count="21">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Consideration stage parameters ---</span></span>
@@ -6934,7 +6935,7 @@ Warning
 <p><strong>The model surfaces structural discrimination.</strong> <code>is_white</code> and <code>is_under_40</code> shift consideration probabilities as strongly as <code>is_college_grad</code>. A standard multinomial logit would absorb these effects into firm-level constants. The consideration set model separates <em>who gets screened in</em> from <em>who is attractive once screened</em>. The screening stage is where protected characteristics exert their gatekeeping force.</p>
 </div>
 </div>
-<div id="cell-comparison-visualisation" class="cell" data-execution_count="21">
+<div id="cell-comparison-visualisation" class="cell" data-execution_count="22">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Side-by-side: transformer attention weights vs posterior consideration probs.</span></span>
@@ -7027,7 +7028,7 @@ Note
 <p><strong>Instrument choice is arguable here, not obvious.</strong> In hiring, protected characteristics satisfy the exclusion restriction almost by definition. In transport the case is weaker. Does holding a GA pass shift whether you <em>consider</em> the train, or does it shift how attractive the train <em>is</em> conditional on consideration? Plausibly both. We proceed with the assumption that person-level characteristics primarily gate consideration while mode-level attributes (time, cost) drive utility. The framework does not hide this assumption. It names it as <span class="math inline">\(Z \neq X\)</span> and invites scrutiny.</p>
 </div>
 </div>
-<div id="swiss-metro-data" class="cell" data-message="false" data-execution_count="22">
+<div id="swiss-metro-data" class="cell" data-message="false" data-execution_count="23">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -7074,7 +7075,7 @@ Person-level variables (consideration instruments):
   INCOME distribution: {0: 306, 1: 1719, 2: 3744, 3: 4041, 4: 909}</code></pre>
 </div>
 </div>
-<div id="swiss-metro-prep" class="cell" data-message="false" data-execution_count="23">
+<div id="swiss-metro-prep" class="cell" data-message="false" data-execution_count="24">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Prepare arrays for the consideration set model ----</span></span>
@@ -7143,7 +7144,7 @@ Z instrument means (pre-centring):
   Older       : 0.265</code></pre>
 </div>
 </div>
-<div id="swiss-metro-model" class="cell" data-execution_count="24">
+<div id="swiss-metro-model" class="cell" data-execution_count="25">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pymc <span class="im">as</span> pm</span>
@@ -7236,7 +7237,7 @@ Z instrument means (pre-centring):
 <pre><code>&lt;pymc.model.core.Model object at 0x29fa0d750&gt;</code></pre>
 </div>
 </div>
-<div id="swiss-metro-fit" class="cell" data-execution_count="25">
+<div id="swiss-metro-fit" class="cell" data-execution_count="26">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> sm_model:</span>
@@ -7264,7 +7265,7 @@ NUTS: [gamma_0, gamma_z, alpha_raw, beta_tt, beta_cost]</code></pre>
 <pre><code>Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 327 seconds.</code></pre>
 </div>
 </div>
-<div id="swiss-metro-results" class="cell" data-execution_count="26">
+<div id="swiss-metro-results" class="cell" data-execution_count="27">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Consideration parameters: gamma_z by mode ----</span></span>
@@ -7344,7 +7345,7 @@ NUTS: [gamma_0, gamma_z, alpha_raw, beta_tt, beta_cost]</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-swiss-metro-consideration-plot" class="cell" data-execution_count="27">
+<div id="cell-swiss-metro-consideration-plot" class="cell" data-execution_count="28">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Stratified consideration: GA holders vs non-holders ----</span></span>
@@ -7394,7 +7395,7 @@ NUTS: [gamma_0, gamma_z, alpha_raw, beta_tt, beta_cost]</code></pre>
 </div>
 </div>
 <p>Before interpreting any posterior, check convergence. A Bayesian model that has not converged is a random number generator with delusions of structure. The trace plots show marginal posterior densities (left) and raw MCMC chains (right). We want smooth, unimodal densities and chains that look like hairy caterpillars: rapidly mixing, stationary, overlapping. Chains that drift, stick, or separate indicate the sampler has not explored the posterior.</p>
-<div id="cell-swiss-metro-diagnostics" class="cell" data-execution_count="28">
+<div id="cell-swiss-metro-diagnostics" class="cell" data-execution_count="29">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>az.plot_trace(</span>
@@ -7415,7 +7416,7 @@ NUTS: [gamma_0, gamma_z, alpha_raw, beta_tt, beta_cost]</code></pre>
 </div>
 </div>
 <p>The chains mix well. The posteriors are unimodal. The summary table provides the numerical diagnostics. <span class="math inline">\(\hat{R}\)</span> measures between-chain versus within-chain variance: values at or near 1.00 confirm convergence. Effective sample size (ESS) tells us how many independent draws the chains are worth after accounting for autocorrelation. Values in the hundreds or thousands mean the posteriors are well-estimated. <span class="math inline">\(\hat{R}\)</span> above 1.01 or ESS below 100 would warrant longer chains or a reparameterisation.</p>
-<div id="cell-swiss-metro-summary" class="cell" data-execution_count="29">
+<div id="cell-swiss-metro-summary" class="cell" data-execution_count="30">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>az.summary(</span>
@@ -7840,7 +7841,7 @@ Where the Analogy Breaks
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Two metaphors, one problem. The streetlight effect says we search where the light is, not where the keys fell. The accountability sink says the architecture ensures there is no one to blame when the keys go missing. Multi-head attention is both at once: the bias is real, but distributed across anonymous subspaces where it resists inspection, and no single head is responsible for the discriminatory outcome.</p>
+<p>Two metaphors, one problem. The streetlight effect says we search where the light is, not where the keys fell. The accountability sink says the architecture ensures there is no one to blame when the keys go missing. Multi-head attention is both at once: the bias is real, but distributed across anonymous subspaces where it resists inspection, and no single head is responsible for the discriminatory outcome. Wrap the architecture in a vendor API and the sink deepens further. The firm that made the hiring decision can point to the model. The vendor that trained the model can point to the data. The data is a record of past human decisions that nobody alive is responsible for. Accountability does not vanish. It is <em>delegated into a void</em>.</p>
 <p>Consideration set models are the counter-architecture. They name the variables that gate access. They estimate how strongly each one operates. They report their uncertainty. <span class="math inline">\(\gamma_z[\text{Car, GA}] \approx -7.7\)</span> is not a diffuse activation pattern. It is a claim, with a sign, a magnitude, and a credible interval. You can show it to a regulator. You can argue about whether the instrument is valid. You can be <em>wrong</em> — and that is the point. A framework that can be wrong can also be held accountable.</p>
 <p>Naming what you model is not a stylistic preference. It is audit infrastructure.</p>
 <hr>
