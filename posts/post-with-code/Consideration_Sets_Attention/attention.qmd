@@ -1239,7 +1239,7 @@ TRUE_GAMMA = np.array([
 ])
 
 # ---- Simulate data ----
-N = 400
+N = 4000
 alts = ["Firm A", "Firm B", "Firm C"]
 
 # Consideration instruments (screening-relevant only)
