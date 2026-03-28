@@ -98,9 +98,10 @@ Each step changed the posteriors. The GA effect on Car was robust across all spe
 
 The hiring case, by contrast, has *clean* instruments. Protected characteristics like race and age gate whether a résumé is read but should not determine job performance conditional on reading. The model recovers *which firm* screens on *which variable* and how strongly. The aliasing problem barely arises because the exclusion restriction holds by construction and, in practice, by law.
 
-This contrast, clean instruments in hiring against impure instruments in transport, became the heart of the argument. Its status as the *central modelling choice* only emerged through iterative refinement. The most important idea in the post was latent for several drafts before the right framing surfaced it:
 
 > *The "should not" is not a pious hope; it is the content of anti-discrimination law. When the exclusion restriction and the legal standard say the same thing, the modelling assumption is as defensible as it gets.*
+
+This contrast, clean instruments in hiring against impure instruments in transport, became the heart of the argument. Its status as the *central modelling choice* only emerged through iterative refinement. The most important idea in the post was latent for several drafts before the right framing surfaced it.
 
 ### The Political Turn: Naming What Was Already There
 
