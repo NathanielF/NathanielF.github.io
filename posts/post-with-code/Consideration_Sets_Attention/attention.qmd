@@ -1173,15 +1173,15 @@ $$U_{\text{avail},nj} = \log\sigma\!\bigl(\underbrace{\gamma_{0j}}_{\text{consid
 
 This contains **two identification problems**:
 
-**Problem 1 — Level aliasing.** If both $\gamma_{0j}$ and $\alpha_j$ are free, they are aliased. Both shift the level of $U_{\text{avail},nj}$ in the same direction, so the data cannot separate "often considered" from "high intrinsic utility." Fix: drop $\gamma_{0j}$, letting $\alpha_j$ absorb both. Both demos below use this strategy. The slopes $\gamma_z$ remain identified from cross-person variation in $Z$.
+**Problem 1 — Level aliasing.** If both $\gamma_{0j}$ and $\alpha_j$ are free, they compete. Both shift the level of $U_{\text{avail},nj}$ in the same direction, so a mode that is "often considered" can look identical to a mode with "high intrinsic utility." The two strategies are: (a) drop $\gamma_{0j}$ entirely, letting $\alpha_j$ absorb both baselines — simpler but forces the utility constant to do double duty; or (b) include $\gamma_{0j}$ and accept the soft identification from priors and the nonlinearity of the sigmoid. The hiring model below uses strategy (a). The Swiss Metro model uses strategy (b): the consideration intercepts absorb baseline consideration, freeing $\alpha_j$ to capture only utility preference, and the $\gamma_z$ slopes to capture only the marginal instrument effects. The aliasing is not eliminated — it is *managed*, and the intercepts make the decomposition more interpretable at the cost of weaker identification.
 
-**Problem 2 — Misspecified heterogeneity.** If the DGP generates individual heterogeneity in utility that the model does not capture, the unexplained variance bleeds into the consideration mechanism, attenuating the utility coefficients. Fix: match the model complexity to the DGP.
+**Problem 2 — Misspecified heterogeneity.** If the DGP generates individual heterogeneity in utility that the model does not capture, the unexplained variance bleeds into the consideration mechanism, attenuating the utility coefficients. Fix: match the model complexity to the DGP. The Swiss Metro model includes per-individual random effects on travel-time sensitivity to absorb this heterogeneity in the utility stage where it belongs.
 
-With both problems resolved, the model structure becomes:
+With mean-centred instruments, the consideration model becomes:
 
-$$\log \pi_{nj} = \gamma_{zj} \cdot \tilde{z}_{nj}, \quad \tilde{z}_{nj} = z_{nj} - \bar{z}_j$$
+$$\log \pi_{nj} = \gamma_{0j} + \gamma_{zj} \cdot \tilde{z}_{nj}, \quad \tilde{z}_{nj} = z_{nj} - \bar{z}_j$$
 
-where $\tilde{z}_{nj}$ is mean-centred so that the default consideration ($z_{nj} = \bar{z}_j$) maps onto $\pi_{nj} = 0.5$, absorbed into $\alpha_j$. Only the **within-alternative, cross-person variation** in $z$ identifies $\gamma_{zj}$.
+where $\tilde{z}_{nj}$ is mean-centred so that the default consideration ($z_{nj} = \bar{z}_j$) is captured by $\gamma_{0j}$. Only the **within-alternative, cross-person variation** in $z$ identifies $\gamma_{zj}$. When $\gamma_{0j}$ is dropped (hiring model), this variation identifies against $\alpha_j$.
 
 This is the discrete choice analogue of K ≠ V in transformers: the signal that determines what to consider ($\tilde{z}$, the Key) must be structurally separate from what determines utility ($x$, the Value), and both must be different projections of the available information.
 :::
@@ -1357,6 +1357,8 @@ def build_consideration_model(
         log_odds = pt.sum(gamma_z[None, :, :] * Z_data, axis=2)
         pi = pm.Deterministic("pi", pm.math.sigmoid(log_odds),
                               dims=("obs", "alts"))
+        # log(sigmoid(x)) = x - softplus(x), numerically stable
+        log_pi = log_odds - pt.softplus(log_odds)
 
         # STAGE 2: Utility
         alpha_raw = pm.Normal("alpha_raw", mu=0, sigma=2, dims="alts_ref")
@@ -1370,7 +1372,6 @@ def build_consideration_model(
         V = alpha[None, :] + pt.sum(X_data * beta[None, None, :], axis=2)
 
         # Log-consideration-adjusted utility
-        log_pi  = pm.math.log(pi + 1e-8)
         U_avail = V + log_pi
 
         U_c = U_avail - U_avail.max(axis=1, keepdims=True)
@@ -1686,15 +1687,25 @@ avail = np.column_stack([
 
 y_sm = sm_df["y"].values
 
+# ---- Individual-level index for random effects ----
+# Each respondent (ID) appears in multiple choice scenarios.
+# The random effect on travel time is per-individual, not per-observation.
+unique_ids = sm_df["ID"].unique()
+id_to_idx = {uid: i for i, uid in enumerate(unique_ids)}
+individual_idx = sm_df["ID"].map(id_to_idx).values  # (N,) — maps each obs to its individual
+n_individuals = len(unique_ids)
+
 print(f"Z_sm shape: {Z_sm.shape}  (N, J, K_z)")
 print(f"X_sm shape: {X_sm.shape}  (N, J, K_x)")
 print(f"Availability: {avail.mean(axis=0).round(2)} (Train, SM, Car)")
+print(f"Individuals: {n_individuals}  (observations per individual: "
+      f"{len(sm_df) / n_individuals:.1f} avg)")
 print(f"\nZ instrument means (pre-centring):")
 for name, m in zip(["GA", "Business", "High income", "Older"], Z_means_sm):
     print(f"  {name:12s}: {m:.3f}")
 ```
 
-The model adds one refinement over the hiring demo: a **random coefficient** on travel time. Not everyone values speed equally. Business commuters on tight schedules are acutely time-sensitive; retirees on leisure trips much less so. A fixed $\beta_{tt}$ forces a single time-sensitivity onto the entire population. Unmodelled heterogeneity in utility does not vanish — it bleeds into the consideration stage, attenuating the $\gamma_z$ slopes (this is aliasing problem 2 from the identification callout). The random effect $\beta_{tt,n} \sim \mathcal{N}(\mu_{tt}, \sigma_{tt}^2)$ absorbs that heterogeneity where it belongs: in the utility stage. This is the mixed logit component — the same extension that motivates combining consideration sets with random-coefficient models in the [pymc-marketing implementation](https://github.com/pymc-labs/pymc-marketing/pull/2442).
+The model adds one refinement over the hiring demo: a **per-individual random coefficient** on travel time. Not everyone values speed equally. Business commuters on tight schedules are acutely time-sensitive; retirees on leisure trips much less so. A fixed $\beta_{tt}$ forces a single time-sensitivity onto the entire population. Unmodelled heterogeneity in utility does not vanish — it bleeds into the consideration stage, attenuating the $\gamma_z$ slopes (this is aliasing problem 2 from the identification callout). The random effect $\beta_{tt,i} \sim \mathcal{N}(\mu_{tt}, \sigma_{tt}^2)$ absorbs that heterogeneity where it belongs: in the utility stage. Since each respondent appears in multiple choice scenarios, the random effect is defined per individual, not per observation — an index lookup maps each observation to its respondent's time sensitivity. This is the mixed logit component, the same extension that motivates combining consideration sets with random-coefficient models in the [pymc-marketing implementation](https://github.com/pymc-labs/pymc-marketing/pull/2442).
 
 ```{python}
 #| label: swiss-metro-model
@@ -1705,29 +1716,29 @@ import pymc as pm
 import pytensor.tensor as pt
 
 def build_swissmetro_consideration(
-    X: np.ndarray, Z: np.ndarray, avail: np.ndarray, y: np.ndarray
+    X: np.ndarray, Z: np.ndarray, avail: np.ndarray, y: np.ndarray,
+    individual_idx: np.ndarray = None, n_individuals: int = None,
 ) -> pm.Model:
     """
     Consideration set model for Swiss Metro with random coefficients:
       - Person-level Z instruments (GA, business, income, age) driving consideration
       - Mode-level X covariates (travel time, cost) driving utility
-      - Random effect on travel time sensitivity (mixed logit component)
+      - Per-individual random effect on travel time sensitivity (mixed logit)
       - Availability constraints (unavailable modes get -inf utility)
 
     Each mode gets its own gamma_z vector: a GA pass may strongly increase
     train consideration but have no effect on car consideration.
 
-    No consideration intercept: alpha_j absorbs both baseline utility
-    and average consideration. Only the within-alternative, cross-person
-    variation in Z identifies gamma_z. This avoids the aliasing between
-    gamma_0j and alpha_j that would arise if both were free — the same
-    identification strategy used in the hiring model.
+    Consideration intercepts (gamma_0) absorb baseline consideration for
+    each mode, freeing alpha_j to capture only utility preference and
+    gamma_z slopes to capture marginal instrument effects. The aliasing
+    between gamma_0 and alpha_j is managed by priors and the sigmoid
+    nonlinearity, not eliminated.
 
-    The random effect on beta_tt captures person-level heterogeneity in
-    time sensitivity. Some travellers are time-insensitive (retirees,
-    leisure trips); others are acutely time-sensitive (business commuters).
-    Without this, unexplained heterogeneity bleeds into the consideration
-    stage (aliasing problem 2 from the callout above).
+    The random effect on beta_tt is per-individual, not per-observation.
+    Each respondent appears in multiple choice scenarios; the same person
+    has the same time sensitivity across scenarios. The index lookup maps
+    each observation to its individual: beta_tt_n[obs] = beta_tt_i[individual_idx[obs]].
     """
     n_obs, n_alts, n_z = Z.shape
     _, _, n_x = X.shape
@@ -1739,6 +1750,7 @@ def build_swissmetro_consideration(
     with pm.Model(
         coords={
             "obs": range(n_obs),
+            "individual": range(n_individuals),
             "alts": sm_alts,
             "alts_ref": alt_names_ref,
             "z_instruments": z_names,
@@ -1747,30 +1759,43 @@ def build_swissmetro_consideration(
     ) as model:
 
         # ---- STAGE 1: Consideration ----
+        # Consideration intercepts: baseline log-odds of considering each mode
+        # These absorb mode-specific baseline consideration, freeing gamma_z
+        # slopes to capture the marginal effect of each instrument.
+        gamma_intercept = pm.Normal("gamma_intercept", mu=0, sigma=2,
+                                    dims="alts")
+
         # gamma_z: (J, K_z) — each mode has its own sensitivity to each instrument
-        # No consideration intercept: alpha_j absorbs baseline consideration
         gamma_z = pm.Normal("gamma_z", mu=0, sigma=2,
                            dims=("alts", "z_instruments"))
 
         Z_data = pm.Data("Z", Z, dims=("obs", "alts", "z_instruments"))
 
-        # log_odds_consideration: (N, J) = sum_k gamma_z[j,k] * Z[n,j,k]
-        log_odds_c = pt.sum(gamma_z[None, :, :] * Z_data, axis=2)
+        # log_odds_consideration: (N, J) = gamma_0[j] + sum_k gamma_z[j,k] * Z[n,j,k]
+        log_odds_c = gamma_intercept[None, :] + pt.sum(gamma_z[None, :, :] * Z_data, axis=2)
         pi = pm.Deterministic("pi", pm.math.sigmoid(log_odds_c),
                              dims=("obs", "alts"))
+        # log(sigmoid(x)) = x - softplus(x), numerically stable
+        log_pi = log_odds_c - pt.softplus(log_odds_c)
 
         # ---- STAGE 2: Utility (mixed logit) ----
         alpha_raw = pm.Normal("alpha_raw", mu=0, sigma=2, dims="alts_ref")
         alpha = pt.concatenate([alpha_raw, pt.zeros(1)])  # Car = reference
 
-        # Travel time: random coefficient (non-centred parameterisation)
-        # beta_tt_n = beta_tt_mu + beta_tt_sigma * z_n
+        # Travel time: per-individual random coefficient (non-centred)
+        # beta_tt_i = beta_tt_mu + beta_tt_sigma * offset_i
         beta_tt_mu    = pm.Normal("beta_tt_mu", mu=0, sigma=2)
         beta_tt_sigma = pm.HalfNormal("beta_tt_sigma", sigma=1)
-        beta_tt_offset = pm.Normal("beta_tt_offset", mu=0, sigma=1, dims="obs")
-        beta_tt_n = pm.Deterministic(
-            "beta_tt", beta_tt_mu + beta_tt_sigma * beta_tt_offset
-        )  # (N,)
+        beta_tt_offset = pm.Normal("beta_tt_offset", mu=0, sigma=1,
+                                   dims="individual")
+        beta_tt_i = pm.Deterministic(
+            "beta_tt_i", beta_tt_mu + beta_tt_sigma * beta_tt_offset,
+            dims="individual",
+        )  # (n_individuals,)
+
+        # Index lookup: map each observation to its individual's beta_tt
+        idx = pm.Data("individual_idx", individual_idx, dims="obs")
+        beta_tt_n = beta_tt_i[idx]  # (N,)
 
         # Cost: fixed coefficient (less heterogeneity expected)
         beta_cost = pm.Normal("beta_cost", mu=0, sigma=2)
@@ -1783,7 +1808,6 @@ def build_swissmetro_consideration(
 
         # ---- Availability + log-consideration-adjusted utility ----
         avail_data = pm.Data("avail", avail.astype(float), dims=("obs", "alts"))
-        log_pi = pm.math.log(pi + 1e-8)
 
         # Unavailable modes: set to large negative number
         U_avail = log_pi + V + pt.log(avail_data + 1e-8)
@@ -1797,7 +1821,11 @@ def build_swissmetro_consideration(
 
     return model
 
-sm_model = build_swissmetro_consideration(X_sm, Z_sm, avail, y_sm)
+sm_model = build_swissmetro_consideration(
+    X_sm, Z_sm, avail, y_sm,
+    individual_idx=individual_idx,
+    n_individuals=n_individuals,
+)
 print(sm_model)
 ```
 
@@ -1865,17 +1893,22 @@ plt.tight_layout()
 plt.show()
 
 # ---- Distribution of individual time sensitivities ----
-beta_tt_samples = sm_idata.posterior["beta_tt"].values.flatten()
+# beta_tt_i has shape (chains, draws, n_individuals) — flatten across chains/draws,
+# then take the mean per individual to show the distribution of person-level estimates.
+beta_tt_i_post = sm_idata.posterior["beta_tt_i"]  # (chain, draw, individual)
+beta_tt_i_mean = beta_tt_i_post.mean(("chain", "draw")).values  # (n_individuals,)
+
 fig, ax = plt.subplots(figsize=(8, 3.5))
-ax.hist(beta_tt_samples, bins=80, density=True, color=PAL["focal2"], alpha=0.7,
+ax.hist(beta_tt_i_mean, bins=50, density=True, color=PAL["focal2"], alpha=0.7,
         edgecolor="white", linewidth=0.3)
 ax.axvline(0, color=PAL["ref_line"], linestyle="--", alpha=0.5)
 mu_hat = sm_idata.posterior["beta_tt_mu"].values.mean()
 ax.axvline(mu_hat, color=PAL["focal1"], linestyle="-", alpha=0.8,
            label=f"Population mean ≈ {mu_hat:.2f}")
-ax.set_xlabel("β_tt (individual travel time sensitivity)")
+ax.set_xlabel("β_tt (posterior mean per individual)")
 ax.set_ylabel("Density")
-ax.set_title("Person-level heterogeneity in travel time sensitivity")
+ax.set_title(f"Person-level heterogeneity in travel time sensitivity "
+             f"({len(beta_tt_i_mean)} individuals)")
 ax.legend(fontsize=9)
 plt.tight_layout()
 plt.show()
@@ -1937,8 +1970,9 @@ Before interpreting any posterior, check convergence. A Bayesian model that has 
 
 az.plot_trace(
     sm_idata,
-    var_names=["beta_tt_mu", "beta_tt_sigma", "beta_cost", "alpha_raw", "gamma_z"],
-    figsize=(9, 14),
+    var_names=["beta_tt_mu", "beta_tt_sigma", "beta_cost", "alpha_raw",
+               "gamma_intercept", "gamma_z"],
+    figsize=(9, 16),
 )
 plt.tight_layout()
 plt.show()
@@ -1953,31 +1987,44 @@ The chains mix well. The posteriors are unimodal. The summary table provides the
 
 az.summary(
     sm_idata,
-    var_names=["beta_tt_mu", "beta_tt_sigma", "beta_cost", "alpha_raw", "gamma_z"],
+    var_names=["beta_tt_mu", "beta_tt_sigma", "beta_cost", "alpha_raw",
+               "gamma_intercept", "gamma_z"],
     round_to=3,
 )
 ```
 
 #### Reading the results
 
-**Consideration slopes.** Without a consideration intercept, $\alpha_j$ absorbs both baseline utility and average consideration. The $\gamma_z$ slopes capture the *marginal* effect of each person-level instrument on consideration, relative to that absorbed baseline. This is the same identification strategy used in the hiring model: only the cross-person variation in $Z$ identifies the consideration parameters. The patterns are stable relative to the fixed-coefficient model — adding the random effect on travel time has not distorted the consideration stage.
+**Consideration intercepts.** The intercepts absorb baseline log-odds of considering each mode, freeing the $\gamma_z$ slopes to capture *marginal* instrument effects. The estimates reveal the model's prior on which modes are in the default choice set:
 
-- **GA pass** is negative on *all three modes* — including Train. This requires careful reading. The Z instruments are mean-centred, so $\gamma_z$ captures the deviation from average consideration, not the level. A GA holder's baseline rail consideration is already absorbed into $\alpha_{raw}[\text{Train}]$. The negative slope ($\gamma_z \approx -1.0$) says: relative to that absorbed baseline, the *marginal* GA effect on Train consideration is mildly negative — not because GA holders avoid trains, but because their rail consideration is essentially saturated. The pass has already done its work; the baseline reflects it; the slope has little left to add. The asymmetry across modes is where the real story lives. Car ($\gamma_z \approx -8.5$) is catastrophic: GA holders stop considering driving entirely. Swiss Metro ($\gamma_z \approx -2.0$) is substantial: committed rail users are less interested in a hypothetical alternative. Train ($\gamma_z \approx -1.0$) is mild — the marginal effect is spent because the baseline already captures the rail commitment. The GA pass is doing its strongest work as a *negative gate* on non-rail modes, not as a positive gate on rail.
-- **Older** travellers consider Train more ($\gamma_z \approx 1.5$) and are roughly indifferent to Swiss Metro ($\gamma_z \approx -0.28$, HDI spans zero). They consider Car more too ($\gamma_z \approx 1.1$). Familiarity with existing modes, mild scepticism toward a hypothetical maglev.
-- **Business** travellers consider Swiss Metro strongly ($\gamma_z \approx 1.4$) and are roughly indifferent to Train ($\gamma_z \approx -0.05$, HDI spans zero) and somewhat screen out Car ($\gamma_z \approx -1.0$). They want speed.
-- **High income** favours Swiss Metro ($\gamma_z \approx 0.37$) and is roughly indifferent to Train ($\gamma_z \approx -0.19$) and Car ($\gamma_z \approx 0.32$). The HDIs for Train and Car span zero — income does not strongly gate consideration of these modes.
+- $\gamma_0[\text{Swiss Metro}] \approx 4.0$ (HDI: $[0.9, 6.5]$): high baseline consideration. This is a survey effect — the Swiss Metro is the novel alternative that the survey was *designed* to evaluate, so nearly everyone "considers" it in the survey context. The intercept absorbs this.
+- $\gamma_0[\text{Train}] \approx -0.7$ (HDI: $[-3.0, 1.5]$): uncertain, spanning zero. Train consideration varies enough across the population that the intercept cannot pin it down without the instruments.
+- $\gamma_0[\text{Car}] \approx -0.5$ (HDI: $[-1.5, 0.5]$): similarly uncertain. The baseline is roughly even odds, modulated by the instruments.
 
-**Utility stage.** Conditional on consideration, mode attributes drive choice — but travellers differ substantially in how much they care about speed.
+**The GA pass as consideration filter.** With the intercepts absorbing baselines, the $\gamma_z$ slopes now tell a cleaner story about what the GA pass *does* at the margin:
 
-- $\beta_{tt,\mu} \approx -1.04$: the population mean time sensitivity. Strongly negative — people prefer faster modes on average, and the magnitude is larger than the fixed-coefficient estimate ($\approx -0.72$). The random effect separates mean sensitivity from person-level variation, giving a cleaner estimate of the population centre.
-- $\beta_{tt,\sigma} \approx 0.67$: substantial person-level spread. A standard deviation of 0.67 around a mean of $-1.04$ means the most time-insensitive travellers have $\beta_{tt} \approx -0.37$ while the most sensitive have $\beta_{tt} \approx -1.71$. This heterogeneity, if left unmodelled, would bleed into the consideration stage — exactly aliasing problem 2 from the callout above. The random effect absorbs it in the utility stage where it belongs.
-- $\beta_{cost} \approx -0.087$: negative but smaller (fixed across persons). Cost matters less than time in this sample, consistent with a relatively affluent Swiss commuter population.
-- $\alpha_{raw}[\text{Train}] \approx -0.80$: lower baseline utility than Car (reference), net of time and cost. The utility constant absorbs both intrinsic mode preference *and* average consideration — the price of dropping $\gamma_0$, but it keeps the slopes cleanly identified.
-- $\alpha_{raw}[\text{Swiss Metro}] \approx -0.03$: near-zero baseline utility relative to Car. With no consideration intercept, this reflects both the mode's intrinsic attractiveness and its average consideration. The consideration slopes (business, high income) do the work of lifting Swiss Metro's choice share.
+- **Car** ($\gamma_z \approx -9.5$, HDI: $[-10.8, -8.1]$): catastrophic. GA holders do not consider driving. The HDI excludes zero by a wide margin. This is the strongest and cleanest effect in the model: the annual rail pass eliminates car from the choice set entirely.
+- **Train** ($\gamma_z \approx 0.0$, HDI: $[-0.8, 0.7]$): essentially zero. The marginal GA effect on rail consideration vanishes once the intercept absorbs the baseline. GA holders overwhelmingly consider rail, but that fact lives in $\gamma_0[\text{Train}]$ and $\alpha[\text{Train}]$, not in the slope. There is no *additional* consideration boost from holding the pass — the commitment is already total.
+- **Swiss Metro** ($\gamma_z \approx 1.0$, HDI: $[-1.0, 3.5]$): positive but uncertain. A slight tendency for GA holders to also consider the hypothetical rail alternative — plausible for committed rail users — but the wide HDI spanning zero means this is not a confident claim.
 
-**The GA consideration plot** confirms the story visually. GA holders screen out driving entirely and lose some interest in Swiss Metro. The consideration probabilities stratified by GA status show the instrument doing real work: shifting *which modes enter the choice set* rather than just adjusting utility conditional on consideration.
+The pass does its strongest work not by *promoting* rail consideration but by *eliminating* the car alternative. It is a negative gate, not a positive one. The consideration intercepts make this decomposition visible: the intercept captures the baseline, the slope captures the filter, and the two tell different stories.
 
-This is the core advantage over transformer attention. When a multi-head model distributes mode preferences across anonymous subspaces, there is nothing to argue about. No named assumption to accept or reject. The consideration set model makes instrument validity the central modelling choice and forces it into the open.
+**Other instruments.** The remaining slopes reveal patterns that were masked in the no-intercept model:
+
+- **Business** travellers show *negative* consideration effects on all three modes — Train ($\gamma_z \approx -1.5$, HDI excludes zero), Swiss Metro ($\gamma_z \approx -2.7$, HDI excludes zero), and Car ($\gamma_z \approx -2.6$, HDI excludes zero). This is not "business travellers don't consider anything." The intercepts have absorbed the baselines; the slopes say business travellers have *narrower* consideration sets than average. They have decided already. Their consideration is concentrated, not diffuse — consistent with habitual commuters who have optimised their route and do not re-evaluate alternatives.
+- **High income** shows a similar pattern: negative on Swiss Metro ($\gamma_z \approx -2.4$, HDI excludes zero) and Train ($\gamma_z \approx -0.5$, HDI barely excludes zero), indifferent on Car (HDI spans zero). High earners are not shopping around.
+- **Older** travellers show a mild positive effect on Train ($\gamma_z \approx 0.7$, HDI: $[0.02, 1.55]$) — familiarity with existing infrastructure — and negative but uncertain on Swiss Metro ($\gamma_z \approx -2.1$, HDI spans zero). A hypothetical mode has no incumbency advantage.
+
+**Utility stage.** The per-individual random effect on travel time reveals massive heterogeneity, and the consideration intercepts have sharpened the separation between stages.
+
+- $\beta_{tt,\mu} \approx -1.81$, $\beta_{tt,\sigma} \approx 1.89$: the population mean time sensitivity and its person-level spread. The standard deviation is nearly as large as the mean, implying substantial heterogeneity: individuals one standard deviation above the mean are barely time-sensitive ($\mu + \sigma \approx 0.1$), while those one standard deviation below are extremely so ($\mu - \sigma \approx -3.7$). The per-individual parameterisation ensures the model learns a *consistent* time sensitivity for each respondent across their multiple choice scenarios, rather than fitting noise at the observation level.
+- $\beta_{cost} \approx -0.13$: negative, fixed across persons. Cost sensitivity is more homogeneous than time sensitivity — a modelling choice that could be relaxed.
+- $\alpha_{raw}[\text{Train}] \approx -0.47$ (HDI: $[-1.6, 1.2]$): now spans zero. With the consideration intercept absorbing baseline consideration, $\alpha_j$ no longer needs to do double duty. The aliasing is not eliminated — both HDIs are wide — but the decomposition is more honest: the model admits it cannot cleanly separate "often considered" from "high baseline utility" for Train.
+- $\alpha_{raw}[\text{Swiss Metro}] \approx -0.97$ (HDI: $[-1.3, -0.7]$): negative baseline utility relative to Car, and this one excludes zero. Even after the high consideration intercept accounts for the survey design, Swiss Metro has lower intrinsic utility — consistent with a hypothetical mode competing against established alternatives.
+
+**The GA consideration plot** confirms the story visually. The consideration probabilities stratified by GA status show the instrument doing real work: shifting *which modes enter the choice set* rather than adjusting utility conditional on consideration. GA holders do not slightly prefer rail. They *screen out car entirely*. The consideration intercepts make the mechanism legible: the intercept captures baseline consideration, the slope captures the marginal filter, and neither is fully aliased against the utility constants.
+
+This is the core advantage over transformer attention. When a multi-head model distributes mode preferences across anonymous subspaces, there is nothing to argue about. No named assumption to accept or reject. The consideration set model makes every modelling choice — the intercept specification, the exclusion restriction, the choice of which variables enter $Z$ versus $X$ — visible and arguable.
 
 ---
 
@@ -2005,7 +2052,7 @@ Other domains are harder still. In content recommendation, what feature shifts w
 
 Two metaphors, one problem. The streetlight effect says we search where the light is, not where the keys fell. The accountability sink says the architecture ensures there is no one to blame when the keys go missing. Multi-head attention is both at once: the bias is real, but distributed across anonymous subspaces where it resists inspection, and no single head is responsible for the discriminatory outcome. Wrap the architecture in a vendor API and the sink deepens further. The firm that made the hiring decision can point to the model. The vendor that trained the model can point to the data. The data is a record of past human decisions that nobody alive is responsible for. Accountability does not vanish. It is *delegated into a void*.
 
-Consideration set models are the counter-architecture. They name the variables that gate access, estimate how strongly each one operates, and report their uncertainty. $\gamma_z[\text{Car, GA}] \approx -8.5$ is not a diffuse activation pattern. It is a claim, with a sign, a magnitude, and a credible interval. You can show it to a regulator. You can argue about whether the instrument is valid. You can be *wrong* — and that is the point. A framework that can be wrong can also be held accountable.
+Consideration set models are the counter-architecture. They name the variables that gate access, estimate how strongly each one operates, and report their uncertainty. $\gamma_z[\text{Car, GA}] \approx -9.5$ is not a diffuse activation pattern. It is a claim, with a sign, a magnitude, and a credible interval. You can show it to a regulator. You can argue about whether the instrument is valid. You can be *wrong* — and that is the point. A framework that can be wrong can also be held accountable.
 
 Naming what you model is not a stylistic preference. It is audit infrastructure.
 

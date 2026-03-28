@@ -12,3 +12,4 @@ posts/post-with-code/Survey_Analytics_Design/*
 */*/*/tinytable_assets
 posts/post-with-code/blaavan_sem
 posts/post-with-code/discrete_choice_mlogit
+*.jupyter_cache/
