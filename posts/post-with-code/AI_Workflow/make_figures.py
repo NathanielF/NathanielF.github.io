@@ -101,11 +101,12 @@ PHASES = {
     "Phase 4: Swiss Metro":         ("2026-03-23 14:00", "2026-03-23 21:00"),
     "Phase 5: Accountability Sinks": ("2026-03-23 21:00", "2026-03-24 09:00"),
     "Phase 6: Exclusion Restriction Lands": ("2026-03-24 09:00", "2026-03-27"),
+    "Phase 7: Sensitivity Analysis":  ("2026-03-27", "2026-03-29"),
 }
 
 phase_colors = [
     PAL["grey1"], PAL["taupe"], PAL["focal2"],
-    PAL["focal3"], PAL["focal1"], PAL["brown"],
+    PAL["focal3"], PAL["focal1"], PAL["brown"], PAL["grey2"],
 ]
 
 def get_phase(dt):
@@ -161,7 +162,9 @@ ax.legend(handles=patches, fontsize=7.5, loc="upper left", framealpha=0.9)
 
 ax.set_ylabel("Total lines in file")
 ax.set_xlabel("")
-ax.set_title("Evolution of attention.qmd: 18 commits over 13 days")
+n_commits = len(commits)
+days_span = (commits[-1]["date"] - commits[0]["date"]).days
+ax.set_title(f"Evolution of attention.qmd: {n_commits} commits over {days_span} days")
 plt.xticks(rotation=30, ha="right")
 plt.tight_layout()
 plt.savefig(f"{OUT_DIR}/line_evolution.png", dpi=300, bbox_inches="tight")
@@ -194,62 +197,69 @@ plt.close()
 print("Saved additions_deletions.png")
 
 # ================================================================
-# Figure 3: Argument arc
+# Figure 3: Argument arc (top to bottom)
 # ================================================================
-fig, ax = plt.subplots(figsize=(18, 6))
+fig, ax = plt.subplots(figsize=(8, 14))
 
 nodes = [
-    ("Technical\nanalogy", "Core Q/K/V\n\u2194 consideration"),
-    ("Methodological\nclaim", "Named parameters\nvs anonymous heads"),
-    ("Rhetorical\nclarity", "McCloskey pass\nstreetlight thread"),
-    ("Empirical\ngrounding", "Swiss Metro\naliasing effect"),
-    ("Political\nargument", "Accountability sinks\nvendor APIs"),
-    ("Exclusion restriction\nlands", "Clean vs impure\ninstruments"),
+    ("Technical analogy", "Core Q/K/V \u2194 consideration"),
+    ("Methodological claim", "Named parameters vs anonymous heads"),
+    ("Rhetorical clarity", "McCloskey pass, streetlight thread"),
+    ("Empirical grounding", "Swiss Metro, aliasing effect"),
+    ("Political argument", "Accountability sinks, vendor APIs"),
+    ("Exclusion restriction lands", "Clean vs impure instruments"),
+    ("Sensitivity analysis", "Intercepts, random effects: robust vs fragile"),
 ]
 
-x_positions = np.linspace(0.08, 0.92, len(nodes))
-y_node = 0.65
-y_label = 0.25
+y_positions = np.linspace(0.93, 0.05, len(nodes))
+x_node   = 0.18   # circle centre
+x_title  = 0.30   # phase title starts here
+x_sub    = 0.30   # subtitle starts here
+r        = 0.032  # circle radius in axes fraction
 
-for i, ((title, subtitle), x) in enumerate(zip(nodes, x_positions)):
+for i, ((title, subtitle), y) in enumerate(zip(nodes, y_positions)):
     color = phase_colors[i]
-    circle = plt.Circle((x, y_node), 0.045, transform=ax.transAxes,
-                        color=color, alpha=0.85, zorder=5)
+    circle = plt.Circle((x_node, y), r, transform=ax.transAxes,
+                         color=color, alpha=0.85, zorder=5)
     ax.add_patch(circle)
-    ax.text(x, y_node, str(i + 1), transform=ax.transAxes,
+    ax.text(x_node, y, str(i + 1), transform=ax.transAxes,
             ha="center", va="center", fontsize=11, fontweight="bold", color="white")
-    ax.text(x, y_node + 0.12, title, transform=ax.transAxes,
-            ha="center", va="bottom", fontsize=8.5, fontweight="bold",
+    ax.text(x_title, y + 0.012, title, transform=ax.transAxes,
+            ha="left", va="center", fontsize=9, fontweight="bold",
             color=PAL["ref_line"])
-    ax.text(x, y_label, subtitle, transform=ax.transAxes,
-            ha="center", va="top", fontsize=7.5, color=PAL["grey2"],
+    ax.text(x_sub, y - 0.018, subtitle, transform=ax.transAxes,
+            ha="left", va="center", fontsize=8, color=PAL["grey2"],
             style="italic")
 
-# Connecting arrows
+# Connecting arrows (top to bottom)
 for i in range(len(nodes) - 1):
     ax.annotate(
-        "", xy=(x_positions[i + 1] - 0.05, y_node),
-        xytext=(x_positions[i] + 0.05, y_node),
+        "", xy=(x_node, y_positions[i + 1] + r + 0.005),
+        xytext=(x_node, y_positions[i] - r - 0.005),
         xycoords="axes fraction", textcoords="axes fraction",
         arrowprops=dict(arrowstyle="->", color=PAL["ref_dash"], lw=1.5),
     )
 
-# Dashed "latent → explicit" arrow from node 4 to node 6
+# Dashed "latent → explicit" arc from node 4 to node 6 on the right
+y4 = y_positions[3]
+y6 = y_positions[5]
+x_arc = 0.78
 ax.annotate(
-    "latent \u2192 explicit",
-    xy=(x_positions[5], y_node - 0.08),
-    xytext=(x_positions[3], y_node - 0.08),
+    "", xy=(x_arc, y6),
+    xytext=(x_arc, y4),
     xycoords="axes fraction", textcoords="axes fraction",
-    fontsize=7.5, color=PAL["brown"], ha="center", va="top",
     arrowprops=dict(arrowstyle="->", color=PAL["brown"], lw=1.2,
-                    linestyle="dashed"),
+                    linestyle="dashed", connectionstyle="arc3,rad=-0.3"),
 )
+ax.text(x_arc + 0.14, (y4 + y6) / 2, "latent \u2192\nexplicit",
+        transform=ax.transAxes, ha="center", va="center",
+        fontsize=7.5, color=PAL["brown"], style="italic")
 
 ax.set_xlim(0, 1)
 ax.set_ylim(0, 1)
 ax.axis("off")
-ax.set_title("How the argument evolved: from technical analogy to accountability infrastructure",
-             fontsize=11, pad=10)
+ax.set_title("How the argument evolved:\nfrom technical analogy to accountability infrastructure",
+             fontsize=11, pad=12)
 plt.tight_layout()
 plt.savefig(f"{OUT_DIR}/argument_arc.png", dpi=300, bbox_inches="tight")
 plt.close()
