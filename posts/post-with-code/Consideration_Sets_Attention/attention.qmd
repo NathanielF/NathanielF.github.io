@@ -57,8 +57,6 @@ plt.rcParams.update({
 })
 ```
 
-!!!!!THIS IS A DRAFT!!!!!!
-
 ## Introduction: Attention is Bias
 
 Every act of attention is an act of exclusion. To focus on one thing is to ignore another. When the mechanism operates invisibly in systems that make consequential decisions about people, it becomes unaccountable bias.
@@ -74,7 +72,7 @@ When AI systems screen candidates, recommend content, or triage decisions, their
 
 **Part I** builds a toy transformer that replicates the conjunction fallacy. A single attention head learns to over-weight vivid but non-diagnostic words. We can see the bias in the attention map. Then we add heads: the same bias persists, but now it is distributed across anonymous subspaces. No single head is "the biased one." The architecture has become what Dan Davies calls an *accountability sink*: a structure that absorbs blame without assigning it. Wrap it in a vendor API and the sink deepens: the firm points to the model, the vendor points to the data, the data points to history.
 
-**Part II** introduces the econometric alternative. Consideration set models separate screening from evaluation, with named parameters, posteriors, and an exclusion restriction that forces instrument validity into the open. We fit the model to synthetic hiring data (where the ground truth is known) and then to the Swiss Metro transport dataset (where it is not). The hiring case has clean instruments: the model recovers *which firm* screens on *which variable*, and how strongly. The Swiss Metro case is harder: the GA pass is pulled between consideration and utility. The model names the tension and earns its decomposition.
+**Part II** introduces the econometric alternative. Consideration set models separate screening from evaluation, with named parameters, posteriors, and an exclusion restriction that forces instrument validity into the open. We fit the model to synthetic hiring data (where the ground truth is known) and then to the Swiss Metro transport dataset (where it is not), adding random coefficients on travel time to capture person-level heterogeneity in time sensitivity. The hiring case has clean instruments: the model recovers *which firm* screens on *which variable*, and how strongly. The Swiss Metro case is harder: the GA pass is pulled between consideration and utility. The model names the tension and earns its decomposition.
 
 **Part III** draws the structural comparison. Internal attribution methods (SHAP, probing, causal tracing) are confounded by the architecture they try to explain. The consideration set model sidesteps this: it wraps a behavioural model around the black box and asks whether the system's screening pattern exhibits gatekeeping bias. The streetlight effect and the accountability sink are two sides of the same problem. We search where the light is; the architecture ensures there is no light where the bias lives. Consideration set models bring their own lamp.
 :::
@@ -1158,30 +1156,13 @@ Dan Davies would recognise the structure. An *accountability sink* is an institu
 
 ## Part II: From Cognitive Bias to Institutional Bias
 
-The Linda task is a thought experiment. The real world is worse. In hiring, the priming signals are protected characteristics: race, age, gender. The conjunction fallacy shows that attention can be captured by irrelevant salience. Hiring bias shows that attention can be captured by *systematically* irrelevant salience, i.e. features that predict screening decisions but should not predict job performance. And when the screening system is a multi-head transformer, the accountability sink swallows the evidence.
+The Linda task is a thought experiment. The real world is worse. In hiring, the priming signals are protected characteristics: race, age, gender. When a firm replaces its screening committee with an API call to a vendor LLM, it outsources the decision *and* the accountability. The vendor says: "we provide a tool, not a decision." The firm says: "we used the best available technology." The candidate has no one to appeal to. The architecture distributes blame internally across anonymous heads; the procurement structure distributes it externally across organisations. The opacity is a side effect that happens to be convenient.
 
-The sink has an outer layer too. When a firm replaces its screening committee with an API call to a vendor LLM, it outsources the decision *and* the accountability. The vendor says: "we provide a tool, not a decision." The firm says: "we used the best available technology." The candidate has no one to appeal to. The architecture distributes blame internally across anonymous heads. The procurement structure distributes it externally across organisations. Nobody chose multi-head attention to hide bias. They chose it because it was SOTA and cheap. The opacity is a side effect that happens to be convenient.
+The consideration set model is the counter-architecture. Every screening variable gets a name, a coefficient, and a posterior. *Who gets considered?* is separate from *who gets hired?*
 
-The consideration set model is the counter-architecture. Every screening variable gets a name, a coefficient, and a posterior. *Who gets considered?* is separate from *who gets hired?* The variables driving each stage are structurally distinct.
+### Implementation
 
-### The Two-Stage Model
-
-The consideration set model separates choice into two stages:
-
-**Stage 1 — Consideration:**
-$$\pi_{nj} = \sigma\!\left(\gamma_{0j} + \mathbf{z}_n^\top \boldsymbol{\gamma}_j\right), \qquad j = 1, \ldots, J$$
-
-Each alternative is independently included in the consideration set. The **sigmoid** (not softmax) is critical: consideration of one alternative does not crowd out another.
-
-**Stage 2 — Choice within consideration:**
-$$P(j \mid \mathcal{C}_n) = \frac{\exp(V_{nj})}{\sum_{k \in \mathcal{C}_n} \exp(V_{nk})}, \qquad V_{nj} = \alpha_j + \mathbf{x}_{nj}^\top \boldsymbol{\beta}$$
-
-As before, the **log-consideration-adjusted utility** collapses both stages into a surrogate softmax:
-$$P(j \text{ chosen}) \approx \text{softmax}_j\!\bigl(\underbrace{\log \pi_{nj}}_{\text{Key score}} + \underbrace{V_{nj}}_{\text{Value}}\bigr)$$
-
-Why "surrogate"? The structural story is hard gating: each alternative is in the set or not, generating $2^J$ possible subsets. The log-adjusted form marginalises over those subsets analytically, yielding a single softmax. We estimate this reduced form, not the latent binary gates. The decomposition is identified provided the exclusion restriction holds: the screening instruments $z$ create cross-person variation in $\log \pi_{nj}$ that is absent from $V_{nj}$.
-
-In the transformer analogy, $\log \pi_{nj}$ plays the role of the query-key dot product. $V_{nj}$ is, literally, the value.
+We use the surrogate likelihood from Part I: $\text{softmax}_j(\log \pi_{nj} + V_{nj})$. Two identification choices, both applied in the hiring and Swiss Metro models below:
 
 ::: {.callout-important icon=false}
 ## Identification requires K ≠ V: two aliasing problems
@@ -1192,7 +1173,7 @@ $$U_{\text{avail},nj} = \log\sigma\!\bigl(\underbrace{\gamma_{0j}}_{\text{consid
 
 This contains **two identification problems**:
 
-**Problem 1 — Level aliasing.** If both $\gamma_{0j}$ and $\alpha_j$ are free, they are aliased. Both shift the level of $U_{\text{avail},nj}$ in the same direction, so the data cannot separate "often considered" from "high intrinsic utility." Fix: drop $\gamma_{0j}$, letting $\alpha_j$ absorb both. (In the Swiss Metro demo below we relax this, adding $\gamma_{0j}$ back and letting the data adjudicate.)
+**Problem 1 — Level aliasing.** If both $\gamma_{0j}$ and $\alpha_j$ are free, they are aliased. Both shift the level of $U_{\text{avail},nj}$ in the same direction, so the data cannot separate "often considered" from "high intrinsic utility." Fix: drop $\gamma_{0j}$, letting $\alpha_j$ absorb both. Both demos below use this strategy. The slopes $\gamma_z$ remain identified from cross-person variation in $Z$.
 
 **Problem 2 — Misspecified heterogeneity.** If the DGP generates individual heterogeneity in utility that the model does not capture, the unexplained variance bleeds into the consideration mechanism, attenuating the utility coefficients. Fix: match the model complexity to the DGP.
 
@@ -1614,15 +1595,11 @@ plt.show()
 
 ### Consideration Sets on Real Data: Transport Mode Choice
 
-The hiring demo used synthetic data with known ground truth and clean instruments. Protected characteristics satisfy the exclusion restriction almost by definition: they gate whether a résumé is read but should not determine job performance conditional on reading. The model recovered the per-firm pattern cleanly. Now we confront the harder case: real data where nobody hands you the true $\gamma_z$ and the instruments are impure.
+The hiring demo had clean instruments and known ground truth. Now the harder case: real data where nobody hands you the true $\gamma_z$ and the instruments are impure.
 
-The data comes from a 1998 stated preference survey in Switzerland. Respondents chose between three transport modes: **Train**, **Swiss Metro** (a hypothetical high-speed maglev), and **Car**, across scenarios that varied travel time, cost, and headway. Each respondent also reported person-level characteristics: age, income, whether the trip was for business, and whether they held a **General Abonnement (GA)**, i.e. an annual rail pass that covers most Swiss public transport.
+The data comes from a 1998 stated preference survey in Switzerland. Respondents chose between three transport modes: **Train**, **Swiss Metro** (a hypothetical high-speed maglev), and **Car**, across scenarios that varied travel time, cost, and headway. Each respondent also reported person-level characteristics: age, income, whether the trip was for business, and whether they held a **General Abonnement (GA)** — an annual rail pass covering most Swiss public transport. The question: which person-level characteristics gate *consideration* of a mode, as distinct from the mode-level attributes that drive utility conditional on consideration?
 
-The question: which person-level characteristics gate *consideration* of a mode, as distinct from the mode-level attributes that drive utility conditional on consideration?
-
-::: {.callout-note}
-**Instrument choice is arguable here, not obvious.** In hiring, protected characteristics satisfy the exclusion restriction almost by definition. In transport the case is weaker. Does holding a GA pass shift whether you *consider* the train, or does it shift how attractive the train *is* conditional on consideration? Plausibly both. We proceed with the assumption that person-level characteristics primarily gate consideration while mode-level attributes (time, cost) drive utility. The framework does not hide this assumption. It names it as $Z \neq X$ and invites scrutiny.
-:::
+The GA pass is the key instrument — and the key problem. Does holding a GA shift whether you *consider* rail, or does it shift how attractive rail *is* conditional on consideration? Plausibly both. We proceed with the assumption that person-level characteristics primarily gate consideration while mode-level attributes (time, cost) drive utility. The framework names this assumption as $Z \neq X$ and invites scrutiny.
 
 ```{python}
 #| label: swiss-metro-data
@@ -1717,6 +1694,8 @@ for name, m in zip(["GA", "Business", "High income", "Older"], Z_means_sm):
     print(f"  {name:12s}: {m:.3f}")
 ```
 
+The model adds one refinement over the hiring demo: a **random coefficient** on travel time. Not everyone values speed equally. Business commuters on tight schedules are acutely time-sensitive; retirees on leisure trips much less so. A fixed $\beta_{tt}$ forces a single time-sensitivity onto the entire population. Unmodelled heterogeneity in utility does not vanish — it bleeds into the consideration stage, attenuating the $\gamma_z$ slopes (this is aliasing problem 2 from the identification callout). The random effect $\beta_{tt,n} \sim \mathcal{N}(\mu_{tt}, \sigma_{tt}^2)$ absorbs that heterogeneity where it belongs: in the utility stage. This is the mixed logit component — the same extension that motivates combining consideration sets with random-coefficient models in the [pymc-marketing implementation](https://github.com/pymc-labs/pymc-marketing/pull/2442).
+
 ```{python}
 #| label: swiss-metro-model
 #| eval: true
@@ -1729,22 +1708,26 @@ def build_swissmetro_consideration(
     X: np.ndarray, Z: np.ndarray, avail: np.ndarray, y: np.ndarray
 ) -> pm.Model:
     """
-    Consideration set model for Swiss Metro with:
+    Consideration set model for Swiss Metro with random coefficients:
       - Person-level Z instruments (GA, business, income, age) driving consideration
       - Mode-level X covariates (travel time, cost) driving utility
+      - Random effect on travel time sensitivity (mixed logit component)
       - Availability constraints (unavailable modes get -inf utility)
-      - Consideration intercept gamma_0 per mode
 
     Each mode gets its own gamma_z vector: a GA pass may strongly increase
     train consideration but have no effect on car consideration.
 
-    Unlike the hiring model, we include a consideration intercept here.
-    In principle gamma_0j and alpha_j are aliased (both shift the level of
-    U_avail_nj). In practice, with strong instruments and real data, letting
-    each stage have its own intercept allows the model to separate baseline
-    consideration from baseline utility — at the cost of weaker identification
-    of the intercept decomposition. The slopes (gamma_z, beta) remain identified
-    from cross-person variation.
+    No consideration intercept: alpha_j absorbs both baseline utility
+    and average consideration. Only the within-alternative, cross-person
+    variation in Z identifies gamma_z. This avoids the aliasing between
+    gamma_0j and alpha_j that would arise if both were free — the same
+    identification strategy used in the hiring model.
+
+    The random effect on beta_tt captures person-level heterogeneity in
+    time sensitivity. Some travellers are time-insensitive (retirees,
+    leisure trips); others are acutely time-sensitive (business commuters).
+    Without this, unexplained heterogeneity bleeds into the consideration
+    stage (aliasing problem 2 from the callout above).
     """
     n_obs, n_alts, n_z = Z.shape
     _, _, n_x = X.shape
@@ -1764,30 +1747,39 @@ def build_swissmetro_consideration(
     ) as model:
 
         # ---- STAGE 1: Consideration ----
-        # gamma_0: per-mode consideration intercept
         # gamma_z: (J, K_z) — each mode has its own sensitivity to each instrument
-        gamma_0 = pm.Normal("gamma_0", mu=0, sigma=2, dims="alts")
+        # No consideration intercept: alpha_j absorbs baseline consideration
         gamma_z = pm.Normal("gamma_z", mu=0, sigma=2,
                            dims=("alts", "z_instruments"))
 
         Z_data = pm.Data("Z", Z, dims=("obs", "alts", "z_instruments"))
 
-        # log_odds_consideration: (N, J) = gamma_0[j] + sum_k gamma_z[j,k] * Z[n,j,k]
-        log_odds_c = gamma_0[None, :] + pt.sum(gamma_z[None, :, :] * Z_data, axis=2)
+        # log_odds_consideration: (N, J) = sum_k gamma_z[j,k] * Z[n,j,k]
+        log_odds_c = pt.sum(gamma_z[None, :, :] * Z_data, axis=2)
         pi = pm.Deterministic("pi", pm.math.sigmoid(log_odds_c),
                              dims=("obs", "alts"))
 
-        # ---- STAGE 2: Utility ----
-        # Named dims so the summary table shows mode names, not indices
+        # ---- STAGE 2: Utility (mixed logit) ----
         alpha_raw = pm.Normal("alpha_raw", mu=0, sigma=2, dims="alts_ref")
         alpha = pt.concatenate([alpha_raw, pt.zeros(1)])  # Car = reference
 
-        beta_tt   = pm.Normal("beta_tt", mu=0, sigma=2)    # travel time
-        beta_cost = pm.Normal("beta_cost", mu=0, sigma=2)  # cost
-        beta = pt.stack([beta_tt, beta_cost])
+        # Travel time: random coefficient (non-centred parameterisation)
+        # beta_tt_n = beta_tt_mu + beta_tt_sigma * z_n
+        beta_tt_mu    = pm.Normal("beta_tt_mu", mu=0, sigma=2)
+        beta_tt_sigma = pm.HalfNormal("beta_tt_sigma", sigma=1)
+        beta_tt_offset = pm.Normal("beta_tt_offset", mu=0, sigma=1, dims="obs")
+        beta_tt_n = pm.Deterministic(
+            "beta_tt", beta_tt_mu + beta_tt_sigma * beta_tt_offset
+        )  # (N,)
+
+        # Cost: fixed coefficient (less heterogeneity expected)
+        beta_cost = pm.Normal("beta_cost", mu=0, sigma=2)
 
         X_data = pm.Data("X", X, dims=("obs", "alts", "x_covs"))
-        V = alpha[None, :] + pt.sum(X_data * beta[None, None, :], axis=2)
+        # V_nj = alpha_j + beta_tt_n * tt_nj + beta_cost * cost_nj
+        V = (alpha[None, :]
+             + beta_tt_n[:, None] * X_data[:, :, 0]
+             + beta_cost * X_data[:, :, 1])
 
         # ---- Availability + log-consideration-adjusted utility ----
         avail_data = pm.Data("avail", avail.astype(float), dims=("obs", "alts"))
@@ -1816,8 +1808,8 @@ print(sm_model)
 
 with sm_model:
     sm_idata = pm.sample(
-        draws=1000, tune=1000,
-        target_accept=0.9,
+        draws=1000, tune=2000,
+        target_accept=0.95,
         random_seed=42,
         progressbar=True,
     )
@@ -1858,31 +1850,33 @@ plt.suptitle(
 plt.tight_layout()
 plt.show()
 
-# ---- Consideration intercepts: baseline consideration per mode ----
+# ---- Utility parameters (population-level) ----
 az.plot_posterior(
     sm_idata,
-    var_names=["gamma_0"],
-    figsize=(12, 3),
+    var_names=["beta_tt_mu", "beta_tt_sigma", "beta_cost", "alpha_raw"],
+    figsize=(14, 3),
 )
 plt.suptitle(
-    "Consideration intercepts γ₀ by mode\n"
-    "Positive = higher baseline consideration; these are aliased with α_j",
+    "Utility stage: travel time (random), cost (fixed), mode constants\n"
+    "β_tt_mu = population mean time sensitivity; β_tt_sigma = person-level spread",
     y=1.02,
 )
 plt.tight_layout()
 plt.show()
 
-# ---- Utility parameters ----
-az.plot_posterior(
-    sm_idata,
-    var_names=["beta_tt", "beta_cost", "alpha_raw"],
-    figsize=(12, 3),
-)
-plt.suptitle(
-    "Utility stage: travel time and cost sensitivities, mode constants\n"
-    "Expected: negative β_tt (prefer faster), negative β_cost (prefer cheaper)",
-    y=1.02,
-)
+# ---- Distribution of individual time sensitivities ----
+beta_tt_samples = sm_idata.posterior["beta_tt"].values.flatten()
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.hist(beta_tt_samples, bins=80, density=True, color=PAL["focal2"], alpha=0.7,
+        edgecolor="white", linewidth=0.3)
+ax.axvline(0, color=PAL["ref_line"], linestyle="--", alpha=0.5)
+mu_hat = sm_idata.posterior["beta_tt_mu"].values.mean()
+ax.axvline(mu_hat, color=PAL["focal1"], linestyle="-", alpha=0.8,
+           label=f"Population mean ≈ {mu_hat:.2f}")
+ax.set_xlabel("β_tt (individual travel time sensitivity)")
+ax.set_ylabel("Density")
+ax.set_title("Person-level heterogeneity in travel time sensitivity")
+ax.legend(fontsize=9)
 plt.tight_layout()
 plt.show()
 ```
@@ -1943,8 +1937,8 @@ Before interpreting any posterior, check convergence. A Bayesian model that has 
 
 az.plot_trace(
     sm_idata,
-    var_names=["beta_tt", "beta_cost", "alpha_raw", "gamma_0", "gamma_z"],
-    figsize=(9, 12),
+    var_names=["beta_tt_mu", "beta_tt_sigma", "beta_cost", "alpha_raw", "gamma_z"],
+    figsize=(9, 14),
 )
 plt.tight_layout()
 plt.show()
@@ -1959,30 +1953,29 @@ The chains mix well. The posteriors are unimodal. The summary table provides the
 
 az.summary(
     sm_idata,
-    var_names=["beta_tt", "beta_cost", "alpha_raw", "gamma_0", "gamma_z"],
+    var_names=["beta_tt_mu", "beta_tt_sigma", "beta_cost", "alpha_raw", "gamma_z"],
     round_to=3,
 )
 ```
 
 #### Reading the results
 
-**Consideration intercepts.** Swiss Metro has the highest baseline consideration ($\gamma_0 \approx 4.3$), Train is moderate ($\gamma_0 \approx 1.2$), Car is near zero ($\gamma_0 \approx -0.1$). These intercepts are aliased with $\alpha_j$ in principle — both shift the level of $U_{\text{avail},nj}$ — but the model separates them here. $\gamma_0$ absorbs baseline popularity at the consideration stage. $\alpha_j$ captures utility-stage preferences. Both are well-identified and tell different stories. The two-stage decomposition is earning its keep.
+**Consideration slopes.** Without a consideration intercept, $\alpha_j$ absorbs both baseline utility and average consideration. The $\gamma_z$ slopes capture the *marginal* effect of each person-level instrument on consideration, relative to that absorbed baseline. This is the same identification strategy used in the hiring model: only the cross-person variation in $Z$ identifies the consideration parameters. The patterns are stable relative to the fixed-coefficient model — adding the random effect on travel time has not distorted the consideration stage.
 
-**Consideration slopes.** With the intercept absorbing baseline consideration, the $\gamma_z$ slopes capture the *marginal* effect of each instrument.
+- **GA pass** is negative on *all three modes* — including Train. This requires careful reading. The Z instruments are mean-centred, so $\gamma_z$ captures the deviation from average consideration, not the level. A GA holder's baseline rail consideration is already absorbed into $\alpha_{raw}[\text{Train}]$. The negative slope ($\gamma_z \approx -1.0$) says: relative to that absorbed baseline, the *marginal* GA effect on Train consideration is mildly negative — not because GA holders avoid trains, but because their rail consideration is essentially saturated. The pass has already done its work; the baseline reflects it; the slope has little left to add. The asymmetry across modes is where the real story lives. Car ($\gamma_z \approx -8.5$) is catastrophic: GA holders stop considering driving entirely. Swiss Metro ($\gamma_z \approx -2.0$) is substantial: committed rail users are less interested in a hypothetical alternative. Train ($\gamma_z \approx -1.0$) is mild — the marginal effect is spent because the baseline already captures the rail commitment. The GA pass is doing its strongest work as a *negative gate* on non-rail modes, not as a positive gate on rail.
+- **Older** travellers consider Train more ($\gamma_z \approx 1.5$) and are roughly indifferent to Swiss Metro ($\gamma_z \approx -0.28$, HDI spans zero). They consider Car more too ($\gamma_z \approx 1.1$). Familiarity with existing modes, mild scepticism toward a hypothetical maglev.
+- **Business** travellers consider Swiss Metro strongly ($\gamma_z \approx 1.4$) and are roughly indifferent to Train ($\gamma_z \approx -0.05$, HDI spans zero) and somewhat screen out Car ($\gamma_z \approx -1.0$). They want speed.
+- **High income** favours Swiss Metro ($\gamma_z \approx 0.37$) and is roughly indifferent to Train ($\gamma_z \approx -0.19$) and Car ($\gamma_z \approx 0.32$). The HDIs for Train and Car span zero — income does not strongly gate consideration of these modes.
 
-- **GA pass** is sharply asymmetric. GA holders consider Train more ($\gamma_z \approx 0.64$), screen out Swiss Metro ($\gamma_z \approx -2.7$; they already have a rail commitment and do not need a hypothetical alternative), and massively screen out Car ($\gamma_z \approx -7.7$). The pass does not make driving worse. It makes driving *unconsidered*.
-- **Older** travellers prefer Train ($\gamma_z \approx 2.7$) and avoid Swiss Metro ($\gamma_z \approx -2.8$). Familiarity with existing rail, scepticism toward a hypothetical maglev.
-- **Business** travellers consider Swiss Metro strongly ($\gamma_z \approx 4.2$) but screen out Train ($-1.3$) and Car ($-1.6$). They want speed.
-- **High income** favours Swiss Metro ($\gamma_z \approx 2.7$) and is indifferent to Car ($0.08$).
+**Utility stage.** Conditional on consideration, mode attributes drive choice — but travellers differ substantially in how much they care about speed.
 
-**Utility stage.** Conditional on consideration, mode attributes drive choice in the expected directions.
+- $\beta_{tt,\mu} \approx -1.04$: the population mean time sensitivity. Strongly negative — people prefer faster modes on average, and the magnitude is larger than the fixed-coefficient estimate ($\approx -0.72$). The random effect separates mean sensitivity from person-level variation, giving a cleaner estimate of the population centre.
+- $\beta_{tt,\sigma} \approx 0.67$: substantial person-level spread. A standard deviation of 0.67 around a mean of $-1.04$ means the most time-insensitive travellers have $\beta_{tt} \approx -0.37$ while the most sensitive have $\beta_{tt} \approx -1.71$. This heterogeneity, if left unmodelled, would bleed into the consideration stage — exactly aliasing problem 2 from the callout above. The random effect absorbs it in the utility stage where it belongs.
+- $\beta_{cost} \approx -0.087$: negative but smaller (fixed across persons). Cost matters less than time in this sample, consistent with a relatively affluent Swiss commuter population.
+- $\alpha_{raw}[\text{Train}] \approx -0.80$: lower baseline utility than Car (reference), net of time and cost. The utility constant absorbs both intrinsic mode preference *and* average consideration — the price of dropping $\gamma_0$, but it keeps the slopes cleanly identified.
+- $\alpha_{raw}[\text{Swiss Metro}] \approx -0.03$: near-zero baseline utility relative to Car. With no consideration intercept, this reflects both the mode's intrinsic attractiveness and its average consideration. The consideration slopes (business, high income) do the work of lifting Swiss Metro's choice share.
 
-- $\beta_{tt} \approx -0.72$: strongly negative. People prefer faster modes.
-- $\beta_{cost} \approx -0.094$: negative but smaller. Cost matters less than time in this sample, consistent with a relatively affluent Swiss commuter population.
-- $\alpha_{raw}[\text{Train}] \approx -1.15$: lower baseline utility than Car (reference), net of time and cost. People *consider* Train readily ($\gamma_0 \approx 1.2$) but find it less attractive conditional on consideration.
-- $\alpha_{raw}[\text{Swiss Metro}] \approx -0.50$: moderate baseline utility, but its high consideration intercept ($\gamma_0 \approx 4.3$) drives its overall choice share.
-
-**The GA consideration plot** confirms the story. GA holders consider Train at 0.76 (vs 0.68), Swiss Metro at 0.75 (vs 0.94), and Car at 0.00 (vs 0.70). Someone who has committed to rail screens out driving entirely, gives the familiar mode a slight boost, and loses some interest in a hypothetical alternative.
+**The GA consideration plot** confirms the story visually. GA holders screen out driving entirely and lose some interest in Swiss Metro. The consideration probabilities stratified by GA status show the instrument doing real work: shifting *which modes enter the choice set* rather than just adjusting utility conditional on consideration.
 
 This is the core advantage over transformer attention. When a multi-head model distributes mode preferences across anonymous subspaces, there is nothing to argue about. No named assumption to accept or reject. The consideration set model makes instrument validity the central modelling choice and forces it into the open.
 
@@ -1990,9 +1983,7 @@ This is the core advantage over transformer attention. When a multi-head model d
 
 ## Part III: What the Analogy Buys You
 
-The structural map between transformer attention and consideration sets was laid out early (see the analogy table above). The demos have shown it in action. The question worth asking is what the analogy *buys*.
-
-The most productive difference is the hard/soft divide. Transformer attention is a **differentiable relaxation** of discrete consideration. Consideration sets provide a **Bayesian interpretation** of what attention weights represent: the posterior probability that an alternative is decision-relevant. Cross-pollination runs both ways. Attention weights are better read as "how likely is this token to be decision-relevant" than "how much does this token contribute," motivating sparsity-inducing variants (Sparsemax, $\alpha$-entmax) as continuous relaxations of hard consideration. In the other direction, the $Q/K/V$ factorisation suggests consideration models could separate the *signal* that determines consideration from the *utility* that drives choice. Our Swiss Metro model takes a step in this direction.
+The most productive difference is the hard/soft divide. Transformer attention is a **differentiable relaxation** of discrete consideration. Cross-pollination runs both ways: attention weights are better read as "how likely is this token to be decision-relevant" than "how much does this token contribute," motivating sparsity-inducing variants (Sparsemax, $\alpha$-entmax). In the other direction, the $Q/K/V$ factorisation suggests consideration models could separate the *signal* that determines consideration from the *utility* that drives choice.
 
 But the deepest difference is about what each framework makes *arguable*.
 
@@ -2000,25 +1991,21 @@ But the deepest difference is about what each framework makes *arguable*.
 
 Mechanistic interpretability (probing classifiers, causal tracing, activation patching) asks: *where inside the model does the bias live?* This is the streetlight question. It searches where the representations are visible. The consideration set approach asks something different: *does the system's observable screening behaviour exhibit bias, and on which variables?* It does not need to find the keys under the lamppost. It applies to any screener, whether human, logistic regression, or transformer, without access to weights or architecture.
 
-Internal attribution methods face a different version of the same problem. SHAP, LIME, and integrated gradients ask which input features drive a particular output. But they assume feature contributions are additive or locally linear. Multi-head attention violates both assumptions. The bias lives in the interaction of concatenated value vectors through the GELU MLP, i.e. the interaction terms that SHAP's additivity axiom cannot decompose. A SHAP value for "applicant name" in a résumé screening decision tells you the marginal contribution of that token *holding other features fixed*. It does not tell you whether the name gated consideration or shifted conditional-on-screening utility. The distinction matters. A blocked consideration funnel and a low utility score produce the same outcome (rejection) but require different interventions. The consideration set model does not try to open the black box. It wraps a *separate* behavioural model around it and asks: does the system's screening pattern exhibit gatekeeping bias, and on which variables?
+Internal attribution methods face a different version of the same problem. SHAP, LIME, and integrated gradients assume feature contributions are additive or locally linear. Multi-head attention violates both assumptions — the bias lives in the interaction of concatenated value vectors through the GELU MLP. A SHAP value for "applicant name" tells you the marginal contribution of that token *holding other features fixed*. It does not tell you whether the name gated consideration or shifted conditional-on-screening utility. The distinction matters: a blocked consideration funnel and a low utility score produce the same outcome (rejection) but require different interventions.
 
-A clarification on what the audit recovers. Fitting a consideration set model to a screener's decisions does not estimate the screener's internal mechanism. It estimates a **behavioural model**. If the system's input-output mapping were generated by a two-stage process (gating then evaluation), what would the gating parameters look like? The $\gamma_z$ posteriors say the system's decisions are *consistent with* a process where a given variable gates consideration with a given magnitude and uncertainty. This is a functional claim — it describes behaviour, not mechanism. It has the same epistemic status as the infamous résumé audit studies, which surface discrimination without opening the hiring pipeline. The consideration model adds structure beyond a simple disparity test. It decomposes screening from conditional-on-screening evaluation. The exclusion restriction makes the decomposition identified.
+The consideration set model does not try to open the black box. It wraps a *separate* behavioural model around it. The $\gamma_z$ posteriors say the system's decisions are *consistent with* a process where a given variable gates consideration with a given magnitude and uncertainty. This is a functional claim — it describes behaviour, not mechanism, with the same epistemic status as résumé audit studies that surface discrimination without opening the hiring pipeline. The consideration model adds structure beyond a simple disparity test: it decomposes screening from conditional-on-screening evaluation, and the exclusion restriction makes the decomposition identified.
 
 #### Finding Instruments is the Hard Part
 
-Everything rests on the **exclusion restriction** $Z \neq X$. You need variation that shifts who gets considered without shifting who is attractive conditional on consideration. Without it, screening and evaluation are aliased and the model is unidentified.
+Everything rests on the **exclusion restriction** $Z \neq X$. The two demos illustrate the range. In hiring, protected characteristics satisfy it almost by definition — the "should not affect job performance" is not a pious hope but the content of anti-discrimination law. When the exclusion restriction and the legal standard say the same thing, the modelling assumption is as defensible as it gets. The Swiss Metro case is harder: the GA pass is an impure instrument, pulled between consideration and utility. The framework names this tension rather than hiding it.
 
-The two demos illustrate the range. Hiring is the exemplary domain. Protected characteristics satisfy the exclusion restriction almost by definition. They gate whether a résumé is read but should not determine job performance conditional on reading. The "should not" is not a pious hope; it is the content of anti-discrimination law. When the exclusion restriction and the legal standard say the same thing, the modelling assumption is as defensible as it gets. The hiring model went further: it recovered *which firm* screens on *which variable*, giving you a target for intervention. Firm C's racial screening is actionable in a way that an aggregate disparity statistic is not.
-
-Swiss Metro is harder. The GA pass is pulled between consideration and utility. It plausibly gates whether you check car schedules *and* zeroes the marginal cost of rail trips. The model named this tension. The consideration intercept partially resolved it. But the decomposition is approximate, and the instrument is impure. The contrast is the point. The framework's value lies in making the difficulty *arguable*.
-
-Other domains are harder still. In content recommendation, what feature shifts whether an item is *considered* without shifting its quality? In credit scoring? In triage? The framework does not pretend instrument discovery is easy. It makes the difficulty *visible* as a modelling assumption that must be defended. The same identification problem applies inside the transformer. Is a given attention head encoding screening bias, or a legitimate feature correlation, or both? Without exogenous variation that isolates the bias channel, internal attribution is underdetermined, for the same reason that a consideration model without valid instruments is unidentified.
+Other domains are harder still. In content recommendation, what feature shifts whether an item is *considered* without shifting its quality? In credit scoring? In triage? The framework does not pretend instrument discovery is easy. It makes the difficulty *visible* as a modelling assumption that must be defended. The same identification problem applies inside the transformer — without exogenous variation that isolates the bias channel, internal attribution is underdetermined, for the same reason that a consideration model without valid instruments is unidentified.
 
 ## Conclusion
 
 Two metaphors, one problem. The streetlight effect says we search where the light is, not where the keys fell. The accountability sink says the architecture ensures there is no one to blame when the keys go missing. Multi-head attention is both at once: the bias is real, but distributed across anonymous subspaces where it resists inspection, and no single head is responsible for the discriminatory outcome. Wrap the architecture in a vendor API and the sink deepens further. The firm that made the hiring decision can point to the model. The vendor that trained the model can point to the data. The data is a record of past human decisions that nobody alive is responsible for. Accountability does not vanish. It is *delegated into a void*.
 
-Consideration set models are the counter-architecture. They name the variables that gate access, estimate how strongly each one operates, and report their uncertainty. $\gamma_z[\text{Car, GA}] \approx -7.7$ is not a diffuse activation pattern. It is a claim, with a sign, a magnitude, and a credible interval. You can show it to a regulator. You can argue about whether the instrument is valid. You can be *wrong* — and that is the point. A framework that can be wrong can also be held accountable.
+Consideration set models are the counter-architecture. They name the variables that gate access, estimate how strongly each one operates, and report their uncertainty. $\gamma_z[\text{Car, GA}] \approx -8.5$ is not a diffuse activation pattern. It is a claim, with a sign, a magnitude, and a credible interval. You can show it to a regulator. You can argue about whether the instrument is valid. You can be *wrong* — and that is the point. A framework that can be wrong can also be held accountable.
 
 Naming what you model is not a stylistic preference. It is audit infrastructure.
 
