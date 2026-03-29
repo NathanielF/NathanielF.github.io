@@ -14,9 +14,9 @@ image: "argument_arc.png"
 
 ## Introduction
 
-At my most cynical, I think the hype around AI-assisted work is largely driven by the revelatory power of simply writing things down. I've kept a personal blog and a suite of Obsidian notes for years. Writing has always been the most important step in developing quality work. To test whether AI changes that, I leaned into the workflow for a recent post: tracking every commit, every prompt, every response, and every revision. The question I wanted to answer was not whether the AI helps, but under what conditions, and at what tasks.
+At my most cynical, I think the hype around AI-assisted work is largely driven by the revelatory power of simply writing things down. I've kept a personal blog and a suite of Obsidian notes for years. Writing has always been the most important step in developing quality work. To test whether AI changes that, I leaned into the workflow for a recent post: tracking every commit, every prompt, every response, and every revision. The question I wanted to answer was not whether the AI helps (it does) but under what conditions, and at what tasks.
 
-The companion post, [*The Architecture of Focus*](/posts/post-with-code/Consideration_Sets_Attention/attention.qmd), took 15 days and 21 commits. It started as a technical comparison between transformer attention and econometric consideration sets, with bias detection as the motivating question. It ended as an argument about accountability infrastructure: how multi-head attention functions as what Dan Davies calls an *accountability sink*, and how consideration set models provide a counter-architecture with named parameters, posteriors, and an exclusion restriction you can actually argue about.
+The companion post, [*The Architecture of Focus*](/posts/post-with-code/Consideration_Sets_Attention/attention.qmd), took 15 days and 21 commits. It started as a technical comparison between transformer attention and econometric consideration sets, with bias detection as the motivating question. It ended as an argument about accountability infrastructure: how multi-head attention functions as what Dan Davies calls an *accountability sink*, and how consideration set models provide a counter-architecture with named parameters, posteriors, and an exclusion restriction you can audit and argue about.
 
 The core analogy was there from the first draft. What unfolded over the next two weeks was the rhetorical structure, the real-data empirical grounding, and the political framing. This emerged through iterative refinement with Claude. I have an instinct to call it dialogue, but it was less than that. More mechanical, less enriching, but an occasional spur to thought. This essay maps that evolution: a record of how an argument changes shape when you refine it with a system that can diagnose technical failures, recognise structural patterns, and execute editorial passes at speed.
 
@@ -52,7 +52,7 @@ On March 23, I asked for an assessment of writing style and redundancy through t
 
 The prose tightening was mechanical and fast: splitting run-on sentences, cutting throat-clearing, replacing passive constructions. The more interesting contribution was structural, and it came from a corrective prompt about a disconnected image.
 
-The post contained a streetlight photograph that illustrated the interpretability problem but didn't argue anything. I had gesured at the idea without making it land. The corrective prompt was simple: make this image do argumentative work. The response threaded it into a through-line:
+The post contained a streetlight photograph that illustrated the interpretability problem but didn't argue anything. I had gesured at the idea without making it land. The corrective prompt was simple: make this image do argumentative work. Once I named the problem, the response could thread it into a through-line
 
 > *The old joke about searching under the streetlight applies here. Interpretability tools examine attention weights because they are visible, not because they are where the bias lives. Single-head attention is the lamppost: you can see the weights clearly, so you look there. Multi-head attention scatters the keys into the dark. Consideration set models do something different. They ask not where does the mechanism put the bias? but does the system's behaviour exhibit bias, and on which variables? They bring their own light.*
 
@@ -119,6 +119,14 @@ The architecture (no single head), the procurement (no single firm), the history
 
 What the accountability sink prevents is not just blame assignment. It prevents the feedback that makes diagnosis possible. If no one is responsible for a discriminatory outcome, no one is obliged to investigate it, correct the model, or change the intake filter. The sink is not just a political problem; it is an epistemological one. It structurally blocks the corrective iteration that would improve the system. Consideration set models are the counter-architecture not only because they name the variables that gate access, but because they make the decomposition *arguable*: a named parameter can be challenged, a posterior can be updated, a specification error can be diagnosed and fixed. The accountability sink forecloses that loop. Consideration set models reopen it.
 
+## The Notion of Style in Work
+
+Whenever possible, I aim to say something true and interesting. The style, in so far as I have one, is a function of that aim, combined with details of biography and taste. But style is not merely adornment, it constrains vision and focus. These constraints determine what I choose to attend to, what I notice, and how I connect things. Again, attention here is the key. Just as a transformer model architecture develops heuristics for attending to different parts of the input, a writer's style determines relevance. Proust has the line: 
+
+> Style for the writer, no less than colour for the painter is a question not of technique but of vision: it is the revelation, which by direct and conscious methods would be impossible, of the qualitative difference, the uniqueness of the fashion in which the world appears to each one of us, a difference which, if there were no art, would remain forever the secret of every individual. - Proust, *Time Regained*
+
+Your style of thought pervades your work-product. The style of the piece is a function of your vision and your choices. The AI can help you express that vision more clearly, but it does not determine it. Most of the value of all work is in the act of fitting your vision to task at hand.
+
 ---
 
 ## What It Tells You About AI Collaboration
@@ -129,7 +137,7 @@ The streetlight metaphor needed a corrective prompt and guided threading through
 
 That is the honest description of the tool. It is not a collaborator in the sense of bringing independent insight. It is a respondent that scales with the quality of your prompts. Corrective prompting requires the domain knowledge the AI is simulating: knowing that a flipped sign is a specification error rather than a finding, knowing that random effects per observation and per individual are different models rather than different parameterisations of the same model, knowing that a disconnected image can be made argumentative rather than merely illustrative. Rhetorical positioning requires a point of view the AI will mirror back if you give it one. Model sensitivity analysis requires knowing what to perturb and what counts as a robust result. None of that can be delegated. What can be delegated is execution: drafting the paragraph once you know what it should say, running the model variant once you know what to change, threading the metaphor once you know where it should land.
 
-Convergence on *what matters* took longer than convergence on *how to say it*. The prose was tight by Phase 3. The argument only landed in Phase 6. That gap, between writing that reads well and writing that argues, is where the human work lives. A sharper initial prompt would have collapsed six phases into two. But writing that prompt requires knowing what you are arguing, and knowing what you are arguing is partly what the six phases produced.
+Convergence on *what matters* took longer than convergence on *how to say it*. The prose was tight by Phase 3. The argument only landed in Phase 6. The style determines their arrangement. That gap, between writing that reads well and writing that argues, is where the human work lives. A sharper initial prompt would have collapsed six phases into two. But writing that prompt requires knowing what you are arguing, and knowing what you are arguing is partly what the six phases produced.
 
 ![Per-commit additions (green) and deletions (red). The best commits often remove material.](additions_deletions.png){width=100%}
 
