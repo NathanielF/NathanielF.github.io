@@ -1,1 +1,0 @@
-This section will serve to capture the philosophical topics in my Zettelkasten notes.

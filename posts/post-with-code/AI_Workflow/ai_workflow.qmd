@@ -17,7 +17,9 @@ abstract: "AI-assisted work is often sold on the generative possibilities. The q
 
 At my most cynical, I think the hype around AI-assisted work is largely driven by the revelatory power of simply writing things down. I've kept a personal blog and a suite of Obsidian notes for years. Writing has always been the most important step in developing quality work. The fact that this realization is advertised as a "breakthrough" explains a lot about our current intellectual climate. To test whether AI can improve work quality, I leaned into the workflow for a recent post: tracking every commit, every prompt, every response, and every revision. The question I wanted to answer was not whether the AI helps (it does) but under what conditions, and at what tasks.
 
-The companion post, [*The Architecture of Focus*](/posts/post-with-code/Consideration_Sets_Attention/attention.qmd), took 15 days and 21 commits. It started as a technical comparison between transformer attention and econometric consideration sets, with bias detection as the motivating question. It ended as an argument about accountability infrastructure: how multi-head attention functions as what Dan Davies calls an *accountability sink*, and how consideration set models provide a counter-architecture with named parameters, posteriors, and an exclusion restriction you can audit and argue about.
+![An Obsidian style mind map of related notes](obsidian_map.png)
+
+The companion post, [*The Architecture of Focus*](/posts/post-with-code/Consideration_Sets_Attention/attention.qmd), took 15 days and 21 commits. It started as a technical comparison between transformer attention and econometric consideration sets, with bias detection as the motivating question. It came from the accumulated stock of reading and note-taking that the mind map above represents. It ended as an argument about accountability infrastructure: how multi-head attention functions as what Dan Davies calls an *accountability sink*, and how consideration set models provide a counter-architecture with named parameters, posteriors, and an exclusion restriction you can audit and argue about.
 
 The core analogy was there from the first draft. What unfolded over the next two weeks was the rhetorical structure, the real-data empirical grounding, and the political framing. This emerged through iterative refinement with Claude. I have an instinct to call it dialogue, but it was less than that. More mechanical, less enriching, but an occasional spur to thought. This essay maps that evolution: a record of how an argument changes shape when you refine it with a system that can diagnose technical failures, recognise structural patterns, and execute editorial passes at speed.
 
@@ -142,9 +144,9 @@ Convergence on *what matters* took longer than convergence on *how to say it*. T
 
 ![Per-commit additions (green) and deletions (red). The best commits often remove material.](additions_deletions.png){width=100%}
 
-The core unit of progress here was not generation but diagnosis. Every useful step began with a diagnosis of what was wrong with the previous version: the Linda example replacing bank/river, the streetlight threaded across three sections, the GA pass identified as a negative gate rather than a rail promoter. The AI accelerated the subsequent execution. It did not originate the diagnosis or identify the need.
+The core unit of progress here was not generation but diagnosis. Every useful step began with a diagnosis of what was wrong with the previous version: the Linda example replacing bank/river, the streetlight threaded across three sections, the GA pass identified as a negative gate rather than a rail promoter. The AI accelerated the subsequent execution. It did not originate the diagnosis or identify the need. And the need was not known in advance. It emerged from the work.
 
-Branko Milanovic's [*Capitalism, Alone*](https://www.hup.harvard.edu/catalog.php?isbn=9780674983506) argues that fear of the robot is misplaced:
+Branko Milanovic's [*Capitalism, Alone*](https://www.hup.harvard.edu/catalog.php?isbn=9780674983506) argues that fear of the robot is misplaced because we cannot anticipate need.
 
 > "Fear of robotics and technology arise, I think, from two human frailties. One is cognitive: we simply do not know what future technological change will be and thus cannot tell what jobs will be created, __what our future needs will be__, or how raw materials will be used. The second is psychological: we get a thrill from the fear of the unknown..."
 

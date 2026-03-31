@@ -13,3 +13,4 @@ posts/post-with-code/Survey_Analytics_Design/*
 posts/post-with-code/blaavan_sem
 posts/post-with-code/discrete_choice_mlogit
 *.jupyter_cache/
+/notes/certain_things/*
