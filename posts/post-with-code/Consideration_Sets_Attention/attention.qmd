@@ -75,6 +75,8 @@ When AI systems screen candidates, recommend content, or triage decisions, their
 **Part II** introduces the econometric alternative. Consideration set models separate screening from evaluation, with named parameters, posteriors, and an exclusion restriction that forces instrument validity into the open. We fit the model to synthetic hiring data (where we know the ground truth) and then to the Swiss Metro transport dataset (where we do not), adding per-individual random coefficients on travel time to capture heterogeneity in time sensitivity. The hiring case has clean instruments: the model recovers *which firm* screens on *which variable*, and how strongly. The Swiss Metro case is harder. The GA pass is pulled between consideration and utility. The model names the tension and earns its decomposition.
 
 **Part III** draws the comparison. Internal attribution methods (SHAP, probing, causal tracing) are confounded by the architecture they try to explain. The consideration set model sidesteps this: it wraps a behavioural model around the black box and asks whether the system's screening pattern exhibits gatekeeping bias. The streetlight effect and the accountability sink are two sides of the same problem. We search where the light is; the architecture ensures there is no light where the bias lives. Consideration set models bring their own lamp.
+
+A companion [essay](posts/post-with-code/AI_Workflow/ai_workflow.qmd) tracks the development of this argument through 21 commits over 15 days.
 :::
 
 ![The Streetlight Effect: we look where the light is, not where the keys fell.](streetlight_effect.jpg)
