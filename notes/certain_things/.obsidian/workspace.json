@@ -11,12 +11,14 @@
             "id": "b4ab0f5e43c3f219",
             "type": "leaf",
             "state": {
-              "type": "release-notes",
+              "type": "markdown",
               "state": {
-                "currentVersion": "1.8.10"
+                "file": "Public/Statistics/The Likelihood Principle as Modeling Directive.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-book-up",
-              "title": "Release Notes 1.8.10"
+              "icon": "lucide-file",
+              "title": "The Likelihood Principle as Modeling Directive"
             }
           }
         ]
@@ -155,6 +157,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "bases:Create new base": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
@@ -165,21 +168,22 @@
   },
   "active": "b4ab0f5e43c3f219",
   "lastOpenFiles": [
-    "Public/Philosophy/Repeat, Repeat, Repeat....html",
-    "Public/Philosophy/Repeat, Repeat, Repeat..._files/mediabag",
-    "Public/Philosophy/Repeat, Repeat, Repeat..._files",
-    "Wedding/Tattoo Idea.html",
-    "Wedding/Tattoo Idea_files/mediabag",
-    "Wedding/Tattoo Idea_files",
+    "Public/Talks/working_in_stem.html",
+    "Public/Talks/working_in_stem_files/mediabag",
+    "Public/Talks/working_in_stem_files",
+    "Public/Talks/value_capture.html",
+    "Public/Talks/value_capture_files/mediabag",
+    "Public/Talks/value_capture_files",
+    "Public/Talks/time_to_attrition.html",
+    "Public/Talks/time_to_attrition_files/mediabag",
+    "Public/Talks/time_to_attrition_files",
+    "Public/Talks/talk4ukraine.html",
+    "Public/Talks/talk4ukraine_files/mediabag",
+    "Public/Statistics/Manski's Partial Identification and MMM Calibration.md",
     "Public/Philosophy/Repeat, Repeat, Repeat....md",
     "Wedding/Tattoo Idea.md",
     "Wedding/Speech.md",
     "Wedding/Ceremony.md",
-    "Wedding/Speech.html",
-    "Wedding/Speech_files/mediabag",
-    "Wedding/Speech_files",
-    "Wedding/Three things.html",
-    "Wedding/Three things_files/mediabag",
     "Wedding/Three things.md",
     "Public/Philosophy/Thinking about Statistics.md",
     "Philosophy/Book - Thinking about Statistics.md",
