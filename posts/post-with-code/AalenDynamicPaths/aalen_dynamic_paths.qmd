@@ -16,6 +16,7 @@ author:
     - url: https://nathanielf.github.io/
     - affiliation: PyMC dev
 citation: true
+date: 2026-01-10
 ---
 
 
@@ -1186,44 +1187,57 @@ This approach respects the nonlinearity and properly accounts for individual het
 
 def get_marginal_survival(idata_pp, df_long, n_bins):
     """
-    Revised G-formula: Maintains individual-specific scales by carrying forward 
-    last observed hazard to prevent 'immortal plateau' without corrupting the 
-    global survival scale.
+    G-formula survival projection. Handles event and censored subjects differently:
+    - Event subjects: survival drops to 0 at the event time (absorbing state).
+    - Censored subjects: last observed hazard is carried forward as a
+      constant-hazard extrapolation into unobserved future bins.
     """
     lambda_ds = idata_pp.posterior_predictive["Lambda"]
-    stacked_lambda = lambda_ds.stack(sample=("chain", "draw")).values 
+    stacked_lambda = lambda_ds.stack(sample=("chain", "draw")).values
     n_samples = stacked_lambda.shape[1]
-    
+
     subjects = df_long['subject'].unique()
     n_subs = len(subjects)
-    
-    # Initialize with NaNs or 0s (0s are safer for cumsum if we fill correctly)
+
     full_hazard_matrix = np.zeros((n_samples, n_subs, n_bins))
-    
+    # Track which subjects had the terminal event (absorbing state)
+    subject_had_event = np.zeros(n_subs, dtype=bool)
+    subject_event_bin = np.full(n_subs, n_bins, dtype=int)
+
     for i, sub_id in enumerate(subjects):
         sub_mask = (df_long['subject'] == sub_id).values
-        sub_bins = df_long.loc[sub_mask, 'bin_idx'].values
-        
+        sub_data = df_long.loc[sub_mask]
+        sub_bins = sub_data['bin_idx'].values
+
         # 1. Fill observed bins with actual posterior predictive samples
         actual_hazards = stacked_lambda[sub_mask, :].T
         full_hazard_matrix[:, i, sub_bins] = actual_hazards
-        
-        # 2. Fill unobserved 'future' bins (extrapolation)
-        # Instead of a global mean, we use the individual's own last observed hazard.
-        # This keeps the survival probability decaying at a rate 'fair' to that person.
+
+        # 2. Check if this subject experienced the terminal event
+        had_event = sub_data['event'].sum() > 0
+        subject_had_event[i] = had_event
         last_bin = sub_bins.max()
-        if last_bin < n_bins - 1:
-            last_hazard = actual_hazards[:, -1][:, np.newaxis] # (samples, 1)
-            # Project this hazard into the remaining empty slots
+
+        if had_event:
+            # Record the event bin — survival will be forced to 0 after this
+            subject_event_bin[i] = last_bin
+        elif last_bin < n_bins - 1:
+            # Censored: carry forward last observed hazard
+            last_hazard = actual_hazards[:, -1][:, np.newaxis]
             full_hazard_matrix[:, i, last_bin+1:] = last_hazard
 
     # 3. Cumulative Sum and Survival Transformation
     cum_haz = np.cumsum(full_hazard_matrix, axis=2)
     surv_curves = np.exp(-cum_haz)
-    
-    # 4. Marginalization
-    marginal_samples = surv_curves.mean(axis=1) 
-    
+
+    # 4. For subjects who had the event, force S(t) = 0 after event time
+    for i in range(n_subs):
+        if subject_had_event[i]:
+            surv_curves[:, i, subject_event_bin[i]:] = 0.0
+
+    # 5. Marginalization
+    marginal_samples = surv_curves.mean(axis=1)
+
     return {
         'samples': marginal_samples,
         'mean': marginal_samples.mean(axis=0),
@@ -1286,7 +1300,9 @@ plt.show();
 
 The Bayesian approach naturally propagates uncertainty through the entire calculation, from model parameters through individual trajectories to population-averaged survival curves. This principled approach allows us to finally answer the key causal question: how does treatment affect survival probability over time, accounting for its indirect effect through the time-varying mediator? We have now compared $\bar{S}_{\text{treated}}(t)$ versus $\bar{S}_{\text{control}}(t)$ on an interpretable scale, with full uncertainty quantification. 
 
-It's very important to understand that this counterfactual contrast aims at symmetry. Our focus is the causal estimand and we want to distill the effect of the treatment on the population. By "carrying forward" the last observed hazard for censored individuals or those who experienced an event, we maintained a stable population denominator and avoided immortal time bias. We know that most people eventually suffer the terminal event, and this g-computation approach ensures we compare the same people against themselves.
+It's very important to understand that this counterfactual contrast aims at symmetry. Our focus is the causal estimand and we want to distill the effect of the treatment on the population. By "carrying forward" the last observed hazard for censored individuals, we maintained a stable population denominator and avoided immortal time bias. We know that most people eventually suffer the terminal event, and this g-computation approach ensures we compare the same people against themselves.
+
+The symmetry here deserves emphasis. The process model is built from Aalen's perspective: time-varying coefficients, additive hazard paths, a joint mediator-hazard system that tracks how causation unfolds. But the g-computation step converts this processual machinery into a clean interventionist estimand. The same model, with the same assumptions, generates both counterfactual survival curves for the same population. Modeling choices like the softplus link or the hazard extrapolation for censored subjects affect both worlds equally. What survives in the difference is the causal signal. The process model tells you *why* the treatment works and where it is being undermined. The counterfactual contrast tells you *that* it works, with a defensible number attached. The full Bayesian implementation is what makes both available simultaneously.
 
 
 ### How we got here
