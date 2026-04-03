@@ -10,7 +10,7 @@ execute:
   freeze: auto 
   execute: true
   eval: true
-jupyter: applied-bayesian-regression-modeling-env
+jupyter: bayesian_causal_book
 image: 'evolving_dag.png'
 author:
     - url: https://nathanielf.github.io/
@@ -793,9 +793,9 @@ def make_model(data, basis, sample=True, observed=True):
         beta_low  = pm.Normal("beta_low",  0, 0.1)
         beta_high = pm.Normal("beta_high", 0, 0.1)
         # Log-additive hazard
-        log_lambda_t = (alpha_0_t[b] 
+        log_lambda_t = (alpha_0_t[b]
                         + alpha_1_t[b] * trt # direct effect
-                        + alpha_2_t[b] * med  # mediator effect
+                        + alpha_2_t[b] * med_lag  # mediator effect (lagged for temporal ordering)
                         + beta_low  * I_low
                         + beta_high * I_high
         )
