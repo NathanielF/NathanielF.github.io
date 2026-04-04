@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "bd541fdd86e2a2d9",
+        "id": "872b3b148bbd90c1",
         "type": "tabs",
         "children": [
           {
-            "id": "b4ab0f5e43c3f219",
+            "id": "ad2e84605f534b70",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Public/Statistics/The Likelihood Principle as Modeling Directive.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "The Likelihood Principle as Modeling Directive"
+              "title": "New tab"
             }
           }
         ]
@@ -166,19 +162,28 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "b4ab0f5e43c3f219",
+  "active": "ad2e84605f534b70",
   "lastOpenFiles": [
-    "Public/Talks/working_in_stem.html",
-    "Public/Talks/working_in_stem_files/mediabag",
-    "Public/Talks/working_in_stem_files",
-    "Public/Talks/value_capture.html",
-    "Public/Talks/value_capture_files/mediabag",
-    "Public/Talks/value_capture_files",
-    "Public/Talks/time_to_attrition.html",
-    "Public/Talks/time_to_attrition_files/mediabag",
-    "Public/Talks/time_to_attrition_files",
-    "Public/Talks/talk4ukraine.html",
-    "Public/Talks/talk4ukraine_files/mediabag",
+    "Public/Philosophy/Appiah's As If and Productive Idealization.md",
+    "Public/Statistics/Hernán's Target Trial Framework for Survival Outcomes.md",
+    "Public/Statistics/G-Computation as the Bridge Between Process and Estimand.md",
+    "Public/Philosophy/Processual vs Interventionist Causation in Survival Analysis.md",
+    "Public/Statistics/Preemption and the Many Faces of Causation.html",
+    "Public/Statistics/Preemption and the Many Faces of Causation_files/mediabag",
+    "Public/Statistics/Preemption and the Many Faces of Causation_files",
+    "Public/Statistics/Competing Risks as Causal Preemption.html",
+    "Public/Statistics/Competing Risks as Causal Preemption_files/mediabag",
+    "Public/Statistics/Competing Risks as Causal Preemption_files",
+    "Public/Statistics/Aalen's Dynamic Path Analysis and Dependence-Production Boundary.html",
+    "Public/Statistics/Aalen's Dynamic Path Analysis and Dependence-Production Boundary_files/mediabag",
+    "Public/Statistics/Aalen's Dynamic Path Analysis and Dependence-Production Boundary_files",
+    "Public/Philosophy/Probability's Janus Face and Productive Ambiguity.html",
+    "Public/Statistics/Aalen's Dynamic Path Analysis and Dependence-Production Boundary.md",
+    "Public/Statistics/Preemption and the Many Faces of Causation.md",
+    "Public/Philosophy/Lewis's Unification Programme as Nested Idealization.md",
+    "Public/Statistics/The Likelihood Principle as Modeling Directive.md",
+    "Public/Statistics/Competing Risks as Causal Preemption.md",
+    "Public/Philosophy/Probability's Janus Face and Productive Ambiguity.md",
     "Public/Statistics/Manski's Partial Identification and MMM Calibration.md",
     "Public/Philosophy/Repeat, Repeat, Repeat....md",
     "Wedding/Tattoo Idea.md",
@@ -196,10 +201,6 @@
     "Intro - Zettelkasten.md",
     "Public/Philosophy/Introduction - Philosophy Topics.md",
     "Public/Statistics/Introduction - Statistics Topics.md",
-    "Public/Philosophy/Sorites Paradox and Survival Analysis.md",
-    "Public/Statistics/Images/Expectations_MAR.jpg",
-    "Non-Parametric Bayesian Causal Inference.md",
-    "Philosophy/Untitled.md",
-    "zettelkasten.md"
+    "Public/Statistics/Images/Expectations_MAR.jpg"
   ]
 }
