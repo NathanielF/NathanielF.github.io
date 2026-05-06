@@ -11,7 +11,7 @@
 
   <meta name="author" content="Nathaniel Forde">
   <meta name="dcterms.date" content="2026-06-14">
-  <title>Examined Algorithms – The Journey Is the Model</title>
+  <title>Examined Algorithms – Hazards on the Causal Path</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,8 +193,8 @@
     <div class="slides">
 
 <section class="quarto-title-block center">
-  <h1 class="title">The Journey Is the Model</h1>
-  <p class="subtitle">Bayesian Dynamic Path Analysis in PyMC</p>
+  <h1 class="title">Hazards on the Causal Path</h1>
+  <p class="subtitle">Three Ways to Say ‘Because’ in Survival Analysis</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -252,46 +252,229 @@ Nathaniel Forde
 <section class="slide level2 center" data-background-color="black" data-background-image="images/evolving_dag.png" data-background-size="cover" data-background-opacity="0.2">
 <h2></h2>
 <div style="color: white; font-size: 1.6em; font-weight: bold; text-align: center; margin-top: 100px;">
-<p>“Most causal inference treats time as a container.</p>
-<p>What if time is the medium?”</p>
+<p>“Causation is not a relation between events frozen in amber.</p>
+<p>It is the process by which one thing makes another happen.”</p>
 </div>
 </section>
 <section class="slide level2 center">
 <h2>The Pitch</h2>
-<p>Survival analysis answers <strong>when</strong>.</p>
-<p>Causal inference answers <strong>whether</strong>.</p>
+<p>Data scientists use causal inference every day.</p>
 <div class="fragment">
-<p>Dynamic path analysis answers <strong>how the answer changes</strong>.</p>
+<p>But “causal inference” is not one thing. There are at least <strong>three schools</strong>, and they disagree about mediation.</p>
 </div>
 <div class="fragment">
-<p>A single endpoint is a snapshot. The process is the model.</p>
+<p>This talk: build a model that works for all of them. Along the way, dissolve a philosophical puzzle.</p>
 </div>
 </section>
 <section class="slide level2 center">
 <h2>Agenda</h2>
 <div class="fragment fade-in">
 <ul>
-<li>What your endpoint analysis cannot see</li>
+<li>Three ways to say “because” — and where they disagree</li>
 </ul>
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>The Bayesian DPA model: three technical moves</li>
+<li>Building a generative process model in PyMC</li>
 </ul>
 </div>
 <div class="fragment fade-in">
 <ul>
-<li>From process to estimand: g-computation and the symmetry argument</li>
+<li>Dissolving the cross-world counterfactual objection</li>
 </ul>
 </div>
 </section>
 <section>
 <section class="title-slide slide level1 center" data-background-color="#2a3439">
-<h1>Act I: What You’re Missing</h1>
+<h1>Act I: Three Ways to Say “Because”</h1>
 
 </section>
 <section class="slide level2 center">
-<h2>A Concrete Problem</h2>
+<h2>The Pre-emption Puzzle</h2>
+<p>Two assassins are hired. Assassin A poisons the coffee. Assassin B waits with a sniper rifle as backup.</p>
+<div class="fragment">
+<p>A’s poison works. B never fires. The target dies.</p>
+</div>
+<div class="fragment">
+<p><strong>Counterfactual test:</strong> “Would the target have survived if A hadn’t acted?”</p>
+</div>
+<div class="fragment">
+<p>No — B would have fired. So A <strong>fails</strong> the counterfactual test.</p>
+<p>But A clearly caused the death.</p>
+<aside class="notes">
+<p>This is the classic pre-emption case from the philosophy of causation (Lewis 1973). The audience doesn’t need to memorise the details — just the punchline: asking “would the outcome have been different?” is not always enough. Sometimes you need to know which process actually did the work. This isn’t an academic curiosity. In mediation analysis, the same issue arises: the standard counterfactual framework denies that certain mediation questions are even well-defined.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</section>
+<section class="slide level2 center">
+<h2>School 1: Potential Outcomes</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>The Framework</strong></p>
+<ul>
+<li>Rubin, Holland (1986): “No causation without manipulation”</li>
+<li>Cause = difference between potential outcomes: <span class="math inline">\(Y(1) - Y(0)\)</span></li>
+<li>Clean, experiment-centric</li>
+<li>The gold standard for average treatment effects</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>The Limitation</strong></p>
+<ul>
+<li>Mediation requires <span class="math inline">\(Y(1, M(0))\)</span></li>
+<li>“What would your outcome be under treatment, if your mediator took the value it would have had under control?”</li>
+<li>This <strong>nests two worlds</strong></li>
+<li>Many PO theorists reject this as ill-defined</li>
+</ul>
+</div></div>
+<aside class="notes">
+<p>The potential outcomes framework is enormously successful for total effects. But it has a principled objection to mediation: the Natural Direct Effect requires imagining a person who is simultaneously treated (X=1) but whose mediator behaves as if untreated (M(0)). Robins, Richardson and others have argued this is incoherent because no single experiment could produce this state. If your framework says mediation is ill-defined, you cannot decompose effects into direct and indirect components.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2 center">
+<h2>School 2: Structural Causal Models</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>The Framework</strong></p>
+<ul>
+<li>Pearl (2001): DAGs + structural equations + do-calculus</li>
+<li>Allows cross-world counterfactuals via structural equations</li>
+<li><span class="math inline">\(\text{NDE} = E[Y(1, M(0))] - E[Y(0, M(0))]\)</span> is well-defined</li>
+<li>Mediation is a first-class citizen</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>The Cost</strong></p>
+<ul>
+<li>Requires commitment to structural equations as real</li>
+<li>The cross-world counterfactual remains philosophically contentious</li>
+<li>“Your structural equations had better be right”</li>
+</ul>
+</div></div>
+<aside class="notes">
+<p>Pearl’s framework solves the mediation problem by embracing structural equations. If you believe the equations describe the actual data-generating process, then cross-world counterfactuals are just computations over the model. The NDE formula falls out naturally. But critics (Dawid, Robins in some moods) object that this puts too much weight on untestable structural assumptions. We have a stalemate between two interventionist frameworks.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2 center">
+<h2>School 3: Process / Aalen</h2>
+<p>Aalen (1987, 1989): Causation as <strong>unfolding temporal process</strong>.</p>
+<div class="fragment">
+<p>Effects are <strong>increments to risk</strong> over time, not static comparisons between frozen worlds.</p>
+</div>
+<div class="fragment">
+<p>The causal story is told by the <strong>trajectory</strong>, not the endpoint.</p>
+</div>
+<div class="fragment">
+<p>Time is the medium, not just a container.</p>
+</div>
+<div class="fragment">
+<p>This is where survival analysis lives naturally. And it <strong>sidesteps the cross-world problem entirely</strong>.</p>
+<aside class="notes">
+<p>Aalen’s view is less well-known in the ML/data science community but standard in biostatistics and survival analysis. The key insight: causation is not a comparison between two frozen worlds — it is the accumulation of influence over time. A treatment does not “cause” the outcome at a single moment; it continuously shapes the hazard. This process-oriented view handles pre-emption naturally: the cause is the process that actually transmitted the influence. And it handles mediation naturally: the indirect effect is the product of two time-varying path coefficients, observable as the process unfolds.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</section>
+<section class="slide level2 center">
+<h2>The Stalemate</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Potential Outcomes</th>
+<th>Pearl SCM</th>
+<th>Process (Aalen)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cause is…</td>
+<td>Difference between worlds</td>
+<td>Structural mechanism</td>
+<td>Unfolding process</td>
+</tr>
+<tr class="even">
+<td>Mediation?</td>
+<td>Ill-defined (cross-world)</td>
+<td>Well-defined (structural eqns)</td>
+<td>Naturally decomposable</td>
+</tr>
+<tr class="odd">
+<td>Strength</td>
+<td>Clean identification</td>
+<td>Full causal calculus</td>
+<td>Temporal dynamics</td>
+</tr>
+<tr class="even">
+<td>Weakness</td>
+<td>No mediation</td>
+<td>Structural faith</td>
+<td>No marginal estimand?</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p><strong>What if one model could give you all three rows of the last column?</strong></p>
+<aside class="notes">
+<p>The table oversimplifies, but the pattern is real. Each school has a genuine strength and a genuine limitation. The punchline of this talk: dynamic path analysis in PyMC gives you the process decomposition (Aalen), the structural flexibility to compute NDE/NIE (Pearl), and a marginal survival contrast that even a potential outcomes purist can accept (Rubin). The trick is that the generative model does the heavy lifting.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</section>
+<section class="slide level2 center">
+<h2>Back to Earth: A Concrete Problem</h2>
 <p>A patient starts an exercise programme.</p>
 <div class="fragment">
 <p>It reduces cardiovascular risk directly. Good.</p>
@@ -302,8 +485,11 @@ Nathaniel Forde
 <div class="fragment">
 <p>At the six-month endpoint, the treatment looks modestly protective.</p>
 <p><strong>You have no idea it’s being undermined.</strong></p>
+</div>
+<div class="fragment">
+<p>Three schools, three different things they can tell you about this situation.</p>
 <aside class="notes">
-<p>This is the motivating example. The treatment works through two opposing channels with different temporal signatures. A standard endpoint analysis sees only the net. Dynamic path analysis sees the components.</p>
+<p>Same motivating example, but now the audience has a reason to care. The potential outcomes framework can tell you the total effect but refuses to decompose it. Pearl’s SCM can decompose it but requires commitment to structural equations at a single time point. Aalen’s process model shows you the decomposition unfolding in time — and that is what we will build.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -322,7 +508,7 @@ Nathaniel Forde
 
 <img data-src="images/dpasurv_benchmark.png" class="quarto-figure quarto-figure-center r-stretch" style="width:90.0%"><p>Three panels. Three stories your endpoint missed.</p>
 <aside class="notes">
-<p>Left: the direct effect is protective throughout. Centre: the indirect effect is inert for 100 days, then spikes. Right: the total effect is attenuated. Without the decomposition, you’d conclude “modest benefit” and move on. With it, you know where to intervene next.</p>
+<p>Left: the direct effect is protective throughout. Centre: the indirect effect is inert for 100 days, then spikes. Right: the total effect is attenuated. This is the Aalen/process view made visible. Neither a potential outcomes ATE nor a single-timepoint Pearl NDE can give you this temporal decomposition.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -340,7 +526,7 @@ Nathaniel Forde
 
 <img data-src="images/evolving_dag.png" class="quarto-figure quarto-figure-center r-stretch" style="width:90.0%"><p>The arrows don’t just exist. They <strong>strengthen and weaken</strong> over time.</p>
 <aside class="notes">
-<p>This is Aalen’s insight. The DAG is not static. The causal structure evolves. Treatment X influences mediator M, and both influence the hazard. But the weights on every arrow are functions of time.</p>
+<p>This is Aalen’s insight. The DAG is not static. The causal structure evolves. Treatment X influences mediator M, and both influence the hazard. But the weights on every arrow are functions of time. This is what it means to take the process view seriously.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -355,22 +541,22 @@ Nathaniel Forde
 </section></section>
 <section>
 <section class="title-slide slide level1 center" data-background-color="#2a3439">
-<h1>Act II: How to See It</h1>
+<h1>Act II: Building the Process Model</h1>
 
 </section>
 <section class="slide level2 center">
-<h2>Three Technical Moves</h2>
-<div class="fragment fade-in">
-<p><strong>1. Discretise time</strong> into bins. Piecewise constant hazards.</p>
+<h2>Why a Generative Model?</h2>
+<p>The process view demands a model that <strong>generates trajectories</strong>, not just estimates coefficients.</p>
+<div class="fragment">
+<p>A partial likelihood (Cox) conditions out time. We need time <strong>in</strong>.</p>
 </div>
-<div class="fragment fade-in">
-<p><strong>2. Smooth with B-splines.</strong> Coefficient paths evolve without jumping.</p>
+<div class="fragment">
+<p>A full Poisson likelihood gives us: explicit baseline hazard, time-varying coefficients, and the ability to <strong>simulate counterfactual worlds</strong>.</p>
 </div>
-<div class="fragment fade-in">
-<p><strong>3. The Poisson bridge.</strong> A full generative likelihood, not a partial one.</p>
-</div>
+<div class="fragment">
+<p>Three technical moves: <strong>discretise, smooth, bridge.</strong></p>
 <aside class="notes">
-<p>Each of these solves a specific problem. Discretisation gives us a time index. Splines impose narrative coherence — adjacent time bins are probably similar. The Poisson bridge turns the baseline hazard from a nuisance into an explicit parameter.</p>
+<p>This is the transition from philosophy to engineering. The process view of causation requires a specific technical capability: you must be able to simulate what would have happened under alternative interventions. You cannot simulate from a partial likelihood. This is not about fanciness — it is about what the philosophical commitment demands of the model.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -382,34 +568,29 @@ Nathaniel Forde
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</div>
 </section>
 <section class="slide level2 center">
-<h2>Move 1: Discretise Time</h2>
-<p>The data is long-format: one row per subject per interval.</p>
-<div class="sourceCode" id="cb1" data-code-line-numbers="|1-3|5-6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="co"># Each row: who was at risk, for how long, what happened</span></span>
+<h2>Discretise + Smooth</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Discretise time into bins</strong></p>
+<div class="sourceCode" id="cb1" data-code-line-numbers="|1-3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="co"># Each row: who was at risk, how long, what happened</span></span>
 <span id="cb1-2"><a></a>df[<span class="st">"dt"</span>] <span class="op">=</span> df[<span class="st">"stop"</span>] <span class="op">-</span> df[<span class="st">"start"</span>]</span>
-<span id="cb1-3"><a></a>bin_idx <span class="op">=</span> df[<span class="st">"bin_idx"</span>].values  <span class="co"># discrete time index</span></span>
-<span id="cb1-4"><a></a></span>
-<span id="cb1-5"><a></a><span class="co"># The hazard is now piecewise constant within bins</span></span>
-<span id="cb1-6"><a></a><span class="co"># but free to vary across bins</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="fragment">
-<p>Time is no longer continuous background noise. It’s a covariate.</p>
-</div>
-</section>
-<section class="slide level2 center">
-<h2>Move 2: Smooth with Splines</h2>
-<div class="sourceCode" id="cb2" data-code-line-numbers="|1-3|5-7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="co"># Random walk prior on spline coefficients</span></span>
-<span id="cb2-2"><a></a>beta_raw <span class="op">=</span> pm.Normal(<span class="st">"beta_raw"</span>, <span class="dv">0</span>, <span class="dv">1</span>, dims<span class="op">=</span>(<span class="st">'splines'</span>, <span class="st">'tv'</span>))</span>
-<span id="cb2-3"><a></a>coef_alpha <span class="op">=</span> pt.cumsum(beta_raw <span class="op">*</span> sigma_smooth, axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb2-4"><a></a></span>
-<span id="cb2-5"><a></a><span class="co"># Construct smooth time-varying functions</span></span>
-<span id="cb2-6"><a></a>alpha_0_t <span class="op">=</span> pt.dot(basis, coef_alpha[:, <span class="dv">0</span>])  <span class="co"># baseline</span></span>
-<span id="cb2-7"><a></a>alpha_1_t <span class="op">=</span> pt.dot(basis, coef_alpha[:, <span class="dv">1</span>])  <span class="co"># direct effect</span></span>
-<span id="cb2-8"><a></a>alpha_2_t <span class="op">=</span> pt.dot(basis, coef_alpha[:, <span class="dv">2</span>])  <span class="co"># mediator effect</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="fragment">
-<p>The cumulative sum is a random walk. Adjacent coefficients are probably similar. The data decides how much they differ.</p>
+<span id="cb1-3"><a></a>bin_idx <span class="op">=</span> df[<span class="st">"bin_idx"</span>].values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Time is no longer background noise. It’s a covariate.</p>
+</div><div class="column" style="width:50%;">
+<p><strong>Smooth with B-splines</strong></p>
+<div class="sourceCode" id="cb2" data-code-line-numbers="|1-3|5-6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="co"># Random walk prior on spline coefficients</span></span>
+<span id="cb2-2"><a></a>beta_raw <span class="op">=</span> pm.Normal(<span class="st">"beta_raw"</span>, <span class="dv">0</span>, <span class="dv">1</span>,</span>
+<span id="cb2-3"><a></a>                     dims<span class="op">=</span>(<span class="st">'splines'</span>, <span class="st">'tv'</span>))</span>
+<span id="cb2-4"><a></a>coef_alpha <span class="op">=</span> pt.cumsum(beta_raw <span class="op">*</span> sigma_smooth,</span>
+<span id="cb2-5"><a></a>                       axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb2-6"><a></a>alpha_1_t <span class="op">=</span> pt.dot(basis, coef_alpha[:, <span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The cumulative sum is a random walk. The data decides how much adjacent coefficients differ.</p>
+</div></div>
 <aside class="notes">
-<p>This is the Bayesian version of a smoothing penalty. The sigma_smooth parameter controls wiggliness. Too smooth and you miss real changes. Too wiggly and you fit noise. We test this with LOO cross-validation across different knot counts.</p>
+<p>Discretisation gives us a time index so coefficients can vary. B-splines with a random walk prior enforce smoothness — adjacent time bins are probably similar. The sigma_smooth parameter controls wiggliness. We test this with LOO cross-validation across different knot counts. Details are in the blog post.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -421,18 +602,20 @@ Nathaniel Forde
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</div>
 </section>
 <section class="slide level2 center">
-<h2>Move 3: The Poisson Bridge</h2>
+<h2>The Poisson Bridge</h2>
 <p><span class="math display">\[d_{it} \sim \text{Poisson}(\lambda(t)), \quad \lambda(t) = Y_{it} \cdot \Delta t \cdot f(\text{linear predictor})\]</span></p>
 <div class="fragment">
 <p>Binary events are counts capped at 1.</p>
 </div>
 <div class="fragment">
 <p>The baseline hazard becomes an <strong>explicit parameter</strong>, not a nuisance to be conditioned away.</p>
+</div>
+<div class="fragment">
+<p>This is what makes the model <strong>generative</strong>. We can sample from it. We can intervene on it.</p>
 <aside class="notes">
-<p>This is the key statistical move. Partial likelihoods care about ordering — who failed before whom. The Poisson likelihood cares about intensities — how fast is risk accumulating in each bin. This gives us a full generative model we can simulate from.</p>
+<p>The Poisson likelihood cares about intensities — how fast is risk accumulating in each bin. This gives us a full generative model we can simulate from. A partial likelihood cannot do this. The ability to simulate is what converts a process model into a counterfactual reasoning engine.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -460,8 +643,9 @@ Nathaniel Forde
 </div></div>
 <div class="fragment">
 <p>These are estimated <strong>simultaneously</strong>. One likelihood, one posterior.</p>
+<p>This is a structural equation model in Pearl’s sense, with time-varying coefficients in Aalen’s sense.</p>
 <aside class="notes">
-<p>The joint estimation is important. Information flows between the mediator model and the hazard model. If the mediator equation fits well, the hazard model gets a cleaner signal about M’s causal contribution. You’re fitting a system, not two regressions.</p>
+<p>The joint estimation is important. Information flows between the mediator model and the hazard model. If the mediator equation fits well, the hazard model gets a cleaner signal about M’s causal contribution. You’re fitting a system, not two regressions. Note the dual identity: this is simultaneously a Pearl-style SCM (structural equations, identifiable paths) and an Aalen-style process model (time-varying coefficients, additive hazard).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -485,9 +669,9 @@ Nathaniel Forde
 <p>This is <strong>not</strong> Aalen’s identity link. The path decomposition is approximate on the hazard scale.</p>
 </div>
 <div class="fragment">
-<p>That’s fine. The decomposition is diagnostic. The estimand lives elsewhere.</p>
+<p>That’s fine. The decomposition is <strong>diagnostic</strong>. The causal estimand lives elsewhere.</p>
 <aside class="notes">
-<p>This is where a common objection arises. “But the decomposition doesn’t hold exactly under a nonlinear link!” Correct. And it doesn’t matter, because the coefficients are not the final causal estimand. They show you the mechanism. The causal quantity comes from g-computation, where the link function has already been applied.</p>
+<p>A common objection: “the decomposition doesn’t hold exactly under a nonlinear link.” Correct. And it doesn’t matter, because the coefficients are not the final causal estimand. They show you the mechanism — the process view. The causal quantity comes from g-computation, where the link function has already been applied — the interventionist view. Two views, one model.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -506,7 +690,7 @@ Nathaniel Forde
 
 <img data-src="images/Posterior_Predictive_checks.png" class="quarto-figure quarto-figure-center r-stretch" style="width:85.0%"><p>Left: mediator model fits. Right: event model fits. The generative model is internally coherent.</p>
 <aside class="notes">
-<p>There are also LOO comparisons across spline counts and forest plots showing stability of the direct effect across model specifications. These are in the blog post. The PPC is the one diagnostic that matters for the talk: the model can reproduce the data it was trained on, for both equations simultaneously.</p>
+<p>The PPC is the one diagnostic that matters for the talk: the model can reproduce the data it was trained on, for both equations simultaneously. LOO comparisons across spline counts and forest plots showing stability of the direct effect are in the blog post.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -521,7 +705,7 @@ Nathaniel Forde
 </section></section>
 <section>
 <section class="title-slide slide level1 center" data-background-color="#2a3439">
-<h1>Act III: What It Tells You</h1>
+<h1>Act III: Dissolving the Puzzle</h1>
 
 </section>
 <section class="slide level2 center">
@@ -539,9 +723,9 @@ Nathaniel Forde
 <p>The structure of mediation, not the magnitude.</p>
 </div></div>
 <div class="fragment">
-<p>But mechanism is not yet an estimand.</p>
+<p>But mechanism is not yet an estimand. <strong>The potential outcomes school is unimpressed.</strong></p>
 <aside class="notes">
-<p>The decomposition tells you something real: the treatment is being undermined by a delayed mediator effect. But these quantities live on the linear predictor scale, before the softplus transformation. To get a causal number you can act on, you need g-computation.</p>
+<p>The path decomposition is the Aalen/process contribution. It tells you which channel dominates when. But a potential outcomes theorist would say: “These are just regression coefficients. Show me a well-defined causal contrast.” Fair enough. That is what g-computation gives us next.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -556,7 +740,7 @@ Nathaniel Forde
 </div>
 </section>
 <section class="slide level2 center">
-<h2>G-Computation: The Bridge</h2>
+<h2>G-Computation: Two Counterfactual Worlds</h2>
 <div class="sourceCode" id="cb3" data-code-line-numbers="|1-4|6-9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="co"># World 1: everyone treated</span></span>
 <span id="cb3-2"><a></a>pm.set_data({<span class="st">'trt'</span>: np.ones(n)})</span>
 <span id="cb3-3"><a></a>idata_trt1 <span class="op">=</span> pm.sample_posterior_predictive(</span>
@@ -568,9 +752,9 @@ Nathaniel Forde
 <span id="cb3-9"><a></a>    idata, var_names<span class="op">=</span>[<span class="st">'Lambda'</span>, <span class="st">'obs_m'</span>, <span class="st">'obs_event'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="fragment">
 <p>Two counterfactual worlds. Same population. Same model.</p>
-<p>The mediator evolves naturally under each intervention.</p>
+<p>The mediator <strong>evolves naturally</strong> under each intervention.</p>
 <aside class="notes">
-<p>This is the crucial step. When you set treatment to 1 for everyone, the mediator equation generates what M would have been under treatment. When you set it to 0, M evolves under control. These counterfactual mediator trajectories feed into the hazard equation. The survival curves reflect the full mediated process.</p>
+<p>When you set treatment to 1 for everyone, the mediator equation generates what M would have been under treatment. When you set it to 0, M evolves under control. These counterfactual mediator trajectories feed into the hazard equation. The survival curves reflect the full mediated process. This is g-computation: simulate, don’t derive.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -602,6 +786,75 @@ Nathaniel Forde
 <p>Estimated <strong>processually</strong>.</p>
 <p>Full posterior uncertainty.</p>
 </div></div>
+<aside class="notes">
+<p>This marginal survival contrast is a perfectly valid causal estimand in the potential outcomes framework. It is a comparison of two well-defined interventions on the same population. No cross-world counterfactuals required. The potential outcomes school can accept this number. But we can go further.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2 center" data-background-color="black">
+<h2></h2>
+<div style="color: white; font-size: 1.4em; font-weight: bold; text-align: center; margin-top: 80px; line-height: 2.0;">
+<p>The NDE requires <span class="math inline">\(Y(1, M(0))\)</span>. This nests two worlds.</p>
+<p>. . .</p>
+<p>The potential outcomes school says: <strong>“Ill-defined.”</strong></p>
+<p>. . .</p>
+<p>Pearl says: <strong>“Well-defined, via structural equations.”</strong></p>
+<p>. . .</p>
+<p>The process model says: <strong>“I just simulated it.”</strong></p>
+</div>
+<aside class="notes">
+<p>This is the central claim of the talk. When you have a generative model of the process — mediator dynamics, hazard dynamics, time-varying coefficients — the NDE is not a philosophical commitment to cross-world counterfactuals. It is a computational operation. You run the model with X=1 but feed in the mediator trajectories from the X=0 simulation. The philosophical objection dissolves because the model gives you a concrete mechanism for what “M(0) under Y(1)” means: the mediator trajectories the model generates when treatment is absent, plugged into the hazard equation with treatment present. No metaphysics required — just simulation from a generative model.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2 center">
+<h2>NDE from the Process Model</h2>
+<div class="sourceCode" id="cb4" data-code-line-numbers="|1-2|4-6|8-9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a><span class="co"># Mediator trajectories under control (the "natural" M(0))</span></span>
+<span id="cb4-2"><a></a>m_nat <span class="op">=</span> idata_trt0.posterior_predictive[<span class="st">'obs_m'</span>]</span>
+<span id="cb4-3"><a></a></span>
+<span id="cb4-4"><a></a><span class="co"># Hazard under treatment, but with control mediator</span></span>
+<span id="cb4-5"><a></a>eta_nde <span class="op">=</span> (alpha_0(t) <span class="op">+</span> alpha_1(t) <span class="op">*</span> <span class="dv">1</span></span>
+<span id="cb4-6"><a></a>           <span class="op">+</span> alpha_2(t) <span class="op">*</span> m_nat)</span>
+<span id="cb4-7"><a></a></span>
+<span id="cb4-8"><a></a><span class="co"># Transform through the link and simulate</span></span>
+<span id="cb4-9"><a></a>hazard_nde <span class="op">=</span> dt <span class="op">*</span> log1pexp(eta_nde)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="fragment">
+<p>The cross-world counterfactual is just <strong>plugging one simulation’s mediator into another simulation’s hazard</strong>.</p>
+</div>
+<div class="fragment">
+<p>~25% risk reduction via direct path alone. The mediator claws back ~8%.</p>
+<aside class="notes">
+<p>The blog post computes this in full and gets roughly 25% risk reduction for the NDE versus 17% for the total effect. The key philosophical point: this NDE computation does not require you to believe in cross-world counterfactuals as metaphysical entities. It requires you to believe your generative model is a reasonable approximation of the data-generating process. That is a much weaker commitment — and one that every Bayesian modeller already makes.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
 </section>
 <section class="slide level2 center">
 <h2></h2>
@@ -613,7 +866,7 @@ Nathaniel Forde
 <p>What survives in the difference is the <strong>causal signal</strong>.</p>
 </div>
 <aside class="notes">
-<p>This is the key insight. The softplus link, the hazard extrapolation for censored subjects, the spline flexibility — all of these are modeling choices that could distort the absolute survival curves. But because the same model generates both worlds for the same population, the distortions cancel in the contrast. The causal signal is robust to the modeling apparatus.</p>
+<p>The softplus link, the hazard extrapolation for censored subjects, the spline flexibility — all modeling choices that could distort absolute survival curves. But because the same model generates both worlds for the same population, the distortions cancel in the contrast. Process gives you the mechanism. Intervention gives you the estimand. The Bayesian implementation is what makes both available simultaneously.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -639,7 +892,7 @@ Nathaniel Forde
 <p>Without the decomposition, you’d report “modest benefit” and stop.</p>
 <p>With it, you know exactly where to push next.</p>
 <aside class="notes">
-<p>This is the actionable output. The marginal contrast tells you the treatment is worth doing. The decomposition tells you it could be worth twice as much if you manage the mediator. That’s information an endpoint analysis cannot provide.</p>
+<p>This is the actionable output. The marginal contrast tells you the treatment is worth doing. The decomposition tells you it could be worth twice as much if you manage the mediator. That is information an endpoint analysis cannot provide, and information that requires both the process view and the interventionist view working together.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -654,37 +907,41 @@ Nathaniel Forde
 </div>
 </section>
 <section class="slide level2 center">
-<h2>A Decision Rule</h2>
+<h2>When to Use What</h2>
 <div class="fragment fade-in">
-<p>If your treatment effect is <strong>constant over time</strong> and you don’t care about mechanism:</p>
-<p>Cox is fine.</p>
+<p>If you need <strong>total effects</strong> and have a clean experiment:</p>
+<p>Potential outcomes + Cox is fine.</p>
 </div>
 <div class="fragment fade-in">
-<p>If your effect <strong>changes over time</strong>, or you suspect a <strong>mediator</strong> whose influence evolves:</p>
-<p>This is the model.</p>
+<p>If you need <strong>mediation</strong> but effects are time-constant:</p>
+<p>Pearl’s mediation formulas work.</p>
 </div>
 <div class="fragment fade-in">
-<p><strong>How to tell the difference:</strong> plot Schoenfeld residuals. If they trend, you have time-varying effects. If you also have a candidate mediator, you have a dynamic path problem.</p>
+<p>If effects <strong>change over time</strong> and you suspect a <strong>mediator</strong> whose influence evolves:</p>
+<p>Dynamic path analysis gives you the process <strong>and</strong> the estimands.</p>
+</div>
+<div class="fragment fade-in">
+<p><strong>How to tell:</strong> plot Schoenfeld residuals. If they trend, you have time-varying effects. If you also have a candidate mediator, you have a dynamic path problem.</p>
 </div>
 </section>
 <section class="slide level2 center">
 <h2>What We Built</h2>
 <div class="fragment fade-in">
-<p><strong>1.</strong> A working Bayesian DPA in PyMC. It didn’t exist before.</p>
+<p><strong>1.</strong> A Bayesian dynamic path analysis in PyMC. A generative model of the causal process, with full posterior uncertainty.</p>
 </div>
 <div class="fragment fade-in">
-<p><strong>2.</strong> The g-computation bridge from process to estimand. <code>dpasurv</code> stops at the decomposition. We go to counterfactual survival curves.</p>
+<p><strong>2.</strong> G-computation that converts process to estimand — including NDE/NIE — without requiring philosophical commitment to cross-world counterfactuals.</p>
 </div>
 <div class="fragment fade-in">
-<p><strong>3.</strong> Diagnostic transparency. PPCs, LOO, sensitivity analysis. The frequentist version doesn’t offer these.</p>
+<p><strong>3.</strong> A practical resolution of a real philosophical debate. The generative model dissolves the objection by making the counterfactual concrete.</p>
 </div>
 </section>
 <section class="slide level2 center" data-background-color="#2a3439">
 <h2></h2>
 <div style="color: white; font-size: 1.5em; font-weight: bold; text-align: center; margin-top: 140px; line-height: 1.6;">
-<p>The journey is the model.</p>
-<p>The destination is the estimand.</p>
-<p>The Bayesian implementation gives you both.</p>
+<p>The process tells you why.</p>
+<p>The counterfactual tells you how much.</p>
+<p>The generative model tells you both.</p>
 </div>
 </section>
 <section class="slide level2 center">
@@ -703,6 +960,9 @@ Nathaniel Forde
 <li>PyMC: <a href="https://www.pymc.io">pymc.io</a></li>
 <li>Fosen et al.&nbsp;(2006), “Dynamic path analysis,” <em>Lifetime Data Analysis</em></li>
 <li>Aalen (1989), “A linear regression model for the analysis of life times,” <em>Statistics in Medicine</em></li>
+<li>Holland (1986), “Statistics and Causal Inference,” <em>JASA</em></li>
+<li>Pearl (2001), “Direct and Indirect Effects,” <em>UAI</em></li>
+<li>Robins &amp; Richardson (2010), “Alternative graphical causal models”</li>
 </ul>
 </div>
 </div>
@@ -714,7 +974,7 @@ Nathaniel Forde
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
-<p>Dynamic Path Analysis | PyData London 2026</p>
+<p>Three Ways to Say ‘Because’ | PyData London 2026</p>
 </div>
 </div></div>
 
