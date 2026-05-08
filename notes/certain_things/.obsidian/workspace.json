@@ -74,7 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 386.5
   },
   "right": {
     "id": "1702be1fc8adfafd",
@@ -162,8 +162,20 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "ad2e84605f534b70",
+  "active": "143b8df37714e30f",
   "lastOpenFiles": [
+    "Public/Economics/Temporal Structure in Panel Demand Models.md",
+    "Public/Economics/BLP and the Decade-Long Diffusion of Generative Thinking.md",
+    "Public/Statistics/Halton Sequences and Quasi-Monte Carlo Integration.md",
+    "Public/Statistics/Pragmatic Likelihood Choice in Structural Models.md",
+    "Public/Economics/Non-Collapsibility in Hierarchical Demand Models.md",
+    "Public/Statistics/Effective Sample Size as Implicit Regularization.md",
+    "Public/Philosophy/BLP as Ecological Reverse-Engineering.md",
+    "Public/Statistics/Causal Identification in Multi-State Survival Models.md",
+    "Public/Economics/LTV-CAC as Counterfactual Decision Rule.md",
+    "Public/Statistics/Marginal Structural Models for Multi-Stage Causal Effects.md",
+    "Public/Economics/Two-Stage Survival Models for Freemium Economics.md",
+    "Public/Statistics/Non-Collapsibility of Hazard Ratios.md",
     "Public/Philosophy/Appiah's As If and Productive Idealization.md",
     "Public/Statistics/Hernán's Target Trial Framework for Survival Outcomes.md",
     "Public/Statistics/G-Computation as the Bridge Between Process and Estimand.md",
@@ -188,19 +200,7 @@
     "Public/Philosophy/Repeat, Repeat, Repeat....md",
     "Wedding/Tattoo Idea.md",
     "Wedding/Speech.md",
-    "Wedding/Ceremony.md",
-    "Wedding/Three things.md",
-    "Public/Philosophy/Thinking about Statistics.md",
-    "Philosophy/Book - Thinking about Statistics.md",
-    "Public/Statistics/Analogies between Missing Data and Causal Inference.md",
-    "Images/predictions_imputations.jpg.md",
-    "Images/predictions.md",
-    "predictions.md",
-    "Public/Logic/Introduction - Logic Topics.md",
     "Public/Statistics/Images/predictions_imputation.jpg",
-    "Intro - Zettelkasten.md",
-    "Public/Philosophy/Introduction - Philosophy Topics.md",
-    "Public/Statistics/Introduction - Statistics Topics.md",
     "Public/Statistics/Images/Expectations_MAR.jpg"
   ]
 }
