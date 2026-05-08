@@ -974,37 +974,38 @@ The joint estimation is important. Information flows between the mediator model 
 :::
 
 
-## The Model Block {.smaller}
+## The Model in Code {.smaller}
 
-```{.python code-line-numbers="|1-4|6-9|11-14|16-21|23-27"}
-# 1. Time-varying coefficients via random-walk splines
-beta_raw = pm.Normal("beta_raw", 0, 1,
-                     dims=('splines', 'tv'))
-coef_alpha = pt.cumsum(beta_raw * sigma_smooth, axis=0)
+```{.python code-line-numbers="|1-5|6-10|11-15|16-21|23-27"}
+with pm.Model() as model:
+    # 1. Time-varying coefficients via random-walk splines
+    beta_raw = pm.Normal("beta_raw", 0, 1,
+                        dims=('splines', 'tv'))
+    coef_alpha = pt.cumsum(beta_raw * sigma_smooth, axis=0)
 
-# 2. Mediator equation  (Pearl's X → M, Aalen's β(t))
-mu_m = beta_t[b] * trt + rho * med_lag
-pm.Normal("obs_m", mu=mu_m, sigma=sigma_m,
-          observed=med)
+    # 2. Mediator equation  (Pearl's X → M, Aalen's β(t))
+    mu_m = beta_t[b] * trt + rho * med_lag
+    pm.Normal("obs_m", mu=mu_m, sigma=sigma_m,
+            observed=med)
 
-# 3. Hazard equation  (Pearl's X → Y + M → Y, Aalen's α(t))
-eta = (alpha_0_t[b]
-       + alpha_1_t[b] * trt        # direct path
-       + alpha_2_t[b] * med_lag)   # mediated path
+    # 3. Hazard equation  (Pearl's X → Y + M → Y, Aalen's α(t))
+    eta = (alpha_0_t[b]
+        + alpha_1_t[b] * trt        # direct path
+        + alpha_2_t[b] * med_lag)   # mediated path
 
-# 4. Softplus link → Poisson likelihood
-Lambda = dt * pm.math.log1pexp(eta)
-pm.Poisson("obs_event", mu=Lambda,
-           observed=events)
+    # 4. Softplus link → Poisson likelihood
+    Lambda = dt * pm.math.log1pexp(eta)
+    pm.Poisson("obs_event", mu=Lambda,
+            observed=events)
 
-# 5. Path decomposition — falls out of the structure
-pm.Deterministic("direct",   alpha_1_t)
-pm.Deterministic("indirect", beta_t * alpha_2_t)
-pm.Deterministic("total",    alpha_1_t + beta_t * alpha_2_t)
+    # 5. Path decomposition — falls out of the structure
+    pm.Deterministic("direct",   alpha_1_t)
+    pm.Deterministic("indirect", beta_t * alpha_2_t)
+    pm.Deterministic("total",    alpha_1_t + beta_t * alpha_2_t)
 
-# 6. One call estimates everything jointly
-idata = pm.sample(draws=2000, tune=2000,
-                  nuts_sampler="numpyro")
+    # 6. One call estimates everything jointly
+    idata = pm.sample(draws=2000, tune=2000,
+                    nuts_sampler="numpyro")
 ```
 
 ::: {.notes}
