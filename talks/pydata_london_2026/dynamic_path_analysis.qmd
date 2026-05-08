@@ -74,23 +74,25 @@ The full worked example can be found on my [blog](https://nathanielf.github.io/p
 
 ## The Pitch {.smaller}
 
-Causal claims are contested. There are at least **three schools** of causal inference, and they disagree about mediation.
+There are conflicting views of causation and the conflict matters for __mediation analysis__ in survival contexts.
 
-. . .
+- **Counterfactual view** a causal claim is about probabilistic dependence under intervention
 
-This talk: build a generative model, and then ask what it teaches us about the disagreement.
+- **Process view** a causal claim is about the unfolding of influence over time.
+
+Both are intuitive, but they diverge on mediation cases. This talk builds a **Bayesian dynamic path analysis** in `PyMC` that bridges both views.
 
 
 ## Agenda {.smaller}
 
 ::: {.fragment .fade-in}
-- The puzzle: three ways to say "because" — and where they disagree
+**Act I — The puzzle:** Pre-emption, competing risks, and why mediation splits the schools
 :::
 ::: {.fragment .fade-in}
-- The model: a generative process model in PyMC
+**Act II — The model:** A hybrid Bayesian DPA: Pearl's structural equations + Aalen's time-varying mechanisms
 :::
 ::: {.fragment .fade-in}
-- The lesson: what the model teaches us about the puzzle
+**Act III — The lesson:** Shape vs size. Two questions, one model. The structural commitment made inspectable.
 :::
 
 
@@ -639,7 +641,7 @@ This sidesteps the cross-world problem — direct and indirect effects are read 
 :::
 ::: {.column width="45%"}
 
-![In causal inference it matters if you were killed by a man or a wolf](process_change.gif)
+![In causal inference and judicial sentencing it matters if you were killed by a man or a werewolf](process_change.gif)
 
 :::
 ::::
@@ -718,22 +720,61 @@ This is Aalen's insight. The DAG is not static. The causal structure evolves. Tr
 
 ## Why a Generative Model? {.smaller}
 
-The process view demands a model that **generates trajectories**, not just estimates coefficients.
+::::{.columns}
+:::{.column width="55%"}
+
+Generative AI has made one idea mainstream: **a model that can sample is a model that can reason about what might have been**.
+
+The same logic applies here. The process view demands a model that **generates trajectories** — not just estimates coefficients.
 
 . . .
 
-A partial likelihood (Cox) conditions out time. We need time **in**.
+- A partial likelihood (Cox) conditions out time. **Time is in the residual.**
+- A full Poisson likelihood puts time back in: explicit baseline hazard, time-varying coefficients, and the ability to **simulate counterfactual worlds**.
 
 . . .
 
-A full Poisson likelihood gives us: explicit baseline hazard, time-varying coefficients, and the ability to **simulate counterfactual worlds**.
+Three technical moves make this possible: **discretise, smooth, bridge.**
 
-. . .
+:::
+:::{.column width="45%"}
 
-Three technical moves: **discretise, smooth, bridge.**
+```{python}
+#| echo: false
+#| fig-align: center
+np.random.seed(7)
+t = np.linspace(0, 200, 200)
+
+fig, ax = plt.subplots(figsize=(4.5, 3.8))
+
+# A few sampled trajectories
+for i in range(6):
+    noise = np.cumsum(np.random.normal(0, 0.008, len(t)))
+    base = -0.003 * t + noise
+    alpha = 0.25 + 0.15 * i
+    lw = 1.2 + 0.3 * i
+    ax.plot(t, base, color=TEAL, alpha=alpha, linewidth=lw)
+
+# Highlight the mean trajectory
+mean_traj = -0.003 * t
+ax.plot(t, mean_traj, color=TEAL, linewidth=2.8, label="posterior mean")
+ax.axhline(0, color=GREY, linestyle="--", linewidth=0.8, alpha=0.5)
+
+ax.set_xlabel("Time", fontsize=11)
+ax.set_ylabel("α(t)  direct effect", fontsize=11)
+ax.set_title("Sampled coefficient trajectories", fontsize=11, color=DARK)
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.legend(fontsize=9, frameon=False)
+fig.tight_layout()
+plt.show()
+```
+
+:::
+::::
 
 ::: {.notes}
-This is the transition from philosophy to engineering. The process view of causation requires a specific technical capability: you must be able to simulate what would have happened under alternative interventions. You cannot simulate from a partial likelihood. This is not about fanciness — it is about what the philosophical commitment demands of the model.
+The generative AI connection is not just rhetorical. The reason LLMs are useful for counterfactual reasoning — "what would the text have said if the premise were different?" — is that they model the full joint distribution and can sample from it. The same property is what makes a full Poisson likelihood more powerful than a Cox partial likelihood for causal inference. Cox trades away the baseline hazard (conditions it out) in exchange for robustness. That's a good trade when you only need a total effect. It's a bad trade when you need to simulate — because there's nothing to simulate from. The Poisson bridge keeps the baseline hazard as an explicit parameter, making the model generative. The plot on the right shows what this buys: posterior samples of the time-varying direct effect coefficient, each a plausible trajectory. The posterior is a distribution over mechanisms, not just a point estimate. That is what process reasoning requires.
 :::
 
 
@@ -819,6 +860,8 @@ Discretisation gives us a time index so coefficients can vary. B-splines with a 
 
 ## The Poisson Bridge {.smaller}
 
+Once time is discrete, binary events become **counts capped at 1** — and counts have a natural likelihood.
+
 $$d_{it} \sim \text{Poisson}(\lambda(t)), \quad \lambda(t) = Y_{it} \cdot \Delta t \cdot f(\text{linear predictor})$$
 
 :::: {.columns}
@@ -826,7 +869,6 @@ $$d_{it} \sim \text{Poisson}(\lambda(t)), \quad \lambda(t) = Y_{it} \cdot \Delta
 ::: {.column}
 
 The baseline hazard becomes an **explicit parameter**, not a nuisance to be conditioned away.
-
 
 This is what makes the model **generative**. We can sample from it. We can intervene on it.
 
@@ -1105,7 +1147,7 @@ This marginal survival contrast is a perfectly valid causal estimand in the pote
 :::
 
 
-## Cross World Dynamics{background-color="black" .smaller}
+## Cross World Dynamics and Modularity {background-color="black" .smaller}
 
 :::: {.columns}
 ::: {.column width="45%"}
@@ -1116,13 +1158,14 @@ The NDE requires $Y(X(1), M(0))$.
 - This nests two worlds.
     - M(0) where we intervene on M
     - Conditional on the counterfactual M(0) we intervene on the treatment X(1)
+:::
 
 ::: {.fragment .fade-in}
 Potential outcomes: **"Ill-defined."** Logically Impossible intervention
 
 Pearl: **"Well-defined, via structural equations."**. Assumes modular mechanisms defined by the equations
 :::
-:::
+
 
 :::
 ::: {.column width="10%"}
@@ -1145,8 +1188,9 @@ But it makes that assumption **inspectable**.
 
 - G-computation → contrast.
 
-Both require modularity — inside a testable generative model.
 :::
+
+Both require modularity — inside a testable generative model.
 :::
 
 :::
@@ -1245,6 +1289,19 @@ Neither answer alone gets you here.
 This is the actionable payoff of the two-question framing. The process question — answered by the parametric coefficients — told the practitioner that the mediator becomes harmful after day 100 and that the direct path is consistently protective. That is the "which process" answer. The magnitude question — answered by g-computation — told them the direct effect alone gives 25% risk reduction versus 17% total. That is the "how much difference" answer. Together they produce a concrete clinical recommendation: manage the mediator after day 100 and you could nearly double the benefit. Neither answer alone would have got you there.
 :::
 
+## What We Built {.smaller}
+
+::: {.fragment .fade-in}
+**1.** A hybrid model: Pearl's structural equations + Aalen's time-varying mechanisms, unified in PyMC with full posterior uncertainty.
+:::
+
+::: {.fragment .fade-in}
+**2.** Two kinds of estimand from one model: **coefficients** for the shape of the mechanism, **g-computation** for the size of the effect — including NDE/NIE.
+:::
+
+::: {.fragment .fade-in}
+**3.** A practical lesson from a real philosophical puzzle: the process question and the difference-making question are **complementary**, not rival. Probabilistic programming is the substrate that makes both answerable — and the assumptions inspectable.
+:::
 
 
 ## The Lesson {.smaller}
@@ -1278,20 +1335,6 @@ These were never the same question.
 
 ::: {.notes}
 This is the lesson of the talk. The three schools disagreed because they were asking subtly different questions under the same banner of "causation." The process question — which path transmitted the influence, and when? — is answered by the time-varying coefficients: they show the indirect effect is inert for 100 days, then spikes. That is shape — the temporal signature of the mechanism. The difference-making question — how much benefit does the treatment produce through each path? — is answered by g-computation: 25% risk reduction via the direct path, 17% total, so the mediator claws back roughly 8%. That is size — the integrated magnitude. Shape tells you when to worry and where to intervene. Size tells you how much is at stake. The hybrid model — Pearl's structural equations with Aalen's temporal dynamics, unified in PyMC — is what makes both available from the same assumptions.
-:::
-
-## What We Built {.smaller}
-
-::: {.fragment .fade-in}
-**1.** A hybrid model: Pearl's structural equations + Aalen's time-varying mechanisms, unified in PyMC with full posterior uncertainty.
-:::
-
-::: {.fragment .fade-in}
-**2.** Two kinds of estimand from one model: **coefficients** for the shape of the mechanism, **g-computation** for the size of the effect — including NDE/NIE.
-:::
-
-::: {.fragment .fade-in}
-**3.** A practical lesson from a real philosophical puzzle: the process question and the difference-making question are **complementary**, not rival. Probabilistic programming is the substrate that makes both answerable — and the assumptions inspectable.
 :::
 
 
