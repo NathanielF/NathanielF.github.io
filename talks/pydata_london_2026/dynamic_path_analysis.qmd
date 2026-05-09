@@ -1145,13 +1145,11 @@ This is the deepest conceptual point in the talk. The two outputs don't just ans
 
 **Ockham's Razor** says: one cause, one effect, pare it down.
 
-An endpoint analysis applies Ockham to the treatment: **17% risk reduction. Done.**
-
-. . .
+- An endpoint analysis applies Ockham to the treatment: **17% risk reduction. Done.**
 
 **Hickam's Dictum** says: *"A patient can have as many diseases as they damn well please."*
 
-The same applies to causal paths. The treatment operates through **multiple channels simultaneously** — some protective, some harmful. Collapsing them into one number is the real oversimplification.
+- If treatment operates through **multiple channels simultaneously** collapsing them is oversimplification.
 
 :::
 ::: {.column width="50%"}
@@ -1169,8 +1167,12 @@ The DPA model is Hickam operationalised:
 :::
 ::::
 
+. . .
+
+Refusing to decompose isn't caution, it's a commitment. It assumes all paths point the same way. When they don't, **aggressive simplification is misspecification from the start**.
+
 ::: {.notes}
-Hickam's Dictum is the medical counter to Ockham's Razor. Ockham says prefer the simplest explanation. Hickam says that in medicine, patients often have multiple concurrent conditions, and forcing a single diagnosis can be actively harmful. The same logic applies to causal mediation: the treatment doesn't have one effect, it has multiple effects running through different channels, and they can work in opposite directions. An endpoint analysis that reports "17% risk reduction" is Ockham applied to causal inference — it gives you one clean number but hides the fact that the direct path is giving you 25% while the mediated path is clawing back 8%. The DPA model refuses this collapse. It decomposes by pathway, tracks each channel over time, and reveals the hidden war. This is the opening move of Act III: the model's results are not just technically richer than an endpoint analysis — they reflect a fundamentally different attitude toward causal complexity. Hickam for the paths.
+Hickam's Dictum is the medical counter to Ockham's Razor. Ockham says prefer the simplest explanation. Hickam says that in medicine, patients often have multiple concurrent conditions, and forcing a single diagnosis can be actively harmful. The same logic applies to causal mediation: the treatment doesn't have one effect, it has multiple effects running through different channels, and they can work in opposite directions. An endpoint analysis that reports "17% risk reduction" is Ockham applied to causal inference — it gives you one clean number but hides the fact that the direct path is giving you 25% while the mediated path is clawing back 8%. The PO school's refusal to engage with mediation is often framed as principled caution — "the assumptions are too strong, so we won't decompose." But this refusal is itself a modelling choice: it treats all causal paths as interchangeable, which is wrong whenever they oppose each other. A model that collapses a 25% benefit and an 8% harm into "17% net effect" is not assumption-free — it has baked in the assumption that path heterogeneity doesn't matter. That is misspecification, and it's misspecification you chose at the outset by refusing to look. The DPA model takes on structural assumptions (modularity, sequential unconfoundedness), but it uses them to reveal structure that the simpler model hides. The risk of misspecification from oversimplification can be worse than the risk of misspecification from structural commitment — especially when the structural commitment is inspectable.
 :::
 
 
@@ -1190,7 +1192,7 @@ The NDE requires $Y(X(1), M(0))$.
 ::: {.fragment .fade-in}
 Potential outcomes: **"Ill-defined."** Logically Impossible intervention
 
-Pearl: **"Well-defined, via structural equations."**. Assumes modular mechanisms defined by the equations
+Pearl: **"Well-defined, via structural equations."**. The NDE is a computation over the model, not an experiment you run.
 :::
 
 
@@ -1202,22 +1204,21 @@ Pearl: **"Well-defined, via structural equations."**. Assumes modular mechanisms
 ::: {style="color: white; font-size: 1.1em; line-height: 1.8; margin-top: 40px;"}
 
 ::: {.fragment .fade-in}
-The hybrid model inherits Pearl's key assumption — **modularity**: the equations are stable under intervention.
+**Modularity:** Equations must be stable under intervention is the identification condition for the NDE. The hybrid model inherits this from Pearl.
 :::
 
 ::: {.fragment .fade-in}
-But it makes that assumption **inspectable**.
+But the macro **trajectory decomposition** is a coarser estimand. It only requires that confounding is not *systematic* across the trajectory
 :::
 
 ::: {.fragment .fade-in}
 ::: {style="color: #4ec9b0; font-size: 1.2em; font-weight: bold; margin-top: 20px;"}
-- $\alpha_1(t)$ → process. 
+- $\alpha_1(t)$ → trajectory estimand (macro). Looser identification.
 
-- G-computation → contrast.
+- G-computation NDE → cross-world estimand (micro). Full modularity.
 
 :::
 
-The splines smooth over the point-wise modularity assumption deriving the abstract trajectory.
 :::
 
 :::
@@ -1226,7 +1227,7 @@ The splines smooth over the point-wise modularity assumption deriving the abstra
 ::::
 
 ::: {.notes}
-This is where the philosophical lesson lands. The potential outcomes objection to cross-world counterfactuals was never unreasonable — you really can't run an experiment that produces Y(1, M(0)). Pearl's response was to make it a computation over structural equations, justified by modularity: the assumption that each equation is stable under interventions on other variables. The hybrid model does not escape this assumption — it inherits it. But the Bayesian implementation changes its epistemic status. In Pearl's framework, modularity is an untestable structural commitment. In the generative model, it becomes at least partially inspectable: posterior predictive checks test whether the model reproduces the data, LOO cross-validation tests whether the structural choices are predictively adequate, and you can directly examine whether the mediator-hazard relationship varies by treatment status. The commitment is the same in kind — modularity — but the probabilistic programming substrate makes it something you can scrutinize rather than merely assert. The sequential unconfoundedness point de-fangs a common audience objection. Every time someone fits a Cox model in a clinical trial and interprets the hazard ratio causally, they assume treatment is independent of potential outcomes given covariates. They just don't name the assumption. The DPA model adds one mediator equation, which adds one more ignorability condition: the mediator-outcome relationship is unconfounded given treatment and covariates. That is sequential unconfoundedness — one step beyond what vanilla survival analysis already assumes, not a leap into the impossible. The generative model makes the assumption explicit and gives diagnostics (PPC, LOO) to probe whether it holds approximately. Vanilla Cox never acknowledged the assumption in the first place.
+This is the sharpest philosophical move in the talk. The key insight is that identification conditions are relative to the estimand. The model produces two kinds of output, and they carry different identification burdens. The trajectory decomposition — reading alpha_1(t) and beta(t)*alpha_2(t) as the shape of the direct and indirect effects — is a macro-level estimand. It tells you which path dominates, when, and with what sign. For this estimand, you don't need modularity to hold at every tick. You need the structural relationship between mediator and hazard to be approximately right on average across the trajectory — that confounding, if present, is not systematic. The splines operationalise this: they smooth over point-wise variation, and LOO across knot counts tests whether the macro story is robust to the granularity. The g-computation NDE is a different, finer estimand. It plugs one world's mediator into another world's hazard equation, tick by tick. This requires modularity at each time step — the equation must be stable under intervention at every point. That's a stronger condition, and it's the one the potential outcomes school rightly objects to. So the honest framing is: the model gives you a macro estimand (trajectory shape) with weaker identification conditions, and a micro estimand (NDE) with stronger ones. Both are useful. The trajectory tells you where to look. The NDE tells you how much. They have different epistemic costs, and the audience should understand the distinction. On sequential unconfoundedness specifically: every causal reading of a Cox model already assumes ignorability. The DPA model adds one mediator equation, adding one more condition. That's one step beyond vanilla survival analysis, not a leap into the impossible. And the generative model makes the assumption explicit and gives diagnostics to probe it.
 :::
 
 
