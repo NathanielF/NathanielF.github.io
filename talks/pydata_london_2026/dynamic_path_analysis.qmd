@@ -1233,6 +1233,8 @@ This is the sharpest philosophical move in the talk. The key insight is that ide
 
 ## NDE and the Hidden Harm {.smaller}
 
+The trajectory told us *which* path is harmful and *when*. Now we pay the modularity cost to answer: **how much?**
+
 :::: {.columns}
 ::: {.column width="50%"}
 
@@ -1248,8 +1250,8 @@ eta_nde = (alpha_0(t) + alpha_1(t) * 1
 hazard_nde = dt * log1pexp(eta_nde)
 ```
 ::: {.fragment .fade-in}
-- The **direct effect** (NDE) is calculated by plugging the control-world mediator trajectories into the treatment-world hazard equation.
-- The NDE is a __useful__ cross-world comparison 
+- Plug one world's mediator into another world's hazard — this **is** the cross-world counterfactual, requiring full modularity.
+- The price buys you a number you can subtract from the total.
 :::
 
 :::

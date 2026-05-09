@@ -1180,7 +1180,7 @@ display:block!important;
 <li><p>But A clearly caused the death. The counterfactual test misses the <strong>process</strong> that did the work.</p></li>
 </ul>
 </div><div class="column">
-<div id="4d713872" class="cell" data-execution_count="2">
+<div id="a7ecd24c" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1221,7 +1221,7 @@ display:block!important;
 <li><p>Attributing credit requires <strong>process decomposition</strong></p></li>
 </ul>
 </div><div class="column">
-<div id="97a55126" class="cell" data-execution_count="3">
+<div id="8c1fd4af" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1501,7 +1501,7 @@ display:block!important;
 </ul>
 <p>Three technical moves make this possible: <strong>discretise, smooth, bridge.</strong></p>
 </div><div class="column" style="width:45%;">
-<div id="fea49e52" class="cell" data-execution_count="4">
+<div id="3e904ca4" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1548,7 +1548,7 @@ display:block!important;
 </figure>
 </div>
 </div><div class="column" style="width:33%;">
-<div id="a430de7b" class="cell" data-execution_count="5">
+<div id="a54660d5" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1603,7 +1603,7 @@ display:block!important;
 <h2>The Softplus Link</h2>
 <div class="columns">
 <div class="column" style="width:55%;">
-<div id="9abc314b" class="cell" data-execution_count="6">
+<div id="08c19bd8" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1891,6 +1891,7 @@ display:block!important;
 </section>
 <section class="slide level2 smaller center">
 <h2>NDE and the Hidden Harm</h2>
+<p>The trajectory told us <em>which</em> path is harmful and <em>when</em>. Now we pay the modularity cost to answer: <strong>how much?</strong></p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="sourceCode" id="cb5" data-code-line-numbers="|1-2|4-6|8-9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a><span class="co"># Mediator trajectories under control</span></span>
@@ -1904,12 +1905,12 @@ display:block!important;
 <span id="cb5-9"><a></a>hazard_nde <span class="op">=</span> dt <span class="op">*</span> log1pexp(eta_nde)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="fragment fade-in">
 <ul>
-<li>The <strong>direct effect</strong> (NDE) is calculated by plugging the control-world mediator trajectories into the treatment-world hazard equation.</li>
-<li>The NDE is a <strong>useful</strong> cross-world comparison</li>
+<li>Plug one world’s mediator into another world’s hazard — this <strong>is</strong> the cross-world counterfactual, requiring full modularity.</li>
+<li>The price buys you a number you can subtract from the total.</li>
 </ul>
 </div>
 </div><div class="column" style="width:50%;">
-<div id="37a89474" class="cell" data-execution_count="7">
+<div id="445ac12b" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
