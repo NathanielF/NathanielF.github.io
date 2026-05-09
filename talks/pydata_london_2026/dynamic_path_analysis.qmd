@@ -669,9 +669,8 @@ The table oversimplifies, but the pattern is real. Each school has a genuine str
 :::
 
 
-## Back to Earth: A Concrete Problem {.smaller}
-
-
+## Concrete Mediation {.smaller}
+### Replicating `dpasurv`
 :::: {.columns}
 ::: {.column}
 - A patient starts an exercise programme.
@@ -693,7 +692,7 @@ To act on this, you need both answers: **which process** is doing the underminin
 
 ::: {.column}
 
-![The `dpasurv` benchmark example of mediation structures](dpa.png)
+![The `dpasurv` benchmark example of mediation structures. We will replicate this example in PyMC](dpa.png)
 
 :::
 ::::
@@ -706,12 +705,17 @@ This is the concrete version of the two-question framing from Act I. An endpoint
 
 ## The Structure: A Sequence of DAGs {.smaller}
 
-![](evolving_paths.png){fig-align="center" width="90%"}
+![](evolving_paths.png){fig-align="center" width="75%"}
 
 The arrows don't just exist. They **strengthen and weaken** over time.
 
+::: {.callout-important}
+## Identification assumption: sequential unconfoundedness
+At each time point, conditional on observed history, there are no unmeasured common causes of treatment, mediator, and hazard. The DAG justifies the path decomposition; this assumption justifies calling it **causal**.
+:::
+
 ::: {.notes}
-This is Aalen's insight. The DAG is not static. The causal structure evolves. Treatment X influences mediator M, and both influence the hazard. But the weights on every arrow are functions of time. This is what it means to take the process view seriously.
+This is Aalen's insight. The DAG is not static. The causal structure evolves. Treatment X influences mediator M, and both influence the hazard. But the weights on every arrow are functions of time. Sequential unconfoundedness is the survival-specific identification condition that bridges the process decomposition to causal interpretation — it's the analogue of Pearl's modularity assumption, but stated in terms of the observed data history rather than structural equations. If relevant confounders are omitted, or if feedback from the event process into the mediator is not properly lagged, the decomposition remains algebraically valid but loses its causal meaning.
 :::
 
 
@@ -785,7 +789,7 @@ The generative AI connection is not just rhetorical. The reason LLMs are useful 
 
 **Discretise time into bins**
 
-```{.python code-line-numbers="|1-3"}
+```{.python}
 # Each row: who was at risk, how long, what happened
 df["dt"] = df["stop"] - df["start"]
 bin_idx = df["bin_idx"].values
@@ -871,6 +875,8 @@ $$d_{it} \sim \text{Poisson}(\lambda(t)), \quad \lambda(t) = Y_{it} \cdot \Delta
 The baseline hazard becomes an **explicit parameter**, not a nuisance to be conditioned away.
 
 This is what makes the model **generative**. We can sample from it. We can intervene on it.
+
+We draw our sample trajectories on causal pathways with time-varying coefficients indexed to each temporal stage. 
 
 :::
 
@@ -988,6 +994,8 @@ with pm.Model() as model:
     pm.Normal("obs_m", mu=mu_m, sigma=sigma_m,
             observed=med)
 
+    
+
     # 3. Hazard equation  (Pearl's X → Y + M → Y, Aalen's α(t))
     eta = (alpha_0_t[b]
         + alpha_1_t[b] * trt        # direct path
@@ -1020,6 +1028,31 @@ Walk through this slide step by step. Step 1: the random-walk splines are the Aa
 
 Remember: both the parametric coefficients *and* the g-computation NDE depend on **modularity** — the equations being stable under intervention. 
 
+## G-Computation for the Marginal Contrasts {.smaller}
+
+```{.python code-line-numbers="|1-4|6-9"}
+# World 1: everyone treated
+pm.set_data({'trt': np.ones(n)})
+idata_trt1 = pm.sample_posterior_predictive(
+    idata, var_names=['Lambda', 'obs_m', 'obs_event'])
+
+# World 0: nobody treated
+pm.set_data({'trt': np.zeros(n)})
+idata_trt0 = pm.sample_posterior_predictive(
+    idata, var_names=['Lambda', 'obs_m', 'obs_event'])
+```
+
+. . .
+
+Two counterfactual worlds. Same population. Same model.
+
+The mediator **evolves naturally** under each intervention.
+
+::: {.notes}
+The path coefficients gave us mechanism. Now g-computation gives us magnitude. When you set treatment to 1 for everyone, the mediator equation generates what M would have been under treatment. When you set it to 0, M evolves under control. These counterfactual mediator trajectories feed into the hazard equation. The survival curves reflect the full mediated process. This is the second kind of estimand: simulate, don't derive.
+:::
+
+
 ## Translating to Hazards {.smaller}
 ### (Observed Scale)
 
@@ -1038,7 +1071,7 @@ Remember: both the parametric coefficients *and* the g-computation NDE depend on
 
 - **Size** (Marginal View)
     - Simulate counterfactual worlds
-    - Compare survival curves
+    - Compare survival curves/ hazards
     - Propagate uncertainty
 
 
@@ -1092,31 +1125,6 @@ But the potential outcomes school asks a different question: **how much differen
 
 ::: {.notes}
 This is where Act III connects back to Act I. The pre-emption puzzle showed that "would the outcome have been different?" misses which process did the work. The parametric path coefficients answer precisely that process question: alpha_1(t) shows the direct channel's contribution over time, beta(t) * alpha_2(t) shows the indirect channel. These are genuine estimands — they tell you which path dominates when. But the potential outcomes school's concern was never unreasonable. They want a well-defined interventional contrast, not regression coefficients. The generative model accommodates both: the coefficients give you mechanism, and g-computation gives you magnitude. Neither view is dispensable.
-:::
-
-
-## G-Computation for the Marginal Contrasts {.smaller}
-
-```{.python code-line-numbers="|1-4|6-9"}
-# World 1: everyone treated
-pm.set_data({'trt': np.ones(n)})
-idata_trt1 = pm.sample_posterior_predictive(
-    idata, var_names=['Lambda', 'obs_m', 'obs_event'])
-
-# World 0: nobody treated
-pm.set_data({'trt': np.zeros(n)})
-idata_trt0 = pm.sample_posterior_predictive(
-    idata, var_names=['Lambda', 'obs_m', 'obs_event'])
-```
-
-. . .
-
-Two counterfactual worlds. Same population. Same model.
-
-The mediator **evolves naturally** under each intervention.
-
-::: {.notes}
-The path coefficients gave us mechanism. Now g-computation gives us magnitude. When you set treatment to 1 for everyone, the mediator equation generates what M would have been under treatment. When you set it to 0, M evolves under control. These counterfactual mediator trajectories feed into the hazard equation. The survival curves reflect the full mediated process. This is the second kind of estimand: simulate, don't derive.
 :::
 
 
