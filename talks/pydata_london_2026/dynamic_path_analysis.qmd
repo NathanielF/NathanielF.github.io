@@ -1138,39 +1138,39 @@ This is the deepest conceptual point in the talk. The two outputs don't just ans
 # Act III: What the Model Teaches Us {background-color="#2a3439"}
 
 
-## Shape and Size: Two Questions, One Model {.smaller}
+## Hickam's Dictum for Causal Paths {.smaller}
 
 :::: {.columns}
 ::: {.column width="50%"}
 
-**Shape** — the process question:
+**Ockham's Razor** says: one cause, one effect, pare it down.
 
-- Direct effect: protective throughout
-- Indirect effect: inert, then harmful after day 100
-- Total effect: attenuated
+An endpoint analysis applies Ockham to the treatment: **17% risk reduction. Done.**
 
-Remember pre-emption: the counterfactual test couldn't tell you **which process** did the work. These coefficients can.
+. . .
+
+**Hickam's Dictum** says: *"A patient can have as many diseases as they damn well please."*
+
+The same applies to causal paths. The treatment operates through **multiple channels simultaneously** — some protective, some harmful. Collapsing them into one number is the real oversimplification.
 
 :::
 ::: {.column width="50%"}
 
-**Size** — the marginal question:
-
 ![](survival.png){fig-align="center" width="95%"}
 
-$$\bar{S}_{\text{treated}}(t) - \bar{S}_{\text{control}}(t)$$
+. . .
 
-Defined **interventionally**. Estimated **processually**.
+The DPA model is Hickam operationalised:
+
+- Direct path: **protective throughout**
+- Indirect path: **inert, then harmful after day 100**
+- Total effect: **attenuated** — the endpoint hides the war between paths
 
 :::
 ::::
 
-. . .
-
-The same model answers both. The coefficients tell you the mechanism; g-computation tells you the magnitude. Neither alone suffices.
-
 ::: {.notes}
-This slide merges the two outputs that Act II's model produces. The left column is the process view: parametric time-varying coefficients that show which path dominates when. This answers the pre-emption puzzle from Act I — the counterfactual test couldn't decompose by pathway, but these coefficients can. The right column is the potential outcomes view: a marginal survival contrast, a perfectly valid interventional estimand, computed by g-computation. No cross-world counterfactuals needed for this contrast — just simulate two worlds and compare. The point is that these are complementary, not rival. The coefficients give you shape (which path, when, what sign). The survival contrast gives you size (how much difference overall). One model produces both because it has the structural equations (Pearl) AND the temporal dynamics (Aalen).
+Hickam's Dictum is the medical counter to Ockham's Razor. Ockham says prefer the simplest explanation. Hickam says that in medicine, patients often have multiple concurrent conditions, and forcing a single diagnosis can be actively harmful. The same logic applies to causal mediation: the treatment doesn't have one effect, it has multiple effects running through different channels, and they can work in opposite directions. An endpoint analysis that reports "17% risk reduction" is Ockham applied to causal inference — it gives you one clean number but hides the fact that the direct path is giving you 25% while the mediated path is clawing back 8%. The DPA model refuses this collapse. It decomposes by pathway, tracks each channel over time, and reveals the hidden war. This is the opening move of Act III: the model's results are not just technically richer than an endpoint analysis — they reflect a fundamentally different attitude toward causal complexity. Hickam for the paths.
 :::
 
 
