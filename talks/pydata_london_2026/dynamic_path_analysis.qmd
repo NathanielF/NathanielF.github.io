@@ -1319,17 +1319,11 @@ This slide combines the NDE computation with its actionable consequence. The lef
 :::: {.columns}
 ::: {.column width="50%"}
 
-The pre-emption puzzle asked:
+- The assassin puzzle showed: the endpoint can't identify __which process__ did the work.
 
-> **Which process did the work?**
+- The splines give you that process — the macro trajectory that survives micro-level noise. You don't need modularity at every tick. You need a reified mechanism.
 
-The potential outcomes school asked:
-
-> **How much difference did it make?**
-
-::: {.fragment .fade-in}
-These were never the same question.
-:::
+- But knowing *which* process isn't enough to decide what to do. You also need to know **how much** — and that's the counterfactual question, answered by g-computation.
 
 :::
 
@@ -1338,11 +1332,11 @@ These were never the same question.
 
 ::: {.fragment .fade-in}
 
-__One model. Pearl's structure. Aalen's dynamics. Both answers.__
+__Both questions. Both scales. One model.__
 
-- The splines smooth across time steps — encoding the assumption that **micro-level noise washes out** in the trajectory. 
-- The macro process and the micro counterfactual meet in the same posterior. 
-- Sensitivity analysis and LOO-CV tests whether the meeting holds.
+- **Shape** (macro): the splines identify the realised process — which path, when, what sign
+- **Size** (micro): g-computation sizes the effect — requiring modularity, but only as seriously as the spline granularity demands
+- **LOO** and **Sensitivity Analysis** tests whether your answer depends on how finely you commit
 
 :::
 :::

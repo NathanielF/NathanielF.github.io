@@ -1180,7 +1180,7 @@ display:block!important;
 <li><p>But A clearly caused the death. The counterfactual test misses the <strong>process</strong> that did the work.</p></li>
 </ul>
 </div><div class="column">
-<div id="14ef274c" class="cell" data-execution_count="2">
+<div id="dc9248bb" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1221,7 +1221,7 @@ display:block!important;
 <li><p>Attributing credit requires <strong>process decomposition</strong></p></li>
 </ul>
 </div><div class="column">
-<div id="b04795d1" class="cell" data-execution_count="3">
+<div id="7efd7287" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1501,7 +1501,7 @@ display:block!important;
 </ul>
 <p>Three technical moves make this possible: <strong>discretise, smooth, bridge.</strong></p>
 </div><div class="column" style="width:45%;">
-<div id="ff7e5902" class="cell" data-execution_count="4">
+<div id="21af4303" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1548,7 +1548,7 @@ display:block!important;
 </figure>
 </div>
 </div><div class="column" style="width:33%;">
-<div id="5cbc1c8f" class="cell" data-execution_count="5">
+<div id="1df91560" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1603,7 +1603,7 @@ display:block!important;
 <h2>The Softplus Link</h2>
 <div class="columns">
 <div class="column" style="width:55%;">
-<div id="abbb9d87" class="cell" data-execution_count="6">
+<div id="3ac5826c" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1905,7 +1905,7 @@ display:block!important;
 </ul>
 </div>
 </div><div class="column" style="width:50%;">
-<div id="f94d98af" class="cell" data-execution_count="7">
+<div id="96f11eb9" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1951,24 +1951,18 @@ display:block!important;
 <h2>The Lesson</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<p>The pre-emption puzzle asked:</p>
-<blockquote>
-<p><strong>Which process did the work?</strong></p>
-</blockquote>
-<p>The potential outcomes school asked:</p>
-<blockquote>
-<p><strong>How much difference did it make?</strong></p>
-</blockquote>
-<div class="fragment fade-in">
-<p>These were never the same question.</p>
-</div>
+<ul>
+<li><p>The assassin puzzle showed: the endpoint can’t identify <strong>which process</strong> did the work.</p></li>
+<li><p>The splines give you that process — the macro trajectory that survives micro-level noise. You don’t need modularity at every tick. You need a reified mechanism.</p></li>
+<li><p>But knowing <em>which</em> process isn’t enough to decide what to do. You also need to know <strong>how much</strong> — and that’s the counterfactual question, answered by g-computation.</p></li>
+</ul>
 </div><div class="column" style="width:50%;">
 <div class="fragment fade-in">
-<p><strong>One model. Pearl’s structure. Aalen’s dynamics. Both answers.</strong></p>
+<p><strong>Both questions. Both scales. One model.</strong></p>
 <ul>
-<li>The splines smooth across time steps — encoding the assumption that <strong>micro-level noise washes out</strong> in the trajectory.</li>
-<li>The macro process and the micro counterfactual meet in the same posterior.</li>
-<li>Sensitivity analysis and LOO-CV tests whether the meeting holds.</li>
+<li><strong>Shape</strong> (macro): the splines identify the realised process — which path, when, what sign</li>
+<li><strong>Size</strong> (micro): g-computation sizes the effect — requiring modularity, but only as seriously as the spline granularity demands</li>
+<li><strong>LOO</strong> and <strong>Sensitivity Analysis</strong> tests whether your answer depends on how finely you commit</li>
 </ul>
 </div>
 </div></div>
