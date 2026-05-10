@@ -676,7 +676,7 @@ Aalen (1987, 1989): Causation as **unfolding temporal process**.
 
 - Time is the medium, not just a container.
 
-This sidesteps the cross-world problem on the hazard scale — direct and indirect effects are read off the coefficients as they unfold.
+The process view doesn't just sidestep the cross-world problem. It **diagnoses** it. Cross-world counterfactuals try to locate causation in a comparison between frozen worlds — but in pre-emption and mediation, the cause is the trajectory that actually transmitted the influence. The micro lens isn't a stricter version of the macro lens. It's looking for causation in the wrong place.
 
 :::
 ::: {.column width="45%"}
@@ -1099,34 +1099,21 @@ The path coefficients gave us mechanism. Now g-computation gives us magnitude. W
 
 ## The Dual Output {.smaller}
 
-:::: {.columns width="30%"}
-::: {.column}
+Two independent axes — **estimand** (what are you asking?) and **lens** (where do you locate causation?):
 
-- **Shape** (Process View)
-    - Which path dominates?
-    - When does it change?
-    - What sign?
-    - *Macro-level:* splines smooth over point-wise detail — the story is in the trajectory
-
-- **Size** (Marginal View)
-    - Simulate counterfactual worlds
-    - Compare survival curves / hazards
-    - Propagate uncertainty
-    - *Micro-level:* g-computation requires modularity at each time step
-
-:::
-
-::: {.column}
-
-![](dual_output.png)
-
-:::
-
-::::
+|  | **Macro lens** (realised process) | **Micro lens** (point-wise modularity) |
+|---|---|---|
+| **Shape** *(which path)* | ✓ trajectory coefficients | ✗ category error — pre-emption shows the cause is the process, not a point-wise modular fact |
+| **Size** *(how much)*  | — needs structural commitment to size | g-computation, NDE/NIE |
 
 . . .
 
-One model. Two complementary outputs — operating at **different scales**. The process question reads the macro trajectory. The difference-making question commits to micro-level structure. LOO tests whether the gap matters and Sensitivty analysis can show robustness to violations.
+The diagonals carry the work. **Shape lives at the macro lens — and only there.** Size *can* be computed at the micro lens, but only because we accept structural commitments as a price — not because the micro lens is the right home for causal claims.
+
+::: {.callout-tip}
+## The asymmetry
+The macro lens is **primary**. The micro lens earns its keep only when there's a process already identified to be sized. G-computation is parasitic on the trajectory, not equipotent with it.
+:::
 
 ::: {.notes}
 This is the deepest conceptual point in the talk. The two outputs don't just answer different questions — they locate causation at different levels of granularity. The parametric path coefficients are macro objects: smoothed by the B-spline basis, governed by a random walk prior that says "adjacent time points share structural relationships." The causal story is told by the cumulative trajectory, not by any single tick. This is the process view operationalised. G-computation, by contrast, requires the structural equations to hold point-wise: at each time step, alpha_2(t) relates M to the hazard the same way regardless of which intervention generated M. That's a micro-level commitment — modularity at every tick. The splines bridge these scales. They smooth over point-wise structural detail, encoding the pragmatic attitude that fine-grained modularity violations wash out in the aggregate. LOO cross-validation across knot counts tests this empirically: if the causal conclusions are stable whether you use 6 knots or 12, you have evidence that the macro view is robust to the micro-level granularity — which is indirect evidence that point-wise violations, if any, are not systematic. This is the "inspectability" claim made concrete. You're not just trusting modularity — you're checking whether your answer depends on how seriously you take it at the finest scale.
@@ -1167,7 +1154,7 @@ The DPA model is Hickam operationalised:
 
 . . .
 
-Refusing to decompose isn't caution, it's a commitment. It assumes all paths point the same way. When they don't, **aggressive simplification is misspecification from the start**.
+Refusing to decompose isn't caution, it's a commitment. It assumes all paths point the same way. When they don't, **aggressive simplification is misspecification from the start** — a commitment to looking for causation where it isn't, at the endpoint, between frozen worlds, instead of along the path the process actually took.
 
 ::: {.notes}
 Hickam's Dictum is the medical counter to Ockham's Razor. Ockham says prefer the simplest explanation. Hickam says that in medicine, patients often have multiple concurrent conditions, and forcing a single diagnosis can be actively harmful. The same logic applies to causal mediation: the treatment doesn't have one effect, it has multiple effects running through different channels, and they can work in opposite directions. An endpoint analysis that reports "17% risk reduction" is Ockham applied to causal inference — it gives you one clean number but hides the fact that the direct path is giving you 25% while the mediated path is clawing back 8%. The PO school's refusal to engage with mediation is often framed as principled caution — "the assumptions are too strong, so we won't decompose." But this refusal is itself a modelling choice: it treats all causal paths as interchangeable, which is wrong whenever they oppose each other. A model that collapses a 25% benefit and an 8% harm into "17% net effect" is not assumption-free — it has baked in the assumption that path heterogeneity doesn't matter. That is misspecification, and it's misspecification you chose at the outset by refusing to look. The DPA model takes on structural assumptions (modularity, sequential unconfoundedness), but it uses them to reveal structure that the simpler model hides. The risk of misspecification from oversimplification can be worse than the risk of misspecification from structural commitment — especially when the structural commitment is inspectable.
@@ -1317,14 +1304,18 @@ This slide combines the NDE computation with its actionable consequence. The lef
 
 ## The Lesson{.smaller}
 
+::: {style="font-size: 1.3em; font-weight: bold; margin-bottom: 20px;"}
+Causation lives at the macro scale.
+:::
+
 :::: {.columns}
 ::: {.column width="50%"}
 
-- The assassin puzzle showed: the endpoint can't identify __which process__ did the work.
+- The pre-emption puzzle showed it: ask *"did A make a difference?"* and you get the wrong answer. Ask *"which process transmitted the influence?"* and you get the right one.
 
-- The splines give you that process — the macro trajectory that survives micro-level noise. You don't need modularity at every tick. You need a reified mechanism.
+- The trajectory coefficients are not a *coarser* estimand than the cross-world NDE. They are the **right estimand for the question**. The NDE is a useful auxiliary — it sizes what the trajectory has already identified.
 
-- But knowing *which* process isn't enough to decide what to do. You also need to know **how much** — and that's the counterfactual question, answered by g-computation.
+- The endpoint view isn't caution, it's a commitment to the wrong lens. So is point-wise modularity when the question is *which path did the work?*
 
 :::
 
@@ -1333,11 +1324,13 @@ This slide combines the NDE computation with its actionable consequence. The lef
 
 ::: {.fragment .fade-in}
 
-__Both questions. Both scales. One model.__
+__Two scales. One primary.__
 
-- **Shape** (macro): the splines identify the realised process — which path, when, what sign
-- **Size** (micro): g-computation sizes the effect — requiring modularity, but only as seriously as the spline granularity demands
-- **LOO** and **Sensitivity Analysis** tests whether your answer depends on your precise model or is robust to violated assumptions
+- **Shape** (estimand) lives at the **macro lens** — and only there. The splines identify the realised process — which path, when, what sign.
+- **Size** (estimand) is computed at the **micro lens** via g-computation — but only once the macro lens has identified the process worth sizing.
+- **LOO** and **Sensitivity Analysis** test whether your answer depends on the precise model or is robust to violated assumptions.
+
+Probabilistic programming gives us both scales — but they aren't symmetric. The macro lens is **primary**.
 
 :::
 :::
