@@ -131,7 +131,7 @@ Both are intuitive, but they diverge on mediation cases. This talk builds a **Ba
 **Act II — The model:** A hybrid Bayesian DPA: Pearl's structural equations + Aalen's time-varying mechanisms
 :::
 ::: {.fragment .fade-in}
-**Act III — The lesson:** Shape vs size. Two questions, one model. The structural commitment made inspectable.
+**Act III — The lesson:** The lens, not just the answer. Why the macro view is primary — and the cross-world assumption it lets you escape.
 :::
 
 
@@ -593,105 +593,53 @@ plt.show()
 ::::
 
 :::{.fragment .fade-in}
-The three schools of causal inference give three different answers to how this decomposition should work.
+The three schools of causal inference give three different answers — each depending on where they locate causation.
 :::
 
 ::: {.notes}
-The competing risks framing is the cleaner analogy. Pre-emption in the assassin case involves redundant backup causes, which is not quite the structure of mediation. But competing risks — multiple pathways to the same event, where you need to know which one operated — maps directly onto mediation analysis. In both cases, the counterfactual test on the endpoint is insufficient: the patient dies either way in competing risks; the treatment shows "modest benefit" in mediation. You need to decompose by pathway to understand what actually happened. Whether death occurs due to a mediated harmful effect or an alternative risk pathway, it is the process decomposition that tells you where to intervene. The three schools that follow are three responses to this challenge. Potential outcomes tries to express mediation decomposition as nested counterfactuals and runs into trouble. Pearl embraces structural equations to make the decomposition well-defined. Aalen models the process directly, so the decomposition is algebraic rather than counterfactual.
+The competing risks framing is the cleaner analogy. Pre-emption in the assassin case involves redundant backup causes, which is not quite the structure of mediation. But competing risks — multiple pathways to the same event, where you need to know which one operated — maps directly onto mediation analysis. In both cases, the counterfactual test on the endpoint is insufficient: the patient dies either way in competing risks; the treatment shows "modest benefit" in mediation. You need to decompose by pathway to understand what actually happened. Whether death occurs due to a mediated harmful effect or an alternative risk pathway, it is the process decomposition that tells you where to intervene. The three views on the next slide are three responses to this challenge — each placing causation in a different home. Potential outcomes tries to express mediation decomposition as nested counterfactuals and runs into trouble. Pearl embraces structural equations to make the decomposition well-defined. Aalen models the process directly, so the decomposition is algebraic rather than counterfactual.
 :::
 
 
-## School 1: Potential Outcomes {.smaller}
+## Three Views of Primacy {.smaller}
 
-:::: {.columns}
-::: {.column width="50%"}
-
-**The Framework**
-
-- Rubin, Holland (1986): "No causation without manipulation"
-- Every causal quantity must correspond to a **well-defined intervention**
-- $Y(1) - Y(0)$: randomise treatment on or off
-- Clean, experiment-centric — the gold standard for total effects
-- Operates at the **endpoint**: one comparison, one number
-
-:::
-::: {.column width="50%"}
-
-**The Problem with Mediation**
-
-- The NDE requires $Y(1, M(0))$
-- This demands **two simultaneous interventions**: set $X = 1$, but also force $M$ to take the value it would have had under $X = 0$
-- No single experiment can implement both settings at once
-- If "no causation without manipulation" is your rule, this has **no operational meaning**
-
-:::
-::::
-
-::: {.notes}
-The logic of the objection is clean and principled. The ATE is fine: you randomise treatment on or off, observe Y under each, take the difference. Each potential outcome corresponds to a well-defined intervention. But the NDE requires a nested, staggered intervention: treat the patient (X=1) while simultaneously forcing their mediator to behave as if they were untreated (M(0)). What experiment produces this state? You would need to intervene on X and on M independently — but the whole point of mediation is that M is a consequence of X, not an independent lever. Robins and Richardson have argued this makes the NDE incoherent within the PO framework. It's not that mediation is unimportant — it's that the framework's commitment to intervention semantics rules out the quantity you'd need to define it. If every causal claim must map to an experiment you could run, and this one doesn't, you can't use it.
-:::
-
-
-## School 2: Structural Causal Models {.smaller}
-
-:::: {.columns}
-::: {.column width="50%"}
-
-**The Framework**
-
-- Pearl (2001): DAGs + structural equations + do-calculus
-- Allows cross-world counterfactuals via structural equations
-- $\text{NDE} = E[Y(1, M(0))] - E[Y(0, M(0))]$ is well-defined
-- Mediation is a first-class citizen
-
-:::
-::: {.column width="50%"}
-
-**The Cost**
-
-- Requires commitment to structural equations as real
-- The cross-world counterfactual remains philosophically contentious
-- "Your structural equations had better be right"
-- Operates at the **equation**: modularity must hold at each node
-
-:::
-::::
-
-::: {.notes}
-Pearl's framework solves the mediation problem by embracing structural equations. If you believe the equations describe the actual data-generating process, then cross-world counterfactuals are just computations over the model. The NDE formula falls out naturally. But critics (Dawid, Robins in some moods) object that this puts too much weight on untestable structural assumptions. We have a stalemate between two interventionist frameworks.
-:::
-
-
-## School 3: Process / Aalen {.smaller}
+Each school answers *"where does causation live?"* differently — and that answer dictates how each handles mediation.
 
 :::: {.columns}
 ::: {.column width="55%"}
 
-Aalen (1987, 1989): Causation as **unfolding temporal process**.
+:::{.fragment .fade-in}
+- **Potential Outcomes** — *primacy of intervention.* Rubin, Holland (1986): "no causation without manipulation." A causal claim must map to an experiment you could run. NDE requires $Y(1, M(0))$ — two simultaneous contrary interventions, no single experiment can implement it. **Mediation has no operational meaning.**
+:::
 
+:::{.fragment .fade-in}
+- **Structural Causal Models** — *primacy of equations.* Pearl (2001): causation lives in the stability of structural relations under intervention. Cross-world counterfactuals are computations over the model. **Mediation is first-class — if your equations are right.**
+:::
 
-- Effects are **increments to risk** over time, not static comparisons between frozen worlds.
-
-- The causal story is told by the **trajectory**, not the endpoint.
-
-- Time is the medium, not just a container.
-
-The process view doesn't just sidestep the cross-world problem. It **diagnoses** it. Cross-world counterfactuals try to locate causation in a comparison between frozen worlds — but in pre-emption and mediation, the cause is the trajectory that actually transmitted the influence. The micro lens isn't a stricter version of the macro lens. It's looking for causation in the wrong place.
+:::{.fragment .fade-in}
+- **Process / Aalen** — *primacy of the trajectory.* Causation is the unfolding of influence in time. Effects are increments to risk; the causal story is told by the path, not the endpoint. **Mediation is decomposed algebraically — no cross-world counterfactual ever arises.**
+:::
 
 :::
 ::: {.column width="45%"}
+
+![](potential_outcomes.webp)
 
 ![In causal inference and judicial sentencing it matters if you were killed by a man or a werewolf](process_change.gif)
 
 :::
 ::::
 
+. . .
+
+The process view doesn't just sidestep the cross-world problem — it **diagnoses** it. The micro lens isn't a stricter version of the macro lens. It's looking for causation in the wrong place.
+
 ::: {.notes}
-Aalen's view is less well-known in the ML/data science community but standard in biostatistics and survival analysis. The key insight: causation is not a comparison between two frozen worlds — it is the accumulation of influence over time. The sidestep works because the decomposition is algebraic, not counterfactual. In an additive hazard model, the total effect on the hazard is literally the sum of the direct path coefficient alpha_1(t) and the indirect path product beta(t) * alpha_2(t). You don't need to imagine a person simultaneously treated and untreated — you just read the path coefficients from the fitted model. The cross-world counterfactual Y(1, M(0)) never arises because the decomposition operates on the hazard scale, not on nested potential outcomes. This handles pre-emption naturally too: the cause is the process that actually transmitted the influence, identified by its coefficient, not by a counterfactual subtraction.
+Three answers to the same question — where does causation live? Potential outcomes locates it in interventions: every causal claim must correspond to an experiment. That's principled and clean for total effects, but it rules out mediation because the NDE Y(1, M(0)) requires two simultaneous interventions no single experiment can implement. Robins and Richardson have argued this makes the NDE incoherent within the PO framework. Pearl's SCM relocates causation in the stability of structural equations under intervention. If the equations describe the actual generating process, cross-world counterfactuals are just computations over the model. Mediation becomes first-class — but the price is commitment to untestable structural assumptions. Aalen relocates causation again, this time in the trajectory itself. Effects are increments to risk over time, not comparisons between frozen worlds. The decomposition is algebraic, not counterfactual: total = direct + indirect as an identity in the additive structure. The cross-world counterfactual never arises. This handles pre-emption naturally — the cause is the process that actually transmitted the influence, identified by its coefficient. The deeper claim, which we'll return to: the process view doesn't just dodge the cross-world problem, it diagnoses it. Cross-world counterfactuals are looking for causation in the wrong place.
 :::
 
 
-## The Stalemate {.smaller}
+## Perspectives on Mediation {.smaller}
 
 |  | Potential Outcomes | Pearl SCM | Process (Aalen) |
 |---|---|---|---|
@@ -933,57 +881,6 @@ We draw our sample trajectories on causal pathways with time-varying coefficient
 
 ::: {.notes}
 The Poisson likelihood cares about intensities — how fast is risk accumulating in each bin. This gives us a full generative model we can simulate from. A partial likelihood cannot do this. The ability to simulate is what converts a process model into a counterfactual reasoning engine.
-:::
-
-## The Softplus Link {.smaller}
-
-:::: {.columns}
-::: {.column width="55%"}
-
-```{python}
-#| echo: false
-#| fig-align: center
-x = np.linspace(-5, 6, 300)
-softplus = np.log1p(np.exp(x))
-identity = x
-
-fig, ax = plt.subplots(figsize=(5, 3.5))
-ax.fill_between(x, -1.5, 0, where=(x < 1.5),
-                color=CORAL, alpha=0.08)
-ax.axhline(0, color=GREY, linewidth=0.8, linestyle="--", alpha=0.5)
-ax.plot(x, identity, color=CORAL, linewidth=2, linestyle="--",
-        label="Identity (Aalen)", alpha=0.8)
-ax.plot(x, softplus, color=TEAL, linewidth=2.5,
-        label="Softplus  $\\ln(1+e^x)$")
-ax.annotate("Negative hazards\n(MCMC failure)",
-            xy=(-3, -1.5), fontsize=9, color=CORAL, alpha=0.8,
-            ha="center")
-ax.set_xlabel("Linear predictor", fontsize=11)
-ax.set_ylabel("Hazard intensity", fontsize=11)
-ax.set_ylim(-2, 6.5)
-ax.legend(fontsize=9, frameon=False, loc="upper left")
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-fig.tight_layout()
-plt.show()
-```
-
-:::
-::: {.column width="45%"}
-
-$$f(\eta) = \ln(1 + \exp(\eta))$$
-
-Ensures the hazard is always positive. Smooth. Differentiable. MCMC-friendly.
-
-- Additivity is preserved in the latent structure — $\eta(t) = \alpha_0(t) + \alpha_1(t)X + \alpha_2(t)M$. The softplus is an **observation constraint**, not a structural one.
-
-- The path decomposition is approximate on the **hazard scale**, but the mechanism is intact in $\eta$. For **precise magnitudes**, g-computation pushes the posterior through the nonlinearity.
-
-:::
-::::
-
-::: {.notes}
-A common objection: "the decomposition doesn't hold exactly under a nonlinear link." The precise answer: additivity is preserved in the latent linear predictor eta(t,x) = alpha_0(t) + alpha_1(t)*X + alpha_2(t)*M. The softplus is an observation constraint — it maps eta to a positive intensity — not part of the structural model. So the path decomposition (direct = alpha_1, indirect = beta * alpha_2) is exact in latent space. What's approximate is the mapping to the hazard scale: softplus(a+b) != softplus(a) + softplus(b). But this doesn't matter for causal estimands, because treatment effects are computed by posterior pushforward simulation (g-computation), which propagates through the nonlinearity correctly. The coefficients give you the structural shape — which path, when, what sign — and g-computation gives you the magnitude. The softplus is invisible to both questions: it's just ensuring the intensity is positive so the Poisson likelihood is well-defined.
 :::
 
 
@@ -1288,11 +1185,11 @@ This slide combines the NDE computation with its actionable consequence. The lef
 :::
 
 ::: {.fragment .fade-in}
-**3.** Two scales of causation unified: **macro** (spline-smoothed trajectories tell you the process) and **micro** (point-wise modularity lets you simulate counterfactuals). The splines encode the pragmatic claim that fine-grained noise washes out — and LOO lets you test it.
+**3.** Two scales, but not symmetric: the **macro lens** (spline-smoothed trajectories) identifies the realised process and escapes cross-world independence. The **micro lens** (point-wise modularity) sizes what macro has already identified.
 :::
 
 ::: {.fragment .fade-in}
-**4.** The process question and the difference-making question were never rivals. They operate at different granularities. Probabilistic programming is the substrate that makes both answerable from one model.
+**4.** The macro question is the right question; the micro answer sizes what macro identifies. Probabilistic programming is the substrate that makes both answerable — but only one is primary.
 :::
 
 
