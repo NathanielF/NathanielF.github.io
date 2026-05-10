@@ -676,9 +676,7 @@ Aalen (1987, 1989): Causation as **unfolding temporal process**.
 
 - Time is the medium, not just a container.
 
-- Operates at the **trajectory**: effects accumulate, and the integral tells the story.
-
-This sidesteps the cross-world problem — direct and indirect effects are read off the coefficients as they unfold.
+This sidesteps the cross-world problem on the hazard scale — direct and indirect effects are read off the coefficients as they unfold.
 
 :::
 ::: {.column width="45%"}
@@ -700,7 +698,7 @@ Aalen's view is less well-known in the ML/data science community but standard in
 | Cause is... | Difference between worlds | Structural mechanism | Unfolding process |
 | Mediation? | Ill-defined (cross-world) | Well-defined (structural eqns) | Naturally decomposable |
 | Strength | Clean identification | Full causal calculus | Temporal dynamics |
-| Weakness | No mediation | Untestable structural assumptions | No marginal estimand? |
+| Weakness | No mediation | Untestable structural assumptions | Non-generative inference |
 | Granularity | Endpoint | Each equation / node | Trajectory (cumulative) |
 
 . . .
@@ -712,7 +710,7 @@ The table oversimplifies, but the pattern is real. Each school has a genuine str
 :::
 
 
-## Concrete Mediation {.smaller}
+## Concrete Mediation Example {.smaller}
 ### Replicating `dpasurv`
 :::: {.columns}
 ::: {.column}
@@ -1128,7 +1126,7 @@ The path coefficients gave us mechanism. Now g-computation gives us magnitude. W
 
 . . .
 
-One model. Two complementary outputs — operating at **different scales**. The process question reads the macro trajectory. The difference-making question commits to micro-level structure. LOO tests whether the gap matters.
+One model. Two complementary outputs — operating at **different scales**. The process question reads the macro trajectory. The difference-making question commits to micro-level structure. LOO tests whether the gap matters and Sensitivty analysis can show robustness to violations.
 
 ::: {.notes}
 This is the deepest conceptual point in the talk. The two outputs don't just answer different questions — they locate causation at different levels of granularity. The parametric path coefficients are macro objects: smoothed by the B-spline basis, governed by a random walk prior that says "adjacent time points share structural relationships." The causal story is told by the cumulative trajectory, not by any single tick. This is the process view operationalised. G-computation, by contrast, requires the structural equations to hold point-wise: at each time step, alpha_2(t) relates M to the hazard the same way regardless of which intervention generated M. That's a micro-level commitment — modularity at every tick. The splines bridge these scales. They smooth over point-wise structural detail, encoding the pragmatic attitude that fine-grained modularity violations wash out in the aggregate. LOO cross-validation across knot counts tests this empirically: if the causal conclusions are stable whether you use 6 knots or 12, you have evidence that the macro view is robust to the micro-level granularity — which is indirect evidence that point-wise violations, if any, are not systematic. This is the "inspectability" claim made concrete. You're not just trusting modularity — you're checking whether your answer depends on how seriously you take it at the finest scale.
@@ -1339,7 +1337,7 @@ __Both questions. Both scales. One model.__
 
 - **Shape** (macro): the splines identify the realised process — which path, when, what sign
 - **Size** (micro): g-computation sizes the effect — requiring modularity, but only as seriously as the spline granularity demands
-- **LOO** and **Sensitivity Analysis** tests whether your answer depends on how finely you commit
+- **LOO** and **Sensitivity Analysis** tests whether your answer depends on your precise model or is robust to violated assumptions
 
 :::
 :::
