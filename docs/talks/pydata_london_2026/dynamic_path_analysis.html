@@ -1180,7 +1180,7 @@ display:block!important;
 <li><p>But A clearly caused the death. The counterfactual test misses the <strong>process</strong> that did the work.</p></li>
 </ul>
 </div><div class="column">
-<div id="ce3410df" class="cell" data-execution_count="2">
+<div id="d4ceea46" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1221,7 +1221,7 @@ display:block!important;
 <li><p>Attributing credit requires <strong>process decomposition</strong></p></li>
 </ul>
 </div><div class="column">
-<div id="b41f456a" class="cell" data-execution_count="3">
+<div id="8b9775de" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1390,7 +1390,7 @@ display:block!important;
 <td>Weakness</td>
 <td>No mediation</td>
 <td>Untestable structural assumptions</td>
-<td>Non-generative inference</td>
+<td>OlS estimator and non-generative inference</td>
 </tr>
 <tr class="odd">
 <td>Granularity</td>
@@ -1500,7 +1500,7 @@ display:block!important;
 </ul>
 <p>Three technical moves make this possible: <strong>discretise, smooth, bridge.</strong></p>
 </div><div class="column" style="width:45%;">
-<div id="29071216" class="cell" data-execution_count="4">
+<div id="5846eccd" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1547,7 +1547,7 @@ display:block!important;
 </figure>
 </div>
 </div><div class="column" style="width:33%;">
-<div id="e540bd09" class="cell" data-execution_count="5">
+<div id="823cdd27" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1602,7 +1602,7 @@ display:block!important;
 <h2>The Softplus Link</h2>
 <div class="columns">
 <div class="column" style="width:55%;">
-<div id="4193fb5f" class="cell" data-execution_count="6">
+<div id="6ff3239a" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1856,45 +1856,35 @@ display:block!important;
 </div>
 </section>
 <section class="slide level2 smaller center" data-background-color="black">
-<h2>Cross World Dynamics and Modularity</h2>
+<h2>Cross-World Independence</h2>
+<div style="color: #ddd;">
+<p><strong>The assumption that makes mediation fragile:</strong></p>
+<p><span class="math display">\[Y(1, M(0)) \perp\!\!\!\perp M(1) \mid X\]</span></p>
+<p><em>“The M → Y relationship under treatment is the same as it would be if M had been generated under control.”</em></p>
+<ul>
+<li>Untestable from data</li>
+<li>Often implausible — treatment frequently changes the <em>meaning</em> of M</li>
+</ul>
+</div>
+<div style="color: #4ec9b0; font-size: 1.15em; font-weight: bold; margin-top: 20px; margin-bottom: 20px;">
+<p>The macro lens doesn’t need it. It’s a <strong>strictly weaker</strong> identification regime.</p>
+</div>
 <div class="columns">
-<div class="column" style="width:45%;">
-<div style="color: #aaa; font-size: 1.1em; line-height: 1.8; margin-top: 40px;">
-<p>The NDE requires <span class="math inline">\(Y(X(1), M(0))\)</span>.</p>
-<ul>
-<li>This nests two worlds.
-<ul>
-<li>M(0) where we intervene on M</li>
-<li>Conditional on the counterfactual M(0) we intervene on the treatment X(1)</li>
-</ul></li>
-</ul>
+<div class="column" style="width:50%;">
+<div style="color: #ddd;">
+<p><strong>Trajectory decomposition</strong></p>
+<p><span class="math display">\[\text{total}(t) = \alpha_1(t) + \beta(t)\alpha_2(t)\]</span></p>
+<p>Algebraic identity, not counterfactual subtraction. Identified by <em>sequential within-world unconfoundedness</em> alone. <strong>No cross-world assumption.</strong></p>
 </div>
-<div class="fragment fade-in">
-<p>Potential outcomes: <strong>“Ill-defined.”</strong> Logically Impossible intervention</p>
-<p>Pearl: <strong>“Well-defined, via structural equations.”</strong>. The NDE is a computation over the model, not an experiment you run.</p>
-</div>
-</div><div class="column" style="width:10%;">
-
-</div><div class="column" style="width:45%;">
-<div style="color: white; font-size: 1.1em; line-height: 1.8; margin-top: 40px;">
-<div class="fragment fade-in">
-<p><strong>Modularity:</strong> Equations must be stable under intervention is the identification condition for the NDE. The hybrid model inherits this from Pearl.</p>
-</div>
-<div class="fragment fade-in">
-<p>But the macro <strong>trajectory decomposition</strong> is a coarser estimand. It only requires that confounding is not <em>systematic</em> across the trajectory</p>
-</div>
-<div class="fragment fade-in">
-<div style="color: #4ec9b0; font-size: 1.2em; font-weight: bold; margin-top: 20px;">
-<ul>
-<li><p><span class="math inline">\(\alpha_1(t)\)</span> → trajectory estimand (macro). Looser identification.</p></li>
-<li><p>G-computation NDE → cross-world estimand (micro). Full modularity.</p></li>
-</ul>
-</div>
-</div>
+</div><div class="column" style="width:50%;">
+<div style="color: #ddd;">
+<p><strong>G-computation NDE</strong></p>
+<p>Plug <span class="math inline">\(M(0)\)</span> trajectory into hazard under <span class="math inline">\(X=1\)</span>.</p>
+<p>This <strong>is</strong> a cross-world counterfactual. Pays the full identification price. The price buys you a magnitude.</p>
 </div>
 </div></div>
 <aside class="notes">
-<p>This is the sharpest philosophical move in the talk. The key insight is that identification conditions are relative to the estimand. The model produces two kinds of output, and they carry different identification burdens. The trajectory decomposition — reading alpha_1(t) and beta(t)*alpha_2(t) as the shape of the direct and indirect effects — is a macro-level estimand. It tells you which path dominates, when, and with what sign. For this estimand, you don’t need modularity to hold at every tick. You need the structural relationship between mediator and hazard to be approximately right on average across the trajectory — that confounding, if present, is not systematic. The splines operationalise this: they smooth over point-wise variation, and LOO across knot counts tests whether the macro story is robust to the granularity. The g-computation NDE is a different, finer estimand. It plugs one world’s mediator into another world’s hazard equation, tick by tick. This requires modularity at each time step — the equation must be stable under intervention at every point. That’s a stronger condition, and it’s the one the potential outcomes school rightly objects to. So the honest framing is: the model gives you a macro estimand (trajectory shape) with weaker identification conditions, and a micro estimand (NDE) with stronger ones. Both are useful. The trajectory tells you where to look. The NDE tells you how much. They have different epistemic costs, and the audience should understand the distinction. On sequential unconfoundedness specifically: every causal reading of a Cox model already assumes ignorability. The DPA model adds one mediator equation, adding one more condition. That’s one step beyond vanilla survival analysis, not a leap into the impossible. And the generative model makes the assumption explicit and gives diagnostics to probe it.</p>
+<p>This is the sharpest philosophical move in the talk. Cross-world independence — Y(1, M(0)) independent of M(1) given X — is the assumption that makes most mediation projects fragile. It says the M-Y relationship under treatment is the same as it would be if M had been generated under control. This is untestable, often implausible because treatment usually changes the meaning of M, and it’s the assumption that has broken hundreds of mediation papers in epidemiology and the social sciences. The deep claim of this slide: the trajectory decomposition does not require this assumption. The path coefficients alpha_1(t) and beta(t)*alpha_2(t) are within-world structural coefficients, identified by sequential within-world unconfoundedness plus correct additive specification. The decomposition total = direct + indirect is an algebraic identity in the additive hazard model, not a counterfactual subtraction. So the cross-world assumption never enters. The g-computation NDE, by contrast, plugs M(0) trajectories into the X=1 hazard equation — that IS the cross-world counterfactual, and it pays the full identification price. The macro lens isn’t a coarser version of the micro lens. It’s a strictly weaker identification regime. That asymmetry — different and weaker, not just different — is what justifies treating macro as primary. Aalen, Røysland, and Strohmaier have argued this in print for the additive hazard mediation framework specifically.</p>
 <style type="text/css">
 span.MJX_Assistive_MathML {
 position:absolute!important;
@@ -1928,7 +1918,7 @@ display:block!important;
 </ul>
 </div>
 </div><div class="column" style="width:50%;">
-<div id="bccb8b95" class="cell" data-execution_count="7">
+<div id="66bdc541" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>

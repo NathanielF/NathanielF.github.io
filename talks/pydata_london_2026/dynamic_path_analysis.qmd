@@ -698,7 +698,7 @@ Aalen's view is less well-known in the ML/data science community but standard in
 | Cause is... | Difference between worlds | Structural mechanism | Unfolding process |
 | Mediation? | Ill-defined (cross-world) | Well-defined (structural eqns) | Naturally decomposable |
 | Strength | Clean identification | Full causal calculus | Temporal dynamics |
-| Weakness | No mediation | Untestable structural assumptions | Non-generative inference |
+| Weakness | No mediation | Untestable structural assumptions | OlS estimator and non-generative inference |
 | Granularity | Endpoint | Each equation / node | Trajectory (cumulative) |
 
 . . .
@@ -1161,58 +1161,52 @@ Hickam's Dictum is the medical counter to Ockham's Razor. Ockham says prefer the
 :::
 
 
-## Cross World Dynamics and Modularity {background-color="black" .smaller}
+## Cross-World Independence {background-color="black" .smaller}
+
+::: {style="color: #ddd;"}
+
+**The assumption that makes mediation fragile:**
+
+$$Y(1, M(0)) \perp\!\!\!\perp M(1) \mid X$$
+
+*"The M → Y relationship under treatment is the same as it would be if M had been generated under control."*
+
+- Untestable from data
+- Often implausible — treatment frequently changes the *meaning* of M
+:::
+
+::: {style="color: #4ec9b0; font-size: 1.15em; font-weight: bold; margin-top: 20px; margin-bottom: 20px;"}
+The macro lens doesn't need it. It's a **strictly weaker** identification regime. 
+:::
 
 :::: {.columns}
-::: {.column width="45%"}
+::: {.column width="50%"}
 
-::: {style="color: #aaa; font-size: 1.1em; line-height: 1.8; margin-top: 40px;"}
-The NDE requires $Y(X(1), M(0))$.
+::: {style="color: #ddd;"}
+**Trajectory decomposition**
 
-- This nests two worlds.
-    - M(0) where we intervene on M
-    - Conditional on the counterfactual M(0) we intervene on the treatment X(1)
-:::
+$$\text{total}(t) = \alpha_1(t) + \beta(t)\alpha_2(t)$$
 
-::: {.fragment .fade-in}
-Potential outcomes: **"Ill-defined."** Logically Impossible intervention
-
-Pearl: **"Well-defined, via structural equations."**. The NDE is a computation over the model, not an experiment you run.
-:::
-
-
-:::
-::: {.column width="10%"}
-:::
-::: {.column width="45%"}
-
-::: {style="color: white; font-size: 1.1em; line-height: 1.8; margin-top: 40px;"}
-
-::: {.fragment .fade-in}
-**Modularity:** Equations must be stable under intervention is the identification condition for the NDE. The hybrid model inherits this from Pearl.
-:::
-
-::: {.fragment .fade-in}
-But the macro **trajectory decomposition** is a coarser estimand. It only requires that confounding is not *systematic* across the trajectory
-:::
-
-::: {.fragment .fade-in}
-::: {style="color: #4ec9b0; font-size: 1.2em; font-weight: bold; margin-top: 20px;"}
-- $\alpha_1(t)$ → trajectory estimand (macro). Looser identification.
-
-- G-computation NDE → cross-world estimand (micro). Full modularity.
-
+Algebraic identity, not counterfactual subtraction. Identified by *sequential within-world unconfoundedness* alone. **No cross-world assumption.**
 :::
 
 :::
 
+::: {.column width="50%"}
+
+::: {style="color: #ddd;"}
+**G-computation NDE**
+
+Plug $M(0)$ trajectory into hazard under $X=1$.
+
+This **is** a cross-world counterfactual. Pays the full identification price. The price buys you a magnitude.
 :::
 
 :::
 ::::
 
 ::: {.notes}
-This is the sharpest philosophical move in the talk. The key insight is that identification conditions are relative to the estimand. The model produces two kinds of output, and they carry different identification burdens. The trajectory decomposition — reading alpha_1(t) and beta(t)*alpha_2(t) as the shape of the direct and indirect effects — is a macro-level estimand. It tells you which path dominates, when, and with what sign. For this estimand, you don't need modularity to hold at every tick. You need the structural relationship between mediator and hazard to be approximately right on average across the trajectory — that confounding, if present, is not systematic. The splines operationalise this: they smooth over point-wise variation, and LOO across knot counts tests whether the macro story is robust to the granularity. The g-computation NDE is a different, finer estimand. It plugs one world's mediator into another world's hazard equation, tick by tick. This requires modularity at each time step — the equation must be stable under intervention at every point. That's a stronger condition, and it's the one the potential outcomes school rightly objects to. So the honest framing is: the model gives you a macro estimand (trajectory shape) with weaker identification conditions, and a micro estimand (NDE) with stronger ones. Both are useful. The trajectory tells you where to look. The NDE tells you how much. They have different epistemic costs, and the audience should understand the distinction. On sequential unconfoundedness specifically: every causal reading of a Cox model already assumes ignorability. The DPA model adds one mediator equation, adding one more condition. That's one step beyond vanilla survival analysis, not a leap into the impossible. And the generative model makes the assumption explicit and gives diagnostics to probe it.
+This is the sharpest philosophical move in the talk. Cross-world independence — Y(1, M(0)) independent of M(1) given X — is the assumption that makes most mediation projects fragile. It says the M-Y relationship under treatment is the same as it would be if M had been generated under control. This is untestable, often implausible because treatment usually changes the meaning of M, and it's the assumption that has broken hundreds of mediation papers in epidemiology and the social sciences. The deep claim of this slide: the trajectory decomposition does not require this assumption. The path coefficients alpha_1(t) and beta(t)*alpha_2(t) are within-world structural coefficients, identified by sequential within-world unconfoundedness plus correct additive specification. The decomposition total = direct + indirect is an algebraic identity in the additive hazard model, not a counterfactual subtraction. So the cross-world assumption never enters. The g-computation NDE, by contrast, plugs M(0) trajectories into the X=1 hazard equation — that IS the cross-world counterfactual, and it pays the full identification price. The macro lens isn't a coarser version of the micro lens. It's a strictly weaker identification regime. That asymmetry — different and weaker, not just different — is what justifies treating macro as primary. Aalen, Røysland, and Strohmaier have argued this in print for the additive hazard mediation framework specifically.
 :::
 
 
