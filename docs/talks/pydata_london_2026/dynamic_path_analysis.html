@@ -1173,15 +1173,15 @@ display:block!important;
 <div class="column">
 <p>Two latent afflictions. Condition A stresses the heart. Condition B affects the lungs.</p>
 <ul>
-<li><p>A’s induces heart failure. B doesn’t materialize. The patient dies.</p></li>
-<li><p><strong>Endpoint counterfactual:</strong> “Would the patient have survived without either condition?”</p>
+<li><p>A progresses to heart failure first. B never gets the chance. The patient dies.</p></li>
+<li><p><strong>Counterfactual test:</strong> “Would the patient have survived if Condition A hadn’t developed?”</p>
 <ul>
-<li>No — B would have fired regardless. The endpoint comparison can’t tell you which process did the work.</li>
+<li>No — B would have caused death regardless. So A <strong>fails</strong> the naive counterfactual test for being the cause.</li>
 </ul></li>
-<li><p>To answer <em>“which path was operative?”</em> you have to trace the process — not compare frozen worlds.</p></li>
+<li><p>Yet A is what did the work. The endpoint counterfactual misses <strong>which process was operative</strong>.</p></li>
 </ul>
 </div><div class="column">
-<div id="9a998f20" class="cell" data-execution_count="2">
+<div id="2a749d7d" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1195,7 +1195,7 @@ display:block!important;
 <p>This is a granularity question. At what fidelity do we locate causes?</p>
 </div>
 <aside class="notes">
-<p>The point here is not that the counterfactual framework gives the wrong answer. It’s that the endpoint counterfactual is answering the wrong question. “Would the target have survived without either assassin?” is a legitimate interventional query — and the answer (no) is correct. But it’s silent on which process was operative, which path transmitted the influence, and which mechanism you would need to disrupt to change the outcome. That is what competing risks analysis in medicine requires: not a different theory of causation, but a finer-grained counterfactual query targeted at the path, not the endpoint. This is the motivating structure for mediation analysis in survival data.</p>
+<p>This is the classic pre-emption structure, stated in medical terms so the competing-risks link is explicit. Condition A and Condition B are both latent. A progresses first and causes death, pre-empting B. The naive counterfactual test on A alone — “would the patient have survived if A hadn’t developed?” — returns no, because B would then have caused death. So the test denies A causal credit, even though A is what actually did the work. The point is not that counterfactual reasoning is wrong: it’s that a counterfactual aimed at the endpoint, with the backup cause left free to fire, is too coarse to identify which process was operative. Note the structure: you must intervene on A <em>alone</em> with B still latent — that is what makes it pre-emption rather than a total-effect contrast. Answering “which path was operative?” requires tracing the process, not just comparing endpoints — exactly what mediation analysis in survival data demands.</p>
 <style type="text/css">
 span.MJX_Assistive_MathML {
 position:absolute!important;
@@ -1222,7 +1222,7 @@ display:block!important;
 <li><p>Attributing credit requires <strong>process decomposition</strong></p></li>
 </ul>
 </div><div class="column">
-<div id="9a7f4632" class="cell" data-execution_count="3">
+<div id="59362f07" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1236,7 +1236,7 @@ display:block!important;
 <p>The three schools of causal inference give three different answers — each depending on where they locate causation.</p>
 </div>
 <aside class="notes">
-<p>The competing risks framing is the cleaner analogy. Pre-emption in the assassin case involves redundant backup causes, which is not quite the structure of mediation. But competing risks — multiple pathways to the same event, where you need to know which one operated — maps directly onto mediation analysis. In both cases, the counterfactual test on the endpoint is insufficient: the patient dies either way in competing risks; the treatment shows “modest benefit” in mediation. You need to decompose by pathway to understand what actually happened. Whether death occurs due to a mediated harmful effect or an alternative risk pathway, it is the process decomposition that tells you where to intervene. The three views on the next slide are three responses to this challenge — each placing causation in a different home. Potential outcomes tries to express mediation decomposition as nested counterfactuals and runs into trouble. Pearl embraces structural equations to make the decomposition well-defined. Aalen models the process directly, so the decomposition is algebraic rather than counterfactual.</p>
+<p>The competing risks framing is the cleaner analogy. Pre-emption — Condition A pre-empting the latent Condition B — involves redundant backup causes, which is not quite the structure of mediation. But competing risks — multiple pathways to the same event, where you need to know which one operated — maps directly onto mediation analysis. In both cases, the counterfactual test on the endpoint is insufficient: the patient dies either way in competing risks; the treatment shows “modest benefit” in mediation. You need to decompose by pathway to understand what actually happened. Whether death occurs due to a mediated harmful effect or an alternative risk pathway, it is the process decomposition that tells you where to intervene. The three views on the next slide are three responses to this challenge — each placing causation in a different home. Potential outcomes tries to express mediation decomposition as nested counterfactuals and runs into trouble. Pearl embraces structural equations to make the decomposition well-defined. Aalen models the process directly, so the decomposition is algebraic rather than counterfactual.</p>
 <style type="text/css">
 span.MJX_Assistive_MathML {
 position:absolute!important;
@@ -1445,7 +1445,7 @@ display:block!important;
 </ul>
 <p>Three technical moves make this possible: <strong>discretise, smooth, bridge.</strong></p>
 </div><div class="column" style="width:45%;">
-<div id="59ddb67f" class="cell" data-execution_count="4">
+<div id="4122effe" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1492,7 +1492,7 @@ display:block!important;
 </figure>
 </div>
 </div><div class="column" style="width:33%;">
-<div id="58c3d6ed" class="cell" data-execution_count="5">
+<div id="86c20fd1" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1825,7 +1825,7 @@ display:block!important;
 </ul>
 </div>
 </div><div class="column" style="width:50%;">
-<div id="f7b948de" class="cell" data-execution_count="6">
+<div id="469d944e" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>

@@ -173,13 +173,13 @@ The point of this slide is to establish that the counterfactual test is the shar
 
 Two latent afflictions. Condition A stresses the heart. Condition B affects the lungs.
 
-- A's induces heart failure. B doesn't materialize. The patient dies.
+- A progresses to heart failure first. B never gets the chance. The patient dies.
 
-- **Endpoint counterfactual:** "Would the patient have survived without either condition?"
+- **Counterfactual test:** "Would the patient have survived if Condition A hadn't developed?"
 
-    - No — B would have fired regardless. The endpoint comparison can't tell you which process did the work.
+    - No — B would have caused death regardless. So A **fails** the naive counterfactual test for being the cause.
 
-- To answer *"which path was operative?"* you have to trace the process — not compare frozen worlds.
+- Yet A is what did the work. The endpoint counterfactual misses **which process was operative**.
 
 :::
 
@@ -319,7 +319,7 @@ This is a granularity question. At what fidelity do we locate causes?
 :::
 
 ::: {.notes}
-The point here is not that the counterfactual framework gives the wrong answer. It's that the endpoint counterfactual is answering the wrong question. "Would the target have survived without either assassin?" is a legitimate interventional query — and the answer (no) is correct. But it's silent on which process was operative, which path transmitted the influence, and which mechanism you would need to disrupt to change the outcome. That is what competing risks analysis in medicine requires: not a different theory of causation, but a finer-grained counterfactual query targeted at the path, not the endpoint. This is the motivating structure for mediation analysis in survival data.
+This is the classic pre-emption structure, stated in medical terms so the competing-risks link is explicit. Condition A and Condition B are both latent. A progresses first and causes death, pre-empting B. The naive counterfactual test on A alone — "would the patient have survived if A hadn't developed?" — returns no, because B would then have caused death. So the test denies A causal credit, even though A is what actually did the work. The point is not that counterfactual reasoning is wrong: it's that a counterfactual aimed at the endpoint, with the backup cause left free to fire, is too coarse to identify which process was operative. Note the structure: you must intervene on A *alone* with B still latent — that is what makes it pre-emption rather than a total-effect contrast. Answering "which path was operative?" requires tracing the process, not just comparing endpoints — exactly what mediation analysis in survival data demands.
 :::
 
 
@@ -598,7 +598,7 @@ The three schools of causal inference give three different answers — each depe
 :::
 
 ::: {.notes}
-The competing risks framing is the cleaner analogy. Pre-emption in the assassin case involves redundant backup causes, which is not quite the structure of mediation. But competing risks — multiple pathways to the same event, where you need to know which one operated — maps directly onto mediation analysis. In both cases, the counterfactual test on the endpoint is insufficient: the patient dies either way in competing risks; the treatment shows "modest benefit" in mediation. You need to decompose by pathway to understand what actually happened. Whether death occurs due to a mediated harmful effect or an alternative risk pathway, it is the process decomposition that tells you where to intervene. The three views on the next slide are three responses to this challenge — each placing causation in a different home. Potential outcomes tries to express mediation decomposition as nested counterfactuals and runs into trouble. Pearl embraces structural equations to make the decomposition well-defined. Aalen models the process directly, so the decomposition is algebraic rather than counterfactual.
+The competing risks framing is the cleaner analogy. Pre-emption — Condition A pre-empting the latent Condition B — involves redundant backup causes, which is not quite the structure of mediation. But competing risks — multiple pathways to the same event, where you need to know which one operated — maps directly onto mediation analysis. In both cases, the counterfactual test on the endpoint is insufficient: the patient dies either way in competing risks; the treatment shows "modest benefit" in mediation. You need to decompose by pathway to understand what actually happened. Whether death occurs due to a mediated harmful effect or an alternative risk pathway, it is the process decomposition that tells you where to intervene. The three views on the next slide are three responses to this challenge — each placing causation in a different home. Potential outcomes tries to express mediation decomposition as nested counterfactuals and runs into trouble. Pearl embraces structural equations to make the decomposition well-defined. Aalen models the process directly, so the decomposition is algebraic rather than counterfactual.
 :::
 
 
