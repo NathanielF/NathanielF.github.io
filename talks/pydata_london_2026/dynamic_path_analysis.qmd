@@ -125,13 +125,13 @@ Both are intuitive, but they diverge on mediation cases. This talk builds a **Ba
 ## Agenda {.smaller}
 
 ::: {.fragment .fade-in}
-**Act I — The puzzle:** Pre-emption, competing risks, and why mediation splits the schools
+**Act I — The puzzle:** Competing causes, competing risks, and why mediation splits the schools
 :::
 ::: {.fragment .fade-in}
 **Act II — The model:** A hybrid Bayesian DPA: Pearl's structural equations + Aalen's time-varying mechanisms
 :::
 ::: {.fragment .fade-in}
-**Act III — The lesson:** The lens, not just the answer. Why the macro view is primary — and the cross-world assumption it lets you escape.
+**Act III — The lesson:** The lens, not just the answer. Why the trajectory is primary — and what it costs to go beyond it.
 :::
 
 
@@ -164,21 +164,22 @@ The point of this slide is to establish that the counterfactual test is the shar
 :::
 
 
-## The Pre-emption Puzzle {.smaller}
+## Competing Causes {.smaller}
+### The Pre-emption Puzzle
 
 ::::{.columns}
 
 :::{.column}
 
-Two assassins are hired. Assassin A poisons the coffee. Assassin B waits with a sniper rifle as backup.
+Two latent afflictions. Condition A stresses the heart. Condition B affects the lungs.
 
-- A's poison works. B never fires. The target dies.
+- A's induces heart failure. B doesn't materialize. The patient dies.
 
-- **Counterfactual test:** "Would the target have survived if A hadn't acted?"
+- **Endpoint counterfactual:** "Would the patient have survived without either condition?"
 
-    - No, because B would have fired. So A **fails** the counterfactual test for being the cause.
+    - No — B would have fired regardless. The endpoint comparison can't tell you which process did the work.
 
-- But A clearly caused the death. The counterfactual test misses the **process** that did the work. 
+- To answer *"which path was operative?"* you have to trace the process — not compare frozen worlds.
 
 :::
 
@@ -207,7 +208,7 @@ ax1.set_ylim(0, 10)
 ax1.text(
     5,
     9.3,
-    "The Pre-emption Puzzle",
+    "Competing Causes",
     ha="center",
     va="center",
     fontsize=28,
@@ -318,7 +319,7 @@ This is a granularity question. At what fidelity do we locate causes?
 :::
 
 ::: {.notes}
-This is the classic pre-emption case from the philosophy of causation (Lewis 1973), but it maps directly onto survival analysis. Competing risks are the medical version of pre-emption: the drug prevents one cause of death (cardiac arrest) but another cause (kidney failure) pre-empts the benefit. The counterfactual test — "would the patient have died anyway?" — says yes, so it denies the drug any causal credit. But the drug clearly worked on its pathway.
+The point here is not that the counterfactual framework gives the wrong answer. It's that the endpoint counterfactual is answering the wrong question. "Would the target have survived without either assassin?" is a legitimate interventional query — and the answer (no) is correct. But it's silent on which process was operative, which path transmitted the influence, and which mechanism you would need to disrupt to change the outcome. That is what competing risks analysis in medicine requires: not a different theory of causation, but a finer-grained counterfactual query targeted at the path, not the endpoint. This is the motivating structure for mediation analysis in survival data.
 :::
 
 
@@ -327,7 +328,7 @@ This is the classic pre-emption case from the philosophy of causation (Lewis 197
 ::::{.columns}
 
 :::{.column}
-- The assassin example is a **competing risks** problem
+- The competing causes structure is a **competing risks** problem
 
 - Mediation is a similar structure. 
     - A treatment works through **multiple channels**. 
@@ -646,7 +647,7 @@ Three answers to the same question — where does causation live? Potential outc
 | Cause is... | Difference between worlds | Structural mechanism | Unfolding process |
 | Mediation? | Ill-defined (cross-world) | Well-defined (structural eqns) | Naturally decomposable |
 | Strength | Clean identification | Full causal calculus | Temporal dynamics |
-| Weakness | No mediation | Untestable structural assumptions | OlS estimator and non-generative inference |
+| Weakness | No mediation | Untestable structural assumptions | OLS estimator and non-generative inference |
 | Granularity | Endpoint | Each equation / node | Trajectory (cumulative) |
 
 . . .
@@ -919,7 +920,7 @@ The joint estimation is important. Information flows between the mediator model 
 
 ## The Model in Code {.smaller}
 
-```{.python code-line-numbers="|1-5|6-10|11-15|16-21|23-27"}
+```{.python code-line-numbers="|1-5|6-10|14-19|20-22|23-27"}
 with pm.Model() as model:
     # 1. Time-varying coefficients via random-walk splines
     beta_raw = pm.Normal("beta_raw", 0, 1,
@@ -1003,8 +1004,6 @@ Two independent axes — **estimand** (what are you asking?) and **lens** (where
 | **Shape** *(which path)* | ✓ trajectory coefficients | ✗ category error — pre-emption shows the cause is the process, not a point-wise modular fact |
 | **Size** *(how much)*  | — needs structural commitment to size | g-computation, NDE/NIE |
 
-. . .
-
 The diagonals carry the work. **Shape lives at the macro lens — and only there.** Size *can* be computed at the micro lens, but only because we accept structural commitments as a price — not because the micro lens is the right home for causal claims.
 
 ::: {.callout-tip}
@@ -1033,25 +1032,24 @@ This is the deepest conceptual point in the talk. The two outputs don't just ans
 
 - If treatment operates through **multiple channels simultaneously** collapsing them is oversimplification.
 
+Refusing to decompose isn't caution, it's a commitment. It assumes all paths point the same way. When they don't, **aggressive simplification is misspecification from the start**
+
 :::
 ::: {.column width="50%"}
 
 ![](survival.png){fig-align="center" width="95%"}
 
-. . .
+::: {.fragment .fade-in}
 
-The DPA model is Hickam operationalised:
+[__The DPA model is Hickam operationalised__]{.blue}:
 
 - Direct path: **protective throughout**
 - Indirect path: **inert, then harmful after day 100**
 - Total effect: **attenuated** — the endpoint hides the war between paths
+:::
 
 :::
 ::::
-
-. . .
-
-Refusing to decompose isn't caution, it's a commitment. It assumes all paths point the same way. When they don't, **aggressive simplification is misspecification from the start** — a commitment to looking for causation where it isn't, at the endpoint, between frozen worlds, instead of along the path the process actually took.
 
 ::: {.notes}
 Hickam's Dictum is the medical counter to Ockham's Razor. Ockham says prefer the simplest explanation. Hickam says that in medicine, patients often have multiple concurrent conditions, and forcing a single diagnosis can be actively harmful. The same logic applies to causal mediation: the treatment doesn't have one effect, it has multiple effects running through different channels, and they can work in opposite directions. An endpoint analysis that reports "17% risk reduction" is Ockham applied to causal inference — it gives you one clean number but hides the fact that the direct path is giving you 25% while the mediated path is clawing back 8%. The PO school's refusal to engage with mediation is often framed as principled caution — "the assumptions are too strong, so we won't decompose." But this refusal is itself a modelling choice: it treats all causal paths as interchangeable, which is wrong whenever they oppose each other. A model that collapses a 25% benefit and an 8% harm into "17% net effect" is not assumption-free — it has baked in the assumption that path heterogeneity doesn't matter. That is misspecification, and it's misspecification you chose at the outset by refusing to look. The DPA model takes on structural assumptions (modularity, sequential unconfoundedness), but it uses them to reveal structure that the simpler model hides. The risk of misspecification from oversimplification can be worse than the risk of misspecification from structural commitment — especially when the structural commitment is inspectable.
@@ -1073,7 +1071,7 @@ $$Y(1, M(0)) \perp\!\!\!\perp M(1) \mid X$$
 :::
 
 ::: {style="color: #4ec9b0; font-size: 1.15em; font-weight: bold; margin-top: 20px; margin-bottom: 20px;"}
-The macro lens doesn't need it. It's a **strictly weaker** identification regime. 
+The trajectory decomposition trades one assumption for another: **additive structural form** instead of cross-world counterfactual independence.
 :::
 
 :::: {.columns}
@@ -1084,7 +1082,7 @@ The macro lens doesn't need it. It's a **strictly weaker** identification regime
 
 $$\text{total}(t) = \alpha_1(t) + \beta(t)\alpha_2(t)$$
 
-Algebraic identity, not counterfactual subtraction. Identified by *sequential within-world unconfoundedness* alone. **No cross-world assumption.**
+Algebraic identity, not counterfactual subtraction. Identified by *sequential within-world unconfoundedness* + **additive structural form**. A parametric commitment, but one the data can speak to directly.
 :::
 
 :::
@@ -1103,7 +1101,7 @@ This **is** a cross-world counterfactual. Pays the full identification price. Th
 ::::
 
 ::: {.notes}
-This is the sharpest philosophical move in the talk. Cross-world independence — Y(1, M(0)) independent of M(1) given X — is the assumption that makes most mediation projects fragile. It says the M-Y relationship under treatment is the same as it would be if M had been generated under control. This is untestable, often implausible because treatment usually changes the meaning of M, and it's the assumption that has broken hundreds of mediation papers in epidemiology and the social sciences. The deep claim of this slide: the trajectory decomposition does not require this assumption. The path coefficients alpha_1(t) and beta(t)*alpha_2(t) are within-world structural coefficients, identified by sequential within-world unconfoundedness plus correct additive specification. The decomposition total = direct + indirect is an algebraic identity in the additive hazard model, not a counterfactual subtraction. So the cross-world assumption never enters. The g-computation NDE, by contrast, plugs M(0) trajectories into the X=1 hazard equation — that IS the cross-world counterfactual, and it pays the full identification price. The macro lens isn't a coarser version of the micro lens. It's a strictly weaker identification regime. That asymmetry — different and weaker, not just different — is what justifies treating macro as primary. Aalen, Røysland, and Strohmaier have argued this in print for the additive hazard mediation framework specifically.
+This is the sharpest philosophical move in the talk. Cross-world independence — Y(1, M(0)) independent of M(1) given X — is the assumption that makes most mediation projects fragile. It says the M-Y relationship under treatment is the same as it would be if M had been generated under control. This is untestable, often implausible because treatment usually changes the meaning of M, and it's the assumption that has broken hundreds of mediation papers in epidemiology and the social sciences. The deep claim of this slide: the trajectory decomposition does not require this assumption. The path coefficients alpha_1(t) and beta(t)*alpha_2(t) are within-world structural coefficients, identified by sequential within-world unconfoundedness plus correct additive specification. The decomposition total = direct + indirect is an algebraic identity in the additive hazard model, not a counterfactual subtraction. So the cross-world assumption never enters. The g-computation NDE, by contrast, plugs M(0) trajectories into the X=1 hazard equation — that IS the cross-world counterfactual, and it pays the full identification price. The macro lens isn't a coarser version of the micro lens. It makes a different identification trade: additive structural form instead of cross-world counterfactual independence. Both are assumptions; neither is assumption-free. But the parametric commitment is one you can interrogate — LOO cross-validation across knot counts tests whether the causal conclusions are stable. Cross-world independence cannot be tested from data at all. The asymmetry — different, and testable vs. untestable — is what justifies treating macro as primary for the shape question. Aalen, Røysland, and Strohmaier have argued this for the additive hazard mediation framework specifically.
 :::
 
 
@@ -1196,13 +1194,13 @@ This slide combines the NDE computation with its actionable consequence. The lef
 ## The Lesson{.smaller}
 
 ::: {style="font-size: 1.3em; font-weight: bold; margin-bottom: 20px;"}
-Causation lives at the macro scale.
+For time-evolving mediation, the trajectory is the right unit of analysis.
 :::
 
 :::: {.columns}
 ::: {.column width="50%"}
 
-- The pre-emption puzzle showed it: ask *"did A make a difference?"* and you get the wrong answer. Ask *"which process transmitted the influence?"* and you get the right one.
+- The competing causes structure showed it: ask *"would the outcome have differed at the endpoint?"* and you miss which process was operative. Ask *"which path transmitted the influence, and when?"* and you get an answer you can act on.
 
 - The trajectory coefficients are not a *coarser* estimand than the cross-world NDE. They are the **right estimand for the question**. The NDE is a useful auxiliary — it sizes what the trajectory has already identified.
 
@@ -1238,6 +1236,9 @@ This is the lesson of the talk. The three schools disagreed because they were as
 
 ## Thank You
 
+:::: {.columns}
+::: {.column width="50%"}
+
 :::{.callout-tip}
 ## Resources
 - Blog post: [nathanielf.github.io](https://nathanielf.github.io/posts/post-with-code/AalenDynamicPaths/aalen_dynamic_paths.html)
@@ -1248,5 +1249,9 @@ This is the lesson of the talk. The three schools disagreed because they were as
 - Pearl (2001), "Direct and Indirect Effects," *UAI*
 - Robins & Richardson (2010), "Alternative graphical causal models"
 :::
+:::
 
-![](images/QR_CODE.png){fig-align="center" width="150px"}
+::: {.column width="50%"}
+![Coming Soon to a Book Store near you!](images/bookimage.png)
+:::
+
