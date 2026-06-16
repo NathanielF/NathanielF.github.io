@@ -1,0 +1,88 @@
+---
+title: "MaxDiff Conjoint Analysis in PyMC Marketing"
+author: "Nathaniel Forde"
+date: "2026-06-16"
+categories: ["utility", "consumer choice", "conjoint analysis"]
+abstract: "Hierarchical Bayesian Best-Worst Scaling (MaxDiff) for Item Preference Estimation"
+image: "maxdiff.png"
+---
+
+# MaxDiff Best-Worst Scaling
+
+MaxDiff (Best-Worst Scaling) is the workhorse of conjoint analysis. Rather than asking respondents to rate items on a scale — which produces noisy, anchoring-biased data — it presents subsets of items and asks which is *most* preferred and which is *least* preferred. This forces genuine discrimination and yields interval-scaled utilities that are comparable across respondents.
+
+This contribution implements the Louviere sequential best-worst model with optional hierarchical Bayesian respondent heterogeneity (HB-MaxDiff), two modes of identifying item utilities (item intercepts or part-worths from attributes), and a fully generative prediction path. The implementation can be found in pymc-marketing [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/maxdiff.html).
+
+## The Likelihood
+
+The sequential best-worst likelihood factors as:
+
+$$
+P(\text{best}_t = b, \, \text{worst}_t = w \mid \text{subset}_t)
+= \underbrace{\frac{e^{U_b}}{\sum_{k \in S_t} e^{U_k}}}_{\text{best pick}}
+\cdot \underbrace{\frac{e^{-U_w}}{\sum_{k \in S_t \setminus \{b\}} e^{-U_k}}}_{\text{worst pick from remainder}}
+$$
+
+Two separate `pm.Categorical` observed distributions encode this in the PyMC graph — one for best, one for worst — so `sample_posterior_predictive` yields `best_pick` and `worst_pick` draws directly.
+
+## Respondent Heterogeneity (HB-MaxDiff)
+
+In the default item-intercept mode the population utility for item $i$ is $\beta_i$, with the reference item pinned to zero for identification. With `random_intercepts=True`, each respondent draws item-level deviations:
+
+$$
+\beta^r_i = \beta_i + \sigma_i \cdot z^r_i, \quad z^r_i \sim \mathcal{N}(0, 1)
+$$
+
+This gives individual-level WTP estimates via the posterior of $\beta^r_i$, which is the defining feature of HB-MaxDiff.
+
+## Part-Worths Mode
+
+When items are described by measurable attributes (brand, price, quality) rather than arbitrary labels, passing `item_attributes` and a `utility_formula` switches the model into part-worths mode:
+
+$$
+U_i = X_i^\top \beta_{\text{feat}}
+$$
+
+This extrapolates naturally to new items via their attributes without requiring them to have appeared in any training task.
+
+## Implementation
+
+```{.python}
+from pymc_marketing.customer_choice.maxdiff import MaxDiffMixedLogit
+
+# Item-intercept mode with respondent heterogeneity
+model = MaxDiffMixedLogit(
+    task_df=task_df,         # long-format: (respondent_id, task_id, item_id, is_best, is_worst)
+    items=["apple", "banana", "cherry", "date", "elderberry"],
+    random_intercepts=True,  # HB-MaxDiff: per-respondent item utilities
+    reference_item="date",   # pinned to 0 for identification
+    non_centered=True,
+)
+
+idata = model.fit()
+
+# Generative prediction on a new task design (coherent joint best/worst draw)
+sim = model.predict_choices(new_task_df, new_respondents="population")
+
+# Part-worths mode: utilities from item attributes
+model_pw = MaxDiffMixedLogit(
+    task_df=task_df,
+    items=items,
+    item_attributes=item_attrs_df,    # DataFrame indexed by item name
+    utility_formula="~ 0 + C(brand) + price + quality",
+    random_attributes=["price"],       # random coefficient on price
+)
+
+# Score hypothetical new items without retraining
+new_shares = model_pw.score_new_items(new_sku_attributes)
+```
+
+## Posterior Predictive Limitation
+
+`sample_posterior_predictive` is valid for **in-sample posterior predictive checks**: it conditions the worst pick on the *observed* best position, so the joint draw is intentionally incoherent for generative use. For counterfactual or out-of-sample simulation, use `predict_choices` or `apply_intervention` — these sample best first, then sample worst conditioned on the freshly drawn best, producing the correct generative joint.
+
+## Key Design Choices
+
+- **Full LKJ covariance** (`full_covariance=True`): replaces independent per-item scales with a full Cholesky covariance $\Sigma = LL^\top$ estimated via `pm.LKJCholeskyCov`. Captures correlated item utilities (e.g. premium brands cluster together) at the cost of $O(I^2)$ parameters.
+- **Ragged subset support**: tasks may show different numbers of items. The preprocessing step pads to $K_{\max}$ positions using the reference item as a sentinel and a boolean mask marks real positions, so the masked softmax handles variable-size subsets without data duplication.
+- **Batched prediction**: `predict_choices` accepts a `draw_batch_size` to cap peak memory on large posteriors, while guaranteeing bit-identical output to the unbatched path via pre-drawn uniforms.

@@ -47,6 +47,9 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/pymc_marketing/bayesian_blp.html",
+      "/oss/pymc_marketing/consideration_set.html",
+      "/oss/pymc_marketing/maxdiff.html",
       "/oss/bambi/survival_analysis_sorites.html",
       "/oss/pymc_marketing/mixed_logit.html",
       "/oss/causalpy/variable_selection_joint_models.html",

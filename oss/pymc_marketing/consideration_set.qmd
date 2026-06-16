@@ -1,0 +1,76 @@
+---
+title: "Consideration Set Mixed Logit in PyMC Marketing"
+author: "Nathaniel Forde"
+date: "2026-06-16"
+categories: ["utility", "consumer choice", "causal inference"]
+abstract: "Bayesian Estimation of a Two-Stage Consideration-then-Choice Mixed Logit Model"
+image: "consideration.webp"
+---
+
+# Consideration Set Mixed Logit
+
+This contribution extends the existing `MixedLogit` class with a two-stage consideration-then-choice structure. The core insight is that consumers do not evaluate every available alternative before deciding — they first form a *consideration set* (which products are even on the table) and only then choose among the products they actually considered. The implementation can be found in pymc-marketing [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/consideration_set_logit.html).
+
+## The Model
+
+**Stage 1 — Consideration:**
+
+$$
+\pi_{nj} = \sigma\!\left(\gamma_{0j} + \sum_k \gamma_{zjk} \cdot \tilde{z}_{njk} + \eta_n\right)
+$$
+
+where $\tilde{z}_{njk}$ are mean-centred consideration instruments satisfying an exclusion restriction: they must be structurally separate from the utility covariates. At $\tilde{z} = 0$, $\pi = 0.5$ — only deviations from population-average screening drive consideration.
+
+**Stage 2 — Choice:**
+
+$$
+P(j \mid n) = \operatorname{softmax}\!\left(\log \pi_{nj} + V_{nj}\right)
+$$
+
+The *bridge formula* $U^{\text{avail}}_{nj} = V_{nj} + \log \pi_{nj}$ integrates consideration directly into the utility index, so the mixed logit likelihood structure from the parent class is preserved without modification.
+
+This is the discrete choice analogue of the key/query separation in transformer attention: the consideration instruments $Z$ play the role of the query while the utility covariates $X$ play the role of the value.
+
+## Identification
+
+- **Exclusion restriction**: $Z$ instruments must not appear in $V_{nj}$. This identifies the consideration stage separately from the preference stage.
+- **Mean-centring**: At average screening behaviour ($\tilde{z} = 0$) the consideration probability is exactly $0.5$, so the utility intercept $\alpha_j$ absorbs baseline alternative-specific effects. When `consideration_intercept=True`, $\gamma_{0j}$ and $\alpha_j$ compete to explain baseline effects — use informative priors or constrain one set.
+- **Random consideration** (`random_consideration=True`) adds a per-individual intercept $\eta_n \sim \mathcal{N}(0, \sigma_{\text{consider}})$, capturing unobserved heterogeneity in "visibility" across all alternatives.
+
+## Implementation
+
+```{.python}
+from pymc_marketing.customer_choice.consideration_set_logit import (
+    ConsiderationSetMixedLogit,
+    ConsiderationInstruments,
+)
+
+instruments: ConsiderationInstruments = {
+    "Z_tilde": Z_tilde,             # (N, J) mean-centred, or (N, J, K_z)
+    "z_instrument_names": ["adspend", "shelf_position"],
+}
+
+model = ConsiderationSetMixedLogit(
+    choice_df=df,
+    utility_equations=[
+        "brand_a ~ price_a + quality_a | income",
+        "brand_b ~ price_b + quality_b | income",
+        "brand_c ~ price_c + quality_c | income",
+    ],
+    depvar="choice",
+    covariates=["price", "quality"],
+    consideration_instruments=instruments,
+    consideration_intercept=False,   # alpha_j absorbs baseline consideration
+    random_consideration=True,       # per-individual consideration heterogeneity
+)
+
+idata = model.fit(target_accept=0.97, tune=2000)
+```
+
+The class inherits the full `MixedLogit` interface: Wilkinson-style formula specification, non-centered parameterisation, panel data support, control-function endogeneity correction, `apply_intervention`, and `sample_posterior_predictive`.
+
+## Key Design Choices
+
+- **Numerically stable log-sigmoid**: $\log(\sigma(x)) = x - \operatorname{softplus}(x)$, avoiding the catastrophic cancellation in $\log(\sigma(x) + \varepsilon)$ for large negative $x$.
+- **Multi-instrument support**: $Z$ can be 2-D $(N, J)$ for a single instrument per alternative or 3-D $(N, J, K_z)$ for multiple instruments, with named coordinates surfaced in the posterior.
+- **Dimension-switch guard**: switching $Z$ from 2-D to 3-D after the model is built raises a clear `ValueError`, preventing silent model mismatches on `apply_intervention`.

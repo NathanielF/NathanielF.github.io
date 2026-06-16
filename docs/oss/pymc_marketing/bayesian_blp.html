@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Nathaniel Forde">
+<meta name="dcterms.date" content="2026-06-16">
 
-<title>Consulting – Examined Algorithms</title>
+<title>Bayesian BLP Demand Estimation in PyMC Marketing – Examined Algorithms</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,25 +22,59 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -67,8 +103,37 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<link rel="stylesheet" href="styles.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -78,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Examined Algorithms</span>
     </a>
   </div>
@@ -89,23 +154,23 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html"> 
+    <a class="nav-link" href="../../blog.html"> 
 <span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./opensource.html"> 
+    <a class="nav-link" href="../../opensource.html"> 
 <span class="menu-text">Open Source Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./talks.html"> 
+    <a class="nav-link" href="../../talks.html"> 
 <span class="menu-text">Talks</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./consulting.html" aria-current="page"> 
+    <a class="nav-link" href="../../consulting.html"> 
 <span class="menu-text">Consulting</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./resume/Nathaniel_Forde_CV.pdf"> 
+    <a class="nav-link" href="../../resume/Nathaniel_Forde_CV.pdf"> 
 <span class="menu-text">CV</span></a>
   </li>  
   <li class="nav-item compact">
@@ -140,124 +205,125 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Consulting</h1>
-</div>
+<h1 class="title">Bayesian BLP Demand Estimation in PyMC Marketing</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">utility</div>
+    <div class="quarto-category">consumer choice</div>
+    <div class="quarto-category">structural econometrics</div>
+    <div class="quarto-category">industrial organisation</div>
+  </div>
+  </div>
 
 
 
 <div class="quarto-title-meta column-page">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nathaniel Forde </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 16, 2026</p>
+    </div>
+  </div>
   
     
   </div>
   
+<div>
+  <div class="abstract">
+    <div class="block-title">Abstract</div>
+    Fully Bayesian Random-Coefficients Logit on Aggregate Market-Share Panels (Berry-Levinsohn-Pakes)
+  </div>
+</div>
 
 
 </header>
 
 
-<style>
-.ascii-art {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.72rem;
-  line-height: 1.55;
-  padding: 0.8rem 1rem;
-  margin-bottom: 1rem;
-  background: rgba(0,0,0,0.035);
-  border-radius: 6px;
-  text-align: center;
-  white-space: pre;
-  color: inherit;
-  opacity: 0.82;
-}
-</style>
-<div class="container my-5 fade-in">
-  <h1>Available for Consulting</h1>
-  <p class="lead">
-    I work with teams who want to move beyond dashboards and toward decisions — using Bayesian methods,
-    causal reasoning, and rigorous experimentation to extract real insight from messy data.
-    If your team is wrestling with any of the problems below, <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">get in touch</a>.
-  </p>
-</div>
-<div class="container my-5">
-  <div class="row g-4">
-
-    <div class="col-md-6 fade-in">
-      <div class="card highlight-card h-100">
-        <div class="card-body">
-          <pre class="ascii-art">    ▂▄█▄▂               ▂▄▆████▆▄▂
-    prior       →        posterior
-  ────────────────────────────────
-  P(θ|D)  ∝  P(D|θ) · P(θ)
-</pre>
-          <h5 class="card-title anchored">Bayesian Statistics</h5>
-          <p class="card-text">
-            Probabilistic models that quantify uncertainty honestly ranging from hierarchical mixed-effects models
-            to latent variable structure. Useful when you need to pool information across groups, handle small samples,
-            or communicate confidence ranges rather than point estimates.
-          </p>
-          <p class="card-text"><small>Model Diagnostics · People Analytics · PyMC · GLMs · SEMs · Survival Analysis </small></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6 fade-in">
-      <div class="card highlight-card h-100">
-        <div class="card-body">
-          <pre class="ascii-art">          ┌──[Z]──┐
-          ↓        ↓
-       [X] ──────→ [Y]
-     cause          effect
-  ────────────────────────────
-  do(X=x)  ≠  see(X=x)
-</pre>
-          <h5 class="card-title anchored">Causal Inference</h5>
-          <p class="card-text">
-            Identifying what actually drives outcomes, not just what correlates with them. I work with
-            structural causal models, quasi-experimental designs, and observational data to support
-            decisions where you can't run a clean experiment.
-          </p>
-          <p class="card-text"><small>DAGs · Instrumental variables · Difference-in-differences · Discrete Choice Models · Propensity scores · Experiment Design </small></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6 fade-in">
-      <div class="card highlight-card h-100">
-        <div class="card-body">
-          <pre class="ascii-art">  ╔══════════════════════╗
-  ║  y  ~ Normal(μ, σ)  ║
-  ║  μ   = α + β·x      ║
-  ║  σ  ~ HalfNormal    ║
-  ╚══════════════════════╝
-     ○  ○  ○    ○  ○  ○
-</pre>
-          <h5 class="card-title anchored">Training &amp; Workshops</h5>
-          <p class="card-text">
-            Hands-on sessions for data science and analytics teams — from half-day introductions to
-            multi-day workshops with worked examples in your domain. Past topics include Bayesian
-            workflow, causal inference, and probabilistic programming with PyMC.
-          </p>
-          <p class="card-text"><small>In-person or remote · Beginner to advanced </small></p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-<div class="container my-5 fade-in">
-  <hr>
-  <h4 class="anchored">Get in touch</h4>
-  <p>
-    Reach me on <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">LinkedIn</a> or
-    via <a href="https://bsky.app/profile/nathanielforde.bsky.social">Bluesky</a>.
-    You can also browse my <a href="./talks.html">talks</a> and <a href="./blog.html">writing</a>
-    to get a sense of how I approach problems.
-  </p>
-</div>
+<section id="bayesian-blp-structural-demand-estimation" class="level1">
+<h1>Bayesian BLP: Structural Demand Estimation</h1>
+<p>The Berry-Levinsohn-Pakes (1995) model is the canonical structural demand model for aggregate market-share data — the kind that comes from Nielsen scanner panels, IRI retailer data, or any setting where you observe <em>product-level shares across markets</em> rather than individual purchase decisions. It accounts for price endogeneity, allows consumer heterogeneity through random coefficients, and produces structurally identified cross-price elasticities.</p>
+<p>The classical BLP approach solves a contraction mapping to recover mean utilities and then uses GMM with instruments. This contribution drops both in favour of a fully Bayesian joint posterior over all parameters, following Jiang, Manchanda &amp; Rossi (2009, <em>QME</em>) and Yang, Chen &amp; Allenby (2003). The result is honest uncertainty quantification, hierarchical pooling across regions at essentially no extra cost, and full posterior elasticities without delta-method approximations. The implementation can be found in pymc-marketing <a href="https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/bayesian_blp.html">here</a> and extended to replicate the Nevo (2000) cereal market application <a href="https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/bayesian_blp_nevo.html">here</a>.</p>
+<section id="the-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-model">The Model</h2>
+<p><strong>Mean utility</strong> for product <span class="math inline">\(j\)</span> in market <span class="math inline">\(m\)</span>:</p>
+<p><span class="math display">\[
+\delta_{jm} = \alpha_r p_{jm} + x_{jm}^\top \beta_r + \xi_j + \tilde{\xi}_{jm}
+\]</span></p>
+<p>where <span class="math inline">\(\alpha_r\)</span>, <span class="math inline">\(\beta_r\)</span> are region-level price and characteristic coefficients, <span class="math inline">\(\xi_j\)</span> is a product fixed effect (absorbed demand quality), and <span class="math inline">\(\tilde{\xi}_{jm}\)</span> is the residual market-specific shock.</p>
+<p><strong>Consumer-level utility</strong> with random coefficients:</p>
+<p><span class="math display">\[
+u_{ijm} = \delta_{jm} + \sum_{d} \sigma_d \cdot \nu_{id} \cdot c_{jmd} + \varepsilon_{ijm}
+\]</span></p>
+<p>The consumer taste shocks <span class="math inline">\(\nu_{id}\)</span> are integrated out using Owen-scrambled Halton draws, giving predicted market shares <span class="math inline">\(\hat{s}_{jm}\)</span> without solving a contraction mapping.</p>
+<p><strong>Likelihood</strong> (Berry 1994 log-share ratio):</p>
+<p><span class="math display">\[
+\log s_{jm} - \log s_{0m} \;\sim\; \mathcal{N}\!\left(\log \hat{s}_{jm} - \log \hat{s}_{0m},\; \sigma^2_{jm}\right)
+\]</span></p>
+<p>where the delta-method variance <span class="math inline">\(\sigma^2_{jm} = \left(\frac{1}{n_m s_{jm}} + \frac{1}{n_m s_{0m}}\right)\)</span> scales with the per-market sample size <span class="math inline">\(n_m\)</span>.</p>
+</section>
+<section id="price-endogeneity" class="level2">
+<h2 class="anchored" data-anchor-id="price-endogeneity">Price Endogeneity</h2>
+<p>Instruments <span class="math inline">\(z_{jm}\)</span> identify <span class="math inline">\(\alpha\)</span> under endogeneity via the conditional decomposition of <span class="math inline">\((η_{jm}, \tilde{\xi}_{jm})\)</span>:</p>
+<p><span class="math display">\[
+p_{jm} = \pi_{0j} + \pi_z \cdot z_{jm} + \eta_{jm}
+\qquad
+\tilde{\xi}_{jm} = \underbrace{\frac{\gamma}{\sigma_\eta}}_{\rho \cdot \sigma_\xi / \sigma_\eta} \eta_{jm} + \omega \cdot \varepsilon_{jm}
+\]</span></p>
+<p>Sampling on the slope-residual coordinates <span class="math inline">\((\gamma, \omega)\)</span> rather than <span class="math inline">\((\rho, \sigma_\xi)\)</span> breaks the multiplicative ridge that pins diagonal-mass NUTS at the depth cap.</p>
+</section>
+<section id="implementation" class="level2">
+<h2 class="anchored" data-anchor-id="implementation">Implementation</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pymc_marketing.customer_choice.bayesian_blp <span class="im">import</span> BayesianBLP</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> BayesianBLP(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    market_data<span class="op">=</span>panel_df,          <span class="co"># long-format: (market, product, share, price, ...)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    characteristics<span class="op">=</span>[<span class="st">"quality"</span>, <span class="st">"calories"</span>, <span class="st">"sugar"</span>],</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    instruments<span class="op">=</span>[<span class="st">"cost_iv"</span>, <span class="st">"rival_price_iv"</span>],</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    product_col<span class="op">=</span><span class="st">"product"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    market_col<span class="op">=</span><span class="st">"market"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    region_col<span class="op">=</span><span class="st">"region"</span>,           <span class="co"># enables cross-region hierarchical pooling</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    share_col<span class="op">=</span><span class="st">"share"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    market_size_col<span class="op">=</span><span class="st">"n_consumers"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    price_col<span class="op">=</span><span class="st">"price"</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    outside_good<span class="op">=</span><span class="st">"outside"</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    time_col<span class="op">=</span><span class="st">"week"</span>,               <span class="co"># rectangular (region, week) panel</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    random_coef_on<span class="op">=</span>[<span class="st">"price"</span>],      <span class="co"># random price coefficient via Halton draws</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    n_mc_draws<span class="op">=</span><span class="dv">500</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>idata <span class="op">=</span> model.fit()</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Posterior price elasticity matrix (own- and cross-price)</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>elast <span class="op">=</span> model.elasticities(at<span class="op">=</span><span class="st">"mean"</span>, n_samples<span class="op">=</span><span class="dv">500</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Structural counterfactual: raise brand_a price by 10% in Q4</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>cf <span class="op">=</span> model.counterfactual_shares(</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    price_change<span class="op">=</span>{<span class="st">"brand_a"</span>: <span class="fl">0.10</span>},</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span>[<span class="st">"2024-Q4"</span>],</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape xi posterior to (region, period, product) grid</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>xi_grid <span class="op">=</span> model.xi_as_grid()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="key-design-choices" class="level2">
+<h2 class="anchored" data-anchor-id="key-design-choices">Key Design Choices</h2>
+<ul>
+<li><strong>Halton integration</strong>: Owen-scrambled Halton sequences replace Monte Carlo for the share integral, giving faster convergence in the consumer heterogeneity dimension at a fixed computational budget.</li>
+<li><strong>Centered vs non-centered hierarchy</strong>: the region-level hierarchy on <span class="math inline">\((\alpha_r, \beta_r)\)</span> defaults to <em>centered</em> parameterisation — counterintuitive but correct for scanner panels where each region has many informative observations. Switch to <code>hierarchical_parameterisation="noncentered"</code> only in sparse-data regimes.</li>
+<li><strong>Memory-safe batch evaluation</strong>: <code>batch_shares</code> chunks the posterior sample axis when the <span class="math inline">\(O(S \cdot M \cdot J \cdot R)\)</span> allocation would exceed 2 GiB, producing bit-identical output via numpy concatenation.</li>
+<li><strong>Structural counterfactuals in numpy</strong>: <code>counterfactual_shares</code> pulls the assembled <code>xi</code> Deterministic from the posterior and holds it fixed while re-evaluating the share equation at new prices. Routing through <code>pm.do</code> would incorrectly shift <span class="math inline">\(\tilde{\xi}\)</span> because the conditional mean of <span class="math inline">\(\tilde{\xi}\)</span> depends on <span class="math inline">\(\eta = p - \mu_p\)</span>, which changes when price changes.</li>
+</ul>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script>

@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Nathaniel Forde">
+<meta name="dcterms.date" content="2026-06-16">
 
-<title>Consulting – Examined Algorithms</title>
+<title>MaxDiff Conjoint Analysis in PyMC Marketing – Examined Algorithms</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,25 +22,59 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -67,8 +103,37 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<link rel="stylesheet" href="styles.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -78,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Examined Algorithms</span>
     </a>
   </div>
@@ -89,23 +154,23 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html"> 
+    <a class="nav-link" href="../../blog.html"> 
 <span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./opensource.html"> 
+    <a class="nav-link" href="../../opensource.html"> 
 <span class="menu-text">Open Source Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./talks.html"> 
+    <a class="nav-link" href="../../talks.html"> 
 <span class="menu-text">Talks</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./consulting.html" aria-current="page"> 
+    <a class="nav-link" href="../../consulting.html"> 
 <span class="menu-text">Consulting</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./resume/Nathaniel_Forde_CV.pdf"> 
+    <a class="nav-link" href="../../resume/Nathaniel_Forde_CV.pdf"> 
 <span class="menu-text">CV</span></a>
   </li>  
   <li class="nav-item compact">
@@ -140,124 +205,121 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Consulting</h1>
-</div>
+<h1 class="title">MaxDiff Conjoint Analysis in PyMC Marketing</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">utility</div>
+    <div class="quarto-category">consumer choice</div>
+    <div class="quarto-category">conjoint analysis</div>
+  </div>
+  </div>
 
 
 
 <div class="quarto-title-meta column-page">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nathaniel Forde </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 16, 2026</p>
+    </div>
+  </div>
   
     
   </div>
   
+<div>
+  <div class="abstract">
+    <div class="block-title">Abstract</div>
+    Hierarchical Bayesian Best-Worst Scaling (MaxDiff) for Item Preference Estimation
+  </div>
+</div>
 
 
 </header>
 
 
-<style>
-.ascii-art {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.72rem;
-  line-height: 1.55;
-  padding: 0.8rem 1rem;
-  margin-bottom: 1rem;
-  background: rgba(0,0,0,0.035);
-  border-radius: 6px;
-  text-align: center;
-  white-space: pre;
-  color: inherit;
-  opacity: 0.82;
-}
-</style>
-<div class="container my-5 fade-in">
-  <h1>Available for Consulting</h1>
-  <p class="lead">
-    I work with teams who want to move beyond dashboards and toward decisions — using Bayesian methods,
-    causal reasoning, and rigorous experimentation to extract real insight from messy data.
-    If your team is wrestling with any of the problems below, <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">get in touch</a>.
-  </p>
-</div>
-<div class="container my-5">
-  <div class="row g-4">
-
-    <div class="col-md-6 fade-in">
-      <div class="card highlight-card h-100">
-        <div class="card-body">
-          <pre class="ascii-art">    ▂▄█▄▂               ▂▄▆████▆▄▂
-    prior       →        posterior
-  ────────────────────────────────
-  P(θ|D)  ∝  P(D|θ) · P(θ)
-</pre>
-          <h5 class="card-title anchored">Bayesian Statistics</h5>
-          <p class="card-text">
-            Probabilistic models that quantify uncertainty honestly ranging from hierarchical mixed-effects models
-            to latent variable structure. Useful when you need to pool information across groups, handle small samples,
-            or communicate confidence ranges rather than point estimates.
-          </p>
-          <p class="card-text"><small>Model Diagnostics · People Analytics · PyMC · GLMs · SEMs · Survival Analysis </small></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6 fade-in">
-      <div class="card highlight-card h-100">
-        <div class="card-body">
-          <pre class="ascii-art">          ┌──[Z]──┐
-          ↓        ↓
-       [X] ──────→ [Y]
-     cause          effect
-  ────────────────────────────
-  do(X=x)  ≠  see(X=x)
-</pre>
-          <h5 class="card-title anchored">Causal Inference</h5>
-          <p class="card-text">
-            Identifying what actually drives outcomes, not just what correlates with them. I work with
-            structural causal models, quasi-experimental designs, and observational data to support
-            decisions where you can't run a clean experiment.
-          </p>
-          <p class="card-text"><small>DAGs · Instrumental variables · Difference-in-differences · Discrete Choice Models · Propensity scores · Experiment Design </small></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6 fade-in">
-      <div class="card highlight-card h-100">
-        <div class="card-body">
-          <pre class="ascii-art">  ╔══════════════════════╗
-  ║  y  ~ Normal(μ, σ)  ║
-  ║  μ   = α + β·x      ║
-  ║  σ  ~ HalfNormal    ║
-  ╚══════════════════════╝
-     ○  ○  ○    ○  ○  ○
-</pre>
-          <h5 class="card-title anchored">Training &amp; Workshops</h5>
-          <p class="card-text">
-            Hands-on sessions for data science and analytics teams — from half-day introductions to
-            multi-day workshops with worked examples in your domain. Past topics include Bayesian
-            workflow, causal inference, and probabilistic programming with PyMC.
-          </p>
-          <p class="card-text"><small>In-person or remote · Beginner to advanced </small></p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-<div class="container my-5 fade-in">
-  <hr>
-  <h4 class="anchored">Get in touch</h4>
-  <p>
-    Reach me on <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">LinkedIn</a> or
-    via <a href="https://bsky.app/profile/nathanielforde.bsky.social">Bluesky</a>.
-    You can also browse my <a href="./talks.html">talks</a> and <a href="./blog.html">writing</a>
-    to get a sense of how I approach problems.
-  </p>
-</div>
+<section id="maxdiff-best-worst-scaling" class="level1">
+<h1>MaxDiff Best-Worst Scaling</h1>
+<p>MaxDiff (Best-Worst Scaling) is the workhorse of conjoint analysis. Rather than asking respondents to rate items on a scale — which produces noisy, anchoring-biased data — it presents subsets of items and asks which is <em>most</em> preferred and which is <em>least</em> preferred. This forces genuine discrimination and yields interval-scaled utilities that are comparable across respondents.</p>
+<p>This contribution implements the Louviere sequential best-worst model with optional hierarchical Bayesian respondent heterogeneity (HB-MaxDiff), two modes of identifying item utilities (item intercepts or part-worths from attributes), and a fully generative prediction path. The implementation can be found in pymc-marketing <a href="https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/maxdiff.html">here</a>.</p>
+<section id="the-likelihood" class="level2">
+<h2 class="anchored" data-anchor-id="the-likelihood">The Likelihood</h2>
+<p>The sequential best-worst likelihood factors as:</p>
+<p><span class="math display">\[
+P(\text{best}_t = b, \, \text{worst}_t = w \mid \text{subset}_t)
+= \underbrace{\frac{e^{U_b}}{\sum_{k \in S_t} e^{U_k}}}_{\text{best pick}}
+\cdot \underbrace{\frac{e^{-U_w}}{\sum_{k \in S_t \setminus \{b\}} e^{-U_k}}}_{\text{worst pick from remainder}}
+\]</span></p>
+<p>Two separate <code>pm.Categorical</code> observed distributions encode this in the PyMC graph — one for best, one for worst — so <code>sample_posterior_predictive</code> yields <code>best_pick</code> and <code>worst_pick</code> draws directly.</p>
+</section>
+<section id="respondent-heterogeneity-hb-maxdiff" class="level2">
+<h2 class="anchored" data-anchor-id="respondent-heterogeneity-hb-maxdiff">Respondent Heterogeneity (HB-MaxDiff)</h2>
+<p>In the default item-intercept mode the population utility for item <span class="math inline">\(i\)</span> is <span class="math inline">\(\beta_i\)</span>, with the reference item pinned to zero for identification. With <code>random_intercepts=True</code>, each respondent draws item-level deviations:</p>
+<p><span class="math display">\[
+\beta^r_i = \beta_i + \sigma_i \cdot z^r_i, \quad z^r_i \sim \mathcal{N}(0, 1)
+\]</span></p>
+<p>This gives individual-level WTP estimates via the posterior of <span class="math inline">\(\beta^r_i\)</span>, which is the defining feature of HB-MaxDiff.</p>
+</section>
+<section id="part-worths-mode" class="level2">
+<h2 class="anchored" data-anchor-id="part-worths-mode">Part-Worths Mode</h2>
+<p>When items are described by measurable attributes (brand, price, quality) rather than arbitrary labels, passing <code>item_attributes</code> and a <code>utility_formula</code> switches the model into part-worths mode:</p>
+<p><span class="math display">\[
+U_i = X_i^\top \beta_{\text{feat}}
+\]</span></p>
+<p>This extrapolates naturally to new items via their attributes without requiring them to have appeared in any training task.</p>
+</section>
+<section id="implementation" class="level2">
+<h2 class="anchored" data-anchor-id="implementation">Implementation</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pymc_marketing.customer_choice.maxdiff <span class="im">import</span> MaxDiffMixedLogit</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Item-intercept mode with respondent heterogeneity</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> MaxDiffMixedLogit(</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    task_df<span class="op">=</span>task_df,         <span class="co"># long-format: (respondent_id, task_id, item_id, is_best, is_worst)</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    items<span class="op">=</span>[<span class="st">"apple"</span>, <span class="st">"banana"</span>, <span class="st">"cherry"</span>, <span class="st">"date"</span>, <span class="st">"elderberry"</span>],</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    random_intercepts<span class="op">=</span><span class="va">True</span>,  <span class="co"># HB-MaxDiff: per-respondent item utilities</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    reference_item<span class="op">=</span><span class="st">"date"</span>,   <span class="co"># pinned to 0 for identification</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    non_centered<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>idata <span class="op">=</span> model.fit()</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Generative prediction on a new task design (coherent joint best/worst draw)</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> model.predict_choices(new_task_df, new_respondents<span class="op">=</span><span class="st">"population"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Part-worths mode: utilities from item attributes</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>model_pw <span class="op">=</span> MaxDiffMixedLogit(</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    task_df<span class="op">=</span>task_df,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    items<span class="op">=</span>items,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    item_attributes<span class="op">=</span>item_attrs_df,    <span class="co"># DataFrame indexed by item name</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    utility_formula<span class="op">=</span><span class="st">"~ 0 + C(brand) + price + quality"</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    random_attributes<span class="op">=</span>[<span class="st">"price"</span>],       <span class="co"># random coefficient on price</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Score hypothetical new items without retraining</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>new_shares <span class="op">=</span> model_pw.score_new_items(new_sku_attributes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="posterior-predictive-limitation" class="level2">
+<h2 class="anchored" data-anchor-id="posterior-predictive-limitation">Posterior Predictive Limitation</h2>
+<p><code>sample_posterior_predictive</code> is valid for <strong>in-sample posterior predictive checks</strong>: it conditions the worst pick on the <em>observed</em> best position, so the joint draw is intentionally incoherent for generative use. For counterfactual or out-of-sample simulation, use <code>predict_choices</code> or <code>apply_intervention</code> — these sample best first, then sample worst conditioned on the freshly drawn best, producing the correct generative joint.</p>
+</section>
+<section id="key-design-choices" class="level2">
+<h2 class="anchored" data-anchor-id="key-design-choices">Key Design Choices</h2>
+<ul>
+<li><strong>Full LKJ covariance</strong> (<code>full_covariance=True</code>): replaces independent per-item scales with a full Cholesky covariance <span class="math inline">\(\Sigma = LL^\top\)</span> estimated via <code>pm.LKJCholeskyCov</code>. Captures correlated item utilities (e.g.&nbsp;premium brands cluster together) at the cost of <span class="math inline">\(O(I^2)\)</span> parameters.</li>
+<li><strong>Ragged subset support</strong>: tasks may show different numbers of items. The preprocessing step pads to <span class="math inline">\(K_{\max}\)</span> positions using the reference item as a sentinel and a boolean mask marks real positions, so the masked softmax handles variable-size subsets without data duplication.</li>
+<li><strong>Batched prediction</strong>: <code>predict_choices</code> accepts a <code>draw_batch_size</code> to cap peak memory on large posteriors, while guaranteeing bit-identical output to the unbatched path via pre-drawn uniforms.</li>
+</ul>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script>

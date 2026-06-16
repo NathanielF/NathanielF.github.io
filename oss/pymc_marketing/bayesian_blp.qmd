@@ -1,0 +1,95 @@
+---
+title: "Bayesian BLP Demand Estimation in PyMC Marketing"
+author: "Nathaniel Forde"
+date: "2026-06-16"
+categories: ["utility", "consumer choice", "structural econometrics", "industrial organisation"]
+abstract: "Fully Bayesian Random-Coefficients Logit on Aggregate Market-Share Panels (Berry-Levinsohn-Pakes)"
+image: "BLP_nevo.png"
+---
+
+# Bayesian BLP: Structural Demand Estimation
+
+The Berry-Levinsohn-Pakes (1995) model is the canonical structural demand model for aggregate market-share data — the kind that comes from Nielsen scanner panels, IRI retailer data, or any setting where you observe *product-level shares across markets* rather than individual purchase decisions. It accounts for price endogeneity, allows consumer heterogeneity through random coefficients, and produces structurally identified cross-price elasticities.
+
+The classical BLP approach solves a contraction mapping to recover mean utilities and then uses GMM with instruments. This contribution drops both in favour of a fully Bayesian joint posterior over all parameters, following Jiang, Manchanda & Rossi (2009, *QME*) and Yang, Chen & Allenby (2003). The result is honest uncertainty quantification, hierarchical pooling across regions at essentially no extra cost, and full posterior elasticities without delta-method approximations. The implementation can be found in pymc-marketing [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/bayesian_blp.html) and extended to replicate the Nevo (2000) cereal market application [here](https://www.pymc-marketing.io/en/latest/notebooks/customer_choice/bayesian_blp_nevo.html).
+
+## The Model
+
+**Mean utility** for product $j$ in market $m$:
+
+$$
+\delta_{jm} = \alpha_r p_{jm} + x_{jm}^\top \beta_r + \xi_j + \tilde{\xi}_{jm}
+$$
+
+where $\alpha_r$, $\beta_r$ are region-level price and characteristic coefficients, $\xi_j$ is a product fixed effect (absorbed demand quality), and $\tilde{\xi}_{jm}$ is the residual market-specific shock.
+
+**Consumer-level utility** with random coefficients:
+
+$$
+u_{ijm} = \delta_{jm} + \sum_{d} \sigma_d \cdot \nu_{id} \cdot c_{jmd} + \varepsilon_{ijm}
+$$
+
+The consumer taste shocks $\nu_{id}$ are integrated out using Owen-scrambled Halton draws, giving predicted market shares $\hat{s}_{jm}$ without solving a contraction mapping.
+
+**Likelihood** (Berry 1994 log-share ratio):
+
+$$
+\log s_{jm} - \log s_{0m} \;\sim\; \mathcal{N}\!\left(\log \hat{s}_{jm} - \log \hat{s}_{0m},\; \sigma^2_{jm}\right)
+$$
+
+where the delta-method variance $\sigma^2_{jm} = \left(\frac{1}{n_m s_{jm}} + \frac{1}{n_m s_{0m}}\right)$ scales with the per-market sample size $n_m$.
+
+## Price Endogeneity
+
+Instruments $z_{jm}$ identify $\alpha$ under endogeneity via the conditional decomposition of $(η_{jm}, \tilde{\xi}_{jm})$:
+
+$$
+p_{jm} = \pi_{0j} + \pi_z \cdot z_{jm} + \eta_{jm}
+\qquad
+\tilde{\xi}_{jm} = \underbrace{\frac{\gamma}{\sigma_\eta}}_{\rho \cdot \sigma_\xi / \sigma_\eta} \eta_{jm} + \omega \cdot \varepsilon_{jm}
+$$
+
+Sampling on the slope-residual coordinates $(\gamma, \omega)$ rather than $(\rho, \sigma_\xi)$ breaks the multiplicative ridge that pins diagonal-mass NUTS at the depth cap.
+
+## Implementation
+
+```{.python}
+from pymc_marketing.customer_choice.bayesian_blp import BayesianBLP
+
+model = BayesianBLP(
+    market_data=panel_df,          # long-format: (market, product, share, price, ...)
+    characteristics=["quality", "calories", "sugar"],
+    instruments=["cost_iv", "rival_price_iv"],
+    product_col="product",
+    market_col="market",
+    region_col="region",           # enables cross-region hierarchical pooling
+    share_col="share",
+    market_size_col="n_consumers",
+    price_col="price",
+    outside_good="outside",
+    time_col="week",               # rectangular (region, week) panel
+    random_coef_on=["price"],      # random price coefficient via Halton draws
+    n_mc_draws=500,
+)
+
+idata = model.fit()
+
+# Posterior price elasticity matrix (own- and cross-price)
+elast = model.elasticities(at="mean", n_samples=500)
+
+# Structural counterfactual: raise brand_a price by 10% in Q4
+cf = model.counterfactual_shares(
+    price_change={"brand_a": 0.10},
+    periods=["2024-Q4"],
+)
+
+# Reshape xi posterior to (region, period, product) grid
+xi_grid = model.xi_as_grid()
+```
+
+## Key Design Choices
+
+- **Halton integration**: Owen-scrambled Halton sequences replace Monte Carlo for the share integral, giving faster convergence in the consumer heterogeneity dimension at a fixed computational budget.
+- **Centered vs non-centered hierarchy**: the region-level hierarchy on $(\alpha_r, \beta_r)$ defaults to *centered* parameterisation — counterintuitive but correct for scanner panels where each region has many informative observations. Switch to `hierarchical_parameterisation="noncentered"` only in sparse-data regimes.
+- **Memory-safe batch evaluation**: `batch_shares` chunks the posterior sample axis when the $O(S \cdot M \cdot J \cdot R)$ allocation would exceed 2 GiB, producing bit-identical output via numpy concatenation.
+- **Structural counterfactuals in numpy**: `counterfactual_shares` pulls the assembled `xi` Deterministic from the posterior and holds it fixed while re-evaluating the share equation at new prices. Routing through `pm.do` would incorrectly shift $\tilde{\xi}$ because the conditional mean of $\tilde{\xi}$ depends on $\eta = p - \mu_p$, which changes when price changes.

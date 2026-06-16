@@ -49,7 +49,7 @@ title-block-banner: false
             to latent variable structure. Useful when you need to pool information across groups, handle small samples,
             or communicate confidence ranges rather than point estimates.
           </p>
-          <p class="card-text"><small>Prior/posterior predictive checks · MCMC diagnostics · PyMC · GLMs · SEMs · Survival Analysis </small></p>
+          <p class="card-text"><small>Model Diagnostics · People Analytics · PyMC · GLMs · SEMs · Survival Analysis </small></p>
         </div>
       </div>
     </div>
