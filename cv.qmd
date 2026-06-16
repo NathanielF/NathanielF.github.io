@@ -335,7 +335,7 @@ title-block-banner: false
     <!-- ===== HEADER ===== -->
     <div class="cv-head">
       <h1 class="cv-name">Nathaniel <span>Forde</span></h1>
-      <p class="cv-tagline">Experienced Data Scientist / Statistician</p>
+      <p class="cv-tagline">Nathaniel Forde - Experienced Data Scientist / Statistician</p>
       <div class="cv-contacts">
         <span class="cv-contact-item">
           <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
@@ -414,6 +414,7 @@ title-block-banner: false
       </div>
       <ul>
         <li>Advising on applied Bayesian statistics, causal inference, and probabilistic machine learning for enterprise projects.</li>
+        <li>Multiple +1M$ client engagements  and policy recommendations across different retail sectors and markets.</li>
       </ul>
     </div>
 
@@ -475,7 +476,7 @@ title-block-banner: false
         <span class="cv-entry-date">Feb 2018 – 2019</span>
       </div>
       <ul>
-        <li>Created NLP models predicting sentiment on customer chat data.</li>
+        <li>Created NLP models predicting sentiment on customer chat data during peak usage periods like Cheltenham</li>
         <li>Built propensity models for Responsible Gambling interventions, influencing €5M in budget allocation.</li>
         <li>Partnered with industry think tank on predictive models for problem gambling; findings shaped regulatory strategy.</li>
         <li>Team Lead and Supervisor to Junior Analysts; responsibilities included annual planning and performance reviews.</li>
