@@ -1,0 +1,622 @@
+---
+pagetitle: "Nathaniel Forde — CV"
+page-layout: full
+title-block-banner: false
+---
+
+```{=html}
+<style>
+/* ================================================================
+   CV Page — Screen Styles
+   ================================================================ */
+
+.cv-page {
+  max-width: 860px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Lora', Georgia, serif;
+  color: #2c3e50;
+}
+
+/* ---- Toolbar (download button) ---- */
+.cv-toolbar {
+  text-align: right;
+  margin-bottom: 1.5rem;
+}
+
+.cv-print-btn {
+  background: #18bc9c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.45rem 1.2rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.cv-print-btn:hover {
+  background: #149a80;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* ---- CV Card ---- */
+.cv-card {
+  background: #fff;
+  border: 1px solid #e8edf1;
+  border-radius: 6px;
+  box-shadow: 0 2px 16px rgba(44, 62, 80, 0.07);
+  padding: 2.5rem 3rem;
+}
+
+/* ---- Header ---- */
+.cv-head {
+  text-align: center;
+  padding-bottom: 1.4rem;
+  border-bottom: 2px solid #18bc9c;
+  margin-bottom: 1.4rem;
+}
+
+.cv-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2c3e50;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.1;
+}
+
+.cv-name span {
+  color: #18bc9c;
+}
+
+.cv-tagline {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: #6c757d;
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.03em;
+}
+
+.cv-contacts {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.4rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  color: #5a6472;
+}
+
+.cv-contacts a {
+  color: #5a6472;
+  text-decoration: none;
+}
+.cv-contacts a:hover {
+  color: #18bc9c;
+}
+
+.cv-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.cv-contact-item svg {
+  flex-shrink: 0;
+  color: #18bc9c;
+}
+
+/* ---- Section Titles ---- */
+.cv-section-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #18bc9c;
+  border-bottom: 1px solid #e8edf1;
+  padding-bottom: 0.35rem;
+  margin: 1.8rem 0 1rem 0;
+}
+
+/* ---- Profile ---- */
+.cv-profile {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: #3a4550;
+}
+
+/* ---- Skills ---- */
+.cv-skills-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cv-skills-list li {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  padding: 0.15rem 0;
+  color: #3a4550;
+}
+
+.cv-skills-list li::before {
+  content: "▸ ";
+  color: #18bc9c;
+  font-size: 0.75rem;
+}
+
+.cv-skill-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #2c3e50;
+}
+
+/* ---- Entry (job / education / publication) ---- */
+.cv-entry {
+  margin-bottom: 1.1rem;
+  page-break-inside: avoid;
+}
+
+.cv-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  border-bottom: 1px solid #f0f3f5;
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.cv-entry-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.4rem;
+}
+
+.cv-entry-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #2c3e50;
+}
+
+.cv-entry-org {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.cv-entry-date {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #18bc9c;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cv-entry ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.87rem;
+  line-height: 1.65;
+  color: #3a4550;
+}
+
+.cv-entry ul li {
+  margin-bottom: 0.2rem;
+}
+
+.cv-entry p {
+  font-size: 0.87rem;
+  line-height: 1.65;
+  color: #3a4550;
+  margin: 0.25rem 0 0 0;
+}
+
+/* Pub link */
+.cv-entry a.cv-pub-link {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  color: #18bc9c;
+}
+
+/* ================================================================
+   Print Styles — strip Quarto chrome, clean A4 page
+   ================================================================ */
+@media print {
+
+  /* Hide all site chrome */
+  #quarto-header,
+  .navbar,
+  #quarto-sidebar,
+  #quarto-sidebar-glass,
+  .quarto-secondary-nav,
+  #quarto-margin-sidebar,
+  footer.footer,
+  .nav-footer,
+  .cv-toolbar {
+    display: none !important;
+  }
+
+  /* Reset layout containers */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  #quarto-content,
+  .page-columns,
+  #quarto-document-content,
+  main {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    grid-template-columns: unset !important;
+  }
+
+  /* CV page fills the paper */
+  .cv-page {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cv-card {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 1.4cm 1.6cm 1.4cm 1.6cm;
+  }
+
+  /* Avoid awkward page breaks */
+  .cv-entry {
+    page-break-inside: avoid;
+  }
+
+  .cv-section-title {
+    page-break-after: avoid;
+  }
+
+  .cv-head {
+    page-break-after: avoid;
+  }
+
+  /* Suppress URL printing after links */
+  a[href]::after {
+    content: none !important;
+  }
+
+  /* Slightly tighten for print */
+  .cv-card {
+    font-size: 0.85rem;
+  }
+
+  .cv-name {
+    font-size: 1.75rem;
+  }
+}
+</style>
+
+<div class="cv-page">
+
+  <div class="cv-toolbar">
+    <button class="cv-print-btn" onclick="window.print()">
+      ↓ Download / Print PDF
+    </button>
+  </div>
+
+  <div class="cv-card">
+
+    <!-- ===== HEADER ===== -->
+    <div class="cv-head">
+      <h1 class="cv-name">Nathaniel <span>Forde</span></h1>
+      <p class="cv-tagline">Experienced Data Scientist / Statistician</p>
+      <div class="cv-contacts">
+        <span class="cv-contact-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+          Dublin, Ireland
+        </span>
+        <span class="cv-contact-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328z"/></svg>
+          +353 86 052 5426
+        </span>
+        <span class="cv-contact-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z"/></svg>
+          <a href="https://nathanielf.github.io">nathanielf.github.io</a>
+        </span>
+        <span class="cv-contact-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/></svg>
+          <a href="mailto:nathaniel.forde@gmail.com">nathaniel.forde@gmail.com</a>
+        </span>
+      </div>
+    </div>
+
+    <!-- ===== PROFILE ===== -->
+    <h2 class="cv-section-title">Profile</h2>
+    <p class="cv-profile">
+      Expert Statistician/Data Scientist with 10+ years' experience delivering ML products — ranging across
+      probabilistic modelling to causal inference in high-growth tech and regulated industries. Skilled in leading
+      teams, scaling data platforms, and translating R&amp;D into business impact. Open-source contributor
+      (PyMC, Bambi, CausalPy, PyMC-Marketing) and experienced in experimentation strategy, MLOps, and
+      customer-facing analytics.
+    </p>
+
+    <!-- ===== CORE SKILLS ===== -->
+    <h2 class="cv-section-title">Core Skills</h2>
+    <ul class="cv-skills-list">
+      <li>
+        <span class="cv-skill-label">ML / Statistics:</span>
+        Probabilistic AI, Causal inference, Bayesian methods, Time-series, Survival analysis,
+        Factor analysis, Deep Learning, Survey Analysis, Marketing Analytics
+      </li>
+      <li>
+        <span class="cv-skill-label">MLOps &amp; Cloud:</span>
+        AWS (SageMaker, Lambda, ECS, S3), ML pipelines, CI/CD, Docker, Spark, Statsig, Snowflake-ML
+      </li>
+      <li>
+        <span class="cv-skill-label">Data Tools:</span>
+        scikit-learn, PyMC, Pandas, dbt, PyTorch, Bambi, CausalPy, statsmodels
+      </li>
+      <li>
+        <span class="cv-skill-label">Leadership:</span>
+        Team growth (0→9), cross-functional influence, experimentation strategy, mentoring
+      </li>
+    </ul>
+
+    <!-- ===== EXPERIENCE ===== -->
+    <h2 class="cv-section-title">Experience</h2>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Staff Data Scientist</span>
+          <span class="cv-entry-org">— PandaDocs, Dublin</span>
+        </div>
+        <span class="cv-entry-date">August 2026 – Present</span>
+      </div>
+      <ul>
+        <li>Leading on causal inference and experimentation strategy across the product led growth initiative.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Principal Data Scientist</span>
+          <span class="cv-entry-org">— PyMC Labs (Part-time Consulting)</span>
+        </div>
+        <span class="cv-entry-date">Present</span>
+      </div>
+      <ul>
+        <li>Advising on applied Bayesian statistics, causal inference, and probabilistic machine learning for enterprise projects.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Staff Data Scientist</span>
+          <span class="cv-entry-org">— Personio (HR SaaS), Dublin</span>
+        </div>
+        <span class="cv-entry-date">April 2024 – August 2026</span>
+      </div>
+      <ul>
+        <li>Scaled the data science org from 0→9 scientists, establishing hiring processes, best practices, and technical roadmaps.</li>
+        <li>Built and designed Proactive Insights and Engagement Survey products, driving product stickiness and upsell opportunities.</li>
+        <li>Designed and rolled out in-house experimentation framework; A/B testing adoption increased 3×, and test velocity improved 40% YoY after Statsig integration.</li>
+        <li>Led long-term forecasting and MMM models (revenue/costs) that improved planning accuracy by 15%, directly impacting company OKRs.</li>
+        <li>Mentored junior data scientists and set standards for documentation, modelling, and productionization of ML workflows. Adopted Manager role during Paternity cover period.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Senior Data Scientist</span>
+          <span class="cv-entry-org">— Personio (HR SaaS), Dublin</span>
+        </div>
+        <span class="cv-entry-date">Nov 2021 – April 2024</span>
+      </div>
+      <ul>
+        <li>Built Personio's first end-to-end ML deployment pipeline (Python/AWS), now serving 10+ live models.</li>
+        <li>Developed survival models (time-to-failure) used for reliability prioritization; reduced error by 5%.</li>
+        <li>Performed root-cause analytics for UX latency issues, resulting in 35% improvement in customer-facing performance metrics.</li>
+        <li>Led experimentation with LLMs and NLP pipelines for customer feedback analysis, enabling automated diagnostics at scale.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Data Scientist (R&amp;D)</span>
+          <span class="cv-entry-org">— CarTrawler (E-commerce), Dublin</span>
+        </div>
+        <span class="cv-entry-date">Nov 2019 – 2021</span>
+      </div>
+      <ul>
+        <li>Designed dynamic pricing and demand forecasting models improving margin 4% and reducing loss ratios 8% YoY.</li>
+        <li>Built customer segmentation based on price sensitivity that fed into real-time pricing strategies.</li>
+        <li>Developed interlocking claim-propensity and loss-ratio forecasting models for insurance products.</li>
+        <li>Published work on Discrete Choice modelling for consumer preference.</li>
+        <li>Tech stack: Python, PyMC, scikit-learn, Spark, in-house ML pipeline infrastructure.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Lead Insights Analyst</span>
+          <span class="cv-entry-org">— Paddy Power/Betfair (Gaming), Dublin</span>
+        </div>
+        <span class="cv-entry-date">Feb 2018 – 2019</span>
+      </div>
+      <ul>
+        <li>Created NLP models predicting sentiment on customer chat data.</li>
+        <li>Built propensity models for Responsible Gambling interventions, influencing €5M in budget allocation.</li>
+        <li>Partnered with industry think tank on predictive models for problem gambling; findings shaped regulatory strategy.</li>
+        <li>Team Lead and Supervisor to Junior Analysts; responsibilities included annual planning and performance reviews.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Software Developer</span>
+          <span class="cv-entry-org">— Marsh &amp; McLennan Innovation Centre (Insurance), Dublin</span>
+        </div>
+        <span class="cv-entry-date">Mar 2017 – 2018</span>
+      </div>
+      <ul>
+        <li>Developed web-apps (Go/Postgres/React) to deliver MCMC risk prediction models (earthquakes, floods, fires) to underwriters.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Data Analyst</span>
+          <span class="cv-entry-org">— Marsh &amp; McLennan Innovation Centre (Insurance), Dublin</span>
+        </div>
+        <span class="cv-entry-date">Mar 2014 – 2017</span>
+      </div>
+      <ul>
+        <li>Built statistical metrics and dashboards improving data quality 15% across 20+ global business units.</li>
+        <li>Developed CRUD app (Shiny) for customer QA and spearheaded the company's first data quality framework.</li>
+      </ul>
+    </div>
+
+    <!-- ===== PUBLICATIONS & OPEN SOURCE ===== -->
+    <h2 class="cv-section-title">Selected Publications &amp; Open Source</h2>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Bayesian Vector AutoRegressive Models of Irish GDP</span>
+          <span class="cv-entry-org">— PyMC, Open Source</span>
+        </div>
+        <span class="cv-entry-date">Dec 2022</span>
+      </div>
+      <p>Developed hierarchical Bayesian VAR &amp; forecasting models. <a class="cv-pub-link" href="https://www.pymc.io/projects/examples/en/latest/time_series/bayesian_var_model.html">View on PyMC</a></p>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Justifying Instruments in IV Designs</span>
+          <span class="cv-entry-org">— CausalPy, Open Source</span>
+        </div>
+        <span class="cv-entry-date">Jun 2024</span>
+      </div>
+      <p>Core documentation on instrumental variable methods. <a class="cv-pub-link" href="https://causalpy.readthedocs.io/en/latest/notebooks/iv_weak_instruments.html">View on CausalPy</a></p>
+    </div>
+
+    <!-- ===== EDUCATION ===== -->
+    <h2 class="cv-section-title">Education</h2>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">MSc Logic</span>
+          <span class="cv-entry-org">— University of Amsterdam (ILLC), Netherlands</span>
+        </div>
+        <span class="cv-entry-date">2011 – 2013</span>
+      </div>
+      <ul>
+        <li>Research thesis: models of causal inference and dependency relations.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">MPhil (Research) Philosophy</span>
+          <span class="cv-entry-org">— Trinity College Dublin</span>
+        </div>
+        <span class="cv-entry-date">2009 – 2011</span>
+      </div>
+      <ul>
+        <li>Modal logics &amp; identity; awarded IRCHSS Scholarship.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">BA International</span>
+          <span class="cv-entry-org">— UCD / Sorbonne Université, Dublin &amp; Paris</span>
+        </div>
+        <span class="cv-entry-date">2005 – 2009</span>
+      </div>
+    </div>
+
+    <!-- ===== LEADERSHIP & COMMUNITY ===== -->
+    <h2 class="cv-section-title">Leadership &amp; Community</h2>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">PyCon &amp; PyData Speaker</span>
+          <span class="cv-entry-org">— PyCon Ireland &amp; PyData Berlin</span>
+        </div>
+        <span class="cv-entry-date">2023 – Present</span>
+      </div>
+      <ul>
+        <li>Frequent mentor and speaker at PyCon events, Bayesian meetup groups, and internal data science guilds.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Hiring Strategy</span>
+          <span class="cv-entry-org">— Personio, Dublin</span>
+        </div>
+        <span class="cv-entry-date">2021 – Present</span>
+      </div>
+      <ul>
+        <li>Co-led Personio's data science hiring strategy: designed technical interview frameworks, improving candidate signal and DEI balance.</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div class="cv-entry-left">
+          <span class="cv-entry-title">Open Source Contributor</span>
+          <span class="cv-entry-org">— PyMC ecosystem</span>
+        </div>
+        <span class="cv-entry-date">2021 – Present</span>
+      </div>
+      <ul>
+        <li>Contributor to open-source probabilistic programming and causal inference libraries with 100k+ total users.</li>
+      </ul>
+    </div>
+
+  </div><!-- /.cv-card -->
+
+</div><!-- /.cv-page -->
+```

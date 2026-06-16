@@ -24,7 +24,7 @@ website:
       - text: Consulting
         href: consulting.qmd
       - text: CV
-        href: /resume/Nathaniel_Forde_CV.pdf
+        href: cv.qmd
       - icon: github
         href: https://github.com/NathanielF
       - icon: twitter
