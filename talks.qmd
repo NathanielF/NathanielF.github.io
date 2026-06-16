@@ -1,13 +1,36 @@
 ---
 listing:
-  contents: talks/**/*.qmd
-  sort: "date desc"
-  type: default
-  categories: true
-  sort-ui: true
-  filter-ui: true
-  fields: [date, title, reading-time, description, categories, image]
-  feed: true
+  - id: recordings
+    contents: "talks/*_recording/*.qmd"
+    sort: "date desc"
+    type: default
+    categories: true
+    sort-ui: false
+    filter-ui: false
+    fields: [date, title, description, categories, image]
+  - id: slides
+    contents:
+      - "talks/**/*.qmd"
+      - "!talks/*_recording/*.qmd"
+    sort: "date desc"
+    type: default
+    categories: true
+    sort-ui: true
+    filter-ui: true
+    fields: [date, title, reading-time, description, categories, image]
+    feed: true
 page-layout: full
 title-block-banner: false
 ---
+
+## Recordings
+
+Conference and podcast recordings from talks, all collected in [this YouTube playlist](https://www.youtube.com/playlist?list=PLpQizmKwp6ik1pAzb1mDq3P6QoBKbgWwM).
+
+::: {#recordings}
+:::
+
+## Slides
+
+::: {#slides}
+:::

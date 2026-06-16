@@ -21,6 +21,8 @@ website:
         href: opensource.qmd
       - text: Talks
         href: talks.qmd
+      - text: Consulting
+        href: consulting.qmd
       - text: CV
         href: /resume/Nathaniel_Forde_CV.pdf
       - icon: github

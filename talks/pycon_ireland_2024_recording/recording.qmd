@@ -1,0 +1,18 @@
+---
+title: "Uncertainty and Causal Inference in Python"
+subtitle: "PyCon Ireland 2024 Recording"
+author:
+    - name: Nathaniel Forde
+      affiliations:
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+categories: [recording, bayesian, causal inference]
+image: "https://img.youtube.com/vi/-C4p4b2cUp8/hqdefault.jpg"
+date: "2024-11-09"
+---
+
+In November 2024 I gave a talk at PyCon Ireland on quasi-experimental design and causal inference using CausalPy. The slides can be found [here](https://nathanielf.github.io/talks/pycon_ireland_causalpy/pycon_2024.html#/title-slide).
+
+The recording of the talk is available on YouTube.
+
+[![PyCon Ireland 2024](https://img.youtube.com/vi/-C4p4b2cUp8/hqdefault.jpg)](https://www.youtube.com/watch?v=-C4p4b2cUp8 "PyCon Ireland 2024 — Uncertainty and Causal Inference in Python")

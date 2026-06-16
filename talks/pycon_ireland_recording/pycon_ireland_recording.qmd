@@ -6,9 +6,9 @@ author:
       affiliations: 
         - Data Science @ Personio
         - and Open Source Contributor @ PyMC
-categories: [bayesian, discrete choice]
+categories: [recording, bayesian, discrete choice]
 image: "snapshot.png"
-date: last-modified
+date: 2023-11-15
 ---
 
 In November 2023 I gave a talk at PyCon Ireland on the usage of discrete choice models for the estimation of market share. The Slides can be found [here](https://nathanielf.github.io/talks/pycon_ireland/pycon_ireland_discrete.html#/title-slide)

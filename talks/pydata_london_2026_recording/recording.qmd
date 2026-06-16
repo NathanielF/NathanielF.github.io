@@ -1,0 +1,18 @@
+---
+title: "Hazards on the Causal Path"
+subtitle: "PyData London 2026 Recording"
+author:
+    - name: Nathaniel Forde
+      affiliations:
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+categories: [recording, bayesian, survival analysis, causal inference]
+image: "https://img.youtube.com/vi/CPZGlrNnTKs/hqdefault.jpg"
+date: "2026-04-01"
+---
+
+In April 2026 I gave a talk at PyData London on survival analysis and causal inference — three ways to say "because" using hazard models. The slides can be found [here](https://nathanielf.github.io/talks/pydata_london_2026/dynamic_path_analysis.html#/title-slide).
+
+The recording of the talk is available on YouTube.
+
+[![PyData London 2026](https://img.youtube.com/vi/CPZGlrNnTKs/hqdefault.jpg)](https://www.youtube.com/watch?v=CPZGlrNnTKs "PyData London 2026 — Hazards on the Causal Path")

@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Nathaniel Forde">
+<meta name="dcterms.date" content="2025-06-01">
 
-<title>Examined Algorithms</title>
+<title>Learning Bayesian Statistics: SEM and CFA – Examined Algorithms</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,21 +25,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -67,7 +70,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -77,7 +80,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Examined Algorithms</span>
     </a>
   </div>
@@ -88,23 +91,19 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html"> 
+    <a class="nav-link" href="../../blog.html"> 
 <span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./opensource.html"> 
+    <a class="nav-link" href="../../opensource.html"> 
 <span class="menu-text">Open Source Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./talks.html"> 
+    <a class="nav-link" href="../../talks.html"> 
 <span class="menu-text">Talks</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./consulting.html"> 
-<span class="menu-text">Consulting</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./resume/Nathaniel_Forde_CV.pdf"> 
+    <a class="nav-link" href="../../resume/Nathaniel_Forde_CV.pdf"> 
 <span class="menu-text">CV</span></a>
   </li>  
   <li class="nav-item compact">
@@ -135,92 +134,68 @@ ul.task-list li input[type="checkbox"] {
 <!-- margin-sidebar -->
     
 <!-- main -->
-<div class="quarto-about-jolla column-page">
- <header id="title-block-header" class="quarto-title-block default">
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Examined Algorithms</h1>
-<p class="subtitle lead">Nathaniel Forde’s Personal Website</p>
-</div>
+<h1 class="title">Learning Bayesian Statistics: SEM and CFA</h1>
+<p class="subtitle lead">Learning Bayesian Statistics Podcast 2025 Recording</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">recording</div>
+    <div class="quarto-category">bayesian</div>
+    <div class="quarto-category">SEM</div>
+    <div class="quarto-category">CFA</div>
+  </div>
+  </div>
+
+
+<div class="quarto-title-meta-author column-page">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliations</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Nathaniel Forde </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Data Science @ Personio
+          </p>
+        <p class="affiliation">
+            and Open Source Contributor @ PyMC
+          </p>
+      </div>
+  </div>
+
 <div class="quarto-title-meta column-page">
-  </div>
-</header><main class="content column-page" id="quarto-document-content">
-<!-- Compact Hero Section -->
-<div class="hero fade-in">
-  <img src="profile_photo.jpeg" alt="Nathaniel" class="profile-img mb-3">
-  <h1>Hi, I'm Nathaniel 👋</h1>
-  <p class="tagline"> Data Science Leadership · Bayesian Statistics &amp; Causal Inference · Still Learning...</p>
-  <div class="mt-3">
-    <a href="./opensource.html" class="btn btn-primary btn-lg">View My Work</a>
-    <a href="./blog.html" class="btn btn-outline-light btn-lg">Read My Blog</a>
-  </div>
-</div>
-<!-- About Me Inline -->
-<div class="container my-5 fade-in">
-  <img src="talks/pycon_ireland_causalpy/images/probable_graphs.png" class="small-right-img">
-  <h2>About Me</h2>
-  <p>
-    I'm an experienced <b>Data-Scientist</b> and <b>Statistician</b> helping organisations make better decisions through data and experimentation. Using my expertise in <i>Bayesian methods, Causal inference and Probabilistic AI</i> I've learned to drive impact across multiple industries. I share what i've learned here.
-  </p>
-</div>
-<!-- Recent Highlights Section -->
-<div class="container my-5">
-  <h2 class="mb-4 fade-in">Recent Highlights</h2>
-  <div class="row">
-    <div class="col-md-4 fade-in">
-      <div class="card highlight-card">
-        <div class="card-body">
-          <h5 class="card-title">Variational Auto-Encoders and Latent Structure with PyTorch and PyMC</h5>
-          <p class="card-text"> Missing data is prevalent in job satisfaction surveys which present a problem for HR SaaS analytics. We compare different approaches to solving this problem.</p>
-          <a href="./posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.html" class="btn btn-primary">Read More</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4 fade-in">
-      <div class="card highlight-card">
-        <div class="card-body">
-          <h5 class="card-title">Podcast Appearance on Learning Bayesian Statistics</h5>
-          <p class="card-text">Talking confirmatory factor analysis &amp; Bayesian methods with Alex Andorra on Learning Bayesian Statistics.</p>
-          <a href="https://www.youtube.com/watch?v=WEb9SnVLTmE&amp;t=3s" class="btn btn-primary">Listen</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4 fade-in">
-      <div class="card highlight-card">
-        <div class="card-body">
-          <h5 class="card-title">Consumer Choice models in PyMC Marketing</h5>
-          <p class="card-text"> Market competition eats into companies revenue bottom lines. Understanding the effective drivers of win-rates improves company revenues. I implement discrete choice models and demonstrate how to model product differentiation with PyMC marketing. </p>
-          <a href="./oss/pymc_marketing/nested_logit.html" class="btn btn-primary">View Post</a>
-        </div>
-      </div>
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 1, 2025</p>
     </div>
   </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>In 2025 I appeared on the Learning Bayesian Statistics podcast to discuss structural equation models and confirmatory factor analysis with PyMC. The slides can be found <a href="https://nathanielf.github.io/talks/lbs_sem_causal/lbs_sem_causal.html#/title-slide">here</a>.</p>
+<p>The recording is available on YouTube.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://www.youtube.com/watch?v=6mL1J_b7_E0" title="Learning Bayesian Statistics 2025 — SEM and CFA with PyMC"><img src="https://img.youtube.com/vi/6mL1J_b7_E0/hqdefault.jpg" class="img-fluid figure-img" alt="Learning Bayesian Statistics 2025"></a></p>
+<figcaption>Learning Bayesian Statistics 2025</figcaption>
+</figure>
 </div>
 
 
-</main> 
-  <hr class="about-sep">
-   <div class="about-links">
-  <a href="/blog.html" class="about-link" rel="" target="">
-     <span class="about-link-text">Writing</span>
-  </a>
-  <a href="https://twitter.com/forde_nathaniel" class="about-link" rel="" target="">
-    <i class="bi bi-twitter"></i>
-     <span class="about-link-text">Twitter</span>
-  </a>
-  <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/" class="about-link" rel="" target="">
-    <i class="bi bi-linkedin"></i>
-     <span class="about-link-text">LinkedIn</span>
-  </a>
-  <a href="https://github.com/NathanielF" class="about-link" rel="" target="">
-    <i class="bi bi-github"></i>
-     <span class="about-link-text">Github</span>
-  </a>
-  <a href="https://bsky.app/profile/nathanielforde.bsky.social" class="about-link" rel="" target="">
-     <span class="about-link-text">Bluesky</span>
-  </a>
-</div>
-</div>
- <!-- /main -->
+
+</main> <!-- /main -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const elements = document.querySelectorAll(".fade-in");
@@ -260,6 +235,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
   toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
   const isCodeAnnotation = (el) => {
     for (const clz of el.classList) {
       if (clz.startsWith('code-annotation-')) {                     

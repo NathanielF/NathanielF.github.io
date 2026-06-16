@@ -1,0 +1,18 @@
+---
+title: "Learning Bayesian Statistics: SEM and CFA"
+subtitle: "Learning Bayesian Statistics Podcast 2025 Recording"
+author:
+    - name: Nathaniel Forde
+      affiliations:
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+categories: [recording, bayesian, SEM, CFA]
+image: "https://img.youtube.com/vi/6mL1J_b7_E0/hqdefault.jpg"
+date: "2025-06-01"
+---
+
+In 2025 I appeared on the Learning Bayesian Statistics podcast to discuss structural equation models and confirmatory factor analysis with PyMC. The slides can be found [here](https://nathanielf.github.io/talks/lbs_sem_causal/lbs_sem_causal.html#/title-slide).
+
+The recording is available on YouTube.
+
+[![Learning Bayesian Statistics 2025](https://img.youtube.com/vi/6mL1J_b7_E0/hqdefault.jpg)](https://www.youtube.com/watch?v=6mL1J_b7_E0 "Learning Bayesian Statistics 2025 — SEM and CFA with PyMC")

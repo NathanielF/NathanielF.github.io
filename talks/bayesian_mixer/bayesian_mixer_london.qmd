@@ -13,7 +13,7 @@ format:
          footer: "Discrete Choice with PyMC"
 categories: [bayesian, discrete choice]
 image: "images/individual_heterogeniety.png"
-date: last-modified
+date: 2023-08-20
 ---
 
 ## Preliminaries {.smaller}

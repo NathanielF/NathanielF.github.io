@@ -1,0 +1,18 @@
+---
+title: "Discrete Choice Models in PyMC-Marketing"
+subtitle: "PyData Berlin 2025 Recording"
+author:
+    - name: Nathaniel Forde
+      affiliations:
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+categories: [recording, bayesian, discrete choice]
+image: "https://img.youtube.com/vi/1fpTYyHOLz4/hqdefault.jpg"
+date: "2025-09-10"
+---
+
+In September 2025 I gave a talk at PyData Berlin on Bayesian consumer choice modelling — a choose-your-own-adventure in discrete choice with PyMC-Marketing. The slides can be found [here](https://nathanielf.github.io/talks/pydata_berlin_nested_logit/consumer_choice.html#/title-slide).
+
+The recording of the talk is available on YouTube.
+
+[![PyData Berlin 2025](https://img.youtube.com/vi/1fpTYyHOLz4/hqdefault.jpg)](https://www.youtube.com/watch?v=1fpTYyHOLz4 "PyData Berlin 2025 — Discrete Choice Models in PyMC-Marketing")

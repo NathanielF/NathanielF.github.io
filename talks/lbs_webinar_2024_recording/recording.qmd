@@ -1,0 +1,18 @@
+---
+title: "Non Parametric Causal Inference with PyMC"
+subtitle: "Learning Bayesian Statistics Webinar 2024 Recording"
+author:
+    - name: Nathaniel Forde
+      affiliations:
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+categories: [recording, bayesian, causal inference]
+image: "https://img.youtube.com/vi/y9BeOr0AETw/hqdefault.jpg"
+date: "2024-08-01"
+---
+
+In 2024 I gave a webinar for the Learning Bayesian Statistics series on non-parametric causal inference — covering propensity scores, debiased ML, and causal mediation with PyMC. The slides can be found [here](https://nathanielf.github.io/talks/lbs_non_param_causal/non_param_causal.html#/title-slide).
+
+The recording is available on YouTube.
+
+[![Learning Bayesian Statistics Webinar 2024](https://img.youtube.com/vi/y9BeOr0AETw/hqdefault.jpg)](https://www.youtube.com/watch?v=y9BeOr0AETw "Learning Bayesian Statistics Webinar 2024 — Non Parametric Causal Inference with PyMC")

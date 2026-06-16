@@ -2,6 +2,15 @@
   {
     "listing": "/talks.html",
     "items": [
+      "/talks/pydata_london_2026_recording/recording.html",
+      "/talks/pycon_ireland_2025_recording/recording.html",
+      "/talks/pydata_berlin_2025_recording/recording.html",
+      "/talks/lbs_sem_2025_recording/recording.html",
+      "/talks/ukraine_sem_recording/recording.html",
+      "/talks/pycon_ireland_2024_recording/recording.html",
+      "/talks/lbs_webinar_2024_recording/recording.html",
+      "/talks/pydata_berlin_recording/pydata_berlin_2024.html",
+      "/talks/pycon_ireland_recording/pycon_ireland_recording.html",
       "/talks/python_ireland_2026_march/condorcet_agents.html",
       "/talks/scm_with_vs_priors/scm_causalpy.html",
       "/talks/pydata_london_2026/dynamic_path_analysis.html",
@@ -13,13 +22,12 @@
       "/talks/lbs_sem_causal/lbs_sem_causal.html",
       "/talks/pycon_ireland_causalpy/pycon_2024.html",
       "/talks/stem_talk_junior_infants/working_in_stem.html",
-      "/talks/pydata_berlin_recording/pydata_berlin_2024.html",
-      "/talks/pycon_ireland_recording/pycon_ireland_recording.html",
       "/talks/missing_data/missing_data_causal.html",
-      "/talks/bayesian_mixer/bayesian_mixer_london.html",
+      "/talks/utility_and_choice/discrete_choice_and_utility.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
+      "/talks/bayesian_mixer/bayesian_mixer_london.html",
       "/talks/tenuous_relations/first_talk.html"
     ]
   },

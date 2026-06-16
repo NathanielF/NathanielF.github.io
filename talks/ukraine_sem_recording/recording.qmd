@@ -1,0 +1,18 @@
+---
+title: "Structural Causal Models in PyMC"
+subtitle: "Talks for Ukraine 2025 Recording"
+author:
+    - name: Nathaniel Forde
+      affiliations:
+        - Data Science @ Personio
+        - and Open Source Contributor @ PyMC
+categories: [recording, bayesian, causal, SCM, SEM]
+image: "https://img.youtube.com/vi/2VcEuoRgK2c/hqdefault.jpg"
+date: "2025-03-15"
+---
+
+In 2025 I gave a talk for the Talks for Ukraine series on structural causal models and valid conditionalisation strategies in PyMC. The slides can be found [here](https://nathanielf.github.io/talks/ukraine_sem/talk4ukraine.html#/title-slide).
+
+The recording of the talk is available on YouTube.
+
+[![Talks for Ukraine 2025](https://img.youtube.com/vi/2VcEuoRgK2c/hqdefault.jpg)](https://www.youtube.com/watch?v=2VcEuoRgK2c "Talks for Ukraine 2025 — Structural Causal Models in PyMC")

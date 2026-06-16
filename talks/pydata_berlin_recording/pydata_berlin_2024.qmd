@@ -6,9 +6,9 @@ author:
       affiliations: 
         - Data Science @ Personio
         - and Open Source Contributor @ PyMC
-categories: [bayesian, missing data]
+categories: [recording, bayesian, missing data]
 image: "snapshot.png"
-date: last-modified
+date: "2024-06-12"
 ---
 
 In April 2024 I gave a talk at PyData Berlin on the usage of bayesian imputation techniques in people analytics. The Slides can be found [here](https://nathanielf.github.io/talks/missing_data/missing_data_causal.html#/title-slide)

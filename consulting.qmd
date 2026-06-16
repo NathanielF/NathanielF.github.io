@@ -1,0 +1,116 @@
+---
+title: "Consulting"
+page-layout: full
+title-block-banner: false
+---
+
+```{=html}
+<style>
+.ascii-art {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.72rem;
+  line-height: 1.55;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(0,0,0,0.035);
+  border-radius: 6px;
+  text-align: center;
+  white-space: pre;
+  color: inherit;
+  opacity: 0.82;
+}
+</style>
+<div class="container my-5 fade-in">
+  <h1>Available for Consulting</h1>
+  <p class="lead">
+    I work with teams who want to move beyond dashboards and toward decisions — using Bayesian methods,
+    causal reasoning, and rigorous experimentation to extract real insight from messy data.
+    If your team is wrestling with any of the problems below, <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">get in touch</a>.
+  </p>
+</div>
+```
+
+```{=html}
+<div class="container my-5">
+  <div class="row g-4">
+
+    <div class="col-md-6 fade-in">
+      <div class="card highlight-card h-100">
+        <div class="card-body">
+          <pre class="ascii-art">
+    ▂▄█▄▂               ▂▄▆████▆▄▂
+    prior       →        posterior
+  ────────────────────────────────
+  P(θ|D)  ∝  P(D|θ) · P(θ)
+</pre>
+          <h5 class="card-title">Bayesian Statistics</h5>
+          <p class="card-text">
+            Probabilistic models that quantify uncertainty honestly ranging from hierarchical mixed-effects models
+            to latent variable structure. Useful when you need to pool information across groups, handle small samples,
+            or communicate confidence ranges rather than point estimates.
+          </p>
+          <p class="card-text"><small>Prior/posterior predictive checks · MCMC diagnostics · PyMC · GLMs · SEMs · Survival Analysis </small></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 fade-in">
+      <div class="card highlight-card h-100">
+        <div class="card-body">
+          <pre class="ascii-art">
+          ┌──[Z]──┐
+          ↓        ↓
+       [X] ──────→ [Y]
+     cause          effect
+  ────────────────────────────
+  do(X=x)  ≠  see(X=x)
+</pre>
+          <h5 class="card-title">Causal Inference</h5>
+          <p class="card-text">
+            Identifying what actually drives outcomes, not just what correlates with them. I work with
+            structural causal models, quasi-experimental designs, and observational data to support
+            decisions where you can't run a clean experiment.
+          </p>
+          <p class="card-text"><small>DAGs · Instrumental variables · Difference-in-differences · Discrete Choice Models · Propensity scores · Experiment Design </small></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 fade-in">
+      <div class="card highlight-card h-100">
+        <div class="card-body">
+          <pre class="ascii-art">
+  ╔══════════════════════╗
+  ║  y  ~ Normal(μ, σ)  ║
+  ║  μ   = α + β·x      ║
+  ║  σ  ~ HalfNormal    ║
+  ╚══════════════════════╝
+     ○  ○  ○    ○  ○  ○
+</pre>
+          <h5 class="card-title">Training &amp; Workshops</h5>
+          <p class="card-text">
+            Hands-on sessions for data science and analytics teams — from half-day introductions to
+            multi-day workshops with worked examples in your domain. Past topics include Bayesian
+            workflow, causal inference, and probabilistic programming with PyMC.
+          </p>
+          <p class="card-text"><small>In-person or remote · Beginner to advanced </small></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+```
+
+```{=html}
+<div class="container my-5 fade-in">
+  <hr>
+  <h4>Get in touch</h4>
+  <p>
+    Reach me on <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">LinkedIn</a> or
+    via <a href="https://bsky.app/profile/nathanielforde.bsky.social">Bluesky</a>.
+    You can also browse my <a href="talks.qmd">talks</a> and <a href="blog.qmd">writing</a>
+    to get a sense of how I approach problems.
+  </p>
+</div>
+```
