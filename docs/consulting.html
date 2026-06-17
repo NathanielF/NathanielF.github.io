@@ -177,7 +177,16 @@ ul.task-list li input[type="checkbox"] {
   <p class="lead">
     I work with teams who want to move beyond dashboards and toward decisions — using Bayesian methods,
     causal reasoning, and rigorous experimentation to extract real insight from messy data.
-    If your team is wrestling with any of the problems below, <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">get in touch</a>.
+    With a background in formal logic and philosophy of causation (MSc Logic, ILLC Amsterdam),
+    I bring conceptual rigour to hard applied problems in data science, analytics, and experimentation.
+  </p>
+  <p>
+    I consult as a Principal Data Scientist with
+    <a href="https://www.pymc-labs.com/">PyMC Labs</a>, the leading Bayesian consulting firm,
+    where I have delivered multiple enterprise engagements across retail and technology sectors
+    — including projects with $1M+ in measurable business impact.
+    If your team is wrestling with any of the problems below,
+    <a href="mailto:nathaniel.forde@gmail.com?subject=Consulting%20Enquiry">get in touch directly</a>.
   </p>
 </div>
 <div class="container my-5">
@@ -193,11 +202,11 @@ ul.task-list li input[type="checkbox"] {
 </pre>
           <h5 class="card-title anchored">Bayesian Statistics</h5>
           <p class="card-text">
-            Probabilistic models that quantify uncertainty honestly ranging from hierarchical mixed-effects models
+            Probabilistic models that quantify uncertainty honestly — ranging from hierarchical mixed-effects models
             to latent variable structure. Useful when you need to pool information across groups, handle small samples,
             or communicate confidence ranges rather than point estimates.
           </p>
-          <p class="card-text"><small>Model Diagnostics · People Analytics · PyMC · GLMs · SEMs · Survival Analysis </small></p>
+          <p class="card-text"><small>Model Diagnostics · People Analytics · PyMC · GLMs · SEMs · Survival Analysis</small></p>
         </div>
       </div>
     </div>
@@ -205,9 +214,9 @@ ul.task-list li input[type="checkbox"] {
     <div class="col-md-6 fade-in">
       <div class="card highlight-card h-100">
         <div class="card-body">
-          <pre class="ascii-art">          ┌──[Z]──┐
+          <pre class="ascii-art">          └——[Z]——┘
           ↓        ↓
-       [X] ──────→ [Y]
+       [X] ——————→ [Y]
      cause          effect
   ────────────────────────────
   do(X=x)  ≠  see(X=x)
@@ -216,9 +225,9 @@ ul.task-list li input[type="checkbox"] {
           <p class="card-text">
             Identifying what actually drives outcomes, not just what correlates with them. I work with
             structural causal models, quasi-experimental designs, and observational data to support
-            decisions where you can't run a clean experiment.
+            decisions where you can’t run a clean experiment.
           </p>
-          <p class="card-text"><small>DAGs · Instrumental variables · Difference-in-differences · Discrete Choice Models · Propensity scores · Experiment Design </small></p>
+          <p class="card-text"><small>DAGs · Instrumental variables · Difference-in-differences · Discrete Choice Models · Propensity scores · Experiment Design</small></p>
         </div>
       </div>
     </div>
@@ -226,11 +235,32 @@ ul.task-list li input[type="checkbox"] {
     <div class="col-md-6 fade-in">
       <div class="card highlight-card h-100">
         <div class="card-body">
-          <pre class="ascii-art">  ╔══════════════════════╗
-  ║  y  ~ Normal(μ, σ)  ║
-  ║  μ   = α + β·x      ║
-  ║  σ  ~ HalfNormal    ║
-  ╚══════════════════════╝
+          <pre class="ascii-art">  A/B → Δμ significant?    →  ✓
+  But: network effects?       →  ?
+       novelty decay?         →  ?
+       long-run CATE?         →  ?
+  ────────────────────────────
+  test design ≠ test validity
+</pre>
+          <h5 class="card-title anchored">Experimentation &amp; Marketing Mix</h5>
+          <p class="card-text">
+            Helping teams move past significance theatre toward experiments that actually
+            inform decisions. I also build Marketing Mix Models that identify where spend is
+            working — and where budget can be reallocated for better return.
+          </p>
+          <p class="card-text"><small>A/B &amp; multivariate testing · Bayesian MMM · PyMC-Marketing · Statsig · Quasi-experiments · Experiment strategy</small></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 fade-in">
+      <div class="card highlight-card h-100">
+        <div class="card-body">
+          <pre class="ascii-art">  ┌——————————————————————┐
+  │  y  ~ Normal(μ, σ)  │
+  │  μ   = α + β·x      │
+  │  σ  ~ HalfNormal    │
+  └——————————————————————┘
      ○  ○  ○    ○  ○  ○
 </pre>
           <h5 class="card-title anchored">Training &amp; Workshops</h5>
@@ -239,7 +269,10 @@ ul.task-list li input[type="checkbox"] {
             multi-day workshops with worked examples in your domain. Past topics include Bayesian
             workflow, causal inference, and probabilistic programming with PyMC.
           </p>
-          <p class="card-text"><small>In-person or remote · Beginner to advanced </small></p>
+          <p class="card-text">
+            <em>Half-day team sessions from €4,500 · In-person or remote · Beginner to advanced.</em>
+          </p>
+          <p class="card-text"><small>Bayesian workflow · Causal inference · PyMC · Experimentation strategy</small></p>
         </div>
       </div>
     </div>
@@ -248,12 +281,21 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="container my-5 fade-in">
   <hr>
+  <h4 class="anchored">Who typically hires me</h4>
+  <ul>
+    <li>Heads of data science who need senior Bayesian or causal inference expertise without a full-time hire</li>
+    <li>Growth-stage or enterprise teams building or stress-testing their experimentation function</li>
+    <li>Analytics teams who need to upskill on causal methods or probabilistic modelling</li>
+    <li>Companies running A/B tests at scale and hitting the limits of frequentist significance testing</li>
+  </ul>
+  <hr>
   <h4 class="anchored">Get in touch</h4>
   <p>
-    Reach me on <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">LinkedIn</a> or
-    via <a href="https://bsky.app/profile/nathanielforde.bsky.social">Bluesky</a>.
-    You can also browse my <a href="./talks.html">talks</a> and <a href="./blog.html">writing</a>
-    to get a sense of how I approach problems.
+    Email me at <a href="mailto:nathaniel.forde@gmail.com?subject=Consulting%20Enquiry">nathaniel.forde@gmail.com</a>
+    or reach me on <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">LinkedIn</a> and
+    <a href="https://bsky.app/profile/nathanielforde.bsky.social">Bluesky</a>.
+    You can browse my <a href="./talks.html">talks</a> and <a href="./blog.html">writing</a>
+    to get a sense of how I approach problems before reaching out.
   </p>
 </div>
 

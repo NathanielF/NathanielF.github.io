@@ -23,9 +23,18 @@ title-block-banner: false
 <div class="container my-5 fade-in">
   <h1>Available for Consulting</h1>
   <p class="lead">
-    I work with teams who want to move beyond dashboards and toward decisions — using Bayesian methods,
+    I work with teams who want to move beyond dashboards and toward decisions &mdash; using Bayesian methods,
     causal reasoning, and rigorous experimentation to extract real insight from messy data.
-    If your team is wrestling with any of the problems below, <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">get in touch</a>.
+    With a background in formal logic and philosophy of causation (MSc Logic, ILLC Amsterdam),
+    I bring conceptual rigour to hard applied problems in data science, analytics, and experimentation.
+  </p>
+  <p>
+    I consult as a Principal Data Scientist with
+    <a href="https://www.pymc-labs.com/">PyMC Labs</a>, the leading Bayesian consulting firm,
+    where I have delivered multiple enterprise engagements across retail and technology sectors
+    &mdash; including projects with $1M+ in measurable business impact.
+    If your team is wrestling with any of the problems below,
+    <a href="mailto:nathaniel.forde@gmail.com?subject=Consulting%20Enquiry">get in touch directly</a>.
   </p>
 </div>
 ```
@@ -38,18 +47,18 @@ title-block-banner: false
       <div class="card highlight-card h-100">
         <div class="card-body">
           <pre class="ascii-art">
-    ▂▄█▄▂               ▂▄▆████▆▄▂
-    prior       →        posterior
+    &#9602;&#9604;&#9608;&#9604;&#9602;               &#9602;&#9604;&#9606;&#9608;&#9608;&#9608;&#9608;&#9606;&#9604;&#9602;
+    prior       &rarr;        posterior
   ────────────────────────────────
-  P(θ|D)  ∝  P(D|θ) · P(θ)
+  P(&theta;|D)  &prop;  P(D|&theta;) &middot; P(&theta;)
 </pre>
           <h5 class="card-title">Bayesian Statistics</h5>
           <p class="card-text">
-            Probabilistic models that quantify uncertainty honestly ranging from hierarchical mixed-effects models
+            Probabilistic models that quantify uncertainty honestly &mdash; ranging from hierarchical mixed-effects models
             to latent variable structure. Useful when you need to pool information across groups, handle small samples,
             or communicate confidence ranges rather than point estimates.
           </p>
-          <p class="card-text"><small>Model Diagnostics · People Analytics · PyMC · GLMs · SEMs · Survival Analysis </small></p>
+          <p class="card-text"><small>Model Diagnostics &middot; People Analytics &middot; PyMC &middot; GLMs &middot; SEMs &middot; Survival Analysis</small></p>
         </div>
       </div>
     </div>
@@ -58,20 +67,20 @@ title-block-banner: false
       <div class="card highlight-card h-100">
         <div class="card-body">
           <pre class="ascii-art">
-          ┌──[Z]──┐
-          ↓        ↓
-       [X] ──────→ [Y]
+          &boxur;&mdash;&mdash;[Z]&mdash;&mdash;&boxul;
+          &darr;        &darr;
+       [X] &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&rarr; [Y]
      cause          effect
   ────────────────────────────
-  do(X=x)  ≠  see(X=x)
+  do(X=x)  &ne;  see(X=x)
 </pre>
           <h5 class="card-title">Causal Inference</h5>
           <p class="card-text">
             Identifying what actually drives outcomes, not just what correlates with them. I work with
             structural causal models, quasi-experimental designs, and observational data to support
-            decisions where you can't run a clean experiment.
+            decisions where you can&rsquo;t run a clean experiment.
           </p>
-          <p class="card-text"><small>DAGs · Instrumental variables · Difference-in-differences · Discrete Choice Models · Propensity scores · Experiment Design </small></p>
+          <p class="card-text"><small>DAGs &middot; Instrumental variables &middot; Difference-in-differences &middot; Discrete Choice Models &middot; Propensity scores &middot; Experiment Design</small></p>
         </div>
       </div>
     </div>
@@ -80,20 +89,45 @@ title-block-banner: false
       <div class="card highlight-card h-100">
         <div class="card-body">
           <pre class="ascii-art">
-  ╔══════════════════════╗
-  ║  y  ~ Normal(μ, σ)  ║
-  ║  μ   = α + β·x      ║
-  ║  σ  ~ HalfNormal    ║
-  ╚══════════════════════╝
-     ○  ○  ○    ○  ○  ○
+  A/B &rarr; &Delta;&mu; significant?    &rarr;  &check;
+  But: network effects?       &rarr;  ?
+       novelty decay?         &rarr;  ?
+       long-run CATE?         &rarr;  ?
+  ────────────────────────────
+  test design &ne; test validity
+</pre>
+          <h5 class="card-title">Experimentation &amp; Marketing Mix</h5>
+          <p class="card-text">
+            Helping teams move past significance theatre toward experiments that actually
+            inform decisions. I also build Marketing Mix Models that identify where spend is
+            working &mdash; and where budget can be reallocated for better return.
+          </p>
+          <p class="card-text"><small>A/B &amp; multivariate testing &middot; Bayesian MMM &middot; PyMC-Marketing &middot; Statsig &middot; Quasi-experiments &middot; Experiment strategy</small></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 fade-in">
+      <div class="card highlight-card h-100">
+        <div class="card-body">
+          <pre class="ascii-art">
+  &boxdr;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&boxdl;
+  &boxv;  y  ~ Normal(&mu;, &sigma;)  &boxv;
+  &boxv;  &mu;   = &alpha; + &beta;&middot;x      &boxv;
+  &boxv;  &sigma;  ~ HalfNormal    &boxv;
+  &boxur;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&boxul;
+     &cir;  &cir;  &cir;    &cir;  &cir;  &cir;
 </pre>
           <h5 class="card-title">Training &amp; Workshops</h5>
           <p class="card-text">
-            Hands-on sessions for data science and analytics teams — from half-day introductions to
+            Hands-on sessions for data science and analytics teams &mdash; from half-day introductions to
             multi-day workshops with worked examples in your domain. Past topics include Bayesian
             workflow, causal inference, and probabilistic programming with PyMC.
           </p>
-          <p class="card-text"><small>In-person or remote · Beginner to advanced </small></p>
+          <p class="card-text">
+            <em>Half-day team sessions from &euro;4,500 &middot; In-person or remote &middot; Beginner to advanced.</em>
+          </p>
+          <p class="card-text"><small>Bayesian workflow &middot; Causal inference &middot; PyMC &middot; Experimentation strategy</small></p>
         </div>
       </div>
     </div>
@@ -105,12 +139,21 @@ title-block-banner: false
 ```{=html}
 <div class="container my-5 fade-in">
   <hr>
+  <h4>Who typically hires me</h4>
+  <ul>
+    <li>Heads of data science who need senior Bayesian or causal inference expertise without a full-time hire</li>
+    <li>Growth-stage or enterprise teams building or stress-testing their experimentation function</li>
+    <li>Analytics teams who need to upskill on causal methods or probabilistic modelling</li>
+    <li>Companies running A/B tests at scale and hitting the limits of frequentist significance testing</li>
+  </ul>
+  <hr>
   <h4>Get in touch</h4>
   <p>
-    Reach me on <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">LinkedIn</a> or
-    via <a href="https://bsky.app/profile/nathanielforde.bsky.social">Bluesky</a>.
-    You can also browse my <a href="talks.qmd">talks</a> and <a href="blog.qmd">writing</a>
-    to get a sense of how I approach problems.
+    Email me at <a href="mailto:nathaniel.forde@gmail.com?subject=Consulting%20Enquiry">nathaniel.forde@gmail.com</a>
+    or reach me on <a href="https://www.linkedin.com/in/nathaniel-forde-2477a265/">LinkedIn</a> and
+    <a href="https://bsky.app/profile/nathanielforde.bsky.social">Bluesky</a>.
+    You can browse my <a href="talks.qmd">talks</a> and <a href="blog.qmd">writing</a>
+    to get a sense of how I approach problems before reaching out.
   </p>
 </div>
 ```
