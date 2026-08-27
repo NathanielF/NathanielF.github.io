@@ -5,12 +5,12 @@ categories: ["learning", "experimentation", "going deeper", "zooming out", "plan
 keep-ipynb: false
 self-contained: true
 draft: false
-image: "images/construction_bricks.jpg"
+image: "accordion.jpg"
 author:
     - url: https://nathanielf.github.io/
     - affiliation: PyMC dev
 citation: true
-abstract: "Some notes about data science as craft prompted by a recent job move and consideration of AI assisted work."
+abstract: "Good data science is an accordion motion — stretching wide across domains, then compressing deep into any one of them. Drawing on the lessons of the Big Data era and Kenneth Stanley's work on objective-free search, this post argues that the value of data science lies not in automation but in frontier discovery: shaping how a company sees success. It covers both the organisational conditions and the individual habits of mind that sustain this kind of work."
 ---
 
 > The best thing about being a statistician is that you get to play in everyone's backyard. - John Tukey
@@ -338,3 +338,20 @@ What works instead:
 - __Deliver near-term value without losing sight of strategic goals.__ Every piece of work should serve the larger conversation between the business and its data.
 
 When leadership treats data science as a strategic peer rather than a tactical support desk, the organization stops building models for problems it doesn't fully understand. It gains a permanent strategic radar and discovers where commercial leverage actually lies.
+
+### How to Cultivate Good Data Scientists
+
+The environment is only one half of the equation. The accordion motion is a demanding workflow and requires robust habits of mind. The repeated stretch-and-compress requires something instills comfort with uncertainty and builds a set of reflexes you want to train.
+
+__Cultivate discomfort with premature certainty.__ The instinct to train a model or a build dashboard before understanding the domain is strong and rewarded by ticket-based management. Resist it. The first job in any new backyard is to map what you don't know. Encourage engagement and questioning as default.
+
+__Learn to read a business the way you read a dataset.__ Incentive structures, org charts, budget flows — these are the features of the domain model. A data scientist who understands why a team measures what it measures can spot misalignment faster than any anomaly detector. The technical work follows from this understanding, not the other way around.
+
+__Build the habit of writing things down for people who aren't you.__ Not documentation for its own sake, but the discipline of translating a finding into a decision. If you can't write a one-paragraph recommendation that a non-technical executive would act on, you haven't finished the analysis. The accordion compresses all the way down to rigorous method and stretches all the way up to plain language. Both endpoints matter.
+
+__Invest in statistical foundations, not just tooling.__ Tools change every few years; the logic of inference does not. A data scientist who understands why a bootstrap works will adapt to any framework. One who only knows how to call `sklearn.model_selection.cross_val_score` is stuck when the problem doesn't fit the API. Go deep enough that you can build the tool you need when no one has built it yet. This is even easier today than before, but you need to know why to build. 
+
+__Seek lateral exposure deliberately.__ Don't wait for the org chart to send you somewhere new. Volunteer for the messy cross-functional project. Sit in on the sales review. Read the support tickets. Every domain you touch extends the range of analogies you can draw, and analogies are the primary currency of strategic insight. The accordion stretches wider each time you play in a new backyard.
+
+These habits compound. A data scientist who practises them for five years has a qualitatively different understanding of the business than one who spent the same five years optimising models in a single vertical. The first can set targets; the second can only hit them.
+
