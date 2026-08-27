@@ -1,0 +1,348 @@
+---
+title: "Some notes on Good Data Science"
+date: "2026-08-20"
+categories: ["learning", "experimentation", "going deeper", "zooming out", "planning greatness"]
+keep-ipynb: false
+self-contained: true
+draft: false
+image: "images/construction_bricks.jpg"
+author:
+    - url: https://nathanielf.github.io/
+    - affiliation: PyMC dev
+citation: true
+abstract: "Some notes about data science as craft prompted by a recent job move and consideration of AI assisted work."
+---
+
+> The best thing about being a statistician is that you get to play in everyone's backyard. - John Tukey
+
+
+This infamous quote gives a sense of why you'd want to be a statistician/data scientist. I want to unpack what it suggests about the nature of the statistician's work that's valuable, and what "good" work looks like when you're free to move between backyards. 
+
+Recently I finished up a five year stint at a SaaS start up, and I'm about to start with another. Around us the face of work is changing. The nature of knowledge work is evolving. New tools, yet again, demand our attention. Vendors sell their wares as if all work were on the cusp of automation. Anxiety creeps in as CEOs foam at the mouth imagining bottom lines with reduced wages. In short, it's an interesting moment to consider what "good" work looks like. 
+
+I'm not going to try and predict the future here. No doubt you've already heard fantastical forecasts about AI-assisted work will herald either a golden age or a dystopic future. I don't think either species of forecast is very helpful for considering how we conduct our business today. I do think there is some value in considering the past and how similar innovations resulted in change landscapes. The question is which is the proper precedent. 
+
+Do we look at the tulip phenomenon in the Netherlands? The invention of printing? The Dotcom Boom? Or maybe even the great financial crisis? The scale, I think, is too large. Let's focus closer to home. Let's think about the Big-Data movement and abiding lessons we can learn from that period. 
+
+## The Paradox of Big Data: Demand for Data Science
+
+In 2005 Hadoop was invented. In 2006 AWS started offering cloud compute solutions. In 2012 Harvard Business review declared Data science the sexiest job of the 21st Century. These events look precipitous, as if the work was truly new. Data science is not new. At least, the core of it is not new. Data science is as old as the attempts to parse insight from numeric scratching on cuneiform tablets.
+
+Between then and now, we've added some tooling, but the process of diligent analysis, transcription and communication have not changed. The tooling in the era of Big Data hype was as pivotal as the abundance of data due to the proliferation of digital tracking. [Scikit-learn](https://scikit-learn.org/stable/about.html) was established early in the 2000s and went from strength to strength over the next 20 years or so. Python script-kids were derisively dismissed, but they inherited the future from excel-jockies of the 1990s. Disputes raged across blogs about the relative merits of Python versus R. There were interminable debates about Jupyter notebooks versus production engineering and reproducible workflows. These petty spats about tooling were an identity crisis in disguise. It was a real vibe. 
+
+Ultimately though, the ambiguity of the data-scientist title opened doors to many folks. I graduated in 2009 with a degree in literature and philosophy. By 2013 I'd added some post-grad work in the more esoteric aspects of mathematical logic. None of this was especially attractive to employers. But equally employers were divided in what they were looking to hire. This was an opportunity for many. 
+
+Employers sensed that there was an opportunity in Big-Data, but they didn't quite grasp the shape of it. Traditional job-titles like statistician, or econometrician seemed archaic and expensive - the preserve of actual experts. The world needed some new class of cheaper malleable professional and the data scientist was born. You could bootstrap yourself into these roles if only you could either signal or demonstrate expansive competence. 
+
+### Deep and Wide Competence
+
+Engineers talk of the mythical 10x Engineer, Data scientists are also fabulists. But we instead revere the composite of computer scientist, project manager, statistician and software engineer, as a vaunted "unicorn" data scientist. These chimeric creatures exist, but they are not what their job-descriptions would suggest.
+
+When I think of good data scientists I don't think of a laundry list of software they once touched, I think of accordion players. I think of the capacity to stretch across domains and go deep into any of them. This is not merely the classic T-shaped professional, with some breadth and a specialism. The ask for a data-scientist, like the statisticians before them, is to play in __everyone's backyard__. To absorb domain context and go deep where your stakeholders can't, derive insight and value, define the problem and build the solution... and then do it all over again in the next domain. 
+
+
+```{=html}
+<style>
+  .widget-container {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent-wide: #38bdf8;
+    --accent-deep: #f43f5e;
+    
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--card-bg);
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 28px;
+    width: 100%;
+    max-width: 720px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    margin: 2rem auto;
+    color: var(--text-main);
+  }
+
+  .widget-container .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .widget-container .header h3 {
+    margin: 0 0 6px 0;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
+  }
+
+  .widget-container .header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .widget-container .canvas-area {
+    background: #090d16;
+    border-radius: 12px;
+    height: 240px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid #1e293b;
+  }
+
+  .widget-container .bellows-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+  }
+
+  .widget-container .bellows {
+    display: flex;
+    height: 140px;
+    align-items: center;
+  }
+
+  .widget-container .fold {
+    height: 100%;
+    width: 12px;
+    background: linear-gradient(135deg, #334155, #1e293b);
+    border-top: 2px solid var(--accent-wide);
+    border-bottom: 2px solid var(--accent-wide);
+    transition: margin 0.05s linear, background 0.2s ease, border-color 0.2s ease;
+    clip-path: polygon(0 0, 100% 15%, 100% 85%, 0 100%);
+  }
+
+  .widget-container .fold:nth-child(even) {
+    clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 85%);
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+  }
+
+  .widget-container .label-group {
+    position: absolute;
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .widget-container .wide-labels, .widget-container .deep-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .widget-container .wide-labels {
+    align-items: flex-start;
+    color: var(--accent-wide);
+  }
+
+  .widget-container .deep-labels {
+    align-items: flex-end;
+    color: var(--accent-deep);
+  }
+
+  .widget-container .tag {
+    background: rgba(15, 23, 42, 0.85);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid currentColor;
+    backdrop-filter: blur(4px);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .widget-container .controls {
+    margin-top: 28px;
+  }
+
+  .widget-container .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .widget-container .label-wide { color: var(--accent-wide); }
+  .widget-container .label-deep { color: var(--accent-deep); }
+
+  .widget-container input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent-wide), var(--accent-deep));
+    outline: none;
+  }
+
+  .widget-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    border: 2px solid var(--card-bg);
+  }
+
+  .widget-container .state-description {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    min-height: 40px;
+  }
+
+  .widget-container .highlight {
+    color: var(--text-main);
+    font-weight: 600;
+  }
+</style>
+
+<div class="widget-container">
+  <div class="header">
+    <h3>The Accordion Competence Pulse</h3>
+    <p>Drag the slider to adjust the resolution of data science engagement</p>
+  </div>
+
+  <div class="canvas-area">
+    <div class="bellows-wrapper">
+      <div class="bellows" id="bellows"></div>
+    </div>
+
+    <div class="label-group">
+      <div class="wide-labels" id="wideLabels">
+        <span class="tag">Domain Context</span>
+        <span class="tag">Cross-Functional Translation</span>
+        <span class="tag">Strategic Vision</span>
+      </div>
+      <div class="deep-labels" id="deepLabels">
+        <span class="tag">Mathematical Rigor</span>
+        <span class="tag">Custom Estimators</span>
+        <span class="tag">Low-Level Debugging</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="slider-labels">
+      <span class="label-wide">◄ Fully Stretched (Wide)</span>
+      <span class="label-deep">Compressed (Deep) ►</span>
+    </div>
+    <input type="range" id="stateSlider" min="0" max="100" value="0">
+  </div>
+
+  <div class="state-description" id="description"></div>
+</div>
+
+<script>
+(function() {
+  const bellows = document.getElementById('bellows');
+  const slider = document.getElementById('stateSlider');
+  const description = document.getElementById('description');
+  const wideLabels = document.getElementById('wideLabels');
+  const deepLabels = document.getElementById('deepLabels');
+  
+  const numFolds = 16;
+
+  for (let i = 0; i < numFolds; i++) {
+    const fold = document.createElement('div');
+    fold.className = 'fold';
+    bellows.appendChild(fold);
+  }
+
+  const folds = bellows.querySelectorAll('.fold');
+
+  function updateWidget(val) {
+    const factor = val / 100;
+    const margin = 18 * (1 - factor);
+    
+    folds.forEach((fold) => {
+      fold.style.marginLeft = `${margin}px`;
+      fold.style.marginRight = `${margin}px`;
+      
+      if (factor > 0.5) {
+        fold.style.borderColor = `hsl(${200 - (factor * 160)}, 85%, 60%)`;
+      } else {
+        fold.style.borderColor = `hsl(${199 + (factor * 10)}, 89%, 54%)`;
+      }
+    });
+
+    wideLabels.style.opacity = 1 - (factor * 0.7);
+    deepLabels.style.opacity = 0.3 + (factor * 0.7);
+
+    wideLabels.style.transform = `scale(${1 - factor * 0.15})`;
+    deepLabels.style.transform = `scale(${0.85 + factor * 0.15})`;
+
+    if (val < 30) {
+      description.innerHTML = `<span class="highlight">Wide Competence:</span> Wandering between backyards. Connecting business problems, framing metrics, and establishing data provenance.`;
+    } else if (val >= 30 && val <= 70) {
+      description.innerHTML = `<span class="highlight">Dynamic Synthesis:</span> Shifting fluidly between high-level strategy and low-level statistical validation.`;
+    } else {
+      description.innerHTML = `<span class="highlight">Deep Focus:</span> Operating in the niche. Concentrating pressure to extract truth, refine algorithms, and build foundational rigor.`;
+    }
+  }
+
+  slider.addEventListener('input', (e) => {
+    updateWidget(e.target.value);
+  });
+
+  updateWidget(0);
+})();
+</script>
+```
+
+It's the repetitive twitch of the accordion player that pulls wide, presses deep and repeats, that characterises the work of good data science. Cumulatively over time this breadth of exposure pulls the data scientist across the business and into the thorniest areas with the least well-defined answers. It's the reliable discovery of answers amongst this huge range of possibilities that makes a data scientist valuable.
+
+### Back to Big Data
+So, sifting through data sources of increasingly larger sizes across different industries and evolving expectations the data scientist role meets with varied success. Some cases of spectacular success; others run the range from modest to negative outcomes. But everywhere the promise of Big-Data failed. 
+
+Scaling data collection was not enough. 
+
+In their paper "Challenges of Big Data Analysis" Fan, Han and Liu argued convincingly that the promise of high dimensional data is overstated. Not all collectible data was useful. Most data collection was just scaled up convenience sampling. Convenience samples masked obvious mistakes behind misguided confidence. Yes, you had a large sample size, but the sample measured the wrong things, or your analysis over-stated effects as generalisable when they reflected only the available patterns. Industry adjusted. We slowly learned that relevant data was better than convenient data.
+
+#### AI Assisted Workflows and Convenient Answers
+
+The data scientist plays the role here of a forward scout. The untested/unexamined areas of the commercial environment are the areas where the data-scientist tends to work. These are areas where we generally have low-traction, inadequate data and poor oversight. A good data scientist will communicate this deficit and work to improve it. Much of the value of data science work sits in the discovery work in these domains, and in the recommendations they make in these circumstances.
+
+AI assisted workflows can help the data-scientist discover the limits of the available data quicker. They can help them build illustrative prototypes faster, but they will rarely demur an answer when asked for one. The good data scientist will give the uncomfortable answer and a plan on how to get a better one. 
+
+## Data Science and Commercial Relevance
+
+The accordion-like workflow is what drives an explore/exploit optimisation process. Our optimisation goal is oddly ill-defined though. In any one data science project we're optimising for some commercial outcomes, but we're also betting that exposure will aid goal discovery. 
+
+The greatest commercial value from investment in data science is not a series of automations or a model based solution, but rather a cohort of professionals whose understanding of the business is second to none. The data scientist sees in each domain what kind of levers the business has to play with and understands how responsive the business' outcomes are to those levers. Their commercial judgment has been gleaned through hard won experimentation and analysis. But their breadth of exposure allows them to see tight analogies across the business. Their recommendations can move markets and steer substantial investments, but also set new targets. 
+
+With the advent of AI assisted work some of the mechanical data-science tasks can be expressed as optimisable goals that can be automated with a sufficient token spend. The value of data-science is that their work takes place at the frontier of the company's understanding. Their findings shape how the company sees success, and their observations can steer the company on a new course. 
+
+### How to Build Environments for Relevant Data Science
+
+To cultivate effective data science teams, organizations must dismantle the standard "ticket-taker" model of analytics management. When data science operates as a downstream service bureau e.g. fetching data for ad-hoc requests, building isolated dashboards, or training models on predetermined specs, then the accordion stays compressed and the range of expression is muted. Such a setup falsely assumes that business leadership already knows the exact questions to ask and the right objectives to pursue.
+
+Kenneth Stanley and Joel Lehman in their _Why Greatness Cannot Be Planned: The Myth of the Objective_ demonstrate why this strict objective-seeking fails in complex domains. Breakthrough discoveries are rarely achieved by aiming directly at a fixed, linear target. Instead, they rely on identifying "stepping stones" i.e. the unexpected intermediate insights whose ultimate strategic value cannot be predicted from the starting line.
+
+When a data team is managed like a Jira assembly line, they are forced to march toward pre-packaged objectives, systematically blinded to the stepping stones lying just off the main path. Transforming data science from a passive service center into an integral strategic partner requires deliberate care in how the function is embedded and evaluated:
+
+Some useful general patterns of work: 
+
+- __Include Data Science at Problem Definition, Not Problem Assignment__: Position data scientists upstream as co-authors of strategy. Before declaring a corporate metric or launching an initiative, involve data science to evaluate problem framing, test underlying assumptions, and inspect data provenance at ground level.
+
+- __Reward Stepping-Stone Discovery Over Ticket Velocity__: Shift evaluation away from dashboard volume or model deployments. Assess data scientists on their qualitative impact: the doomed multi-million-dollar initiatives they invalidate early, the hidden levers they uncover, and the clarity they bring to ambiguous commercial spaces.
+
+- __Normalize Cross-Functional "Stepping-Stone" Exploration__: Give data scientists explicit autonomy to follow anomalous signals across departmental boundaries. The broken logging script discovered while inspecting customer support data often becomes the stepping stone to fixing a company-wide retention leak.
+
+- __Eliminate the Multi-Layer Translation Barrier__: Enable direct, unfiltered dialogue between data scientists and executive decision-makers. The real value of a forward scout lies in translating low-level data realities into high-level strategic direction without strategic intent being diluted through filtering.
+
+- __Deliver Value, but never Lose Track of Strategic Goals__: Work in a way that yields near term value, but always position the work in the larger conversation between the business and data-science. 
+
+When leadership stops treating data science as a tactical support desk and starts treating it as an essential strategic peer, the organization stops building models for problems it doesn't fully understand. It gains a permanent strategic radar—one that actively discovers where real commercial leverage lies.
