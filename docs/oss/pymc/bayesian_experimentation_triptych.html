@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Nathaniel Forde">
+<meta name="dcterms.date" content="2026-08-15">
 
-<title>Archive – Examined Algorithms</title>
+<title>Bayesian Experimentation Triptych – Examined Algorithms</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,24 +25,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-48ffa3e5b9d089919c6712c39e5b00f2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-6d5f49080fd7a04518cb6db3008564bf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,67 +68,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-subtitle","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -138,7 +80,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Examined Algorithms</span>
     </a>
   </div>
@@ -149,23 +91,23 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html"> 
+    <a class="nav-link" href="../../blog.html"> 
 <span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./opensource.html"> 
+    <a class="nav-link" href="../../opensource.html"> 
 <span class="menu-text">Open Source Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./talks.html"> 
+    <a class="nav-link" href="../../talks.html"> 
 <span class="menu-text">Talks</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./consulting.html"> 
+    <a class="nav-link" href="../../consulting.html"> 
 <span class="menu-text">Consulting</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./cv.html"> 
+    <a class="nav-link" href="../../cv.html"> 
 <span class="menu-text">CV</span></a>
   </li>  
   <li class="nav-item compact">
@@ -200,184 +142,75 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Archive</h1>
-</div>
+<h1 class="title">Bayesian Experimentation Triptych</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">probability</div>
+    <div class="quarto-category">pymc</div>
+    <div class="quarto-category">experimentation</div>
+    <div class="quarto-category">a/b testing</div>
+  </div>
+  </div>
 
 
 
 <div class="quarto-title-meta column-page">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nathaniel Forde </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 15, 2026</p>
+    </div>
+  </div>
   
     
   </div>
   
+<div>
+  <div class="abstract">
+    <div class="block-title">Abstract</div>
+    Looping through experiment design via Assurance, through Sensitivity Analysis and Meta-analysis
+  </div>
+</div>
 
 
 </header>
 
 
+<section id="experiment-design-workflow-in-pymc" class="level1">
+<h1>Experiment Design Workflow in PyMC</h1>
+<p>This project added three new demonstrations to the PyMC Examples site, staged above as a Boschian triptych of the experimentation lifecycle. The learning loop, plan, interpret, synthesize, then plan again with what you learned, is central to the Bayesian experimentation workflow.</p>
+<ul>
+<li>→ Assurance Planning via Simulation</li>
+<li>→ Sensitivity Analysis for Unmeasured Confounding</li>
+<li>→ Multiple Experiments &amp; Bayesian Meta-analysis</li>
+<li>…</li>
+<li>→ Assurance Planning via Simulation</li>
+</ul>
+<p>Each notebook jumps off a theme in the FDA’s guidance on how to plan, probe and consolidate information derived from an experimentation programme.</p>
+<ul>
+<li><p>Bayesian Assurance: <a href="https://www.pymc.io/projects/examples/en/latest/causal_inference/assurance_planning_simulation.html">here</a></p></li>
+<li><p>Bayesian Sensitivity Analysis: <a href="https://www.pymc.io/projects/examples/en/latest/causal_inference/sensitivity_unmeasured_confounding.html#sensitivity-confounding">here</a></p></li>
+<li><p>Bayesian Meta-analysis: <a href="https://www.pymc.io/projects/examples/en/latest/causal_inference/multiple_experiments_meta_analysis.html#meta-analysis-experiments">here</a></p></li>
+</ul>
+<p>They will ideally be read as a learning loop.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="experimentation_triptych.jpeg" class="img-fluid figure-img"></p>
+<figcaption>Boschian Triptych: Assurance, Sensitivity and Meta-analysis</figcaption>
+</figure>
+</div>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="Y2ZhJTJDc2VtJTJDbWVhc3VybWVudA==" data-listing-file-modified-sort="1724959415265" data-listing-reading-time-sort="58" data-listing-word-count-sort="11492">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html" class="no-external">Measurement, Latent Factors and the Garden of Forking Paths</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html" class="no-external">Confirmatory Factor Analysis and Structural Equations in PyMC</a>
-</div>
-</div>
-<div class="metadata">
-<p><a href="./posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html" class="no-external"></a></p><a href="./posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html" class="no-external">
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="bGVhcm5pbmclMkNleHBlcmltZW50YXRpb24lMkNnb2luZyUyMGRlZXBlciUyQ3pvb21pbmclMjBvdXQlMkNwbGFubmluZyUyMGdyZWF0bmVzcw==" data-listing-date-sort="1787180400000" data-listing-file-modified-sort="1787864152726" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2910">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/ReflectionOnDatascience/good_datascience.html" class="no-external">Some notes on Good Data Science</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/ReflectionOnDatascience/good_datascience.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/post-with-code/ReflectionOnDatascience/good_datascience.html" class="no-external">
-<div class="listing-date">
-Aug 20, 2026
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="QUklMjB3b3JrZmxvdyUyQ3dyaXRpbmclMkNkYXRhJTIwc2NpZW5jZSUyQ2NvbGxhYm9yYXRpb24=" data-listing-date-sort="1774569600000" data-listing-file-modified-sort="1775076565639" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="18" data-listing-word-count-sort="3553">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/AI_Workflow/ai_workflow.html" class="no-external">Prompting the Void: On Sustained Attention and Goal Discovery</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/AI_Workflow/ai_workflow.html" class="no-external">A case study in iterative refinement</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/post-with-code/AI_Workflow/ai_workflow.html" class="no-external">
-<div class="listing-date">
-Mar 27, 2026
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="TkxQJTJDZGlzY3JldGUlMjBjaG9pY2UlMkNlY29ub21ldHJpY3MlMkNkZWVwJTIwbGVhcm5pbmclMkNQeU1D" data-listing-date-sort="1773360000000" data-listing-file-modified-sort="1775076579296" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="84" data-listing-word-count-sort="16694">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/Consideration_Sets_Attention/attention.html" class="no-external">The Architecture of Focus: Attention in Transformers and Discrete Choice</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/Consideration_Sets_Attention/attention.html" class="no-external">How Transformer Attention and Econometric ‘Consideration Sets’ share a mathematical skeleton</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/post-with-code/Consideration_Sets_Attention/attention.html" class="no-external">
-<div class="listing-date">
-Mar 13, 2026
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="dGhlb3J5JTJDc2ltdWxhdGlvbiUyQ2NhdXNhbCUyMGluZmVyZW5jZSUyQ3NlbnNpdGl2aXR5JTIwYW5hbHlzaXMlMkNpcnQ=" data-listing-date-sort="1769299200000" data-listing-file-modified-sort="1769621095934" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="71" data-listing-word-count-sort="14019">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/Condorcet_Jury_Sensitivity/sensitivity_analysis.html" class="no-external">Condorcet Juries and Incentivised Legibility</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/Condorcet_Jury_Sensitivity/sensitivity_analysis.html" class="no-external">Sensitivity Analysis with Item Responses</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/post-with-code/Condorcet_Jury_Sensitivity/sensitivity_analysis.html" class="no-external">
-<div class="listing-date">
-Jan 25, 2026
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-categories="cGF0aC1tb2RlbHMlMkNzZW0lMkNjYXVzYWwlMjBpbmZlcmVuY2U=" data-listing-date-sort="1768003200000" data-listing-file-modified-sort="1775216976967" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="57" data-listing-word-count-sort="11202">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/AalenDynamicPaths/aalen_dynamic_paths.html" class="no-external">The Journey Is the Model: Dynamic Path Analysis in PyMC</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/AalenDynamicPaths/aalen_dynamic_paths.html" class="no-external">Causal Inference with Time-Varying Effects</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/post-with-code/AalenDynamicPaths/aalen_dynamic_paths.html" class="no-external">
-<div class="listing-date">
-Jan 10, 2026
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="6" data-categories="cHl0b3JjaCUyQ3ZhcmlhdGlvbmFsJTIwYXV0by1lbmNvZGVycyUyQ2Ftb3J0aXplZCUyMGJheWVzaWFuJTIwaW5mZXJlbmNl" data-listing-date-sort="1753398000000" data-listing-file-modified-sort="1754936505659" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="53" data-listing-word-count-sort="10469">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.html" class="no-external">Heuristics in Latent Space: VAEs and Bayesian Inference</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.html" class="no-external">
-<div class="listing-date">
-Jul 25, 2025
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="7" data-categories="VFdGRSUyQ211bmRsYWslMkNoaWVyYXJjaGljYWwlMjBtb2RlbHMlMkNEaUQ=" data-listing-date-sort="1719788400000" data-listing-file-modified-sort="1721945430830" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="43" data-listing-word-count-sort="8525">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/multilevel_confounding/multilevel_models.html" class="no-external">Freedom, Hierarchies and Confounded Estimates</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/multilevel_confounding/multilevel_models.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/post-with-code/multilevel_confounding/multilevel_models.html" class="no-external">
-<div class="listing-date">
-Jul 1, 2024
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="8" data-categories="cHJvYmFiaWxpdHklMkNnZW5lcmFsaXNlZCUyMGFkZGl0aXZlJTIwbW9kZWxzJTJDZ2F1c3NpYW4lMjBwcm9jZXNzZXM=" data-listing-date-sort="1712444400000" data-listing-file-modified-sort="1716789618267" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="40" data-listing-word-count-sort="7930">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/post-with-code/GAMs_and_GPs/gams_and_gps.html" class="no-external">GAMs and GPs: Flexibility and Calibration</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/post-with-code/GAMs_and_GPs/gams_and_gps.html" class="no-external"></a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/post-with-code/GAMs_and_GPs/gams_and_gps.html" class="no-external">
-<div class="listing-date">
-Apr 7, 2024
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const elements = document.querySelectorAll(".fade-in");
