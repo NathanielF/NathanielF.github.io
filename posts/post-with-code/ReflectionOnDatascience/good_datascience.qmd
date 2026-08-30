@@ -10,7 +10,7 @@ author:
     - url: https://nathanielf.github.io/
     - affiliation: PyMC dev
 citation: true
-abstract: "Good data science is an accordion motion — stretching wide across domains, then compressing deep into any one of them. Drawing on the lessons of the Big Data era and Kenneth Stanley's work on objective-free search, this post argues that the value of data science lies not in automation but in frontier discovery: shaping how a company sees success. It covers both the organisational conditions and the individual habits of mind that sustain this kind of work."
+abstract: "Good data science is an accordion motion of stretching wide across domains, then compressing deep into any one of them. Drawing on the lessons of the Big Data era and Kenneth Stanley's work on objective-free search, this post argues that the value of data science lies not in automation but in frontier discovery: shaping how a company sees success. It covers both the organisational conditions and the individual habits of mind that sustain this kind of work."
 ---
 
 ## Deep and Wide Competence
@@ -287,7 +287,7 @@ The repetitive twitch of the accordion player that pulls wide, presses deep and 
 
 > The best thing about being a statistician is that you get to play in everyone's backyard. - John Tukey
 
-Playing in everyone's backyard sounds liberating, but the accordion motion didn't emerge from generosity. It was the product of a specific economic moment: employers sensed that data could transform their business, but they couldn't articulate how. They hired malleable professionals and pointed them at everything. That same pattern is repeating now with AI agents. We have broad deployment, diffuse expectations, uneven results. The Big Data era is the right precedent for understanding what's coming, because it already taught us the difference between collecting answers and discovering good questions.
+Playing in everyone's backyard sounds liberating, but the accordion motion didn't emerge pure play. It was the product of a specific economic moment: employers sensed that data could transform their business, but they couldn't articulate how. They hired malleable professionals and pointed them at everything. That same pattern is repeating now with AI agents. We have broad deployment, diffuse expectations, uneven results. The Big Data era is the right precedent for understanding what's coming, because it already taught us the difference between collecting answers and discovering good questions.
 
 ## The Paradox of Big Data: Demand for Data Science
 
@@ -305,6 +305,8 @@ Scaling data collection was not enough.
 
 Fan, Han and Liu in ["Challenges of Big Data Analysis"](https://academic.oup.com/nsr/article/1/2/293/1397586?login=false) argued convincingly that the promise of high-dimensional data is overstated. Most data collection was just scaled-up convenience sampling. Convenience samples masked obvious mistakes behind misguided confidence: yes, you had a large sample size, but the sample measured the wrong things, or the analysis overstated effects as generalisable when they reflected only the available patterns. Industry adjusted. We slowly learned that relevant data was better than convenient data.
 
+AI-assisted workflows risk the same trap at a different level of abstraction. Where Big Data offered convenient data, LLMs offer convenient answers: fluent, immediate, and untethered from the messy provenance that would tell you whether to trust them.
+
 #### AI Assisted Workflows and Convenient Answers
 
 The data scientist plays the forward scout. They work in the untested, unexamined areas of the commercial environment. In areas of low traction, inadequate data and poor oversight data scientists work drive discoveries in those domains. A good data scientist communicates the real deficits and works to improve them. Much of their value sits in the discovery process, and in the recommendations made under such uncertainty.
@@ -321,11 +323,13 @@ The accordion workflow drives an explore/exploit process whose optimisation goal
 
 The greatest commercial value of data science is not a series of automations or a model-based solution. It is a cohort of professionals whose understanding of the business is second to none — who see which levers the business has, how responsive its outcomes are to those levers, and where tight analogies hold across domains. Their judgment is gleaned through hard-won experimentation; their breadth lets them set new targets, not just hit old ones.
 
-AI can automate the mechanical parts of this work. What it cannot automate is the frontier: shaping how the company sees success, steering it on a new course or finding relevance in the swamp of frothy AI slop.
+AI can automate the mechanical parts of this work. What it cannot automate is the frontier: shaping how the company sees success, steering it on a new course or finding relevance in the swamp of frothy AI slop. In particular AI cannot reliably choose which frontier is worth pursuing and what evidence should change the company's mind.
 
 ### How to Build Environments for Relevant Data Science
 
-The standard "ticket-taker" model of analytics management kills the accordion motion. When data science operates as a downstream service bureau fetching data for ad-hoc requests or building isolated dashboards while training models on predetermined specs, it compresses their focus and falsely assumes that leadership already knows the right questions to ask, and the right things to build.
+The standard "ticket-taker" model of analytics management kills the accordion motion. When data science operates as a downstream service bureau fetching data for ad-hoc requests or building isolated dashboards while training models on predetermined specs, it compresses their focus and falsely assumes that leadership already knows the right questions to ask, and the right things to build. 
+
+This is not to say operational reporting has no value. Reliable KPIs and automated dashboards are the floor, not the ceiling. The problem is when the floor becomes the entire job description, and leaves no room for innovation.
 
 Kenneth Stanley and Joel Lehman in [_Why Greatness Cannot Be Planned_](https://link.springer.com/book/10.1007/978-3-319-15524-1) demonstrate why strict objective-seeking fails in complex domains. Breakthroughs rarely come from marching toward a fixed target. They come from "stepping stones" and unexpected intermediate insights whose strategic value cannot be predicted from the starting line. A data team managed like a Jira assembly line is systematically blinded to these stepping stones.
 
@@ -345,7 +349,7 @@ When leadership treats data science as a strategic peer rather than a tactical s
 
 ### How to Cultivate Good Data Scientists
 
-The environment is only one half of the equation. The accordion motion is a demanding workflow and requires robust habits of mind. The repeated stretch-and-compress instills comfort with uncertainty and builds a set of reflexes you want to train.
+The environment is only one half of the equation. The accordion motion is a demanding workflow and requires robust habits of mind. The repeated stretch-and-compress instills comfort with uncertainty and builds a set of reflexes you want to train. This motion is also exhausting. The constant context-switching between executive strategy and low-level debugging is a primary driver of data scientist burnout. The habits below are not just about competence but sustainability.
 
 __Resist premature certainty.__ The instinct to train a model or a build dashboard before understanding the domain is strong and rewarded by ticket-based management. Resist it. The first job in any new backyard is to map what you don't know. Encourage engagement and questioning as default.
 
@@ -357,10 +361,12 @@ __Invest in statistical foundations, not just tooling.__ Tools change every few 
 
 __Seek lateral exposure deliberately.__ Don't wait for the org chart to send you somewhere new. Volunteer for the messy cross-functional project. Sit in on the sales review. Read the support tickets. Every domain you touch extends the range of analogies you can draw, and analogies are the primary currency of strategic insight. The accordion stretches wider each time you play in a new backyard.
 
+__Own your Expertise/Authority__: The idea of influence without authority is often cited as a way for Data Science ICs to contribute to the business, but it concedes too much. You can influence, but you shouldn't concede your authority. A data scientist can and should make recommendations without equivocating if they have the data to back the claim.
+
 These habits compound. A data scientist who practises them for five years has a qualitatively different understanding of the business than one who spent the same five years optimising models in a single vertical. The first can set targets; the second can only hit them.
 
 ## Conclusion: Zooming out
 
-The environment and the individual are two halves of the same instrument. An organisation that treats data science as a strategic peer gives the accordion room to stretch. A practitioner who cultivates these habits builds the range to make that room worth having, and the capacity to hold the sharpest notes. 
+The environment and the individual are two halves of the equation. An organisation that treats data science as a strategic peer gives the accordion room to stretch. A practitioner who cultivates these habits builds the range to make that room worth having, and the capacity to hold the sharpest notes. 
 
-A general-purpose LLM can be thrown at every backyard just as a data scientist once was. The lesson of the last twenty years is that what makes either valuable is not breadth of deployment but depth of engagement. The required specificity comes from actually playing in the backyard rather than reading about it.
+A general-purpose LLM can be thrown at every backyard just as a data scientist once was. The lesson of the last twenty years is that what makes either valuable is not breadth of deployment but depth of engagement. The required judgement, skill and specificity comes from actually playing in the backyard rather than reading about it.
