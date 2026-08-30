@@ -1,5 +1,5 @@
 ---
-title: "Some notes on Good Data Science"
+title: "Notes on Good Data Science"
 date: "2026-08-20"
 categories: ["learning", "experimentation", "going deeper", "zooming out", "planning greatness"]
 keep-ipynb: false
@@ -13,26 +13,11 @@ citation: true
 abstract: "Good data science is an accordion motion — stretching wide across domains, then compressing deep into any one of them. Drawing on the lessons of the Big Data era and Kenneth Stanley's work on objective-free search, this post argues that the value of data science lies not in automation but in frontier discovery: shaping how a company sees success. It covers both the organisational conditions and the individual habits of mind that sustain this kind of work."
 ---
 
-> The best thing about being a statistician is that you get to play in everyone's backyard. - John Tukey
+## Deep and Wide Competence
 
+Engineers talk of the mythical 10x engineer. Data scientists have their own fable: the "unicorn" who is simultaneously computer scientist, project manager, statistician and software engineer. These chimeric creatures exist, but they are not what their job descriptions would suggest. The data scientist is an ambiguously valuable professional hire, so it's worth a little time trying to say where the value lies. 
 
-Tukey's quote gives a sense of why you'd want to be a statistician/data scientist. I want to unpack what it suggests about the nature of the statistician's work that's valuable, and what "good" work looks like when you're free to move between backyards. 
-
-When all the world is wondering about the future work, it's an interesting time to consider what good data science work looks like. Amid another round of breathless forecasting about AI-assisted work, I find the most useful precedent is not the printing press or the tulip mania but something closer to home: the Big Data movement, and what it taught us about the difference between collecting answers and discovering good questions.
-
-## The Paradox of Big Data: Demand for Data Science
-
-In 2005 Hadoop was invented. In 2006 AWS started offering cloud compute. In 2012 Harvard Business Review declared data science the sexiest job of the 21st century. These events look precipitous, as if the work were truly new. It is not. Data science is as old as the attempt to parse insight from numeric scratching on cuneiform tablets.
-
-Between then and now, we've added tooling, but the process of diligent analysis, transcription and communication has not changed. The tooling mattered as much as the data itself. [Scikit-learn](https://scikit-learn.org/stable/about.html) was established early in the 2000s and went from strength to strength. Python script-kids were derisively dismissed, but they inherited the future from the Excel jockeys of the 1990s. Disputes raged across blogs about Python versus R, Jupyter notebooks versus production engineering. These petty spats about tooling were an identity crisis in disguise. Who is empowered to be a data scientist?
-
-The ambiguity of the title opened doors. I graduated in 2009 with a degree in literature and philosophy, added post-grad work in mathematical logic, and found that none of it was especially attractive to employers. But equally employers were divided in what they wanted. Traditional titles like statistician or econometrician seemed archaic and expensive, the preserve of actual experts. The world needed a cheaper, more malleable professional. The data scientist was born: you could bootstrap yourself into the role if you could signal or demonstrate expansive competence. It was a liberating time. 
-
-### Deep and Wide Competence
-
-Engineers talk of the mythical 10x engineer. Data scientists have their own fable: the "unicorn" who is simultaneously computer scientist, project manager, statistician and software engineer. These chimeric creatures exist, but they are not what their job descriptions would suggest.
-
-When I think of good data scientists I don't think of a laundry list of software they clam to use, I think of accordion players. I think of the capacity to stretch across domains and go deep into any of them. This is not merely the classic T-shaped professional, with some breadth and a specialism. The ask for a data-scientist, like the statisticians before them, is to play in __everyone's backyard__. To absorb domain context and go deep where your stakeholders can't, derive insight and value, define the problem and build the solution... and then do it all over again in the next domain. 
+When I think of good data scientists I don't think of a laundry list of software they claim to use, I think of accordion players. I think of the capacity to stretch across domains and go deep into any of them. This is not merely the classic T-shaped professional, with some breadth and a specialism. The ask for a data-scientist, like the statisticians before them, is to play in __everyone's backyard__. To absorb domain context and go deep where your stakeholders can't, derive insight and value, define the problem and build the solution... and then do it all over again in the next domain. 
 
 
 ```{=html}
@@ -298,8 +283,23 @@ When I think of good data scientists I don't think of a laundry list of software
 
 The repetitive twitch of the accordion player that pulls wide, presses deep and repeats, characterises good data science. Over time, the breadth of exposure pulls the data scientist across the business and into the thorniest areas with the least well-defined answers. Reliable discovery across that range is what makes them valuable.
 
-### Back to Big Data
-The data scientist role met with varied success — some spectacular, much of it modest to negative. Everywhere, the central promise of Big Data failed.
+### Everyone's Backyard
+
+> The best thing about being a statistician is that you get to play in everyone's backyard. - John Tukey
+
+Playing in everyone's backyard sounds liberating, but the accordion motion didn't emerge from generosity. It was the product of a specific economic moment: employers sensed that data could transform their business, but they couldn't articulate how. They hired malleable professionals and pointed them at everything. That same pattern is repeating now with AI agents. We have broad deployment, diffuse expectations, uneven results. The Big Data era is the right precedent for understanding what's coming, because it already taught us the difference between collecting answers and discovering good questions.
+
+## The Paradox of Big Data: Demand for Data Science
+
+In 2005 Hadoop was invented. In 2006 AWS started offering cloud compute. In 2012 Harvard Business Review declared data science the sexiest job of the 21st century. These events look precipitous, as if the work were truly new. It is not. Data science is as old as the attempt to parse insight from numeric scratching on cuneiform tablets.
+
+Between then and now, we've added tooling, but the process of transcription, diligent analysis and communication has not changed. Like today, some changes in tooling made of this work easier.  [Scikit-learn](https://scikit-learn.org/stable/about.html) was established early in the 2000s and went from strength to strength. Python script-kids were derisively dismissed, but they inherited the future from the Excel jockeys of the 1990s. Disputes raged across blogs about Python versus R, Jupyter notebooks versus production engineering. These petty spats about tooling were an identity crisis in disguise. In the era of Big Data, who was empowered to be a data scientist?
+
+The ambiguity of the title opened doors. But equally employers were divided in what they wanted. Traditional titles like statistician or econometrician seemed archaic and expensive, the preserve of professionals with specific expertise. The world needed a cheaper, more malleable professional. The data scientist was born, and you could bootstrap yourself into the role if you could signal or demonstrate expansive competence. The promise of Big-Data spoke of revolutions in every domain, but the work asked of data-scientists was massively heterogenous. 
+
+
+### Success for Diffuse Tasks was Unevenly Distributed
+The data scientist role met with varied success — some spectacular, much of it modest to negative. Much of the success depended on where they were deployed. The data maturity of the organisation or the receptivity of the organisation to data-informed strategy.  But everywhere we discovered that Big-Data was not enough.
 
 Scaling data collection was not enough.
 
@@ -307,9 +307,13 @@ Fan, Han and Liu in ["Challenges of Big Data Analysis"](https://academic.oup.com
 
 #### AI Assisted Workflows and Convenient Answers
 
-The data scientist plays the forward scout. They work in the untested, unexamined areas of the commercial environment. In areas of low traction and inadequate data with poor oversight and investment. A good data scientist communicates this deficit and works to improve it. Much of their value sits in the discovery, and in the recommendations made under such uncertainty.
+The data scientist plays the forward scout. They work in the untested, unexamined areas of the commercial environment. In areas of low traction, inadequate data and poor oversight data scientists work drive discoveries in those domains. A good data scientist communicates the real deficits and works to improve them. Much of their value sits in the discovery process, and in the recommendations made under such uncertainty.
 
 AI-assisted workflows help the data scientist discover the limits of the available data faster and build illustrative prototypes sooner. But they will rarely decline to give an answer when asked for one. The good data scientist will give the uncomfortable answer, and then a plan for how to get a better one.
+
+#### Overpromising and Under delivering
+
+When the promise of an innovation is over-extended it almost necessarily under delivers. This was true of Big-Data, this will likely be true of AI too. It's not to say there is no value there, but that a tool applied widely without focus is often less useful than hoped. The demand for data science in the early 2000s is similar to demand for adaptive agents today. We're throwing agentic compute at problems in the same way business threw data-science at their problems 20 years ago. The lesson we learned from that period is that if you throw one solution at every task-domain your success will be unevenly distributed across those domains.    
 
 ## Data Science and Commercial Relevance
 
@@ -341,11 +345,11 @@ When leadership treats data science as a strategic peer rather than a tactical s
 
 ### How to Cultivate Good Data Scientists
 
-The environment is only one half of the equation. The accordion motion is a demanding workflow and requires robust habits of mind. The repeated stretch-and-compress requires something instills comfort with uncertainty and builds a set of reflexes you want to train.
+The environment is only one half of the equation. The accordion motion is a demanding workflow and requires robust habits of mind. The repeated stretch-and-compress instills comfort with uncertainty and builds a set of reflexes you want to train.
 
-__Cultivate discomfort with premature certainty.__ The instinct to train a model or a build dashboard before understanding the domain is strong and rewarded by ticket-based management. Resist it. The first job in any new backyard is to map what you don't know. Encourage engagement and questioning as default.
+__Resist premature certainty.__ The instinct to train a model or a build dashboard before understanding the domain is strong and rewarded by ticket-based management. Resist it. The first job in any new backyard is to map what you don't know. Encourage engagement and questioning as default.
 
-__Learn to read a business the way you read a dataset.__ Incentive structures, org charts, budget flows — these are the features of the domain model. A data scientist who understands why a team measures what it measures can spot misalignment faster than any anomaly detector. The technical work follows from this understanding, not the other way around.
+__Read the Business.__ Incentive structures, org charts, budget flows — these are the features of the domain model. A data scientist who understands why a team measures what it measures can spot misalignment faster than any anomaly detector. The technical work follows from this understanding, not the other way around.
 
 __Build the habit of writing things down for people who aren't you.__ Not documentation for its own sake, but the discipline of translating a finding into a decision. If you can't write a one-paragraph recommendation that a non-technical executive would act on, you haven't finished the analysis. The accordion compresses all the way down to rigorous method and stretches all the way up to plain language. Both endpoints matter.
 
@@ -355,3 +359,8 @@ __Seek lateral exposure deliberately.__ Don't wait for the org chart to send you
 
 These habits compound. A data scientist who practises them for five years has a qualitatively different understanding of the business than one who spent the same five years optimising models in a single vertical. The first can set targets; the second can only hit them.
 
+## Conclusion: Zooming out
+
+The environment and the individual are two halves of the same instrument. An organisation that treats data science as a strategic peer gives the accordion room to stretch. A practitioner who cultivates these habits builds the range to make that room worth having, and the capacity to hold the sharpest notes. 
+
+A general-purpose LLM can be thrown at every backyard just as a data scientist once was. The lesson of the last twenty years is that what makes either valuable is not breadth of deployment but depth of engagement. The required specificity comes from actually playing in the backyard rather than reading about it.
