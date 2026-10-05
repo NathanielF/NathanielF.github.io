@@ -11,10 +11,12 @@
             "id": "ad2e84605f534b70",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "New tab"
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.13.7"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.13.7"
             }
           }
         ]
@@ -37,7 +39,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -162,8 +166,21 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "143b8df37714e30f",
+  "active": "ad2e84605f534b70",
   "lastOpenFiles": [
+    "Untitled.md",
+    "Public/Philosophy/Causal Locutions as Norms Under Construction.html",
+    "Public/Philosophy/Causal Locutions as Norms Under Construction_files/mediabag",
+    "Public/Philosophy/Causal Locutions as Norms Under Construction_files",
+    "Public/Philosophy/Bayesian Posterior Predictives as Brandomian Explicitation.html",
+    "Public/Philosophy/Bayesian Posterior Predictives as Brandomian Explicitation_files/mediabag",
+    "Public/Philosophy/Bayesian Posterior Predictives as Brandomian Explicitation_files",
+    "Public/Philosophy/Causal Locutions as Norms Under Construction.md",
+    "Public/Philosophy/Bayesian Posterior Predictives as Brandomian Explicitation.md",
+    "Public/Statistics/Separability as the Potential Outcomes Alternative to Cross-World Counterfactuals.html",
+    "Public/Statistics/Separability as the Potential Outcomes Alternative to Cross-World Counterfactuals_files/mediabag",
+    "Public/Statistics/Separability as the Potential Outcomes Alternative to Cross-World Counterfactuals_files",
+    "Public/Statistics/Scale Dependence in Causal Decomposition.html",
     "Public/Philosophy/Temporal Trajectory as the Process Model's Comparative Advantage.md",
     "Public/Philosophy/The PO Critique of Structural Mediation.md",
     "Public/Economics/Identification Power and Cross-Market Variation in BLP.md",
@@ -187,19 +204,6 @@
     "Public/Statistics/Marginal Structural Models for Multi-Stage Causal Effects.md",
     "Public/Economics/Two-Stage Survival Models for Freemium Economics.md",
     "Public/Statistics/Non-Collapsibility of Hazard Ratios.md",
-    "Public/Philosophy/Appiah's As If and Productive Idealization.md",
-    "Public/Statistics/Hernán's Target Trial Framework for Survival Outcomes.md",
-    "Public/Statistics/G-Computation as the Bridge Between Process and Estimand.md",
-    "Public/Statistics/Preemption and the Many Faces of Causation.html",
-    "Public/Statistics/Preemption and the Many Faces of Causation_files/mediabag",
-    "Public/Statistics/Preemption and the Many Faces of Causation_files",
-    "Public/Statistics/Competing Risks as Causal Preemption.html",
-    "Public/Statistics/Competing Risks as Causal Preemption_files/mediabag",
-    "Public/Statistics/Competing Risks as Causal Preemption_files",
-    "Public/Statistics/Aalen's Dynamic Path Analysis and Dependence-Production Boundary.html",
-    "Public/Statistics/Aalen's Dynamic Path Analysis and Dependence-Production Boundary_files/mediabag",
-    "Public/Statistics/Aalen's Dynamic Path Analysis and Dependence-Production Boundary_files",
-    "Public/Philosophy/Probability's Janus Face and Productive Ambiguity.html",
     "Public/Statistics/Images/predictions_imputation.jpg",
     "Public/Statistics/Images/Expectations_MAR.jpg"
   ]

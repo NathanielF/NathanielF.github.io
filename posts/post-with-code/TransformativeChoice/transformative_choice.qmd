@@ -1,0 +1,1733 @@
+---
+title: "The Shape of a Transformative Event"
+subtitle: "Hierarchical discrete choice with a change point: recovering when someone's utility function moved, how far it moved, and whether it moved at all"
+date: "2026-09-12"
+author: "Nathaniel Forde"
+categories: ["discrete choice", "change point", "causal inference", "PyMC", "philosophy"]
+image: "vampire_transformation.png"
+format:
+  html:
+    toc: true
+    code-fold: show
+    fig-width: 8
+    fig-height: 4
+self-contained: true
+draft: true
+cache: true
+execute:
+  enabled: true
+jupyter: bayesian_causal_book
+---
+
+L. A. Paul defines a transformative experience as one that changes what you want. Her main example is becoming a parent. You cannot decide whether to have a child using your current preferences, because the experience changes them, and you cannot know in advance how.
+
+Other people have already had the experience, and the change shows up in the choices they made afterwards. So there is an empirical version of Paul's question: when an event changes someone's preferences, when does the change happen, how large is it, and how much does it vary between people?
+
+Parenthood has a smaller, earlier version that shows up in shopping data. Pregnancy commonly changes what people want to eat. Some foods become cravings, others become aversions, and nausea in early pregnancy sends many people to plain foods. Saltine crackers are the standard folk remedy. A household that has bought the same brand of crackers for years may switch abruptly to plain saltines, or start buying crackers for the first time. It has the structure of Paul's case on a small scale: an event with a date changes preferences in a way the person could not have fully predicted, and the change is visible in their purchases.
+
+This is a problem for discrete choice models, the standard tool for inferring preferences from purchases. They infer a latent utility function from observed choices, and they assume that the utility function is the same on every trip. A household whose tastes change partway through the data breaks that assumption. A standard model averages the two sets of preferences into one that the household never held.
+
+In this post I add a change point to the utility function of a hierarchical discrete choice model, fit it in PyMC, and test on simulated data whether it recovers changes that happened and reports no change when there was none.
+
+```{python}
+# | label: setup
+# | code-fold: true
+# | code-summary: "Imports, palette, sampler settings"
+import os
+import sys
+import warnings
+
+import numpy as np
+import pandas as pd
+import pymc as pm
+import pytensor.tensor as pt
+import arviz as az
+import matplotlib.pyplot as plt
+
+sys.path.insert(0, os.getcwd())
+from choice_panel import (
+    ALTS, PRICE_IDX, prepare_panel, lagged_choice_matrix, tau_bounds,
+    auc,
+)
+
+warnings.filterwarnings("ignore")
+pd.set_option("display.precision", 3)
+plt.rcParams.update({"figure.dpi": 110, "axes.spines.top": False,
+                     "axes.spines.right": False})
+
+PAL = {"grey": "#8a8583", "focal": "#eb6834", "cool": "#2a78d6"}
+INK = "#2b2b2b"
+# C is the alternative people abandon, D the one they adopt; A and B recede.
+ALT_COL = {"A": "#b4b1ab", "B": "#77746e", "C": PAL["focal"], "D": PAL["cool"]}
+plt.rcParams.update({"axes.edgecolor": "#9a9893", "axes.labelcolor": INK,
+                     "xtick.color": "#55534f", "ytick.color": "#55534f",
+                     "axes.titlesize": 10, "axes.titlelocation": "left"})
+SAMPLE = dict(draws=500, tune=500, chains=2, target_accept=0.9,
+              nuts_sampler="numpyro", progressbar=False, random_seed=7)
+```
+
+## The Estimand
+
+In a discrete choice model, a person assigns each of $J$ alternatives a utility and chooses the one with the highest utility. For household $n$ on trip $t$,
+
+$$ U_{njt} = \alpha_j + \beta_n\,\text{price}_{njt} + \theta'x_{njt} + \varepsilon_{njt} $$
+
+where $\alpha_j$ is the baseline preference for alternative $j$, $\beta_n$ is the person's price sensitivity, $\theta$ are the effects of display and feature promotions $x_{njt}$, and a Gumbel $\varepsilon$ gives softmax choice probabilities. The parameters are the same on every trip, so the model assumes preferences do not change.
+
+I let the parameters take one set of values before a person-specific time $\tau_n$ and another after it. The estimand is whether a person's utility function changes, when, and by how much. Throughout, the **change** is the event, $\tau_n$ is its **date**, and the **shift** $\Delta$ is how far the utility function moves.
+
+There are two cases:
+
+- **The date is known.** A panel may record a change in household composition, such as a birth. $\tau_n$ is data, and only the size of the change is estimated.
+- **The date is unknown.** No panel records when cravings or nausea began. $\tau_n$ is a parameter, estimated together with the size of the change.
+
+## Change-Point Detection and Interrupted Time Series
+
+Two standard methods correspond to these cases. Change-point detection estimates when a series changed. Interrupted time series takes a known date and compares the series before and after it.
+
+Both work on the observed series. In choice data the observed series, for example the share of trips on which someone bought `C`, depends on prices and promotions as well as on preferences. The share can change when preferences do not, and stay the same when they do. So a change in the observed series is not the same as a change in the utility function.
+
+A discrete choice model separates preferences from the attributes of the alternatives. If the change point is placed in the preference parameters, the model estimates the change in utility after accounting for prices and promotions. A known date enters as data on $\tau_n$; a suspected date enters as a prior over $\tau_n$.
+
+Pregnancy shows how the two combine. Suppose the panel records a birth. Cravings and nausea are concentrated in the first months of pregnancy, so the birth date implies a window, roughly six to nine months earlier, in which a change in food preferences would have begun. With purchase dates, that window converts into a range of shopping trips. The range becomes the prior on $\tau_n$, and the household's purchases locate the change within it. The recorded event does not give the date of the change in preferences, but it narrows where to look.
+
+## The Panel
+
+The simulations use the structure of a real scanner panel of cracker purchases (Jain, Vilcassim and Chintagunta, 1994), a standard dataset for panel choice models. It follows 136 households over about twenty cracker purchases each. On each trip the household chooses among four brands, and the data record each brand's shelf price and whether it was on display or featured in a store advertisement.
+
+The panel does not record pregnancies, so I cannot ask whether any of these households changed. Instead I keep the real prices, promotions, and number of trips per household, and simulate the choices. This keeps the parts of the problem that make it hard: prices move only a few cents, households are observed unevenly, and sequences are short. The brands are labelled `A` to `D`. Each shopping trip gives one choice, and the post counts time in trips.
+
+```{python}
+# | label: panel
+CRACKERS = (
+    "/Users/nathanielforde/Documents/Github/bayesian_causal_inference"
+    "/bayesian_causal_infer/data/choice_crackers.csv"
+)
+panel = prepare_panel(pd.read_csv(CRACKERS))
+f"{panel.N} choices, {panel.P} people, median {np.median(panel.T_p):.0f} trips each"
+```
+
+## Adding a Change Point to the Utility Function
+
+The switch between the two utility functions is a logistic weight, which keeps $\tau_n$ continuous so NUTS can sample it:
+
+$$ w_{nt} = \sigma\!\left(\frac{t - \tau_n}{s}\right), \qquad U_{njt} = (\alpha_j + w_{nt}\,\Delta_{\alpha jn}) + (\beta_n + w_{nt}\,\Delta_{n})\,\text{price}_{njt} + \theta'x_{njt} $$
+
+$w$ goes from 0 to 1 around $\tau_n$; at $s = 0.75$ it goes from 0.1 to 0.9 in about three trips. $\Delta_{\alpha jn}$ is the shift in person $n$'s preference for alternative $j$, and $\Delta_n$ the shift in their price sensitivity.
+
+```{python}
+# | label: fig-hinge
+# | fig-cap: "The weight $w$ that switches between the two utility functions, for three values of $\tau_n$. A date after the last trip keeps $w$ near zero, which is how the model represents no change."
+# | code-fold: true
+grid = np.linspace(1, 20, 400)
+fig, ax = plt.subplots(figsize=(7, 2.6))
+for tau, c, txt in [(7, INK, r"$\tau_n = 7$"), (13, INK, r"$\tau_n = 13$"),
+                    (23, PAL["grey"], "τ after the last trip:\nno change observed")]:
+    ax.plot(grid, 1 / (1 + np.exp(-(grid - tau) / 0.75)), color=c, lw=2)
+    if tau < 20:
+        ax.annotate(txt, (tau + 0.3, 0.5), fontsize=9, color=INK)
+ax.annotate("$\\tau_n = 23$, after the last trip:\n$w \\approx 0$ throughout (no change)",
+            (14.2, 0.1), fontsize=9, color=PAL["grey"])
+ax.axvline(20, color=PAL["grey"], lw=0.8)
+ax.annotate("last trip", (19.8, 0.85), ha="right", fontsize=8, color=PAL["grey"])
+ax.set(xlabel="trip $t$", ylabel="$w_{nt}$", ylim=(-0.05, 1.05), xlim=(1, 21));
+```
+
+### How the shifts vary across people
+
+The change point says *that* preferences change. A second choice says how the change varies from one person to the next, and each option is a different claim about what the event is. I consider three structures for the shift vector $\Delta_{\alpha n}$:
+
+- **Shared:** $\Delta_{\alpha n} = \Delta_\alpha$. Everyone who goes through the event changes in the same way; only the date differs. This is the implicit claim of a market-level interrupted time series.
+- **Independent:** $\Delta_{\alpha jn} \sim \text{Normal}(\mu_{\Delta j}, \sigma_{\Delta j})$, separately for each alternative. Each person's change is their own, and nothing links how a person's preference for `A` moves to how their preference for `C` moves. Twenty trips are too few to estimate these shifts without the pooling the hierarchy provides.
+- **Factor:** $\Delta_{\alpha n} = m_n \lambda$, with $m_n \sim \text{Normal}(1, \sigma_m)$. A single latent cause acts on each person. The loadings $\lambda$ are shared and say how that cause moves each alternative; the magnitude $m_n$ says how strongly it acts in person $n$. Fixing the mean of $m_n$ at 1 makes $\lambda$ the typical shift and separates the scale of the two.
+
+The factor structure is an explicit commitment that something unobserved, such as the nausea of early pregnancy, drives the change in all of a person's preferences at once. It says there is one kind of transformation, realised with different strength in different people, and $\sigma_m$ measures how different those realisations are. This sits in some tension with Paul. A shared direction of change makes the transformation predictable in kind, and only its strength is personal. Paul's claim is stronger: that what the experience is like for you, and so what you come to value, cannot be known in advance. The factor model captures the part of her view that varies in degree, not the part that varies in kind. The independent structure makes a weaker commitment and spends three parameters per person to make it. The factor structure spends one.
+
+The rest of the post uses the independent structure unless stated otherwise. The factor structure is compared with it after the recovery test, and the shared structure appears in Appendix B.
+
+The other specification choice is where the date can fall. The window for $\tau_n$ runs from a quarter of the way through each person's trips to past their last trip.
+
+The upper end extends past the data on purpose. A date after the last trip keeps $w$ near zero on every observed trip, which is how the model represents no change. Without that option, every person would be assigned a change somewhere in their data.
+
+The lower end stops inside the data, also on purpose. A date before the first trip would set $w$ to one on every trip, so the person would be "after" throughout. That is also a description of no change: a single set of preferences, now written as $\alpha + \Delta$ instead of $\alpha$. With both options open, the model has two equivalent ways to say nothing happened, and the sampler moves between them, so the sign of $\Delta$ stops meaning anything. Closing the lower end keeps one way. The cost is that a real change in the first quarter of a person's data cannot be detected, and the simulations do not test that case.
+
+```{python}
+# | label: model
+def changepoint_logit(
+    panel,
+    y,
+    *,
+    shift=("alpha",),         # what changes: "alpha" (tastes) and/or "price" (sensitivity)
+    structure="independent",  # how shifts vary across people: "shared",
+                              # "independent", or "factor"
+    tau="estimate",           # "estimate" the dates, or "known" with tau_known supplied
+    tau_known=None,
+    habit=None,               # (N, J) lagged-choice matrix, or None
+    mixture=False,            # add an explicit "no change" state for each person
+    s=0.75,                   # width of the switch between before and after
+):
+    J, P = panel.J, panel.P
+    tau_lo, tau_hi = tau_bounds(panel.T_p, s=s)
+
+    with pm.Model(coords=panel.coords) as model:
+        X = pm.Data("X", panel.X, dims=("obs", "alts", "covariates"))
+        t = pm.Data("t", panel.t, dims="obs")
+        g = pm.Data("grp_idx", panel.grp_idx, dims="obs")    # person on each row
+        obs = pm.Data("y", y, dims="obs")
+
+        # --- preferences before the change --------------------------------------
+        # One intercept is fixed at zero: utility has no natural origin, so only
+        # differences between alternatives are identified.
+        alphas = pm.Deterministic(
+            "alphas",
+            pt.concatenate([pm.Normal("alphas_free", 0, 1.5, dims="alts_free"),
+                            pt.zeros(1)]),
+            dims="alts",
+        )
+        betas_nr = pm.Normal("betas_nr", 0, 1, dims="normal_covariates")  # display, feature
+
+        mu_price = pm.Normal("mu_price", -2.0, 1.5)
+        sigma_price = pm.HalfNormal("sigma_price", 1.0)
+        beta_price_n = pm.Deterministic(
+            "beta_price_n",
+            mu_price + sigma_price * pm.Normal("z_price", 0, 1, dims="person"),
+            dims="person",
+        )
+
+        # --- the change date tau_n and the weight w_nt ---------------------------
+        if not shift:
+            # Nothing changes, so there is no date to estimate.
+            w = pt.zeros(panel.N)
+        else:
+            if tau == "known":
+                tau_n = pm.Data("tau", np.asarray(tau_known, dtype="float64"),
+                                dims="person")
+            else:
+                # Each date is a fraction of the way through the person's window,
+                # drawn hierarchically on the logit scale.
+                mu_tau = pm.Normal("mu_tau", 0, 1)
+                sigma_tau = pm.HalfNormal("sigma_tau", 1.0)
+                fraction = pm.math.sigmoid(
+                    mu_tau + sigma_tau * pm.Normal("z_tau", 0, 1, dims="person"))
+                tau_n = pm.Deterministic("tau", tau_lo + fraction * (tau_hi - tau_lo),
+                                         dims="person")
+            # w = 0 before the change date, 1 after it.
+            w = pm.Deterministic("w", pm.math.sigmoid((t - tau_n[g]) / s), dims="obs")
+
+        # --- the shift in tastes, Delta_alpha ------------------------------------
+        # Priors are deliberately wide: a change in tastes can be several logit
+        # units, and a tight prior would shrink the quantity being measured.
+        if "alpha" in shift and structure == "shared":
+            # Everyone has the same shift; only the date differs.
+            shared = pm.Normal("delta_alpha_shared", 0, 2.5, dims="alts_free")
+            delta_alpha_n = pt.tile(pt.concatenate([shared, pt.zeros(1)])[None, :], (P, 1))
+        elif "alpha" in shift and structure == "factor":
+            # One latent cause per person. The loadings say how that cause moves
+            # each alternative and are shared; m_n says how strongly it acts in
+            # person n. The mean of m_n is fixed at 1, so the loadings are the
+            # typical shift and the scale of the two is identified.
+            loadings = pm.Normal("loadings", 0, 2.5, dims="alts_free")
+            sigma_m = pm.HalfNormal("sigma_m", 0.5)
+            m_n = pm.Deterministic(
+                "m_n", 1 + sigma_m * pm.Normal("z_m", 0, 1, dims="person"), dims="person")
+            delta_alpha_n = pm.Deterministic(
+                "delta_alpha_n",
+                pt.concatenate([m_n[:, None] * loadings[None, :], pt.zeros((P, 1))], axis=1),
+                dims=("person", "alts"),
+            )
+        elif "alpha" in shift:
+            # Independent: each person's shift on each alternative is its own draw.
+            mu_shift = pm.Normal("mu_delta_alpha", 0, 2.5, dims="alts_free")
+            sd_shift = pm.HalfNormal("sigma_delta_alpha", 2.0, dims="alts_free")
+            z_shift = pm.Normal("z_delta_alpha", 0, 1, dims=("person", "alts_free"))
+            delta_alpha_n = pm.Deterministic(
+                "delta_alpha_n",
+                pt.concatenate([mu_shift + sd_shift * z_shift, pt.zeros((P, 1))], axis=1),
+                dims=("person", "alts"),
+            )
+        else:
+            delta_alpha_n = pt.zeros((P, J))
+
+        # --- the shift in price sensitivity, Delta_n -----------------------------
+        if "price" in shift:
+            mu_price_shift = pm.Normal("mu_delta_price", 0, 1.5)
+            sd_price_shift = pm.HalfNormal("sigma_delta_price", 1.0)
+            delta_price_n = pm.Deterministic(
+                "delta_price_n",
+                mu_price_shift + sd_price_shift
+                * pm.Normal("z_delta_price", 0, 1, dims="person"),
+                dims="person",
+            )
+        else:
+            delta_price_n = pt.zeros(P)
+
+        # --- utilities before and after, blended by w -----------------------------
+        promotion = pt.sum(X[:, :, :PRICE_IDX] * betas_nr, axis=2)
+        if habit is None:
+            habit_term = pt.zeros((panel.N, J))
+        else:
+            last_choice = pm.Data("L", habit, dims=("obs", "alts"))
+            habit_term = pm.Normal("beta_habit", 0, 1) * last_choice
+
+        price = X[:, :, PRICE_IDX]
+        U_before = alphas + promotion + habit_term + beta_price_n[g][:, None] * price
+        U_after = (alphas + delta_alpha_n[g] + promotion + habit_term
+                   + (beta_price_n[g] + delta_price_n[g])[:, None] * price)
+        U = pm.Deterministic("U", (1 - w[:, None]) * U_before + w[:, None] * U_after,
+                             dims=("obs", "alts"))
+        p = pm.Deterministic("p", pm.math.softmax(U, axis=1), dims=("obs", "alts"))
+
+        if not mixture:
+            pm.Categorical("y_cat", p=p, observed=obs, dims="obs")
+            return model
+
+        # --- "never changed" as an explicit hypothesis ----------------------------
+        # Each person's choices are explained either by the model above or by
+        # U_before alone. The indicator is summed out, not sampled.
+        rows = pt.arange(panel.N)
+        loglik_changed_obs = pt.log(p)[rows, obs]
+        loglik_same_obs = pt.log(pm.math.softmax(U_before, axis=1))[rows, obs]
+        per_person = pt.zeros((P,))
+        loglik_changed = pt.inc_subtensor(per_person[g], loglik_changed_obs)  # sum by person
+        loglik_same = pt.inc_subtensor(per_person[g], loglik_same_obs)
+
+        pi = pm.Deterministic("pi_pivot", pm.math.sigmoid(pm.Normal("mu_pi", 0, 1)))  # P(changed)
+        log_pi, log_1m_pi = pt.log(pi), pt.log1p(-pi)
+        pm.Potential("mixture_ll",
+                     pt.logaddexp(log_pi + loglik_changed, log_1m_pi + loglik_same).sum())
+        pm.Deterministic(        # each person's posterior probability of having changed
+            "p_transformed",
+            pm.math.sigmoid((log_pi + loglik_changed) - (log_1m_pi + loglik_same)),
+            dims="person",
+        )
+    return model
+```
+
+The function crosses the three structures with three ways of handling the date: known, estimated, or estimated with an explicit "no change" state (Appendix A). The graphs below show the independent and factor structures. The difference is in the `person` plate: three draws per person in the first, one magnitude `m_n` in the second, with the loadings outside the plate because everyone shares them.
+
+```{python}
+# | label: fig-graph-independent
+# | fig-cap: "The independent structure: each person's shift on each alternative is drawn separately (`z_delta_alpha` in the person × alternative plate)."
+pm.model_to_graphviz(changepoint_logit(panel, panel.y, structure="independent"))
+```
+
+```{python}
+# | label: fig-graph-factor
+# | fig-cap: "The factor structure: one magnitude `m_n` per person, scaling loadings shared by everyone."
+pm.model_to_graphviz(changepoint_logit(panel, panel.y, structure="factor"))
+```
+
+## The Simulated Data
+
+Every result below comes from choices simulated with known parameters, so the estimates can be checked against the truth. The prices, promotions and number of trips come from the real panel; everything else is set here.
+
+**Preferences before the change.** The baseline utilities for `A` to `D` are $\alpha = (-1.0, -1.2, 0.6, 0)$: `C` has the highest baseline preference, `D` the next, and `A` and `B` are rarely bought. `D` is also the cheapest brand, so at the panel's prices the typical person splits their purchases mainly between `C` and `D` (table below). Display and feature promotions raise utility by 0.5 and 0.8. Each person has their own price sensitivity, $\beta_n \sim \text{Normal}(-2.5, 0.8)$.
+
+**The change.** Each person's change date $\tau_n$ is drawn uniformly from the first three-quarters of their window for $\tau$, so every change happens inside the data. The change is a **switch** away from `C` and towards `D`. With `D` fixed at zero, a switch of size $d$ moves the four utilities by $(-d, -d, -2d, 0)$: `C` falls twice as far as `A` and `B`. Each person has their own switch size, drawn as $d_n \sim \text{Normal}(d, 0.7)$, and each alternative gets a little extra noise, $\text{Normal}(0, 0.25)$, so people differ in how strongly they change and slightly in how. Throughout the post, `C` is the **abandoned** alternative and `D` the **adopted** one. In the pregnancy example, `C` is the brand the household liked best and `D` the plain saltine it switches to.
+
+**Who changes.** In the main tests everyone changes. Appendix A uses populations in which half the people change, or no one does.
+
+**How choices are drawn.** On each trip the utilities move from their before values to their after values by the weight $w_{nt}$ from the model section, and the choice is drawn from the resulting logit probabilities.
+
+The main tests use $d = 2.5$, a fall of 5 in the utility of `C`. That is a large change, chosen so that it is clearly present in each person's choices; smaller changes leave less evidence and are not tested here. The change is in tastes rather than price sensitivity for a similar reason. A change in price sensitivity affects choices only through the prices a person faces, and in this panel the median person sees prices vary over a range of about 26 cents, so even a large change in sensitivity moves their choices very little.
+
+| parameter | true value | meaning |
+|---|---|---|
+| $\alpha$ | $(-1.0, -1.2, 0.6, 0)$ | baseline preference for `A`–`D`; highest for `C` |
+| $\theta$ | $(0.5, 0.8)$ | effect of display and feature promotions |
+| $\beta_n$ | $\text{Normal}(-2.5, 0.8)$ | each person's price sensitivity |
+| $\tau_n$ | uniform over the first ¾ of the window | each person's change date |
+| $d_n$ | $\text{Normal}(2.5, 0.7)$ | each person's switch size; shift $(-d_n, -d_n, -2d_n, 0)$ |
+| noise | $\text{Normal}(0, 0.25)$ per alternative | small person-specific variation in the shift |
+| $s$ | 0.75 | how quickly the weight $w$ moves from 0 to 1 |
+
+The table below shows what the switch does to a typical person's choices, at the panel's average prices and promotions. Before the change they buy `C` on about two trips in five and `D` on about half; after it, they buy `D` almost every time.
+
+```{python}
+# | label: truth-helper
+def make_truth(panel, *, switch=0.0, spread=0.7, change_rate=1.0,
+               delta_price=0.0, seed=0):
+    """True parameters for a simulated switch, relative to the pinned alternative D.
+
+    Every person has their own switch size, drawn around `switch` with standard
+    deviation `spread`, so that recovery can be judged person by person.
+    `change_rate` below 1 leaves the remaining people unchanged, which is what
+    separates detecting a change in the population from saying whose it was.
+    """
+    rng = np.random.default_rng(seed)
+    tau_lo, tau_hi = tau_bounds(panel.T_p)
+    changed = rng.random(panel.P) < change_rate
+
+    if switch > 0:
+        size_n = switch + spread * rng.standard_normal(panel.P)
+    else:
+        size_n = np.zeros(panel.P)
+    # The switch moves A and B by -d and C by -2d, relative to D.
+    d_alpha = np.stack([-size_n, -size_n, -2 * size_n, np.zeros(panel.P)], axis=1)
+    # A little extra noise on each alternative. It is drawn even when there is
+    # no switch, so that every seed produces the same sequence of draws.
+    noise = 0.25 * rng.standard_normal((panel.P, panel.J - 1))
+    if switch > 0:
+        d_alpha[:, :-1] += noise
+
+    return dict(
+        alphas=np.array([-1.0, -1.2, 0.6, 0.0]),
+        betas_nr=np.array([0.5, 0.8]),
+        beta_price_n=-2.5 + 0.8 * rng.standard_normal(panel.P),
+        tau=tau_lo + rng.uniform(0.0, 0.75, panel.P) * (tau_hi - tau_lo),
+        delta_alpha_n=np.where(changed[:, None], d_alpha, 0.0),
+        delta_price_n=np.where(changed, delta_price, 0.0),
+        changed=changed,
+    )
+
+
+def simulation_inputs(truth, **overrides):
+    """The parts of a truth dictionary that simulate_panel takes as arguments."""
+    return {**{k: v for k, v in truth.items() if k != "changed"}, **overrides}
+```
+
+```{python}
+# | label: tbl-dgp-shares
+# | code-fold: true
+typical = make_truth(panel, switch=2.5, seed=0)
+average_X = panel.X.mean(axis=0)                            # (J, K): average prices, promotions
+U_before = (typical["alphas"] + average_X[:, :PRICE_IDX] @ typical["betas_nr"]
+            - 2.5 * average_X[:, PRICE_IDX])                  # the typical price sensitivity
+U_after = U_before + np.array([-2.5, -2.5, -5.0, 0.0])       # a switch of d = 2.5
+shares = {when: np.exp(U - U.max()) / np.exp(U - U.max()).sum()
+          for when, U in [("before the change", U_before), ("after the change", U_after)]}
+pd.DataFrame(shares, index=ALTS).T.round(2)
+```
+
+Choices are simulated with the forward simulator below. It is written in numpy, separately from the PyMC model, so that an error in one does not appear in the other and go unnoticed.
+
+```{python}
+# | label: simulator
+def simulate_panel(
+    panel, *, alphas, betas_nr, beta_price_n, tau,
+    delta_alpha_n=None, delta_price_n=None, gamma_habit=0.0, s=0.75, seed=0,
+    tau_end=None,
+):
+    """Forward-simulate choices. Returns (choices, lagged-choice matrix).
+
+    ``alphas`` may be a (J,) vector shared by everyone, or a (P, J) array giving
+    each person their own baseline tastes (used in Appendix B).
+    ``tau_end``, if given, is a second date per person at which the change
+    reverses, as a craving that fades would.
+    """
+    rng = np.random.default_rng(seed)
+    N, J, P, g = panel.N, panel.J, panel.P, panel.grp_idx
+    price = panel.X[:, :, PRICE_IDX]
+
+    # w = 0 before the change, 1 after it (and back to 0 after tau_end).
+    w = 1 / (1 + np.exp(-(panel.t - np.asarray(tau)[g]) / s))
+    if tau_end is not None:
+        w = w - 1 / (1 + np.exp(-(panel.t - np.asarray(tau_end)[g]) / s))
+    shift_alpha = np.zeros((P, J)) if delta_alpha_n is None else np.asarray(delta_alpha_n)
+    shift_price = np.zeros(P) if delta_price_n is None else np.asarray(delta_price_n)
+
+    baseline = np.asarray(alphas)
+    baseline = baseline[None, :] if baseline.ndim == 1 else baseline[g]
+    promotion = panel.X[:, :, :PRICE_IDX] @ np.asarray(betas_nr)
+    U = (baseline + w[:, None] * shift_alpha[g] + promotion
+         + (np.asarray(beta_price_n)[g] + w * shift_price[g])[:, None] * price)
+
+    def softmax(V):
+        V = V - V.max(-1, keepdims=True)
+        E = np.exp(V)
+        return E / E.sum(-1, keepdims=True)
+
+    if gamma_habit == 0.0:
+        p = softmax(U)
+        y = np.array([rng.choice(J, p=p[i]) for i in range(N)])
+        return y, lagged_choice_matrix(y, g, panel.t)
+
+    # With habit, each choice affects the next, so trips are simulated in order.
+    y, last_choice, previous = np.empty(N, int), np.zeros((N, J)), {}
+    for i in range(N):
+        person = int(g[i])
+        if panel.t[i] > 1 and person in previous:
+            last_choice[i, previous[person]] = 1.0
+        y[i] = rng.choice(J, p=softmax(U[i] + gamma_habit * last_choice[i]))
+        previous[person] = int(y[i])
+    return y, last_choice
+```
+
+## Recovering a Real Change
+
+I simulate a population in which everyone switches at a random date, and fit the model twice: with the true dates supplied and with the dates estimated.
+
+```{python}
+# | label: recovery-fit
+# | output: false
+truth = make_truth(panel, switch=2.5, seed=31)
+y_sim, L_sim = simulate_panel(panel, seed=31, **simulation_inputs(truth))
+
+
+def fit(model, **kw):
+    """Sample a model with the post's sampler settings (overridable)."""
+    with model:
+        return pm.sample(**{**SAMPLE, **kw})
+
+
+recovery = {
+    "dates supplied": fit(changepoint_logit(
+        panel, y_sim, tau="known", tau_known=truth["tau"])),
+    "dates estimated": fit(changepoint_logit(panel, y_sim, tau="estimate")),
+}
+```
+
+### What the model recovers
+
+The figure below shows the parameters shared by everyone, and each person's change date, against the truth.
+
+```{python}
+# | label: fig-recovery-structure
+# | fig-cap: "Left: posterior means and 94% intervals for the parameters shared by everyone, from both fits, against the true values (black ticks). Right: each person's estimated change date against the true date, with the dates estimated. The grey line is equality."
+# | code-fold: true
+true_shift = truth["delta_alpha_n"][:, :-1]            # (person, A/B/C)
+# How each fit is drawn in the interval plots, here and in the factor section.
+FIT_STYLE = {"dates supplied": (INK, "o", 0.15), "dates estimated": (PAL["grey"], "s", -0.15)}
+
+params = [  # (label, posterior variable, index along its last dimension, true value)
+    *[(f"baseline, {a}", "alphas", j, truth["alphas"][j]) for j, a in enumerate(ALTS[:-1])],
+    ("display", "betas_nr", 0, truth["betas_nr"][0]),
+    ("feature", "betas_nr", 1, truth["betas_nr"][1]),
+    ("mean price coefficient", "mu_price", None, truth["beta_price_n"].mean()),
+    *[(f"typical shift, {a}", "mu_delta_alpha", j, true_shift[:, j].mean())
+      for j, a in enumerate(ALTS[:-1])],
+]
+
+fig, axs = plt.subplots(1, 2, figsize=(11, 4.2), gridspec_kw={"width_ratios": [1.5, 1]})
+ax = axs[0]
+for row, (name, var, j, true_value) in enumerate(params[::-1]):
+    ax.plot([true_value], [row], marker="|", ms=16, mew=2.5, color=INK)
+    for label, idata in recovery.items():
+        draws = idata.posterior[var]
+        if j is not None:
+            draws = draws.isel({draws.dims[-1]: j})
+        draws = draws.values.ravel()
+        colour, marker, offset = FIT_STYLE[label]
+        ax.plot(np.percentile(draws, [3, 97]), [row + offset] * 2, color=colour, lw=1.8)
+        ax.plot([draws.mean()], [row + offset], marker=marker, color=colour, ms=5,
+                ls="none", label=label if row == 0 else None)
+ax.plot([], [], marker="|", ms=12, mew=2.5, color=INK, ls="none", label="truth")
+ax.set(yticks=range(len(params)), yticklabels=[p[0] for p in params[::-1]],
+       xlabel="value (logit scale)", title="Shared parameters")
+ax.legend(frameon=False, fontsize=8, loc="upper left")
+
+tau_hat = recovery["dates estimated"].posterior["tau"].mean(dim=("chain", "draw")).values
+tau_lo, tau_hi = tau_bounds(panel.T_p)
+mean_error = np.abs(tau_hat - truth["tau"]).mean()
+midpoint_error = np.abs((tau_lo + tau_hi) / 2 - truth["tau"]).mean()
+lim = [truth["tau"].min() - 0.5, truth["tau"].max() + 0.5]
+axs[1].plot(lim, lim, color=PAL["grey"], lw=0.8)
+axs[1].scatter(truth["tau"], tau_hat, s=12, alpha=0.6, color=INK)
+axs[1].set(xlabel=r"true date $\tau_n$ (trip)", ylabel="estimated date",
+           title="Each person's change date", xlim=lim, ylim=lim)
+axs[1].set_aspect("equal")
+axs[1].annotate(f"mean error {mean_error:.1f} trips\n(midpoint guess: {midpoint_error:.1f})",
+                (0.04, 0.96), xycoords="axes fraction", va="top", fontsize=8)
+plt.tight_layout();
+```
+
+The model picks up the real structure of the change.
+
+- **The typical shift is recovered.** For each alternative, the average change across people comes back close to the truth, with the dates supplied or estimated. The fit finds that people abandon `C` and that `C` falls about twice as far as `A` and `B`.
+- **Each person's date is recovered.** Estimated dates are within 1.6 trips of the truth on average, against 4.3 for a guess at the midpoint of each window. Knowing the dates in advance did not improve the other estimates at this effect size.
+- **Prices and promotions are recovered,** so the change is measured after accounting for what was on offer. The baselines for `B` and `C` come out somewhat low in both fits.
+
+For individual people, the fitted choice probabilities show the change where it happened:
+
+```{python}
+# | label: fig-trajectory
+# | fig-cap: "Three simulated people. Lines are fitted choice probabilities; squares along the top are the choices actually made. The vertical line is the true change date and the grey band is the 94% interval for the estimated date."
+# | code-fold: true
+fit_est = recovery["dates estimated"]
+p_hat = fit_est.posterior["p"].mean(dim=("chain", "draw")).values           # (rows, J)
+tau_draws = fit_est.posterior["tau"].stack(s=("chain", "draw")).values      # (person, draws)
+
+# The three people with the largest switches, so the step is easy to see.
+switch_size = np.abs(truth["delta_alpha_n"]).max(axis=1)
+picks = np.argsort(switch_size)[-3:][::-1]
+
+fig, axs = plt.subplots(1, 3, figsize=(11, 3.4), sharey=True)
+for ax, person in zip(axs, picks):
+    rows = np.where(panel.grp_idx == person)[0]
+    trips = panel.t[rows]
+    ax.axvspan(*np.percentile(tau_draws[person], [3, 97]), color=PAL["grey"], alpha=0.15, lw=0)
+    ax.axvline(truth["tau"][person], color=INK, lw=1)
+    for j, alt in enumerate(ALTS):
+        ax.plot(trips, p_hat[rows, j], color=ALT_COL[alt], lw=2 if alt in "CD" else 1.2,
+                label=f"P({alt})")
+    # What was actually chosen, one square per trip, along the top.
+    ax.scatter(trips, np.full(len(trips), 1.07), c=[ALT_COL[ALTS[k]] for k in y_sim[rows]],
+               s=22, marker="s", clip_on=False)
+    ax.set(xlabel="trip", ylim=(0, 1.12), yticks=[0, 0.25, 0.5, 0.75, 1, 1.07],
+           yticklabels=["0", "0.25", "0.5", "0.75", "1", "chosen"],
+           title=f"person {panel.person_id[person]}")
+    ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+axs[0].set_ylabel("fitted choice probability")
+axs[-1].legend(frameon=False, fontsize=8, loc="center right")
+plt.tight_layout();
+```
+
+### Whether each person changed
+
+The fits above assume everyone changed. To ask *whether* a given person changed, the model needs a way to say no. Appendix A adds an explicit no-change state for each person, which gives a probability that the person changed, and tests it on two simulated populations:
+
+- **No one changed.** No one is flagged as having changed.
+- **Half the panel changed.** About the right share is flagged (54% against a true 53%), and the model separates people who changed from people who did not almost perfectly: a randomly chosen person who changed is ranked above a randomly chosen person who did not 98% of the time.
+
+So *whether* a person changed is recovered as well as *when*, at this effect size. The appendix also explains why the no-change state is needed: without it, whether the model reports no change depends on the prior.
+
+### What the model does not recover: how much each person changed
+
+The model knows that each person changed and when. It does not know how much one person changed compared with another. The figure plots each person's estimated shift against their true shift, for each alternative.
+
+The table below adds two measures of how well the data separate one person from another. The **between-person share** is the fraction of all the posterior variation in a person's shift that lies between people rather than within each person's own posterior. It is near 1 when the data pin each person down and near 0 when every person's posterior is mostly the population distribution. The **slope on truth** is how far the estimates move per unit of true difference between two people: 1 is full recovery, 0 means everyone is estimated the same.
+
+```{python}
+# | label: fig-recovery
+# | fig-cap: "Estimated against true per-person shifts, coloured by alternative, with the correlation within each alternative. The grey line is equality. Points along a flat band are people estimated at about the population average."
+# | code-fold: true
+fig, axs = plt.subplots(1, 2, figsize=(9, 3.9), sharex=True, sharey=True)
+for ax, (label, idata) in zip(axs, recovery.items()):
+    est_shift = idata.posterior["delta_alpha_n"].mean(dim=("chain", "draw")).values[:, :-1]
+    lim = [min(true_shift.min(), est_shift.min()) - 0.4,
+           max(true_shift.max(), est_shift.max()) + 0.4]
+    ax.plot(lim, lim, color=PAL["grey"], lw=0.8)
+    for j, alt in enumerate(ALTS[:-1]):
+        r = np.corrcoef(true_shift[:, j], est_shift[:, j])[0, 1]
+        ax.scatter(true_shift[:, j], est_shift[:, j], s=12, alpha=0.6, color=ALT_COL[alt],
+                   label=f"{alt}  (r = {r:.2f})")
+    ax.set(xlabel=r"true shift $\Delta_{\alpha jn}$", title=f"Per-person shifts, {label}",
+           xlim=lim, ylim=lim)
+    ax.set_aspect("equal")
+    ax.legend(frameon=False, fontsize=8, title="alternative", title_fontsize=8)
+axs[0].set_ylabel("estimated shift")
+plt.tight_layout();
+```
+
+```{python}
+# | label: tbl-recovery-ind
+# | code-fold: true
+def identification(draws, true):
+    """How far the data separate people, for one quantity per person.
+
+    draws: (P, S) posterior draws; true: (P,) true values. Returns
+    between-person share: the fraction of all posterior variation that lies
+      between people rather than within each person's posterior. Near 1 when
+      the data pin each person down; near 0 when every posterior is mostly prior.
+    slope: how much the posterior mean moves per unit of true difference
+      between people. 1 is full recovery; 0 is everyone estimated the same.
+    """
+    share = 1 - draws.var(axis=1).mean() / draws.var()
+    slope = np.polyfit(true, draws.mean(axis=1), 1)[0]
+    return share, slope
+
+
+def shift_summaries(idata):
+    """Posterior mean, draws and 94% HDI of each person's shift on A, B and C."""
+    post = idata.posterior["delta_alpha_n"]
+    mean = post.mean(dim=("chain", "draw")).values[:, :-1]
+    draws = post.stack(s=("chain", "draw")).values[:, :-1, :]
+    hdi = az.hdi(idata, var_names=["delta_alpha_n"], hdi_prob=0.94)["delta_alpha_n"]
+    return mean, draws, hdi.sel(hdi="lower").values[:, :-1], hdi.sel(hdi="higher").values[:, :-1]
+
+
+rows = []
+for label, idata in recovery.items():
+    est_shift, draws, lo, hi = shift_summaries(idata)
+    per_alt = [identification(draws[:, j, :], true_shift[:, j]) for j in range(3)]
+    rows.append({
+        "fit": label,
+        "corr Δα, pooled": np.corrcoef(true_shift.ravel(), est_shift.ravel())[0, 1],
+        "corr Δα, within alternative": np.mean(
+            [np.corrcoef(true_shift[:, j], est_shift[:, j])[0, 1] for j in range(3)]),
+        "between-person share": np.mean([share for share, _ in per_alt]),
+        "slope on truth": np.mean([slope for _, slope in per_alt]),
+        "RMSE": np.sqrt(np.mean((est_shift - true_shift) ** 2)),
+        "94% coverage": np.mean((lo <= true_shift) & (true_shift <= hi)),
+    })
+pd.DataFrame(rows).set_index("fit").round(3)
+```
+
+- Pooled over alternatives, the correlation with the truth is about 0.73. That mostly reflects `C` moving twice as far as `A` and `B`, which the typical shift already captures. Within an alternative the correlation is 0.05 to 0.46.
+- Under 10% of the posterior variation separates one person from another. The rest is uncertainty within each person's posterior, which is mostly the population distribution.
+- A true difference of one unit between two people moves their estimates apart by under 0.1. Everyone is estimated at about the population average, which is the flat band in the figure.
+- Interval coverage is 93% with estimated dates and 87% with known dates, against a nominal 94%. Supplying the dates removes one source of uncertainty, so the intervals narrow, and in this single run they narrow a little too much; a single short simulation cannot separate that from noise. Either way, coverage can look acceptable while saying almost nothing about individuals, because wide posteriors that sit on the population distribution usually contain the truth.
+
+How much each person changed is identified in principle: each trip after the change adds some information about it. There is too little here. A switch makes choices lopsided: once a person buys `D` 95% of the time, the data hardly distinguish a fall of 4 in the utility of `C` from a fall of 6. Twenty choices are enough to tell *whether* a person changed, but not *how much* one person changed relative to another.
+
+## Pooling Across People
+
+Partial pooling pulls each person's shift toward the population average, which seems to conflict with Paul's claim that the effect of the event is personal. But the model also estimates how much shifts vary between people, $\sigma_\Delta$. A large $\sigma_\Delta$ is Paul's claim stated as a parameter, and the model is set up to estimate it rather than assume it. The previous section suggests the difficulty: if the data cannot separate one person's shift from another's, they also say little about how much shifts vary.
+
+Pooling only makes sense if the events are of the same kind, and aligning people on their own event dates is what makes them comparable. The plot below aligns everyone on their true date and shows the shares of `C` (abandoned) and `D` (adopted). This is an interrupted time series built from many short series.
+
+```{python}
+# | label: fig-event-study
+# | fig-cap: "Everyone aligned on their own true change date. Points are observed choice shares with 94% intervals; lines are the model's fitted probabilities averaged over the same trips."
+# | code-fold: true
+C, D = 2, 3                                               # column indices in ALTS
+
+
+def wilson_interval(successes, n, z=1.88):
+    """94% Wilson interval for a binomial share."""
+    share = successes / n
+    centre = (share + z**2 / (2 * n)) / (1 + z**2 / n)
+    half_width = z * np.sqrt(share * (1 - share) / n + z**2 / (4 * n**2)) / (1 + z**2 / n)
+    return centre - half_width, centre + half_width
+
+
+trips_since = panel.t - truth["tau"][panel.grp_idx]       # relative to each person's date
+p_fit = recovery["dates supplied"].posterior["p"].mean(dim=("chain", "draw")).values
+centres, observed, interval, fitted = [], {C: [], D: []}, {C: [], D: []}, {C: [], D: []}
+for b in np.arange(-8, 9):
+    in_bin = (trips_since >= b - 0.5) & (trips_since < b + 0.5)
+    n = in_bin.sum()
+    if n < 30:                                            # too few trips to plot
+        continue
+    centres.append(b)
+    for j in (C, D):
+        k = (y_sim[in_bin] == j).sum()
+        observed[j].append(k / n)
+        interval[j].append(wilson_interval(k, n))
+        fitted[j].append(p_fit[in_bin, j].mean())
+
+fig, ax = plt.subplots(figsize=(7.5, 3.4))
+ax.axvline(0, color=PAL["grey"], lw=1)
+for j, alt, role in [(C, "C", "abandoned"), (D, "D", "adopted")]:
+    colour = ALT_COL[alt]
+    lo, hi = np.array(interval[j]).T
+    ax.vlines(centres, lo, hi, color=colour, lw=1)
+    ax.plot(centres, observed[j], "o", color=colour, ms=5, mec="white", mew=1)
+    ax.plot(centres, fitted[j], color=colour, lw=2)
+    ax.annotate(f"{alt} ({role})", (-7.8, 0.66 if alt == "D" else 0.2),
+                color=INK, fontsize=9)
+ax.annotate("change date", (0.15, 0.97), fontsize=8, color=PAL["grey"])
+ax.set(xlabel=r"trips since each person's own change date $\tau_n$",
+       ylabel="share of choices", ylim=(0, 1), xlim=(-8.5, 8.5), xticks=np.arange(-8, 9, 2))
+ax.set_title("Points: observed shares with 94% intervals.  Lines: model-fitted probability.",
+             loc="left", fontsize=9);
+```
+
+Two cautions apply to this plot. First, it uses observed shares, so in real data a promotion that happened to fall near the event dates would produce the same step. The model's shift accounts for prices and promotions; the plot does not.
+
+Second, it uses the true dates. In practice the dates would be estimated, and a plot aligned on estimated dates shows a step whether or not one exists: the model places each date where that person's choices changed most, so aligning on those dates lines up the changes by construction, including changes that are only noise. A step in such a plot shows what the model found, not that it was right. Only a plot aligned on dates known independently of the choices, such as recorded births, is evidence of a change.
+
+The population parameters of the shifts, and the predicted shift for a new person:
+
+```{python}
+# | label: tbl-population
+# | code-fold: true
+rows = []
+for j, alt in enumerate(ALTS[:-1]):
+    row = {"alternative": alt, "true μΔ": true_shift[:, j].mean(),
+           "true σΔ": true_shift[:, j].std()}
+    for label, idata in recovery.items():
+        row[f"μΔ ({label})"] = float(idata.posterior["mu_delta_alpha"].isel(alts_free=j).mean())
+        row[f"σΔ ({label})"] = float(idata.posterior["sigma_delta_alpha"].isel(alts_free=j).mean())
+    rows.append(row)
+pd.DataFrame(rows).set_index("alternative").round(2)
+```
+
+```{python}
+# | label: fig-population
+# | fig-cap: "Population parameters of the shifts: posterior means and 94% intervals from both fits, against the true values."
+# | code-fold: true
+fig, axs = plt.subplots(1, 2, figsize=(10, 2.8), sharey=True)
+row_of = {alt: i for i, alt in enumerate(ALTS[:-1][::-1])}
+offset = {"dates supplied": 0.12, "dates estimated": -0.12}
+marker = {"dates supplied": "o", "dates estimated": "s"}
+for ax, var, true_stat, name in [
+    (axs[0], "mu_delta_alpha", np.mean, r"mean shift $\mu_\Delta$"),
+    (axs[1], "sigma_delta_alpha", np.std, r"spread of shifts $\sigma_\Delta$"),
+]:
+    for j, alt in enumerate(ALTS[:-1]):
+        ax.plot([true_stat(true_shift[:, j])], [row_of[alt]], marker="|", ms=18, mew=2.5,
+                color=INK, label="truth" if j == 0 else None)
+        for label, idata in recovery.items():
+            draws = idata.posterior[var].isel(alts_free=j).values.ravel()
+            y = row_of[alt] + offset[label]
+            ax.plot(np.percentile(draws, [3, 97]), [y, y], color=ALT_COL[alt], lw=2)
+            ax.plot([draws.mean()], [y], marker=marker[label], color=ALT_COL[alt], ms=6,
+                    mec="white", mew=1, ls="none", label=label if j == 2 else None)
+    ax.set(xlabel=name, yticks=list(row_of.values()), yticklabels=list(row_of.keys()))
+axs[0].set_ylabel("alternative")
+axs[1].legend(frameon=False, fontsize=8, loc="lower right")
+fig.suptitle("Posterior means with 94% intervals against the true values",
+             x=0.01, ha="left", fontsize=10)
+plt.tight_layout();
+```
+
+```{python}
+# | label: fig-predictive
+# | fig-cap: "Predicted shift for a new person (outline), from the fit with dates supplied, against the 136 simulated shifts (filled)."
+# | code-fold: true
+fit_known = recovery["dates supplied"].posterior
+rng = np.random.default_rng(0)
+fig, axs = plt.subplots(1, 3, figsize=(11, 2.8), sharey=True)
+for j, (ax, alt) in enumerate(zip(axs, ALTS[:-1])):
+    mu = fit_known["mu_delta_alpha"].isel(alts_free=j).values.ravel()
+    sd = fit_known["sigma_delta_alpha"].isel(alts_free=j).values.ravel()
+    new_person = mu + sd * rng.standard_normal(mu.size)   # one draw per posterior draw
+    lo_x, hi_x = np.percentile(new_person, [0.5, 99.5])
+    bins = np.linspace(min(lo_x, true_shift[:, j].min()), max(hi_x, true_shift[:, j].max()), 30)
+    ax.hist(true_shift[:, j], bins=bins, density=True, color=ALT_COL[alt], alpha=0.35,
+            label="the 136 simulated shifts")
+    ax.hist(new_person, bins=bins, density=True, histtype="step", color=INK, lw=1.5,
+            label="prediction for a new person")
+    ax.set(xlabel=rf"shift $\Delta_\alpha$ for {alt}")
+axs[0].set_ylabel("density")
+axs[0].legend(frameon=False, fontsize=8, loc="upper left")
+plt.tight_layout();
+```
+
+The mean shift is recovered. The spread $\sigma_\Delta$ is off by up to a factor of two, and its intervals run from near zero to well past the truth. The likely reason is that the simulated shifts are nearly perfectly correlated across alternatives within a person (one magnitude per person, plus a little noise on each alternative), while the independent structure treats them as unrelated. The factor structure in the next section is the direct remedy; a full covariance between shifts (an LKJ prior) is a less restrictive one.
+
+The predictive distribution for a new person is what someone considering the event could use. It does not resolve Paul's problem: it does not tell a person where in the distribution they will fall.
+
+## One Latent Cause: The Factor Structure
+
+The independent structure asks the data for three shifts per person, from about ten choices after the change. The factor structure asks for one: every post-change choice informs the magnitude $m_n$, and the direction of the change is shared. I fit it to the same simulated panel, with the dates supplied and estimated.
+
+```{python}
+# | label: factor-fit
+# | output: false
+recovery_factor = {
+    "dates supplied": fit(changepoint_logit(
+        panel, y_sim, structure="factor", tau="known", tau_known=truth["tau"])),
+    "dates estimated": fit(changepoint_logit(panel, y_sim, structure="factor")),
+}
+```
+
+### What the factor model recovers
+
+The factor model has two kinds of shared parameter. The loadings $\lambda$ give the direction and typical size of the change for each alternative. The spread $\sigma_m$ says how much the strength of the change varies between people, relative to the typical person. To compare with the truth, I summarise each person's true shift by one magnitude: its projection onto the switch direction $(-1, -1, -2)$.
+
+```{python}
+# | label: fig-factor-structure
+# | fig-cap: "Posterior means and 94% intervals for the factor model's shared parameters, from both fits, against the true values (black ticks). Left: the loadings, the typical change for each alternative. Right: the spread of magnitudes between people, relative to the typical person."
+# | code-fold: true
+def magnitude(shift):
+    """Project (P, 3, ...) shifts onto the switch direction (-1, -1, -2)."""
+    return -(shift[:, 0] + shift[:, 1] + 2 * shift[:, 2]) / 6
+
+
+true_magnitude = magnitude(true_shift)
+fig, axs = plt.subplots(1, 2, figsize=(10, 2.9), gridspec_kw={"width_ratios": [2, 1]})
+for j, alt in enumerate(ALTS[:-1]):
+    row = 2 - j
+    axs[0].plot([true_shift[:, j].mean()], [row], marker="|", ms=16, mew=2.5, color=INK)
+    for label, idata in recovery_factor.items():
+        draws = idata.posterior["loadings"].isel(alts_free=j).values.ravel()
+        colour, marker, offset = FIT_STYLE[label]
+        axs[0].plot(np.percentile(draws, [3, 97]), [row + offset] * 2, color=colour, lw=1.8)
+        axs[0].plot([draws.mean()], [row + offset], marker=marker, color=colour, ms=5,
+                    ls="none", label=label if j == 0 else None)
+axs[0].plot([], [], marker="|", ms=12, mew=2.5, color=INK, ls="none", label="truth")
+axs[0].set(yticks=[2, 1, 0], yticklabels=[f"loading, {a}" for a in ALTS[:-1]],
+           xlabel="typical change (logit scale)", title="Loadings")
+axs[0].legend(frameon=False, fontsize=8, loc="upper left")
+
+# The true spread of magnitudes, relative to the typical person.
+axs[1].plot([true_magnitude.std() / true_magnitude.mean()], [0], marker="|", ms=16,
+            mew=2.5, color=INK)
+for label, idata in recovery_factor.items():
+    draws = idata.posterior["sigma_m"].values.ravel()
+    colour, marker, offset = FIT_STYLE[label]
+    axs[1].plot(np.percentile(draws, [3, 97]), [offset] * 2, color=colour, lw=1.8)
+    axs[1].plot([draws.mean()], [offset], marker=marker, color=colour, ms=5, ls="none")
+axs[1].set(yticks=[0], yticklabels=[r"spread $\sigma_m$"], ylim=(-0.6, 0.6),
+           xlabel="relative to the typical person", title="Spread between people")
+plt.tight_layout();
+```
+
+The loadings come back close to the truth with the dates supplied or estimated. The factor model finds the shared pattern of the change: everyone who changes moves away from `C` about twice as far as from `A` and `B`. In the pregnancy example, this is the effect of the unobserved cause on each brand.
+
+The spread is less well estimated. The interval for $\sigma_m$ includes the truth, but the estimate is about two-thirds of it. When each person contributes little information, the model cannot tell real differences between people from random noise in their choices, and it attributes more of the variation to noise. That makes the estimated spread too small.
+
+### Individual magnitudes
+
+The table and figure compare how well each structure recovers how much each person changed.
+
+```{python}
+# | label: tbl-structures
+# | code-fold: true
+rows = []
+for structure, fits in [("independent", recovery), ("factor", recovery_factor)]:
+    for label, idata in fits.items():
+        est_shift, draws, lo, hi = shift_summaries(idata)
+        share, slope = identification(magnitude(draws), true_magnitude)
+        rows.append({
+            "structure": structure, "dates": label,
+            "corr magnitude": np.corrcoef(true_magnitude, magnitude(est_shift))[0, 1],
+            "between-person share": share,
+            "slope on truth": slope,
+            "RMSE": np.sqrt(np.mean((est_shift - true_shift) ** 2)),
+            "94% coverage": np.mean((lo <= true_shift) & (true_shift <= hi)),
+        })
+pd.DataFrame(rows).set_index(["structure", "dates"]).round(2)
+```
+
+```{python}
+# | label: fig-structures
+# | fig-cap: "Each person's estimated change magnitude against the truth. Columns: the independent structure (projected onto the switch direction) and the factor structure. Rows: dates supplied and dates estimated. The grey line is equality; points along a flat band mean estimates pulled to the average."
+# | code-fold: true
+fig, axs = plt.subplots(2, 2, figsize=(8, 7), sharex=True, sharey=True)
+lim = [true_magnitude.min() - 0.3, true_magnitude.max() + 0.3]
+for col, (structure, fits) in enumerate([("independent", recovery),
+                                         ("factor", recovery_factor)]):
+    for row, label in enumerate(["dates supplied", "dates estimated"]):
+        ax = axs[row, col]
+        est_magnitude = magnitude(fits[label].posterior["delta_alpha_n"]
+                                  .mean(dim=("chain", "draw")).values[:, :-1])
+        r = np.corrcoef(true_magnitude, est_magnitude)[0, 1]
+        ax.plot(lim, lim, color=PAL["grey"], lw=0.8)
+        ax.scatter(true_magnitude, est_magnitude, s=14, alpha=0.6, color=PAL["focal"])
+        ax.set(title=f"{structure}, {label} (r = {r:.2f})", xlim=lim, ylim=lim)
+        ax.set_aspect("equal")
+for ax in axs[1]:
+    ax.set_xlabel("true magnitude")
+for ax in axs[:, 0]:
+    ax.set_ylabel("estimated magnitude")
+plt.tight_layout();
+```
+
+Neither structure recovers how strongly the change acted in an individual. The factor structure does slightly better on every measure except coverage, most of all when the dates are supplied, but both produce a flat band. The between-person share stays under 0.1, and two people whose true magnitudes differ by one unit get estimates about 0.1 apart or less. The small estimated spread adds to this, because the model pulls each person towards the average in proportion to how small it thinks the differences between people are. The factor model's intervals are also too narrow: the simulation adds a little noise to each alternative's shift that a pure one-factor model has no place for.
+
+So the factor structure recovers the shared pattern of the change and not the individual strength of it. Its value is that it states clearly what the model assumes the event is: one unobserved cause, moving all of a person's preferences in a fixed pattern, with a strength that varies between people. That assumption could be wrong. If the event moved different people's preferences in unrelated directions, the shared loadings would force every change onto one axis.
+
+## The Same Question as a Latent Markov Chain
+
+The change point is a special case of a hidden Markov model. Rather than a date, each person has a latent state on every trip, $s_{nt} \in \{\text{before}, \text{after}\}$, and their choices depend on the state.
+
+**The model.** It has three components.
+
+*Where people start.* Everyone starts in "before":
+$$
+\pi = \Pr(s_{n1}) = (1,\ 0).
+$$
+
+*How the state moves.* Between one trip and the next, the state moves according to a transition matrix, with rows for the current state and columns for the next:
+$$
+\Pr(s_{nt} = k \mid s_{n,t-1} = l) = \Gamma_{lk}, \qquad
+\Gamma = \begin{pmatrix} 1-h & h \\ r & 1-r \end{pmatrix}.
+$$
+$h$ is the probability of leaving "before" on any trip, and $r$ the probability of returning from "after".
+
+*What each state does to choices.* In each state the person chooses by the same logit model as before, with the shift added in "after":
+$$
+e_{nt}(k) = \Pr(y_{nt} \mid s_{nt} = k) = \operatorname{softmax}\big(U^{(k)}_{nt}\big)_{y_{nt}}, \qquad
+U^{(\text{after})}_{njt} = U^{(\text{before})}_{njt} + \Delta_{\alpha j},
+$$
+where $U^{(\text{before})}_{njt} = \alpha_j + \beta_n\,\text{price}_{njt} + \theta' x_{njt}$.
+
+**The likelihood.** The states are never observed, so the likelihood sums over every possible path of states. The forward algorithm does this one trip at a time. $f_{nt}(k)$ is the probability of person $n$'s choices up to trip $t$, ending in state $k$:
+$$
+f_{n1}(k) = \pi_k\, e_{n1}(k), \qquad
+f_{nt}(k) = e_{nt}(k) \sum_{l} f_{n,t-1}(l)\, \Gamma_{lk}, \qquad
+p(y_n) = \sum_k f_{nT_n}(k).
+$$
+Each step carries the probabilities forward through $\Gamma$, then weights each state by how well it explains the choice made on that trip.
+
+**The connection to the change point.** With $r = 0$, "after" is permanent and the trip on which the state changes is the date. Its prior is geometric: the change happens on trip $t$ with probability $(1-h)^{t-2}h$, and never happens within person $n$'s data with probability $(1-h)^{T_n - 1}$. The no-change case is therefore part of the model, not something added. Compared with the change point, three things differ:
+
+- **Timing.** The change point puts a prior on each person's date directly. The Markov chain puts one shared probability $h$ on changing at each trip. The chain has no per-person date parameter; the state is summed out.
+- **How shifts vary.** Everyone in "after" has the same utility function. This is the shared structure from earlier, with people differing only in when they move to "after". Since individual magnitudes were not identified anyway, little is lost.
+- **Reversal.** With $r > 0$ the chain allows a return to "before", which a single change point cannot represent.
+
+A known date fits into the chain as a covariate on $h$: a recorded birth would raise the probability of moving to "after" in the months before it. I do not fit that version here.
+
+**In the code.** Each component appears directly. `start` is $\pi$. `transition` is $\Gamma$, built from `hazard` ($h$) and `reversion` ($r$). `p_before` and `p_after` hold the choice probabilities under each state for every person and trip, so $e_{nt}(k)$ is the entry for the alternative actually chosen. `marginalize` replaces the latent chain `s` with the forward recursion above.
+
+Two implementation details matter. Households are observed for different numbers of trips, so each chain is padded to the longest household, and padded trips are made to contribute nothing to the likelihood. And `marginalize` cannot sum over the state through a softmax, so the choice probabilities are computed for each state first and then selected by the state.
+
+```{python}
+# | label: markov-model
+from pymc_extras import marginalize
+from pymc_extras.distributions import DiscreteMarkovChain
+
+
+def to_grid(panel, values, fill=0.0):
+    """One row per trip (N, ...) -> one row per person and trip (P, T_max, ...).
+
+    Households have different numbers of trips, so shorter ones are padded.
+    Also returns a (P, T_max) mask that is True on real trips.
+    """
+    T = int(panel.T_p.max())
+    grid = np.full((panel.P, T) + values.shape[1:], fill, dtype=values.dtype)
+    trip_idx = panel.t.astype(int) - 1
+    grid[panel.grp_idx, trip_idx] = values
+    real_trip = np.zeros((panel.P, T), dtype=bool)
+    real_trip[panel.grp_idx, trip_idx] = True
+    return grid, real_trip
+
+
+def markov_logit(panel, y, *, reversible=False):
+    """Two-state chain ('before', 'after') with a single transition matrix."""
+    X, real_trip = to_grid(panel, panel.X)                     # (P, T, J, K)
+    Y, _ = to_grid(panel, np.asarray(y).astype("int64"), fill=0)
+    P, T, J = Y.shape[0], Y.shape[1], panel.J
+
+    with pm.Model(coords=panel.coords) as model:
+        # --- the choice model ----------------------------------------------------
+        alphas = pt.concatenate([pm.Normal("alphas_free", 0, 1.5, dims="alts_free"),
+                                 pt.zeros(1)])
+        betas_nr = pm.Normal("betas_nr", 0, 1, dims="normal_covariates")
+        mu_price = pm.Normal("mu_price", -2.0, 1.5)
+        sigma_price = pm.HalfNormal("sigma_price", 1.0)
+        beta_price_n = mu_price + sigma_price * pm.Normal("z_price", 0, 1, dims="person")
+        # One shift, shared by everyone in the 'after' state.
+        delta = pm.Normal("delta_alpha", 0, 2.5, dims="alts_free")
+        delta_full = pt.concatenate([delta, pt.zeros(1)])
+
+        # --- the latent chain: pi and Gamma --------------------------------------
+        h = pm.Beta("hazard", 1, 9)                                  # leave 'before'
+        r = pm.Beta("reversion", 1, 9) if reversible else pt.as_tensor(0.0)  # leave 'after'
+        transition = pt.stack([pt.stack([1 - h, h]), pt.stack([r, 1 - r])])   # Gamma
+        start = pm.Categorical.dist(p=np.array([1.0, 0.0]))          # pi: start in 'before'
+        s = DiscreteMarkovChain("s", P=transition, init_dist=start, shape=(P, T))
+
+        # --- e_nt(k): choice probabilities in each state -------------------------
+        U_before = (alphas + pt.sum(X[..., :PRICE_IDX] * betas_nr, axis=-1)
+                    + beta_price_n[:, None, None] * X[..., PRICE_IDX])
+        # Padded trips get a dummy choice that is certain in both states.
+        certain = pt.as_tensor(np.eye(J)[0] * 50.0)
+        p_before = pm.math.softmax(pt.where(real_trip[..., None], U_before, certain), axis=-1)
+        p_after = pm.math.softmax(
+            pt.where(real_trip[..., None], U_before + delta_full, certain), axis=-1)
+        # Select by state elementwise, which is the form marginalize can sum over.
+        state = s[..., None]
+        pm.Categorical("y", p=(1 - state) * p_before + state * p_after, observed=Y)
+    return model
+```
+
+```{python}
+# | label: fig-graph-markov
+# | fig-cap: "The latent Markov version before the chain is summed out. The state `s` is a chain over each person's trips; the shift `delta_alpha` is shared."
+pm.model_to_graphviz(markov_logit(panel, panel.y))
+```
+
+I fit it to three simulated panels: the recovery data from earlier, the data in which no one changed, and a new panel in which each person's change reverses four to eight trips after it starts, as a craving that fades would. The change point is fitted to the third panel as well.
+
+```{python}
+# | label: markov-fit
+# | output: false
+# A craving that fades: each change reverses 4 to 8 trips after it starts.
+truth_f = make_truth(panel, switch=2.5, seed=41)
+tau_end = truth_f["tau"] + np.random.default_rng(41).uniform(4, 8, panel.P)
+y_f, _ = simulate_panel(panel, seed=41, tau_end=tau_end, **simulation_inputs(truth_f))
+# A panel in which no one changes (the same one Appendix A uses).
+truth_0 = make_truth(panel, switch=0.0, seed=13)
+y_0, _ = simulate_panel(panel, seed=13, **simulation_inputs(truth_0))
+
+markov = {
+    "recovery": fit(marginalize(markov_logit(panel, y_sim), ["s"])),
+    "no change": fit(marginalize(markov_logit(panel, y_0), ["s"])),
+    "fading": fit(marginalize(markov_logit(panel, y_f, reversible=True), ["s"])),
+}
+cp_fading = fit(changepoint_logit(panel, y_f))
+```
+
+### The fitted components
+
+The transition matrix $\Gamma$, at its posterior mean, for each of the three fits:
+
+```{python}
+# | label: tbl-markov-gamma
+# | code-fold: true
+def transition_table(idata):
+    """The posterior-mean transition matrix Gamma as a labelled table."""
+    h = float(idata.posterior["hazard"].mean())
+    r = float(idata.posterior["reversion"].mean()) if "reversion" in idata.posterior else 0.0
+    return pd.DataFrame([[1 - h, h], [r, 1 - r]],
+                        index=["from before", "from after"], columns=["to before", "to after"])
+
+
+pd.concat({label: transition_table(idata) for label, idata in markov.items()}).round(3)
+```
+
+- In the recovery data, $h$ is about 0.07: a person still in "before" has about a 7% chance of moving to "after" on each trip. With twenty or so trips, most people move within their data, which matches the simulation.
+- In the data where no one changed, $h$ falls close to zero. The chain reports no change by making the switch itself improbable.
+- In the fading data, $r$ is about 0.15: a person in "after" has about a 15% chance of returning on each trip, so an "after" spell lasts about six to seven trips on average ($1/r$). The simulated cravings lasted four to eight.
+
+The emission side is a pair of choice probabilities for every person and trip. For one person in the fading panel, on one trip before the craving and one during it, at the posterior mean:
+
+```{python}
+# | label: tbl-markov-emission
+# | code-fold: true
+fading = markov["fading"].posterior
+posterior_mean = lambda var: fading[var].mean(("chain", "draw")).values
+
+
+def example_trips(person):
+    """A trip where the person bought C before their craving, and one where
+    they bought D during it, or None if there are no such trips."""
+    rows = np.where(panel.grp_idx == person)[0]
+    t, y_n = panel.t[rows], y_f[rows]
+    start, end = truth_f["tau"][person], tau_end[person]
+    before = rows[(t < start - 1) & (y_n == 2)]
+    during = rows[(t > start + 1) & (t < end - 1) & (y_n == 3)]
+    return (before[-1], during[0]) if len(before) and len(during) else None
+
+
+example = next(person for person in range(panel.P) if example_trips(person))
+alphas_hat = np.append(posterior_mean("alphas_free"), 0.0)
+shift_hat = np.append(posterior_mean("delta_alpha"), 0.0)
+beta_price_hat = float((fading["mu_price"] + fading["sigma_price"]
+                        * fading["z_price"].isel(person=example)).mean())
+
+table = []
+for when, i in zip(["before the craving", "during the craving"], example_trips(example)):
+    U_before = (alphas_hat + panel.X[i, :, :PRICE_IDX] @ posterior_mean("betas_nr")
+                + beta_price_hat * panel.X[i, :, PRICE_IDX])
+    for state, U in [("before", U_before), ("after", U_before + shift_hat)]:
+        p = np.exp(U - U.max()); p /= p.sum()
+        table.append({"trip": f"{int(panel.t[i])} ({when}), chose {ALTS[y_f[i]]}",
+                      "state": state, **dict(zip(ALTS, p)), "P(choice made)": p[y_f[i]]})
+pd.DataFrame(table).set_index(["trip", "state"]).round(3)
+```
+
+Each pair of rows is $e_{nt}(\text{before})$ and $e_{nt}(\text{after})$ for every alternative. The choice actually made picks one column, and the ratio of its two entries is how much that trip moves the odds between the states. Before the craving this person bought `C`, which is about 30 times more likely in "before" than in "after" (0.67 against 0.02), so that trip is strong evidence for "before". During the craving they bought `D`, which is about three times more likely in "after", so it moves them towards "after", but less strongly. One trip rarely settles the state; a run of them does.
+
+The forward algorithm combines these: each trip's pair of probabilities, carried through $\Gamma$ from the trip before. Running it forwards and then backwards over a person's trips gives the probability of each state on each trip, given all of that person's choices.
+
+`pymc_extras` cannot yet recover the states of a Markov chain after summing them out, so I run the forward-backward algorithm myself, on posterior draws, using the same three components.
+
+```{python}
+# | label: markov-states
+# | code-fold: true
+from scipy.special import logsumexp, log_softmax
+
+
+def log_emissions(idata, y, n_draws=200):
+    """log e_nt(k) for a sample of posterior draws: (draws, P, T, 2).
+
+    Zero (probability one) on padded trips. Also returns the draws used.
+    """
+    X, real_trip = to_grid(panel, panel.X)
+    Y, _ = to_grid(panel, np.asarray(y).astype("int64"), fill=0)
+    draws = az.extract(idata, num_samples=n_draws, rng=0)
+    D = draws.sizes["sample"]
+    alphas = np.concatenate([draws["alphas_free"].values.T, np.zeros((D, 1))], axis=1)
+    betas = draws["betas_nr"].values.T
+    beta_price = (draws["mu_price"].values[:, None]
+                  + draws["sigma_price"].values[:, None] * draws["z_price"].values.T)
+    shift = np.concatenate([draws["delta_alpha"].values.T, np.zeros((D, 1))], axis=1)
+    U_before = (alphas[:, None, None, :]
+                + np.einsum("ptjk,dk->dptj", X[..., :PRICE_IDX], betas)
+                + beta_price[:, :, None, None] * X[None, ..., PRICE_IDX])
+
+    def log_prob_of_choice(U):
+        return np.take_along_axis(log_softmax(U, -1), Y[None, ..., None], -1)[..., 0]
+
+    log_e = np.stack([log_prob_of_choice(U_before),
+                      log_prob_of_choice(U_before + shift[:, None, None, :])], axis=-1)
+    return np.where(real_trip[None, ..., None], log_e, 0.0), draws
+
+
+def forward_backward(log_e, log_gamma, log_pi):
+    """P(state = 'after') on every trip, averaged over draws: (P, T).
+
+    log_e: (D, P, T, 2) log emissions; log_gamma: (D, P, T, 2, 2), the log
+    transition matrix used to move into trip t; log_pi: (D, 2) log start.
+    """
+    T = log_e.shape[2]
+    log_fwd, log_bwd = np.empty_like(log_e), np.zeros_like(log_e)
+    # Forward: f_t(k) = e_t(k) * sum_l f_{t-1}(l) Gamma_t[l, k]
+    log_fwd[:, :, 0] = log_pi[:, None, :] + log_e[:, :, 0]
+    for t in range(1, T):
+        log_fwd[:, :, t] = (logsumexp(log_fwd[:, :, t - 1, :, None] + log_gamma[:, :, t], axis=2)
+                            + log_e[:, :, t])
+    # Backward: b_t(l) = sum_k Gamma_{t+1}[l, k] e_{t+1}(k) b_{t+1}(k), with b_T = 1
+    for t in range(T - 2, -1, -1):
+        log_bwd[:, :, t] = logsumexp(
+            log_gamma[:, :, t + 1] + (log_e[:, :, t + 1] + log_bwd[:, :, t + 1])[:, :, None, :],
+            axis=3)
+    # P(s_t = k | all choices) is proportional to f_t(k) b_t(k).
+    log_post = log_fwd + log_bwd
+    log_post -= logsumexp(log_post, axis=-1, keepdims=True)
+    return np.exp(log_post[..., 1]).mean(axis=0)
+
+
+def log_transition(h, r):
+    """log Gamma = log [[1-h, h], [r, 1-r]] for arrays of h and r: (..., 2, 2)."""
+    return np.log(np.stack([np.stack([1 - h, h], -1),
+                            np.stack([r, 1 - r], -1)], -2) + 1e-300)
+
+
+def after_probs(idata, y, n_draws=200):
+    """P(after) on each trip for the single-matrix chain: (P, T)."""
+    log_e, draws = log_emissions(idata, y, n_draws)
+    D, P, T = log_e.shape[:3]
+    h = draws["hazard"].values
+    r = draws["reversion"].values if "reversion" in draws else np.zeros(D)
+    same_every_trip = np.broadcast_to(log_transition(h, r)[:, None, None], (D, P, T, 2, 2))
+    start_before = np.tile([0.0, -np.inf], (D, 1))
+    return forward_backward(log_e, same_every_trip, start_before)
+
+
+p_after = {"recovery": after_probs(markov["recovery"], y_sim),
+           "no change": after_probs(markov["no change"], y_0),
+           "fading": after_probs(markov["fading"], y_f)}
+```
+
+```{python}
+# | label: tbl-markov
+# | code-fold: true
+trip_idx = panel.t.astype(int) - 1                  # each row's trip, as a grid column
+last_trip = panel.T_p.astype(int) - 1               # each person's last real trip
+everyone = np.arange(panel.P)
+
+
+def shift_for_C(idata, var="delta_alpha"):
+    """Posterior mean of the shift on C."""
+    return float(idata.posterior[var].isel(alts_free=2).mean())
+
+
+# Recovery data: the date of the change. In a permanent chain, P(after) only
+# rises, so its increase from one trip to the next is the probability that the
+# change happens on that trip.
+p_after_rec = p_after["recovery"]
+_, real_trip = to_grid(panel, panel.X)
+p_change_on = np.diff(np.concatenate([np.zeros((panel.P, 1)), p_after_rec], 1), axis=1) * real_trip
+p_ever = p_after_rec[everyone, last_trip]
+expected_trip = (p_change_on * np.arange(1, p_after_rec.shape[1] + 1)).sum(1) / np.maximum(p_ever, 1e-9)
+tau_markov = expected_trip - 0.5    # the state changes on the first trip after tau
+tau_cp = recovery["dates estimated"].posterior["tau"].mean(("chain", "draw")).values
+
+# Fading craving: which trips are truly 'after', and what does each model say?
+w_true = (1 / (1 + np.exp(-(panel.t - truth_f["tau"][panel.grp_idx]) / 0.75))
+          - 1 / (1 + np.exp(-(panel.t - tau_end[panel.grp_idx]) / 0.75)))
+after_true = w_true > 0.5
+after_markov = p_after["fading"][panel.grp_idx, trip_idx] > 0.5
+after_cp = cp_fading.posterior["w"].mean(("chain", "draw")).values > 0.5
+craving_over = ~after_true & (panel.t > tau_end[panel.grp_idx])
+
+p_ever_null = p_after["no change"][everyone, last_trip]
+
+pd.DataFrame([
+    {"question": "mean date error, recovery data (trips)",
+     "change point": np.abs(tau_cp - truth["tau"]).mean(),
+     "Markov chain": np.abs(tau_markov - truth["tau"]).mean()},
+    {"question": "share flagged, no one changed",
+     "change point": np.nan,   # needs the no-change state: Appendix A
+     "Markov chain": np.mean(p_ever_null > 0.5)},
+    {"question": "trips classified correctly, fading craving",
+     "change point": np.mean(after_cp == after_true),
+     "Markov chain": np.mean(after_markov == after_true)},
+    {"question": "trips after the craving ends read as 'after'",
+     "change point": after_cp[craving_over].mean(),
+     "Markov chain": after_markov[craving_over].mean()},
+    {"question": f"typical shift for C, fading craving (truth {truth_f['delta_alpha_n'][:, 2].mean():.1f})",
+     "change point": shift_for_C(cp_fading, "mu_delta_alpha"),
+     "Markov chain": shift_for_C(markov["fading"])},
+]).set_index("question").round(2).astype(object).fillna("see Appendix A")
+```
+
+```{python}
+# | label: fig-fade
+# | fig-cap: "Three people whose change reverses. Black: the true weight on the 'after' preferences. Orange: the change point's estimated weight. Blue: the reversible Markov chain's probability of being in 'after'."
+# | code-fold: true
+# Three people whose craving ends inside their data, with the longest cravings.
+complete = np.where(tau_end < panel.T_p - 3)[0]
+picks = complete[np.argsort(tau_end[complete] - truth_f["tau"][complete])[-3:]]
+w_cp = cp_fading.posterior["w"].mean(("chain", "draw")).values
+fig, axs = plt.subplots(1, 3, figsize=(11, 3.2), sharey=True)
+for ax, person in zip(axs, picks):
+    rows = np.where(panel.grp_idx == person)[0]
+    trips = panel.t[rows]
+    ax.plot(trips, w_true[rows], color=INK, lw=1.2, label="truth")
+    ax.plot(trips, w_cp[rows], color=PAL["focal"], lw=2, label="change point")
+    ax.plot(trips, p_after["fading"][person, trip_idx[rows]], color=PAL["cool"], lw=2,
+            label="Markov chain")
+    ax.set(xlabel="trip", title=f"person {panel.person_id[person]}", ylim=(-0.03, 1.03))
+    ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+axs[0].set_ylabel("weight on 'after' preferences")
+axs[-1].legend(frameon=False, fontsize=8)
+plt.tight_layout();
+```
+
+The two models divide the work.
+
+- **Permanent changes.** The change point dates them more precisely, about 1.6 trips against 2.1. Its window prior and per-person dates use more structure than a shared hazard.
+- **No change.** Both report it, but the Markov chain needs nothing added. With no change in the data, the estimated hazard falls close to zero, so no one is placed in "after". The change point needed an explicit no-change state for the same result (Appendix A).
+- **A change that reverses.** The change point has no way to represent the return, so it reads almost all the trips after the craving ends as "after". Its estimated shift is then an average over the craving and the return, and falls to under a third of the truth. The reversible chain follows both transitions, reads a quarter of those trips as "after", and recovers the size of the change on `C`. Its state probabilities are less smooth: a single trip that looks like the other state can briefly move the chain, as for person 87 in the figure. The change point's weight cannot do that, because it has one date and a fixed transition shape.
+
+The Markov chain's assumptions are stronger in one place and weaker in another. It assumes that everyone who changes, changes in the same way, which matches what the data could identify. And it assumes a constant chance of changing on every trip, with no notion of when a change is likely. A recorded event can supply that notion as a covariate on the transition, which is where the known-date idea from the start of the post would enter a Markov model.
+
+### What a transformative event changes
+
+The change point treats a transformation as a switch that happens once and stays. That is the simplest version of Paul's idea, and probably not the realistic one. Becoming a parent does not fix a person's preferences in a new position. Parents have good days and bad days, selfish weeks and generous months. The obligation to the child is permanent; the trade-offs a parent makes from one day to the next are not.
+
+The Markov chain can represent this. A person keeps moving between preference states, before the event and after it. Two numbers summarise the movement. The long-run share of time spent in "after" is
+$$
+\frac{h}{h + r},
+$$
+and an average spell in "after" lasts $1/r$ trips. In the fading-craving fit, $h \approx 0.11$ and $r \approx 0.15$: people move in and out of the "after" preferences, and spend a little under half their trips there in the long run.
+
+On this view, a transformative event does not move a person from one state to another. It changes the transition matrix:
+$$
+\Gamma_{nt} = \begin{cases} \Gamma^{\text{pre}} & t < \tau_n \\ \Gamma^{\text{post}} & t \ge \tau_n \end{cases}
+$$
+Before the event, the person rarely enters the new preference state and leaves it quickly. After it, they enter it more often and stay longer. Both states remain possible on both sides of the event; what changes is how much time is spent in each. The recorded date of an event such as a birth marks where $\Gamma^{\text{pre}}$ gives way to $\Gamma^{\text{post}}$.
+
+To check that this can be recovered, I simulate a panel in which each person's transition matrix changes at a recorded event date:
+
+| | $h$ (enter "after") | $r$ (leave "after") | long-run share in "after" | average spell |
+|---|---|---|---|---|
+| before the event | 0.05 | 0.50 | 0.09 | 2 trips |
+| after the event | 0.25 | 0.15 | 0.62 | about 7 trips |
+
+The model is the Markov chain from the previous section with one change: the transition matrix used to move into trip $t$ is $\Gamma_{nt}$, which is $\Gamma^{\text{pre}}$ or $\Gamma^{\text{post}}$ depending on the person's event date. `DiscreteMarkovChain` does not support a matrix that changes over time, so the code writes the forward recursion out directly, with the same symbols as the formulas above: `log_e` is $\log e_{nt}(k)$, `log_gamma_nt` is $\log \Gamma_{nt}$, and `forward_step` computes $f_{nt}$ from $f_{n,t-1}$.
+
+One detail is needed for the model to be identified. The two states differ only in their preferences, so swapping them, and the meaning of every parameter with them, gives the same likelihood. This is a property of every hidden Markov model with freely estimated states. The earlier Markov model avoided it because "after" was rare before the change and everyone started in "before". Here both states are visited before the event, so the states need a definition. I define "after" as the state in which `C` is less preferred: the shift for `C` is negative. This names the states and constrains nothing that is being estimated, including $h$, $r$ and the size of the shift.
+
+```{python}
+# | label: regime-sim
+# | code-fold: true
+def stationary(h, r):
+    """Long-run share of trips in (before, after) for Gamma = [[1-h, h], [r, 1-r]]."""
+    return np.array([r, h]) / (h + r)
+
+
+def simulate_regimes(panel, truth, *, delta, pre, post, tau, seed=0):
+    """Choices from a two-state chain whose transition matrix changes at tau.
+
+    pre and post are (h, r) pairs. Everyone starts in 'before'. Returns the
+    choices and the latent states, one entry per trip.
+    """
+    rng = np.random.default_rng(seed)
+    g, J = panel.grp_idx, panel.J
+    price = panel.X[:, :, PRICE_IDX]
+    U_before = (truth["alphas"] + panel.X[:, :, :PRICE_IDX] @ truth["betas_nr"]
+                + truth["beta_price_n"][g][:, None] * price)
+    state, y = np.zeros(panel.N, int), np.zeros(panel.N, int)
+    for i in range(panel.N):                 # rows are sorted by person, then trip
+        if panel.t[i] > 1:                   # first trip: state stays 0, 'before'
+            h, r = post if panel.t[i] >= tau[g[i]] else pre
+            if state[i - 1] == 0:
+                state[i] = rng.random() < h          # enter 'after' with probability h
+            else:
+                state[i] = rng.random() >= r         # stay in 'after' unless leaving (r)
+        U = U_before[i] + state[i] * delta
+        p = np.exp(U - U.max()); p /= p.sum()
+        y[i] = rng.choice(J, p=p)
+    return y, state
+```
+
+```{python}
+# | label: regime-model
+import pytensor
+
+
+def regime_markov_logit(panel, y, tau):
+    """Two-state chain with transition matrix Gamma_pre before each person's
+    event date and Gamma_post from it onwards. Same choice model as before."""
+    X, real_trip = to_grid(panel, panel.X)                         # (P, T, J, K)
+    Y, _ = to_grid(panel, np.asarray(y).astype("int64"), fill=0)
+    T = Y.shape[1]
+    # regime[n, t] = 0 before person n's event, 1 on or after it.
+    regime = (np.arange(1, T + 1)[None, :] >= np.asarray(tau)[:, None]).astype("int64")
+
+    with pm.Model(coords={**panel.coords, "regime": ["pre", "post"]}) as model:
+        # --- the choice model, as in the earlier Markov chain -----------------
+        alphas = pt.concatenate([pm.Normal("alphas_free", 0, 1.5, dims="alts_free"),
+                                 pt.zeros(1)])
+        betas_nr = pm.Normal("betas_nr", 0, 1, dims="normal_covariates")
+        mu_price = pm.Normal("mu_price", -2.0, 1.5)
+        sigma_price = pm.HalfNormal("sigma_price", 1.0)
+        beta_price_n = mu_price + sigma_price * pm.Normal("z_price", 0, 1, dims="person")
+
+        # The shift in 'after'. The states are otherwise interchangeable, so
+        # 'after' is defined as the state in which C is less preferred.
+        delta_AB = pm.Normal("delta_AB", 0, 2.5, shape=2)
+        delta_C = -pm.HalfNormal("delta_C_size", 5.0, shape=1)
+        delta = pm.Deterministic("delta_alpha", pt.concatenate([delta_AB, delta_C]),
+                                 dims="alts_free")
+        delta_full = pt.concatenate([delta, pt.zeros(1)])
+
+        # --- the transition matrices: one (h, r) pair per regime --------------
+        h = pm.Beta("hazard", 1, 4, dims="regime")
+        r = pm.Beta("reversion", 1, 4, dims="regime")
+        pm.Deterministic("long_run_after", h / (h + r), dims="regime")
+        # Gamma[regime] = [[1 - h, h], [r, 1 - r]]: rows 'from', columns 'to'.
+        gamma = pt.stack([pt.stack([1 - h, h], axis=-1),
+                          pt.stack([r, 1 - r], axis=-1)], axis=-2)   # (regime, 2, 2)
+        log_gamma_nt = pt.log(gamma)[regime]                         # (P, T, 2, 2)
+
+        # --- e_nt(k): probability of the observed choice in each state --------
+        U_before = (alphas + pt.sum(X[..., :PRICE_IDX] * betas_nr, axis=-1)
+                    + beta_price_n[:, None, None] * X[..., PRICE_IDX])
+
+        def log_prob_of_choice(U):
+            """log P(the choice actually made | utilities U), for every trip."""
+            return pt.take_along_axis(pm.math.log_softmax(U, axis=-1),
+                                      Y[..., None], axis=-1)[..., 0]
+
+        log_e = pt.stack([log_prob_of_choice(U_before),
+                          log_prob_of_choice(U_before + delta_full)], axis=-1)  # (P, T, 2)
+        log_e = pt.where(real_trip[..., None], log_e, 0.0)   # padded trips: probability 1
+
+        # --- the forward algorithm, in logs ------------------------------------
+        # f_n1(k) = pi_k e_n1(k), with pi = (1, 0): everyone starts in 'before'.
+        log_f_first = np.array([0.0, -np.inf]) + log_e[:, 0]               # (P, 2)
+
+        def forward_step(log_e_t, log_gamma_t, log_f_prev):
+            """f_t(k) = e_t(k) * sum_l f_{t-1}(l) * Gamma_t[l, k], for all people."""
+            return pm.math.logsumexp(log_f_prev[:, :, None] + log_gamma_t, axis=1) + log_e_t
+
+        # scan loops over the first axis, so put trips first: (T, P, ...).
+        log_f, _ = pytensor.scan(
+            forward_step,
+            sequences=[log_e[:, 1:].transpose(1, 0, 2),
+                       log_gamma_nt[:, 1:].transpose(1, 0, 2, 3)],
+            outputs_info=[log_f_first],
+        )
+        # p(y_n) = sum_k f_nT(k). Padded trips add nothing, because each row
+        # of Gamma sums to one and their e is one.
+        pm.Potential("loglik", pm.math.logsumexp(log_f[-1], axis=-1).sum())
+    return model
+```
+
+I fit three models to the simulated panel: the two-matrix chain with the known event dates, the single-matrix chain from the previous section, and the change point with the known event dates.
+
+```{python}
+# | label: regime-fit
+# | output: false
+truth_r = make_truth(panel, switch=2.5, seed=51)
+delta_r = np.array([-2.5, -2.5, -5.0, 0.0])          # the shift in 'after', shared
+hr_pre, hr_post = (0.05, 0.50), (0.25, 0.15)          # (h, r) before and after the event
+y_r, s_r = simulate_regimes(panel, truth_r, delta=delta_r, pre=hr_pre, post=hr_post,
+                            tau=truth_r["tau"], seed=51)
+
+regime = {
+    "two matrices": fit(regime_markov_logit(panel, y_r, truth_r["tau"]), chains=4),
+    "one matrix": fit(marginalize(markov_logit(panel, y_r, reversible=True), ["s"])),
+    "change point": fit(changepoint_logit(panel, y_r, tau="known",
+                                          tau_known=truth_r["tau"])),
+}
+```
+
+```{python}
+# | label: regime-states
+# | code-fold: true
+def regime_after_probs(idata, y, tau, n_draws=200):
+    """P(after) on each trip for the two-matrix chain: (P, T)."""
+    log_e, draws = log_emissions(idata, y, n_draws)
+    h, r = draws["hazard"].values.T, draws["reversion"].values.T          # (draws, regime)
+    T = log_e.shape[2]
+    regime = (np.arange(1, T + 1)[None, :] >= np.asarray(tau)[:, None]).astype(int)
+    log_gamma_nt = log_transition(h, r)[:, regime]                        # (draws, P, T, 2, 2)
+    start_before = np.tile([0.0, -np.inf], (len(h), 1))
+    return forward_backward(log_e, log_gamma_nt, start_before)
+
+
+post_event = panel.t >= truth_r["tau"][panel.grp_idx]     # trip is on or after the event
+p_after_r = {   # P(after) for every trip, one value per row of the panel
+    "two matrices": regime_after_probs(regime["two matrices"], y_r,
+                                       truth_r["tau"])[panel.grp_idx, trip_idx],
+    "one matrix": after_probs(regime["one matrix"], y_r)[panel.grp_idx, trip_idx],
+    # The change point has no states; its weight w is the closest equivalent.
+    "change point": regime["change point"].posterior["w"].mean(("chain", "draw")).values,
+}
+```
+
+```{python}
+# | label: tbl-regime-params
+# | code-fold: true
+two_matrix = regime["two matrices"].posterior
+rows = []
+for name, var, truth_pre, truth_post in [
+    ("h, enter 'after'", "hazard", hr_pre[0], hr_post[0]),
+    ("r, leave 'after'", "reversion", hr_pre[1], hr_post[1]),
+    ("long-run share in 'after'", "long_run_after",
+     stationary(*hr_pre)[1], stationary(*hr_post)[1]),
+]:
+    for regime_label, when, true_value in [("pre", "before the event", truth_pre),
+                                           ("post", "after the event", truth_post)]:
+        d = two_matrix[var].sel(regime=regime_label).values.ravel()
+        lo, hi = np.percentile(d, [3, 97])
+        rows.append({"quantity": name, "regime": when, "truth": true_value,
+                     "estimate": d.mean(), "94% interval": f"{lo:.2f} to {hi:.2f}"})
+pd.DataFrame(rows).set_index(["quantity", "regime"]).round(2)
+```
+
+```{python}
+# | label: tbl-regime-compare
+# | code-fold: true
+shift_C = {"two matrices": shift_for_C(regime["two matrices"]),
+           "one matrix": shift_for_C(regime["one matrix"]),
+           "change point": shift_for_C(regime["change point"], "mu_delta_alpha")}
+rows = [{"model": "truth", "share in 'after', before the event": s_r[~post_event].mean(),
+         "share in 'after', after the event": s_r[post_event].mean(),
+         "trips classified correctly": 1.0, "shift for C": delta_r[2]}]
+for name, p in p_after_r.items():
+    rows.append({"model": name,
+                 "share in 'after', before the event": p[~post_event].mean(),
+                 "share in 'after', after the event": p[post_event].mean(),
+                 "trips classified correctly": np.mean((p > 0.5) == (s_r == 1)),
+                 "shift for C": shift_C[name]})
+pd.DataFrame(rows).set_index("model").round(2)
+```
+
+```{python}
+# | label: fig-regime
+# | fig-cap: "Left: the two-matrix chain's estimate of the long-run share of trips in 'after', before and after the event, against the truth. Right: the share of people in 'after' on each trip, aligned on each person's event date: the simulated truth and each model's estimate."
+# | code-fold: true
+fig, axs = plt.subplots(1, 2, figsize=(11, 3.6), gridspec_kw={"width_ratios": [1, 1.6]})
+
+# Left: the long-run share of trips in 'after', before and after the event.
+ax = axs[0]
+for row, (regime_label, hr) in enumerate([("pre", hr_pre), ("post", hr_post)]):
+    draws = two_matrix["long_run_after"].sel(regime=regime_label).values.ravel()
+    ax.plot(np.percentile(draws, [3, 97]), [row, row], color=PAL["cool"], lw=2)
+    ax.plot([draws.mean()], [row], "o", color=PAL["cool"], ms=6,
+            label="estimate" if row == 0 else None)
+    ax.plot([stationary(*hr)[1]], [row], marker="|", ms=18, mew=2.5, color=INK,
+            ls="none", label="truth" if row == 0 else None)
+ax.set(yticks=[0, 1], yticklabels=["before the event", "after the event"], ylim=(-0.6, 1.6),
+       xlim=(0, 1), xlabel="long-run share of trips in 'after'",
+       title="What the event changes")
+ax.legend(frameon=False, fontsize=8, loc="lower right")
+
+# Right: share of people in 'after', aligned on each person's event date.
+ax = axs[1]
+trips_since = np.floor(panel.t - truth_r["tau"][panel.grp_idx]).astype(int)
+window = (trips_since >= -8) & (trips_since <= 12)
+series = {"truth": (s_r.astype(float), INK, 1.2),
+          "two matrices": (p_after_r["two matrices"], PAL["cool"], 2),
+          "one matrix": (p_after_r["one matrix"], PAL["grey"], 2),
+          "change point": (p_after_r["change point"], PAL["focal"], 2)}
+for name, (values, colour, lw) in series.items():
+    share = (pd.Series(values[window]).groupby(trips_since[window]).mean())
+    ax.plot(share.index, share.values, color=colour, lw=lw, label=name)
+ax.axvline(0, color=PAL["grey"], lw=0.8)
+ax.set(xlabel="trips since each person's event", ylabel="share of people in 'after'",
+       ylim=(0, 1.02), title="Aligned on the event")
+ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+ax.legend(frameon=False, fontsize=8, loc="upper left")
+plt.tight_layout();
+```
+
+- **The two-matrix chain recovers how the event changes the dynamics.** Its estimates of $h$ and $r$ before and after the event are close to the truth, and so is the long-run share of trips in "after": about 6% before the event and 54% after, against 9% and 62%. It classifies 89% of trips correctly and follows the gradual rise after the event. Its estimate of the shift for `C` is too large (−6.4 against −5).
+- **The single-matrix chain cannot represent the event.** It has one $h$ and one $r$ for the whole panel, so it averages the dynamics before and after the event (it estimates $h \approx r \approx 0.07$). It places too many trips in "after" before the event (18% against a true 6%), and its estimate of the shift for `C` falls to −2.2.
+- **The change point turns the event into a permanent switch.** It reads 95% of trips after the event as "after", against a true 50%, and its estimate of the shift for `C` falls to −1.2, an average over time spent in both states.
+
+On these data, a transformative event is better described as a change in how preferences move than as a move to new preferences, and that change is recoverable from about twenty choices per person when the date of the event is known.
+
+## Conclusion
+
+Paul's question defines the estimand: whether a person's utility function changes, when, and by how much. Change-point detection and interrupted time series look for change in the observed choices, which also depend on prices and promotions. A discrete choice model with a change point in the preference parameters estimates the change in utility directly, using a known date as data or a suspected date as a prior. Pregnancy and crackers are a small case of this, but a real one: a datable event, a documented change in food preferences, and a panel of purchases in which the change would appear.
+
+On simulated data with the structure of a real panel, the results divide into what about twenty choices per person can and cannot identify.
+
+**Identified for each person:**
+
+- *Whether* they changed. With an explicit no-change state, people who changed are separated from people who did not (AUC 0.98), and a population in which no one changed is reported as such (Appendix A).
+- *When* they changed, to within about 1.6 trips, with or without a known date.
+
+**Identified for the population:**
+
+- The typical change: its direction across alternatives and its average size.
+
+**Not identified:**
+
+- *How strongly* the change acted in any one person. Under both the independent and the factor structure, under 10% of the posterior variation separates one person from another, and estimates move at most about 0.1 per unit of true difference. The model estimates almost everyone at the population mean.
+- How much people differ, which is estimated as smaller than it is, because the data cannot separate real differences from noise.
+
+Neither structure fixes this. Longer series would add information about each person, but in real panels they also add time for other things to change, such as drifting tastes or habits, which the model would have to separate from the event. The choice between structures matters for a different reason: it states what the event is assumed to be. The factor structure says one unobserved cause, the same for everyone, acts with different strength in each person.
+
+This division runs parallel to Paul's argument. From the outside, choices reveal that someone was transformed, when, and what the transformation typically does to people. They do not reveal how it was realised in that person, which is the part Paul argues can only be known by having the experience. The two limits are not the same. Paul's is a limit on what anyone can know before an experience, from the inside, and no amount of data removes it. The analyst's limit here is a shortage of information, and better data could reduce it. But they fall in the same place: what an event does to a particular person is the hardest thing to learn about it, from either side.
+
+Two conditions apply throughout. The simulated switch is large ($d = 2.5$, a fall of 5 in the utility of `C`); smaller changes leave less evidence in each person's choices and are not tested here. And the model reports no change correctly only with a window past the last trip, an explicit no-change state, a habit term, and per-person shifts (Appendices A and B).
+
+The change point is one way to write the model, and it assumes the change is permanent. Written as a latent Markov chain, the same question gets a built-in report of no change and can represent a change that reverses, at the cost of less precise dates for permanent changes. The Markov chain also suggests a better description of a transformative event. Preferences after parenthood are not fixed in a new position; they keep moving, as they did before. What the event changes is how they move: how often a person enters the new set of preferences, and how long they stay. In model terms, a transformative event alters the transition matrix rather than the utility function once and for all. In simulation, a chain with one transition matrix before a recorded event and another after it recovers that change, where a permanent change point overstates it and a single matrix misses it.
+
+## Appendix A: Detecting No Change {.appendix}
+
+The main text tests the model mostly on populations in which everyone changed. This appendix simulates a population in which no one changes and checks whether the model reports that.
+
+```{python}
+# | label: tau-null
+# | output: false
+# y_0 is the no-change panel simulated for the Markov comparison.
+null_fit = fit(changepoint_logit(panel, y_0))
+```
+
+```{python}
+# | label: tbl-tau-null
+# | code-fold: true
+# For each person, the posterior probability that their date falls inside their data.
+p_inside = (null_fit.posterior["tau"].values
+            < panel.T_p[None, None, :]).reshape(-1, panel.P).mean(0)
+pd.DataFrame([{
+    "true changes in the population": 0,
+    "mean P(τ inside the observed trips)": p_inside.mean(),
+    "people assigned a change inside their data": np.mean(p_inside > 0.5),
+}]).T.rename(columns={0: "value"}).round(3)
+```
+
+Most estimated dates fall after the last trip, and about 3% of people are assigned a change inside their data. But this depends on the prior on $\Delta$: when $\Delta$ is zero the date is irrelevant, and an earlier version of the model with tighter priors assigned changes inside the data to most people in the same test.
+
+So I add an explicit no-change state for each person and sum over the two states:
+
+$$ p(y_n) = \pi \cdot p\big(y_n \mid \text{changed at } \tau_n \text{ by } \Delta_n\big) \;+\; (1-\pi)\,p\big(y_n \mid \text{never changed}\big) $$
+
+This gives $\pi$, the share of people who changed, and $P(\text{changed}_n)$ for each person.
+
+```{python}
+# | label: mixture-fit
+# | output: false
+mix = {}   # label -> (truth, fit)
+for label, rate in [("nobody changed", 0.0), ("half the panel changed", 0.5)]:
+    truth_m = make_truth(panel, switch=2.5, change_rate=rate, seed=17)
+    y_m, _ = simulate_panel(panel, seed=17, **simulation_inputs(truth_m))
+    mix[label] = (truth_m, fit(changepoint_logit(panel, y_m, mixture=True)))
+```
+
+```{python}
+# | label: tbl-mixture
+# | code-fold: true
+rows = []
+for label, (truth_m, idata) in mix.items():
+    p_changed = idata.posterior["p_transformed"].mean(dim=("chain", "draw")).values
+    est_shift = idata.posterior["delta_alpha_n"].mean(dim=("chain", "draw")).values[:, :-1]
+    changed = truth_m["changed"]
+    rows.append({
+        "simulated population": label,
+        "true share who changed": changed.mean(),
+        "π estimated": float(idata.posterior["pi_pivot"].mean()),
+        "people flagged": np.mean(p_changed > 0.5),
+        "AUC (which person?)": auc(changed, p_changed) if changed.any() else np.nan,
+        "corr Δα, within alternative (people who changed)": np.mean(
+            [np.corrcoef(est_shift[changed][:, j], truth_m["delta_alpha_n"][changed][:, j])[0, 1]
+             for j in range(3)])
+        if changed.sum() > 2 else np.nan,
+    })
+pd.DataFrame(rows).set_index("simulated population").round(3)
+```
+
+```{python}
+# | label: fig-mixture
+# | fig-cap: "Each person's posterior probability of having changed, from the mixture model. In the right panel, colour shows who actually changed."
+# | code-fold: true
+fig, axs = plt.subplots(1, 2, figsize=(10, 2.8), sharey=True)
+bins = np.linspace(0, 1, 26)
+for ax, (label, (truth_m, idata)) in zip(axs, mix.items()):
+    p_changed = idata.posterior["p_transformed"].mean(dim=("chain", "draw")).values
+    pi_hat = float(idata.posterior["pi_pivot"].mean())
+    changed = truth_m["changed"]
+    ax.hist(p_changed[~changed], bins=bins, color=PAL["grey"], alpha=0.8,
+            label="did not change")
+    if changed.any():
+        ax.hist(p_changed[changed], bins=bins, color=ALT_COL["D"], alpha=0.8, label="changed")
+    ax.axvline(0.5, color=INK, lw=1, label="0.5 threshold")
+    ax.axvline(pi_hat, color=INK, lw=1, ls=":", label="estimated π")
+    ax.set(xlabel=r"$P(\mathrm{changed}_n)$", title=f"{label}  (estimated π = {pi_hat:.2f})")
+axs[0].set_ylabel("people")
+axs[1].legend(frameon=False, fontsize=8, loc="upper left")
+plt.tight_layout();
+```
+
+- When no one changed, no one is flagged. $\pi$ is 0.26, not zero, because it is weakly identified with no signal.
+- When half changed, the share flagged is about right and the AUC is 0.98.
+- As in the recovery test, the sizes of individual shifts are not recovered beyond the population mean (within-alternative correlations below 0.35).
+- For a person with no evidence either way, $P(\text{changed}_n)$ equals $\pi$, which is why everyone in the left panel sits near 0.26. If $\pi$ is above 0.5, such people will be flagged, so the threshold should be read relative to $\pi$.
+
+## Appendix B: Other Causes of an Apparent Change {.appendix}
+
+**Habit.** If choosing an alternative makes choosing it again more likely, a person who switches once and stays produces the same pattern as a change in preferences. I simulate habit with no change and fit the model with and without a lagged-choice term.
+
+```{python}
+# | label: habit-fit
+# | output: false
+truth_h = make_truth(panel, switch=0.0, seed=11)        # no one changes
+y_h, L_h = simulate_panel(panel, gamma_habit=1.5, seed=11, **simulation_inputs(truth_h))
+habit_fits = {
+    "blind to repetition":   fit(changepoint_logit(panel, y_h)),
+    "repetition controlled": fit(changepoint_logit(panel, y_h, habit=L_h)),
+}
+```
+
+```{python}
+# | label: tbl-habit
+# | code-fold: true
+def share_flagged(idata):
+    """Share of people whose 94% interval for the shift on some alternative excludes zero."""
+    _, _, lo, hi = shift_summaries(idata)
+    return float(np.mean(((lo > 0) | (hi < 0)).any(axis=1)))
+
+
+pd.DataFrame([
+    {"fit": label,
+     "largest |μΔα| (truth 0)": float(np.abs(
+         idata.posterior["mu_delta_alpha"].mean(dim=("chain", "draw")).values).max()),
+     "people flagged": share_flagged(idata),
+     "habit coefficient γ (truth 1.5)": float(idata.posterior["beta_habit"].mean())
+     if "beta_habit" in idata.posterior else np.nan}
+    for label, idata in habit_fits.items()
+]).set_index("fit").round(3)
+```
+
+Without the habit term, 89% of people are flagged. With it, the habit coefficient is recovered (1.50 against 1.5) and no one is flagged. The mean shift $\mu_{\Delta\alpha}$ is still about two units from zero for one alternative (the table reports the largest of the three). With no change in the data it is weakly determined: wherever a date falls after the last trip, the choices carry no information about the shift. Without its interval, this fit cannot show whether the two units reflect a bias or that lack of information.
+
+**Unmodelled differences in baseline preference.** While developing the model I fitted it once to the real panel's choices, with a single shared shift. The post does not otherwise analyse the real choices. That fit gave $\sigma_\tau$ above five and $\hat R$ of 1.75. To find the cause, I simulate people with different baseline preferences, which the model does not represent, with and without a real event, and fit both shared-shift and per-person-shift models.
+
+```{python}
+# | label: degeneracy-fit
+# | output: false
+def heterogeneous(switch, seed):
+    """Choices from a population whose baseline tastes differ by person,
+    which the model has no parameter for."""
+    rng_baseline = np.random.default_rng(seed)
+    truth_d = make_truth(panel, switch=switch, seed=seed)
+    baseline_n = truth_d["alphas"][None, :] + 0.9 * rng_baseline.standard_normal((panel.P, panel.J))
+    baseline_n[:, -1] = 0.0                      # the pinned alternative stays pinned
+    y, _ = simulate_panel(panel, seed=seed, **simulation_inputs(truth_d, alphas=baseline_n))
+    return y
+
+
+y_event, y_quiet = heterogeneous(2.5, 5), heterogeneous(0.0, 6)
+degeneracy_fits = {
+    (population, label): fit(changepoint_logit(panel, y, structure=structure))
+    for population, y in [("a real event, d = 2.5", y_event), ("no event at all", y_quiet)]
+    for label, structure in [("one shared shift", "shared"), ("a shift per person", "independent")]
+}
+```
+
+```{python}
+# | label: tbl-degeneracy
+# | code-fold: true
+rows = []
+for (population, spec), idata in degeneracy_fits.items():
+    # Largest R-hat over the sampled parameters (the per-trip deterministics are skipped).
+    rhat = az.rhat(idata)
+    rhat_values = np.concatenate([np.atleast_1d(v.values).ravel()
+                                  for name, v in rhat.data_vars.items()
+                                  if name not in ("U", "p", "w")])
+    shift_var = ("delta_alpha_shared" if "delta_alpha_shared" in idata.posterior
+                 else "mu_delta_alpha")
+    tau = idata.posterior["tau"].values
+    rows.append({
+        "simulated population": population,
+        "intercept shift": spec,
+        "στ": float(idata.posterior["sigma_tau"].mean()),
+        "max R̂": float(np.nanmax(rhat_values)),
+        # Spread of the per-chain means of the shift: large if chains disagree.
+        "chains disagree by": float(
+            idata.posterior[shift_var].mean(dim="draw").values.std(axis=0).max()),
+        # Dates near the bottom of the window or past the last trip.
+        "τ at a bound": float(np.mean((tau < panel.T_p * 0.3) | (tau > panel.T_p))),
+    })
+pd.DataFrame(rows).set_index(["simulated population", "intercept shift"]).round(2)
+```
+
+With a shared shift and no event, $\sigma_\tau$ is 4.2 and 60% of dates are at a bound. With a shared shift, $\tau_n$ is the only per-person parameter that can absorb differences in baseline preference, so when there is no event to date it splits people into two groups instead. Per-person shifts remove the problem. A large $\sigma_\tau$ is a sign that the dates are absorbing some other variation.
+
+**Not addressed here:** habit that differs by alternative, preferences that drift gradually, and seasonal promotions. Each could produce a false detection, and predictive model comparison would not distinguish them from a real change.
+
+The model also assumes the change is permanent. Pregnancy cravings usually are not: a household may switch to saltines during early pregnancy and switch back months later. A single change point will either miss a temporary change or date only one end of it. Modelling a craving properly needs a second change point, a shift that decays, or a latent state that can return. The last of these is the latent Markov chain in the main text.
