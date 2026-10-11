@@ -1,0 +1,39 @@
+/*-- scss:defaults --*/
+
+$presentation-heading-color: #2a3439;
+$body-color: #333;
+$link-color: #1a6b8a;
+$code-block-bg: #f8f8f8;
+$code-block-border-color: #ddd;
+
+/*-- scss:rules --*/
+
+.reveal h1, .reveal h2, .reveal h3 {
+  font-weight: 700;
+}
+
+.reveal blockquote {
+  border-left: 4px solid #1a6b8a;
+  padding-left: 1em;
+  font-style: italic;
+  color: #555;
+}
+
+.reveal table {
+  font-size: 0.75em;
+}
+
+.reveal pre code {
+  font-size: 0.8em;
+  line-height: 1.4;
+}
+
+.reveal .slide-number {
+  font-size: 0.6em;
+  color: #999;
+}
+
+section.has-dark-background blockquote {
+  border-left-color: #aaa;
+  color: #ccc;
+}
