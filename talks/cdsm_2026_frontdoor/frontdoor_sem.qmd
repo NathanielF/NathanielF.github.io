@@ -561,33 +561,67 @@ Now dial the leak up. The analytic answer comes first: in a linear model the fro
 
 
 ## A Design Pattern for People Analytics {.smaller}
+### Same DAG, easier premises to defend
 
 ::::{.columns}
-:::{.column}
+:::{.column width="52%"}
 
-- Satisfaction is a leading indicator of **retention**.
-- The question HR teams need answered is causal: do coaching or self-leadership programmes actually move it?
-- Who receives an intervention and how satisfied they are is **confounded**, and randomisation is rare.
-- But engagement surveys already collect **multi-indicator measures** of the relevant constructs.
+```{python}
+#| echo: false
+fig, ax = plt.subplots(figsize=(8.4, 6.0), facecolor=BG)
+ax.set_facecolor(BG); ax.set_xlim(0, 10); ax.set_ylim(-0.6, 6.6); ax.set_aspect("equal"); ax.axis("off")
+
+pos = {"Course": (1.1, 3.0), "CTS": (3.6, 3.9), "WB": (6.2, 4.9), "DTS": (6.2, 2.9),
+       "Support": (4.9, 1.0), "Sat": (8.9, 3.0)}
+labels = {"Course": "course", "CTS": "ΔCTS", "WB": "WB", "DTS": "DTS", "Support": "support", "Sat": "Sat"}
+styles = {"Course": ("white", DARK), "CTS": ("white", DARK), "WB": ("#E6F4F2", TEAL),
+          "DTS": ("#FBEAE5", CORAL), "Support": ("#EAF2FB", BLUE), "Sat": ("white", DARK)}
+for k, xy in pos.items():
+    node(ax, xy, labels[k], color=styles[k][0], edge=styles[k][1], r=0.62, fontsize=11)
+
+arrow(ax, pos["Course"], pos["CTS"], lw=3.5, shrink=30)
+arrow(ax, pos["CTS"], pos["WB"], color=TEAL, lw=3.5, shrink=30)
+arrow(ax, pos["CTS"], pos["DTS"], color=CORAL, lw=3.5, shrink=30)
+arrow(ax, pos["WB"], pos["Sat"], color=TEAL, lw=3.5, shrink=30)
+arrow(ax, pos["DTS"], pos["Sat"], color=CORAL, lw=3.5, shrink=30)
+arrow(ax, pos["Course"], pos["Support"], color=BLUE, lw=3.5, shrink=30)
+arrow(ax, pos["Support"], pos["Sat"], color=BLUE, lw=3.5, shrink=30)
+
+# selection into the course: the confounding the design survives
+node(ax, (5.0, 6.0), "U", color=BG, edge=GREY, r=0.45, fontsize=13, linestyle="--")
+arrow(ax, (5.0, 6.0), pos["Course"], color=GREY, lw=2, linestyle="--", rad=0.25, shrink=26)
+arrow(ax, (5.0, 6.0), pos["Sat"], color=GREY, lw=2, linestyle="--", rad=-0.25, shrink=26)
+ax.text(5.0, 6.55, "who gets sent: keen staff, nominated by managers", ha="center", fontsize=9, color=GREY)
+ax.text(5.9, 0.95, "feeling invested in:\nbuilt in, not assumed away", ha="left", va="center", fontsize=9, color=BLUE)
+
+# time axis
+for x, t in [(1.1, "t₀  course"), (5.0, "t₁  mechanism measured"), (8.9, "t₂  satisfaction")]:
+    ax.text(x, -0.35, t, ha="center", fontsize=10, color=DARK, weight="bold")
+ax.annotate("", xy=(9.8, -0.05), xytext=(0.2, -0.05), arrowprops=dict(arrowstyle="->", color=GREY, lw=1.2))
+plt.show()
+```
 
 :::
-:::{.column}
+:::{.column width="48%"}
 
 ::: {.callout-important}
-## The recipe
-1. **Build** the mechanism from constructs the survey already measures
-2. **Argue** that it exhausts the pathway, and say what would break it
-3. **Encode** the argument as zeros in $B$ and $\Psi_\zeta$
-4. **Audit** the zeros: relax them, simulate leaks, recover parameters
+## The recipe, applied
+1. **Build**: after a thought-strategy course, measure the change in CTS, well-being, dysfunctional thinking and perceived support.
+2. **Argue**: the course reaches satisfaction only through them. Who gets *sent* is the confounding the design survives.
+3. **Encode**: the argument as zeros in $B$ and $\Psi_\zeta$.
+4. **Audit**: relax the zeros, simulate leaks, recover parameters.
 :::
 
-The same pattern applies wherever no single metric qualifies as a front-door mediator, but a designed construct from several correlated signals may.
+::: {.fragment .fade-in}
+- If enrolment can be **randomised**, just compare the groups. The front door is for selected enrolment, the usual HR case.
+- Given the DAG, the cross-sectional SEM is **already** a causal argument: conditioning stands in for intervention. A dated course makes the DAG's premises **easier to defend**: time order, and a named confounder.
+:::
 
 :::
 ::::
 
 ::: {.notes}
-Job satisfaction is not just a convenient textbook dataset; it is a direct instance of a problem people analytics teams face all the time. Interventions are targeted, so who gets them is confounded with how satisfied they are. Randomisation is rare. But surveys already measure the constructs a mechanism could be built from. So the recipe is: build, argue, encode, audit. The audit step is what keeps this honest. It tells you how much of your answer the argument is carrying.
+Here is the study I would actually want, and it's the one people analytics teams can run. The treatment is attending a thought-strategy course: a dated intervention, not a personality trait. After the course you measure the mechanism: the change in constructive thinking, well-being, dysfunctional thinking. Satisfaction comes later. Time order is now built in. The confounding the front door survives is concrete: who gets sent on the course. Keen employees opt in; managers nominate their engaged people; and those same people are more satisfied anyway. That's why you can't just compare attendees with everyone else. The obvious leak in this design is that being sent on a course can make people feel invested in, which raises satisfaction whatever happens to their thinking. The recipe's answer is not to assume that away but to measure it, perceived organisational support, and build it into the mechanism as its own route. If you can randomise enrolment, do that and skip all of this; the front door is for the much more common case where you can't. And to be clear about what this does and doesn't change. Pearl's point stands: if the DAG is right, conditioning does the work of intervention, so the cross-sectional SEM we fitted is already a valid causal argument, conditional on the graph. A course doesn't change that logic. It makes the graph easier to believe: the time order is built in, the treatment is a dated event rather than a trait, and the confounder has a name you can argue about.
 :::
 
 
