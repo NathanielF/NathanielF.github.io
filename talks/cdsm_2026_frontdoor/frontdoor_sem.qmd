@@ -102,7 +102,7 @@ def canvas(figsize=(10, 5)):
 
 :::{.callout-warning}
 ## Who am I?
-- I'm a __data scientist__ at __[Personio]{.blue}__
+- I'm a __data scientist__ at __[PandaDoc]{.blue}__
     - Bayesian statistician,
     - Reformed philosopher and logician.
 - Website: [https://nathanielf.github.io/](https://nathanielf.github.io/)
@@ -133,7 +133,7 @@ So why does almost nobody use it?
 **The argument:** the mediator should be [__built, not found__]{.blue}. Identification is a piece of information architecture.
 
 ::: {.notes}
-The pitch in one sentence: front-door is underused because we read it as a search problem, look for the one variable that carries the whole effect. I want to recast it as a design problem. We build a mechanism out of measured constructs, argue it is exhaustive, and the zero restrictions of a structural equation model do the identifying. Fifteen minutes: the criterion and why it fails as a search; the construction on a real dataset; then an audit of how much of the result the construction is responsible for.
+The pitch in one sentence: front-door is underused because we read it as a search problem, look for the one variable that carries the whole effect. I want to recast it as a design problem. We build a mechanism out of measured constructs, argue it is exhaustive, and the zero restrictions of a structural equation model do the identifying. Fifteen minutes: the criterion and why it fails as a search; the construction on a published job-satisfaction model; then an audit of how much of the result the construction is responsible for.
 :::
 
 
@@ -296,7 +296,7 @@ This is the frame I want you to leave with. These designs are familiar because t
 ::::{.columns}
 :::{.column width="38%"}
 
-Houghton & Jinkerson (2007): 263 respondents, 12 indicators, 4 latent constructs.
+Houghton & Jinkerson (2007): 12 indicators, 4 constructs; 263 observations simulated from their published correlations.
 
 - **CTS**, constructive thought strategies (treatment): `EBA`, `ST`, `MI`
 - **DTS**, dysfunctional thought: `DA1`–`DA3`
@@ -355,7 +355,7 @@ plt.show()
 ::::
 
 ::: {.fragment .fade-in}
-**The front-door claim:** these two routes *exhaust* CTS's influence. A theoretical commitment, not an empirical finding, and the premise that has to be argued.
+**The front-door claim:** these two routes *exhaust* CTS's influence: a premise to argue, not a finding.
 :::
 
 ::: {.notes}
@@ -442,19 +442,43 @@ Code or it didn't happen. Two lists carry the entire identifying argument: the e
 
 ## The Payoff {.smaller}
 
-![](images/payoff.png){fig-align="center" width="68%"}
+![](images/payoff.png){fig-align="center" width="60%"}
 
 | | Total effect CTS → Sat | 94% HDI | Posterior SD | SRMR |
 |---|---|---|---|---|
 | **Saturated** | +0.19 | [−1.25, +1.62] | 0.77 | 0.054 |
-| **Front-door** | +0.14 | [+0.01, +0.27] | 0.07 | 0.054 |
+| **Front-door** | +0.14 | [+0.01, +0.27] | 0.07 | 0.053 |
 
 . . .
 
-The posterior SD shrinks **11×**, while global fit is unchanged. The restrictions trade one-for-one for identification, so [**fit cannot test them**]{.blue}.
+The saturated model is **not identified**: its interval is mostly prior. The front-door model is identified, and its interval **just** excludes zero. Global fit is unchanged: the restrictions trade one-for-one for identification, so [**fit cannot test them**]{.blue}.
 
 ::: {.notes}
-The saturated model fits well but cannot sign the effect: its interval runs from strongly negative to strongly positive. The front-door model gives roughly the same point estimate with an interval about an order of magnitude tighter, which now just excludes zero. And SRMR is essentially identical. That last fact is the uncomfortable one. The data cannot tell these two models apart. Whatever support the front-door estimate has comes from how well the mechanism was built. So the obvious next question is: how much of this precision is the data, and how much is the zeros?
+The saturated model fits well but cannot sign the effect: its interval runs from strongly negative to strongly positive. That width isn't a measurement of anything; the structural parameters aren't identified, so it mostly reflects the priors. The front-door model gives roughly the same point estimate with an identified interval, and its lower end sits just above zero, so I'd say "just excludes zero" rather than make much of it. And SRMR is essentially identical. That last fact is the uncomfortable one. The data cannot tell these two models apart. Whatever support the front-door estimate has comes from how well the mechanism was built. So the obvious next question is: how much of this precision is the data, and how much is the zeros?
+:::
+
+
+## What the Second Mediator Buys {.smaller}
+
+![](images/routes.png){fig-align="center" width="78%"}
+
+::::{.columns}
+:::{.column}
+- CTS **raises** a positive force (well-being: +0.14 × +0.69 = **+0.09**) and **suppresses** a negative one (dysfunctional thinking: −0.16 × −0.31 = **+0.05**).
+- *Find* only well-being: the suppression route becomes a **leak**, and the front door **misses about a third (35%)** of the effect.
+:::
+:::{.column}
+::: {.fragment .fade-in}
+Two different gains from building:
+
+- **Several indicators per construct** handle *measurement error*.
+- **Several constructs, of opposite valence**, handle *exhaustiveness*: that is what closes the pathway.
+:::
+:::
+::::
+
+::: {.notes}
+This is what "built, not found" buys, in numbers, and it's where the bivalence becomes visible. On the left are the four links. Constructive thinking raises well-being, and well-being raises satisfaction: two positives. It also suppresses dysfunctional thinking, which itself drags satisfaction down: two negatives. Both routes therefore raise satisfaction, one by adding a good force, the other by removing a bad one. In a linear SEM the total effect is the sum of the two routes: about 0.09 through well-being and 0.05 through suppression. Neither route on its own has an interval clear of zero; only the two together do. Now suppose we had gone looking for a mediator, found well-being, and stopped. A front door through well-being alone treats the dysfunctional-thinking route as a path around the mediator, a leak, and as we'll see in Act Three, a leak biases the front door by exactly its size. So the single-mediator analysis would report only the well-being route and miss about a third of the effect. Two different things come from building. Multiple indicators per construct deal with measurement error. Multiple constructs, chosen to cover opposite valences, deal with exhaustiveness, which is what the front door actually needs.
 :::
 
 
@@ -527,12 +551,12 @@ Before asking what happens when the mechanism is wrong, check that the model can
 ![](images/leak_bias.png){fig-align="center" width="100%"}
 
 ::: {.fragment .fade-in}
-- As the leak $\delta$ grows, the true effect climbs to 0.44 but the **estimate stays flat**: bias ≈ −0.3 and coverage falls to 0 at $\delta = 0.3$.
+- In a linear SEM a front door recovers only what flows **through** its mediators, so a leak of size $\delta$ biases it by exactly $-\delta$ (dotted line). The simulations track this, noisily: five replicates per $\delta$; coverage of the true effect falls to zero by $\delta = 0.3$.
 - The leak is **absorbed as confounding**: $\rho(\zeta_{CTS}, \zeta_{Sat})$ rises from 0.10 to 0.27, and **SRMR never moves**.
 :::
 
 ::: {.notes}
-Now dial the leak up. The true total effect rises with delta; the front-door estimate doesn't follow, and coverage collapses. Where does the leak go? Into the one covariance the design leaves open, the treatment-outcome confounding term. A path around the mechanism is observationally equivalent to the confounding we built the design to tolerate, so with a positive leak the model reads part of the real effect as confounding and under-reports it. And global fit is flat throughout. Nothing in the data warns you. This is why the argument for exhaustiveness has to be made on the theory, and why the relaxation curve belongs next to the point estimate.
+Now dial the leak up. The analytic answer comes first: in a linear model the front door recovers only what flows through its mediators, so the bias is exactly minus the leak. The dotted line is that prediction, and the simulations follow it, noisily, with only five replicates per setting. Where does the leak go? Into the one covariance the design leaves open, the treatment-outcome confounding term. A path around the mechanism is observationally equivalent to the confounding we built the design to tolerate, so with a positive leak the model reads part of the real effect as confounding and under-reports it. And global fit is flat throughout. Nothing in the data warns you. This is why the argument for exhaustiveness has to be made on the theory, and why the relaxation curve belongs next to the point estimate.
 :::
 
 

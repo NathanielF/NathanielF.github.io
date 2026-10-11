@@ -58,26 +58,26 @@ Answering needs a demand model, and real markets are full of things nobody obser
 
 . . .
 
-**The argument:** the Berry–Levinsohn–Pakes model is a stack of integrals over a crowd we never see. Treat that [**crowd as a latent variable**]{.blue} and the classical computational tricks become a generative model.
+**The argument:** the Berry–Levinsohn–Pakes model is a stack of integrals over a crowd we never see. Treat the [**crowd's composition as a latent variable**]{.blue} and the classical computational tricks become a generative model.
 
 ::: {.notes}
-The opening question is the one every pricing team asks. The data they have are market shares: what fraction of shoppers bought each brand, in each city, each quarter. What they need is a model of the people behind those shares. BLP is the standard answer in industrial organisation. My claim today is that the heart of BLP is integration, three integrals nested inside each other, and that once you see that, the Bayesian version writes itself: the population of consumers stops being a numerical device and becomes a latent variable in the model.
+The opening question is the one every pricing team asks. The data they have are market shares: what fraction of shoppers bought each brand, in each city, each quarter. What they need is a model of the people behind those shares. BLP is the standard answer in industrial organisation. My claim today is that the heart of BLP is integration, three integrals nested inside each other, and that once you see that, the Bayesian version writes itself: the composition of the crowd stops being a numerical device and becomes a latent variable in the model.
 :::
 
 
 ## Agenda
 
 ::: {.fragment .fade-in}
-**Act I: The Crowd Behind the Shares.** What aggregate data hide, and how classical BLP inverts its way back
+**Act I: The Crowd Behind the Shares.** What aggregate data hide, and why the crowd changes the answer
 :::
 ::: {.fragment .fade-in}
-**Act II: Integration All the Way Down.** Three nested integrals, built up one layer at a time
+**Act II: Integration All the Way Down.** How economists handle the crowd, and the Bayesian alternative
 :::
 ::: {.fragment .fade-in}
-**Act III: Building the Crowd in PyMC.** A Bayesian BLP from scratch, then with endogenous prices
+**Act III: Building the Crowd in PyMC.** A Bayesian BLP from scratch, then the library
 :::
 ::: {.fragment .fade-in}
-**Act IV: Counterfactual Markets.** Nevo's cereal: elasticities and the Corn Flakes question
+**Act IV: Counterfactual Markets.** Nevo's cereal, and whether the crowd mattered
 :::
 
 
@@ -119,7 +119,7 @@ A share is the *average* decision of a crowd. To answer "what if?", we need the 
 ::::
 
 ::: {.notes}
-This is what scanner-style data look like: shares, prices and a few characteristics. No individuals. Everything that drives a counterfactual, how sensitive people are to price, and how differently, and the parts of a brand's appeal we don't measure, is missing. A share is an average over a crowd. If you only model the average, you only ever get answers that are true of an average person, and as we'll see, the crowd is not its average member.
+This is what scanner-style data look like: shares, prices and a few characteristics. No individuals. Everything that drives a counterfactual, how sensitive people are to price, and how differently, and the parts of a brand's appeal we don't measure, is missing. A share is an average over a crowd. If you only model the average, you only ever get answers that are true of an average person, and as we'll see in a moment, the crowd is not its average member.
 :::
 
 
@@ -137,13 +137,65 @@ $$s_{jm} = \int \frac{\exp(\delta_{jm} + \sigma \nu\, p_{jm})}{1 + \sum_k \exp(\
 
 . . .
 
-- $\alpha$: the **average** consumer's price sensitivity
-- $\sigma$: how **differently** consumers feel about price
+- $\alpha$: the **average** consumer's price sensitivity; $\sigma$: how **differently** consumers feel about price
 - $\xi_{jm}$: the brand's **unmeasured appeal** in that market
-- No closed form: the integral over the crowd must be **approximated**.
+- No closed form: we approximate the integral with a **population of synthetic consumers**.
 
 ::: {.notes}
-Here is the model in one line. Mean utility delta collects what everyone shares: price times the average sensitivity, characteristics, and xi, the unmeasured appeal. Each consumer then deviates through nu, their personal taste shock, scaled by sigma. The share is an integral over the distribution of nu, and it has no closed form. That single fact drives everything about how BLP is estimated.
+Here is the model in one line. Mean utility delta collects what everyone shares: price times the average sensitivity, characteristics, and xi, the unmeasured appeal. Each consumer then deviates through nu, their personal taste shock, scaled by sigma. The share is an integral over the distribution of nu, and it has no closed form. So we approximate it with a fixed population of synthetic consumers, and average their choices. Let me show you what that crowd looks like before we talk about how to estimate anything.
+:::
+
+
+## The Synthetic Crowd {.smaller}
+
+![](images/synthetic_crowd.png){fig-align="center" width="92%"}
+
+Price sensitivity varies, $\alpha_i = \alpha + \sigma\nu_i$. Each of 500 synthetic consumers has their own choice probabilities; the share is the **crowd's average**. The crowd buys the premium product at **22%**; its "average member" would buy it at **9%**.
+
+::: {.notes}
+Here is a market of three products: a budget, a mid-range and a premium cereal. On the left, five hundred synthetic consumers sorted from most price-sensitive to least. The sensitive ones mostly buy nothing or the budget option; the insensitive tail buys premium. The market share is the average of these columns. On the right, the punchline: averaging the crowd's choices is not the same as asking the average consumer. The crowd buys premium at twenty-two percent; the average consumer at nine. Nonlinearity makes the crowd matter.
+:::
+
+
+## Same Shares, Different Crowds {.smaller}
+
+![](images/same_shares_different_crowds.png){fig-align="center" width="78%"}
+
+A logit and a crowd fitted to the **same** shares. In the crowd, premium buyers sit in the insensitive tail and mid-range buyers are their nearest neighbours, so a 10% premium price rise sends **28%** of lost customers to mid-range (logit: 15%).
+
+::: {.notes}
+This is why the crowd is worth the trouble. I take the shares from the last slide as data and fit two models to them exactly: a homogeneous logit, and a crowd with sigma 0.9. Both match the data perfectly, but they describe different people. On the left I split the crowd by what each consumer buys. Premium buyers sit out in the price-insensitive tail, and mid-range buyers are their nearest neighbours. In the logit, everyone sits on the dashed line. Now raise the premium price. The logit has the independence of irrelevant alternatives, so lost customers spread in proportion to market share, and seventy-three percent leave the category. The crowd sends them to the product that people like them already buy. Same data, different counterfactual. Shares alone can't decide between the two, which is why we need a model of the crowd, and a way to estimate it.
+:::
+
+
+# Act II: Integration All the Way Down {background-color="#2a3439"}
+
+
+## Integration Is Averaging {.smaller}
+
+::::{.columns}
+:::{.column width="40%"}
+
+![](images/halton_vs_random.png)
+
+$$\int f(\nu)\, dF(\nu) \approx \frac{1}{R}\sum_{r=1}^{R} f(\nu_r)$$
+
+Each point $\nu_r$ is one **synthetic consumer**. Scrambled Halton points spread out on purpose; random draws clump.
+
+:::
+:::{.column width="60%"}
+
+![](images/integration_convergence.png)
+
+::: {.fragment .fade-in}
+On a three-dimensional share integral, a crowd of 8,192 Halton consumers is about **33× more accurate** than a random one of the same size.
+:::
+
+:::
+::::
+
+::: {.notes}
+How do we compute that integral? An integral against a distribution is an expectation, and an expectation is approximated by an average over points. The question is which points. Random draws clump in some places and leave holes in others. Scrambled Halton sequences fill the space evenly. On the right, a real three-dimensional share integral: random crowds improve at the familiar one over root R; Halton crowds much faster, about thirty times more accurate at eight thousand consumers. For a model that evaluates this integral at every step of the sampler, that decides whether it's practical.
 :::
 
 
@@ -182,7 +234,7 @@ Powerful, but **computationally delicate**: the inner loop's tolerance leaks int
 ::::
 
 ::: {.notes}
-The classical estimator wraps one optimisation inside another. Outside, GMM searches over sigma. Inside, for every candidate sigma, Berry's contraction mapping inverts the observed shares to find the mean utilities that reproduce them exactly, and from those the structural errors xi, which the instruments must be orthogonal to. It works, and it is the workhorse of empirical IO. But it is delicate. Dubé, Fox and Su showed that loose inner tolerances produce wrong outer estimates. And the uncertainty you report is bolted on afterwards.
+This is how economists estimate it. The classical estimator wraps one optimisation inside another. Outside, GMM searches over sigma. Inside, for every candidate sigma, Berry's contraction mapping inverts the observed shares to find the mean utilities that reproduce them exactly: that's how I fitted the crowd to the same shares in Act One. From those come the structural errors xi, which the instruments must be orthogonal to. It works, and it is the workhorse of empirical IO. But it is delicate. Dubé, Fox and Su showed that loose inner tolerances produce wrong outer estimates. And the uncertainty you report is bolted on afterwards.
 :::
 
 
@@ -192,112 +244,20 @@ The classical estimator wraps one optimisation inside another. Outside, GMM sear
 | Classical device | Bayesian counterpart |
 |---|---|
 | Simulation draws to approximate the share integral | A **fixed synthetic crowd**: Halton consumers as data |
-| Contraction mapping to invert shares for $\delta$ | **No inversion**: $\xi_{jm}$ is a latent variable with a prior |
-| GMM moment conditions $\mathbb{E}[z\,\xi] = 0$ | A **joint model** of the price equation and $\xi$ |
+| Contraction mapping to invert shares for $\delta$ | **No inversion**: $\xi_{jm}$ is sampled as a latent variable |
+| GMM moment conditions $\mathbb{E}[z\,\xi] = 0$ | A **joint model** of the price equation and $\xi$ (a control function) |
 | Standard errors by the delta method | **Posterior integration**: every quantity is averaged over the posterior |
 
 . . .
 
-Jiang, Manchanda & Rossi (2009) made the case for this model; PyMC-Marketing's `BayesianBLP` implements it. The rest of this talk builds the intuition for **why it works**: it is integration all the way down.
+Jiang, Manchanda & Rossi (2009) gave BLP a Bayesian likelihood but still ran the contraction **inside every MCMC step**. Sampling $\xi$ directly removes the inner loop, in the spirit of Dubé, Fox & Su's MPEC: unknowns become parameters, not a fixed point.
 
 ::: {.notes}
-This is the reframing in one table. Each piece of computational machinery in classical BLP corresponds to something natural in a generative model. The simulation draws become a population of synthetic consumers that the model carries around as data. The inversion disappears, because xi is just another latent variable. The moment conditions become a joint model of how prices were set. And uncertainty is not an afterthought: it is the posterior. Jiang, Manchanda and Rossi made this argument for the random-coefficients logit on aggregate data; the PyMC-Marketing class implements it.
+This is the reframing in one table. Each piece of computational machinery in classical BLP corresponds to something natural in a generative model. The simulation draws become a population of synthetic consumers the model carries around as data. The moment conditions become a joint model of how prices were set. And uncertainty is not an afterthought: it is the posterior. A note on history: Jiang, Manchanda and Rossi gave BLP a proper Bayesian likelihood, but they still invert the shares with the contraction mapping at every MCMC step. The version in PyMC-Marketing samples xi directly as a latent variable, so there is no inner loop at all. It's the same idea as Dubé, Fox and Su's MPEC: stop solving for the unknowns in an inner loop and make them parameters.
 :::
 
 
-# Act II: Integration All the Way Down {background-color="#2a3439"}
-
-
-## Integration Is Averaging {.smaller}
-
-::::{.columns}
-:::{.column width="35%"}
-
-Every integral in BLP is an expectation, so
-
-$$\int f(\nu)\, dF(\nu) \approx \frac{1}{R}\sum_{r=1}^{R} f(\nu_r)$$
-
-The only question is **which** points $\nu_r$ to average over.
-
-::: {.fragment .fade-in}
-- Random draws **clump** and leave **gaps**.
-- Scrambled Halton draws **spread out** on purpose.
-- Each point is one **synthetic consumer**.
-:::
-
-:::
-:::{.column width="65%"}
-
-![](images/halton_vs_random.png)
-
-:::
-::::
-
-::: {.notes}
-Start at the bottom. An integral against a distribution is an expectation, and an expectation can be approximated by an average over points. The question is which points. Independent random draws clump together in some places and leave holes in others. Halton sequences are deterministic, low-discrepancy points that fill the space evenly; scrambling removes their artefacts. In BLP, each of these points is a person: one synthetic consumer with one set of tastes.
-:::
-
-
-## Halton Crowds Are Better Crowds {.smaller}
-
-![](images/integration_convergence.png){fig-align="center" width="68%"}
-
-The same three-dimensional share integral, approximated by crowds of different sizes. At 8,192 consumers the Halton crowd is about **33× more accurate** than a random one; random draws improve only at the $1/\sqrt{R}$ rate.
-
-::: {.notes}
-Here is why the choice matters. This is a real share integral, a mixed logit with three taste dimensions. The orange line is the error of random crowds as they grow; it falls at the familiar one over root R. The teal line is Halton crowds; it falls much faster. By eight thousand consumers it is more than thirty times more accurate. For a model that evaluates this integral at every gradient step of the sampler, that difference decides whether the model is practical.
-:::
-
-
-## Layer 1: The Logit Is Already an Integral {.smaller}
-
-::::{.columns}
-:::{.column width="38%"}
-
-Each consumer adds an idiosyncratic Gumbel shock and picks the best option:
-
-$$s_j = \int \mathbb{1}\big[j \text{ is best}\big]\, dF(\varepsilon) = \frac{e^{\delta_j}}{1 + \sum_k e^{\delta_k}}$$
-
-::: {.fragment .fade-in}
-McFadden (1974): for Gumbel shocks this integral has a **closed form**. Simulate and count, and you converge to it.
-:::
-
-:::
-:::{.column width="62%"}
-
-![](images/gumbel_to_logit.png)
-
-:::
-::::
-
-::: {.notes}
-The first integral is one you may not have noticed. The logit formula is the probability that a product wins a utility contest when every option gets a random Gumbel shock. That's an integral over the shocks, and McFadden showed it has a closed form. On the right, I simulate twenty thousand consumers, give them Gumbel shocks, and count their choices. The running shares converge to the softmax. So when we write a softmax, we are already integrating; we just get to skip the work.
-:::
-
-
-## Layer 2: The Synthetic Crowd {.smaller}
-
-![](images/synthetic_crowd.png){fig-align="center" width="92%"}
-
-Price sensitivity varies, $\alpha_i = \alpha + \sigma\nu_i$. Each of 500 Halton consumers has their own choice probabilities; the share is the **crowd's average**. The crowd buys the premium product at **22%**; its "average member" would buy it at **9%**.
-
-::: {.notes}
-The second integral is the one BLP is famous for. Now the price coefficient varies across people. On the left, five hundred synthetic consumers, one Halton point each, sorted from most price-sensitive to least. The sensitive ones mostly buy nothing or the budget option; the insensitive tail buys premium. The market share is the average of these columns. On the right, the punchline: averaging the crowd's choices is not the same as asking the average consumer. The crowd buys premium at twenty-two percent; the average consumer at nine. Nonlinearity makes the crowd matter.
-:::
-
-
-## Same Shares, Different Crowds {.smaller}
-
-![](images/same_shares_different_crowds.png){fig-align="center" width="78%"}
-
-Berry's inversion fits a logit and a crowd to the **same** shares. Left: in the crowd, premium buyers sit in the insensitive tail and mid-range buyers are their nearest neighbours. So after a 10% premium price rise the crowd sends **28%** of lost customers to mid-range (logit: 15%); the logit sends **73%** out of the category.
-
-::: {.notes}
-This is why the crowd is worth the trouble. I take the shares from the last slide as data and fit two models to them exactly: a homogeneous logit, and a crowd with sigma 0.9. Fitting the crowd is Berry's contraction mapping, the code from Act One. Both models match the data perfectly, but they describe different people. On the left I split the crowd by what each consumer buys. Premium buyers sit out in the price-insensitive tail, and mid-range buyers are their nearest neighbours. In the logit, everyone sits on the dashed line. Now raise the premium price. The logit has the independence of irrelevant alternatives, so lost customers spread in proportion to market share, and most leave the category. The crowd sends them to the product that people like them already buy. Same data, different counterfactual. Shares alone can't decide between the two, which is why we need a model of the crowd.
-:::
-
-
-## Layer 3: We Don't Know the Crowd {.smaller}
+## We Don't Know the Crowd {.smaller}
 
 ::::{.columns}
 :::{.column width="35%"}
@@ -305,10 +265,13 @@ This is why the crowd is worth the trouble. I take the shares from the last slid
 Everything so far assumed $\alpha$ and $\sigma$ were known. They aren't.
 
 ::: {.fragment .fade-in}
-- Put priors on $(\alpha, \sigma, \beta, \xi)$.
-- The Halton points stay **fixed**.
-- The posterior moves the parameters that turn $\nu_r$ into real sensitivities $\alpha + \sigma\nu_r$.
-- **The crowd is a latent variable**: each posterior draw is a different crowd.
+- The Halton points are **fixed**, standardised people $\nu_r$.
+- Priors on $(\alpha, \sigma, \beta, \xi)$; the posterior moves the crowd $\alpha + \sigma\nu_r$.
+- **Each posterior draw is a different crowd.**
+:::
+
+::: {.fragment .fade-in}
+*The licence:* shoppers are exchangeable **given their market and taste profile**, so de Finetti's theorem says their choices are draws given a latent parameter with a prior. The crowd's composition is that parameter.
 :::
 
 :::
@@ -320,50 +283,7 @@ Everything so far assumed $\alpha$ and $\sigma$ were known. They aren't.
 ::::
 
 ::: {.notes}
-The third integral is the Bayesian one. We never know the crowd. So we put priors on the parameters that shape it and let the data speak. The Halton points never change; they are standardised people. What the posterior moves is the mapping from those standard tastes to actual price sensitivities. Each teal curve is one posterior draw: one complete, plausible crowd. The dashed orange curve is the crowd that actually generated the data. A homogeneous logit sees only the dotted line: one number for everybody.
-:::
-
-
-## De Finetti's Crowd {.smaller}
-### Why BLP is a natural Bayesian case study
-
-::::{.columns}
-:::{.column width="58%"}
-
-De Finetti (1937): **exchangeable** observations can be represented as independent draws given a latent parameter, mixed over a prior. Shoppers are not exchangeable outright, but they are **conditionally**:
-
-::: {style="font-size: 0.8em;"}
-$$p(y_{1}, \dots, y_{n} \mid m) = \int \prod_{i=1}^{n} \int p(y_{i} \mid m, \nu)\, dF(\nu \mid \color{teal}{\theta})\; \color{blue}{\pi(d\theta)}$$
-:::
-
-::: {.fragment .fade-in}
-- Given the **market** $m$ (prices, characteristics, appeal $\xi$) and a **taste profile** $\nu$, two shoppers are interchangeable: each choice is a logit draw.
-- Taste profiles are **latent**, so we integrate them over the [crowd $F(\nu \mid \theta)$]{style="color: teal;"}.
-- **The crowd's composition $\theta$ is the de Finetti parameter.**
-:::
-
-:::
-:::{.column width="42%"}
-
-::: {.fragment .fade-in}
-::: {.callout-important}
-## The theorem guarantees a prior; BLP supplies one
-> "...it generally does not specify the model, and it never specifies the required prior distribution." (Bernardo, 1996)
-
-The Bayesian BLP fills [$\pi$]{style="color: blue;"} with structure:
-
-- a **utility model** and a fixed Halton crowd,
-- **product appeal** shared across markets,
-- a **price equation** for why appealing products cost more,
-- a **hierarchy**: markets are only *partially* exchangeable.
-:::
-:::
-
-:::
-::::
-
-::: {.notes}
-This is the reason I find BLP such an evocative Bayesian case study. De Finetti's representation theorem says that if you judge observations exchangeable, you may treat them as independent draws given some latent parameter, averaged over your beliefs about that parameter. Shoppers are not exchangeable outright: they face different prices and they have different tastes. But they are conditionally exchangeable. Fix the market, its prices, characteristics and unmeasured appeal, and fix a taste profile, and two shoppers are interchangeable: each choice is just a logit draw. We never see the taste profile, so we integrate it out over the crowd. That is the inner integral of the talk. And the composition of that crowd is the de Finetti parameter, with a prior over it. That is the outer integral. The nesting of the integrals is the nesting of the exchangeability judgements. But, as José Bernardo puts it, the theorem is an existence result: it tells you a model and a prior must exist, and never tells you which. That is where BLP earns its place as a case study. Economics supplies the structure: a utility model, product appeal shared across markets, a price equation explaining why appealing products cost more, and, because markets are similar but not identical, only partial exchangeability across them, which is exactly a hierarchical model across regions. That structure is what lets shares, which say very little on their own, identify a crowd.
+The third integral is the Bayesian one. We never know the crowd. The Halton points never change; they are standardised people. What the posterior moves is the mapping from those standard tastes to actual price sensitivities. Each teal curve is one posterior draw: one complete, plausible crowd. The dashed orange curve is the crowd that actually generated the data, and a homogeneous logit sees only the dotted line. Why is this legitimate? Shoppers are not identical, but once you fix their market and their taste profile they are interchangeable. De Finetti's representation theorem then says their choices can be modelled as draws given a latent parameter, with a prior over it. The crowd's composition is that parameter.
 :::
 
 
@@ -378,7 +298,7 @@ $$\mathbb{E}[\text{elasticity} \mid \text{shares}] = \color{blue}{\int_\theta} \
 ::: {.fragment .fade-in}
 [**Gumbel shocks**]{style="color: gray;"}
 
-Closed form: the softmax. Free.
+The softmax is already an integral over idiosyncratic shocks, with a closed form (McFadden, 1974). Free.
 :::
 :::
 ::: {.column width="33%"}
@@ -402,7 +322,7 @@ MCMC average over every crowd consistent with the shares.
 Elasticities, diversion ratios and counterfactual shares are all the **same nested average**, evaluated at different prices.
 
 ::: {.notes}
-Here is the whole structure in one line. Innermost, the Gumbel shocks: integrated in closed form, the softmax. In the middle, the crowd: averaged over Halton consumers inside the model. Outermost, the posterior: averaged by MCMC over every crowd consistent with the data. Every quantity a pricing team cares about is this same nested average, evaluated at a different set of prices. Once you see the nesting, there is no separate machinery for uncertainty. It falls out of the outer integral.
+Here is the whole structure in one line. Innermost, the Gumbel shocks. The logit formula you know is itself the solution of an integral: the probability a product wins a utility contest when every option gets a random shock, which McFadden showed has a closed form. In the middle, the crowd: averaged over Halton consumers inside the model. Outermost, the posterior: averaged by MCMC over every crowd consistent with the data. Every quantity a pricing team cares about is this same nested average, evaluated at a different set of prices. Once you see the nesting, there is no separate machinery for uncertainty. It falls out of the outer integral.
 :::
 
 
@@ -425,11 +345,11 @@ with pm.Model(coords=coords) as blp_from_scratch:
     sigma_xi = pm.HalfNormal("sigma_xi", 0.5)
     xi = xi_j + sigma_xi * pm.Normal("xi_raw", 0, 1, dims=("market", "product"))
 
-    # Mean utility, then each synthetic consumer's deviation
+    # Mean utility (M, J), then every consumer's utility (M, J, R)
     delta = alpha * P + (X * beta).sum(-1) + xi
     utility = delta[:, :, None] + sigma * crowd[None, None, :] * P[:, :, None]
 
-    # Integrate the logit over the crowd
+    # Integrate the logit over the crowd: .mean(axis=-1) IS the integral
     u_full = pt.concatenate([utility, pt.zeros((M, 1, R))], axis=1)
     shares = pt.special.softmax(u_full, axis=1).mean(axis=-1)
     log_ratio = pt.log(shares[:, :J]) - pt.log(shares[:, J])[:, None]
@@ -442,19 +362,22 @@ with pm.Model(coords=coords) as blp_from_scratch:
 :::
 :::{.column width="32%"}
 
-$$\delta_{jm} = \alpha p_{jm} + x_{jm}'\beta + \xi_{jm}$$
+$$\hat s_{jm} = \color{teal}{\frac{1}{R}\sum_r} \text{softmax}_j\big(\delta_{jm} + \sigma \color{teal}{\nu_r} p_{jm}\big)$$
 
-$$u_{rjm} = \delta_{jm} + \sigma \color{teal}{\nu_r} p_{jm}$$
+::: {.fragment .fade-in}
+**The engineering**
 
-$$\hat s_{jm} = \color{teal}{\frac{1}{R}\sum_r} \text{softmax}_j(u_{rm})$$
-
-$$\log \tfrac{s_{jm}}{s_{0m}} \sim N\Big(\log \tfrac{\hat s_{jm}}{\hat s_{0m}},\ \tfrac{1}{n s_{jm}} + \tfrac{1}{n s_{0m}}\Big)$$
+- The crowd is a `pm.Data` vector of 200 Halton draws: data, not parameters.
+- Broadcasting builds a markets × products × consumers tensor; no Python loops.
+- `.mean(axis=-1)` is the whole share integral.
+- 40 markets × 3 products fit in 21 s with nutpie.
+:::
 
 :::
 ::::
 
 ::: {.notes}
-Code or it didn't happen. This is the whole model. First the preferences: average price sensitivity alpha, the spread of the crowd sigma, characteristic weights beta. Then the unmeasured appeal xi, a product effect plus market-level shocks, non-centred for the sampler. Then utility: mean utility, plus each synthetic consumer's deviation, sigma times their Halton draw times price. Then the integral: softmax over products for every consumer, averaged over the crowd. That mean over the last axis is the entire share integral. Finally Berry's likelihood on the log share ratio, with variance from multinomial sampling. Notice what isn't here: no contraction mapping, no inversion, no GMM.
+Code or it didn't happen. This is the whole model. First the preferences: average price sensitivity alpha, the spread of the crowd sigma, characteristic weights beta. Then the unmeasured appeal xi, a product effect plus market-level shocks, non-centred for the sampler. Then utility: mean utility, plus each synthetic consumer's deviation, sigma times their Halton draw times price. Broadcasting turns that into one tensor with an axis for markets, products and consumers. Then the integral: softmax over products for every consumer, then a mean over the consumer axis. That one mean is the share integral. Finally Berry's likelihood on the log share ratio. Notice what isn't here: no contraction mapping, no inversion, no GMM.
 :::
 
 
@@ -469,70 +392,42 @@ Code or it didn't happen. This is the whole model. First the preferences: averag
 :::
 :::{.column}
 ::: {.fragment .fade-in}
-- $\sigma$ is the hardest: its interval [0.60, 0.75] **narrowly misses** 0.6, slightly overstating the crowd's spread. Heterogeneity is identified by how shares *bend* across price, a second-order signal in aggregate data.
+- $\sigma$ is the hardest: its interval [0.604, 0.750] **just misses** the true 0.6, slightly overstating the crowd's spread. Heterogeneity is identified by how shares *bend* across price, a second-order signal in aggregate data.
 :::
 :::
 ::::
 
 ::: {.notes}
-Does it work? Mostly. On a simulated panel with known truth there are zero divergences, and the price coefficient and characteristic weights are recovered. The honest detail is sigma, the crowd's spread. Its interval sits just above the true value, so the model slightly overstates how heterogeneous the crowd is. That's typical: heterogeneity is identified from the curvature of shares across markets with different prices, which is a subtle signal in aggregate data. It's exactly why you want a posterior rather than a point estimate for it.
-:::
-
-
-## The Unmeasured Appeal {.smaller}
-### Endogenous prices
-
-::::{.columns}
-:::{.column width="38%"}
-
-Firms set prices knowing their product's appeal $\xi_{jm}$. Popular products get priced **up**.
-
-::: {.fragment .fade-in}
-- Ignore it, and "expensive *because* popular" looks like "consumers don't mind the price".
-- `BayesianBLP` adds a first-stage **price equation** with instruments and models $\xi$ **jointly** with the price residual.
-- Correlation $\rho(\xi, \eta)$: **0.51**, 89% interval [0.31, 0.68].
-:::
-
-:::
-:::{.column width="62%"}
-
-![](images/iv_vs_noiv.png)
-
-:::
-::::
-
-Simulated panel with `price_xi_corr = 0.6`. 94% HDIs. With instruments: **−1.99** [−2.12, −1.86]; without: **−1.91** [−2.04, −1.78]; truth **−2.0**.
-
-::: {.notes}
-Now the second hidden thing from the pitch: the unmeasured appeal that drives both price and sales. Firms see xi and price accordingly, so price and xi are correlated. A model that ignores this underestimates price sensitivity. BayesianBLP adds a first-stage price equation with instruments, cost shifters or rival characteristics, and models xi jointly with the price residual. On a simulated panel with strong endogeneity, the instrumented posterior centres on the truth; the uninstrumented one is pulled towards zero. To be candid, with this panel the gap is modest and the two intervals overlap. The clearer evidence is the endogeneity correlation itself, which the model estimates at about one half, well away from zero.
+Does it work? Mostly. On a simulated panel with known truth there are zero divergences, and the price coefficient and characteristic weights are recovered. The honest detail is sigma, the crowd's spread. Its interval starts at 0.604, just above the true 0.6, so the model slightly overstates how heterogeneous the crowd is. That's typical: heterogeneity is identified from the curvature of shares across markets with different prices, which is a subtle signal in aggregate data.
 :::
 
 
 ## `BayesianBLP` in PyMC-Marketing {.smaller}
 
-```{.python code-line-numbers="|1-9|10|11-12"}
+```{.python code-line-numbers="|1-6|7-9|10-11|12-13"}
 model = BayesianBLP(
-    market_data=df,                       # long format: one row per market × product
+    market_data=nevo,                      # long format: one row per market × product
     characteristics=["sugar", "mushy"],
-    instruments=[f"z{i}" for i in range(6, 11)],
-    random_coef_on=["price", "sugar", "mushy"],   # three taste dimensions
-    region_col="region", time_col="period",       # cities pool hierarchically
-    n_mc_draws=200,                               # the synthetic crowd
-    hierarchical_parameterisation="noncentered",
+    instruments=[f"z{i}" for i in range(6, 11)],    # price equation for endogenous prices
+    random_coef_on=["price", "sugar", "mushy"],     # a three-dimensional crowd
+    region_col="region", time_col="period", n_mc_draws=200,
+    hierarchical_parameterisation="noncentered",    # few markets per city
+    model_config={"alpha": Prior("Normal", mu=0, sigma=3),       # what this data needed
+                  "sigma_xi_j": Prior("HalfNormal", sigma=0.25)},
 )
-model.fit(nuts_sampler="nutpie", draws=2000, tune=1000, chains=4)
+model.fit(nuts_sampler="nutpie", draws=2000, tune=1000, chains=4,
+          target_accept=0.95, init="adapt_full")    # funnel-prone ξ block
 elasticities = model.elasticities(at="samples")
 cf = model.counterfactual_shares(price_change={"GenMills_19": -0.10})
 ```
 
 ::: {.fragment .fade-in}
-- **Hierarchical pooling** of price sensitivity across regions, cheap in a Bayesian model.
-- **Elasticities** reuse the same crowd: the Halton average comes for free.
-- **Counterfactuals** hold each market's posterior $\xi$ fixed and re-integrate over the crowd at new prices.
+- **Endogenous prices**: firms price up appealing products, so price and $\xi$ are correlated. The price equation with instruments models them jointly.
+- **The defaults were not enough** for Nevo: a wider price prior, a non-centred hierarchy, `adapt_full` and a high `target_accept`. Fit time: 3.3 minutes, zero divergences.
 :::
 
 ::: {.notes}
-Everything we've built is packaged in one class. You hand it a long-format panel, name the characteristics and instruments, and choose which dimensions get random coefficients: here price, sugar and mushiness, so the synthetic crowd lives in three dimensions. Regions pool hierarchically. After fitting, elasticities and counterfactuals are one call each, and both are the nested average from Act Two, evaluated at new prices.
+Everything we've built is packaged in one class, and I want to show you what it actually took on real-shaped data rather than pretend the defaults just work. You hand it a long-format panel, name the characteristics and the instruments, and choose which dimensions get random coefficients: here price, sugar and mushiness, so the synthetic crowd lives in three dimensions. The instruments matter because firms price up their most appealing products, so price and unmeasured appeal are correlated; the class models the price equation jointly with xi. For Nevo's data I needed a wider prior on price, a non-centred hierarchy because each city has only two markets, a full-rank mass-matrix initialisation and a high target acceptance. With those, it fits in a few minutes without divergences.
 :::
 
 
@@ -551,62 +446,76 @@ The standard benchmark for BLP: Nevo's (2000) *Practitioner's Guide*.
 - Hausman instruments: the brand's price in **other** cities
 - Three-dimensional crowd of 200 Halton consumers
 
-::: {.fragment .fade-in}
-Zero divergences. Price coefficient $\alpha = -0.33$ (price in cents); crowd spread on price **0.15** [0.11, 0.19]; endogeneity $\rho = 0.33$ [0.11, 0.52] (89% intervals).
-:::
+[Nevo's panel is simulated to resemble the cereal market, and brand names are coded.]{style="font-size: 0.8em; color: #888;"}
 
 :::
 :::{.column width="45%"}
 
-::: {.callout-warning}
-## The Hard Truth
-- Nevo's panel is **simulated** to resemble cereal; it is not scanner data.
-- The data carry no market sizes: $n = 1{,}000$ is a **placeholder** that scales interval widths.
-- Brand identities are **coded**; sugar and mushiness never vary within a brand, so they compete with brand effects.
+::: {.fragment .fade-in}
+::: {.callout-note}
+## What the posterior says about this crowd
+- Average price coefficient $\alpha = -0.33$ (price in cents)
+- Spread of price sensitivity across the crowd: **0.15** [0.11, 0.19]
+- Prices are endogenous: $\rho(\xi, \eta) = 0.33$ [0.11, 0.52]
+
+(89% intervals.) A real but **modest** spread. Does it change the answer to the Corn Flakes question?
+:::
 :::
 
 :::
 ::::
 
 ::: {.notes}
-Now the benchmark everyone uses. Nevo's cereal data: twenty-four brands, prices, two characteristics, and Hausman instruments, the same brand's price in other cities. I fit a subset of eight cities so it runs in minutes. The fit is clean, and the model finds both heterogeneity in price sensitivity and endogeneity of prices. And the honest caveats: the data are simulated to look like cereal, there are no market sizes so I use a placeholder, and brands are coded, so I can't actually tell you which one is Corn Flakes.
+Now the benchmark everyone uses. Nevo's cereal data: twenty-four brands, prices, two characteristics, and Hausman instruments, the same brand's price in other cities. I fit a subset of eight cities so it runs in minutes. The data are simulated to look like the cereal market, and the brands are coded, so I can't actually tell you which one is Corn Flakes. What does the posterior say about the crowd? Price sensitivity does vary across consumers, but the spread is modest relative to the average, and prices are endogenous, so the instruments are earning their keep. Keep that modest spread in mind; it matters in two slides' time. If asked: the data carry no market sizes, so I use a placeholder of a thousand, which affects how residuals split between noise and appeal; and because sugar and mushiness never vary within a brand, those coefficients compete with the brand effects, much as a categorical variable competes with an intercept.
 :::
 
 
 ## Elasticities with Uncertainty {.smaller}
 
 ::::{.columns}
-:::{.column width="62%"}
+:::{.column width="58%"}
 
 ![](images/nevo_elasticities.png)
 
 :::
-:::{.column width="38%"}
+:::{.column width="42%"}
 
-- Own-price elasticities from **−2.4 to −2.9**, median **−2.78**: inside the range usually reported for cereal.
+- Own-price elasticities from **−2.4 to −2.9**, median **−2.78**.
 - Every brand gets a **full posterior**, not a delta-method standard error.
 
 ::: {.fragment .fade-in}
-- Wide intervals flag brands whose demand the data pin down poorly. That is a business fact, not a nuisance.
+- Wide intervals flag brands whose demand the data pin down poorly. Kelloggs_11, our stand-in for Corn Flakes, is one of them: worth knowing before you price it.
 :::
 
 :::
 ::::
 
 ::: {.notes}
-The first test of any demand model is whether the elasticities are sensible. Here they run from about minus two and a half to just under minus three, which is where the cereal literature puts them. But look at the widths. Most brands are tightly estimated; a few, like GenMills_28 and Kelloggs_11, have intervals stretching well above minus two. That is the model telling you where its knowledge runs out, and a pricing team should hear it.
+The first test of any demand model is whether the elasticities are sensible. Here every brand loses between about two and a half and three percent of its share for each one percent price rise. But look at the widths. Most brands are tightly estimated; a few have intervals stretching much closer to zero, and one of them is Kelloggs_11, the brand I'll treat as our Corn Flakes. That is the model telling you where its knowledge runs out, and a pricing team should hear it before setting a price.
 :::
 
 
 ## The Corn Flakes Question {.smaller}
 ### A competitor cuts its price by 10%
 
-![](images/nevo_counterfactual.png){fig-align="center" width="66%"}
+![](images/nevo_counterfactual.png){fig-align="center" width="58%"}
 
 GenMills_19 cuts its price by 10% and gains about **29%** share [25%, 33%]. Kelloggs_11, our largest Kellogg's brand, loses about **0.7%** [0.5%, 0.9%]. Only **4%** of the competitor's gain comes from us; **55%** comes from people who weren't buying cereal at all.
 
 ::: {.notes}
-Back to the opening question. Kelloggs_11 is the largest Kellogg's brand in the subset; call it our Corn Flakes. The largest General Mills brand cuts its price by ten percent. The model holds every market's unmeasured appeal fixed and re-integrates over the crowd at the new prices, once per posterior draw. The competitor's share jumps by about twenty-nine percent. Ours falls by under one percent. The striking part is where the gain comes from: only four percent from us, and more than half from consumers who weren't buying cereal at all. A homogeneous model could not tell you that, and a point estimate could not tell you how sure to be.
+Back to the opening question. Kelloggs_11 is the largest Kellogg's brand in the subset; call it our Corn Flakes. The largest General Mills brand cuts its price by ten percent. The model holds every market's unmeasured appeal fixed and re-integrates over the crowd at the new prices, once per posterior draw. The competitor's share jumps by about twenty-nine percent. Ours falls by under one percent. And most of the competitor's gain comes from people who weren't buying cereal at all. Now the honest question: is that the crowd talking, or would any demand model say it?
+:::
+
+
+## Did the Crowd Matter Here? {.smaller}
+### The same question, asked of a homogeneous logit
+
+![](images/nevo_logit_vs_crowd.png){fig-align="center" width="92%"}
+
+Refit with `random_coef_on=[]`: the same data, instruments and priors, but one taste for everyone. The answers barely move: GenMills_19 **+30.5%** vs **+29.1%**, Kelloggs_11 **−0.73%** vs **−0.69%**, and **58%** vs **55%** of the gain from the outside good. **For this question, the posterior says the crowd is doing little work.**
+
+::: {.notes}
+So I asked the same question of a homogeneous logit: same data, same instruments, same priors, but everyone shares one set of tastes. And the answers barely move. The competitor gains thirty and a half percent instead of twenty-nine; we lose about the same; the outside good supplies fifty-eight percent of the gain instead of fifty-five, and the intervals overlap throughout. I want to be straight about this, because it would be easy to pretend otherwise. On this question, in this data, the crowd isn't changing the answer. Two brands at similar prices, and a crowd whose spread of price sensitivity is real but modest, so the logit's simple substitution pattern is close enough. That isn't a failure of the approach. Earlier we saw a market where the crowd changed the counterfactual completely. Here it doesn't. You only know which world you are in because the crowd is in the model, and the posterior can tell you when it matters and when you could have done without it.
 :::
 
 
@@ -624,7 +533,7 @@ Back to the opening question. Kelloggs_11 is the largest Kellogg's brand in the 
 :::{.column}
 
 ::: {.fragment .fade-in}
-- The **average consumer** misleads: identical shares can hide crowds with different counterfactuals.
+- The **average consumer** can mislead: identical shares can hide crowds with different counterfactuals.
 :::
 
 ::: {.fragment .fade-in}
@@ -632,23 +541,23 @@ Back to the opening question. Kelloggs_11 is the largest Kellogg's brand in the 
 :::
 
 ::: {.fragment .fade-in}
-- Shoppers exchangeable **given their market and taste profile** license the crowd as a latent parameter with a prior. BLP's economics supplies that prior's structure, and the classical machinery dissolves: no inversion, no GMM, uncertainty in every elasticity and counterfactual.
+- Treat the crowd's composition as a **latent parameter with a prior**, and the classical machinery dissolves into one PyMC model. The posterior then tells you, market by market, **whether the crowd mattered**.
 :::
 
 :::
 ::::
 
 ::: {.notes}
-Bernardo's summary of de Finetti is the licence for everything in this talk. If we judge shoppers exchangeable once we account for their market and their taste profile, then their choices must be modelled as draws from some model given a parameter, with a prior over that parameter. The crowd is that parameter. We never observe it; we infer it. A model that collapses it to one average person can fit the shares perfectly and still get every counterfactual wrong. The theorem says a prior must exist; BLP's economics tells us what it should look like. With that structure in place, the inversion and the moment conditions disappear, and uncertainty flows through every number we report.
+Bernardo's summary of de Finetti is the licence for everything in this talk. If we judge shoppers exchangeable once we account for their market and their taste profile, then their choices must be modelled as draws from some model given a parameter, with a prior over that parameter. The composition of the crowd is that parameter. We never observe it; we infer it. A model that collapses it to one average person can fit the shares perfectly and still get the counterfactual wrong, as the synthetic market showed. Or, as Nevo's cereal showed, it can turn out to be fine. The point of putting the crowd in the model is that the posterior tells you which, with the inversion and moment conditions gone and uncertainty carried through every number.
 :::
 
 
 ## {background-color="black"}
 
 ::: {style="color: white; font-size: 1.6em; font-weight: bold; text-align: center; margin-top: 150px;"}
-"The crowd is not an approximation.
+"The crowd is not a numerical trick.
 
-It is a parameter of belief."
+Its shape is what we infer."
 :::
 
 
@@ -664,10 +573,9 @@ It is a parameter of belief."
 - Berry, Levinsohn & Pakes (1995), "Automobile Prices in Market Equilibrium," *Econometrica*
 - Berry (1994), "Estimating Discrete-Choice Models of Product Differentiation," *RAND J. Econ.*
 - Nevo (2000), "A Practitioner's Guide to Estimation of Random-Coefficients Logit Models of Demand," *JEMS*
-- de Finetti (1937), "La prévision: ses lois logiques, ses sources subjectives," *Ann. Inst. Henri Poincaré*
-- Bernardo (1996), "The Concept of Exchangeability and its Applications," *Far East J. Math. Sci.*
 - Jiang, Manchanda & Rossi (2009), "Bayesian Analysis of Random Coefficient Logit Models Using Aggregate Data," *J. Econometrics*
 - Dubé, Fox & Su (2012), "Improving the Numerical Performance of ... Random Coefficients Demand Estimation," *Econometrica*
+- Bernardo (1996), "The Concept of Exchangeability and its Applications," *Far East J. Math. Sci.*
 - Train (2009), *Discrete Choice Methods with Simulation*
 :::
 
