@@ -673,6 +673,10 @@ It is a parameter of belief."
 
 :::
 ::: {.column width="40%"}
-![Link to my website](images/QR_CODE.png){fig-align="center" width="200px"}
+![Coming soon: *Bayesian Causal Inference* (Vincent & Forde). Its discrete-choice chapter works through the individual-level counterpart of this talk.](images/bookimage.png){fig-align="center" width="62%"}
 :::
 ::::
+
+::: {.notes}
+One last plug. Ben Vincent and I have a book coming out, Bayesian Causal Inference. Its discrete choice chapter is the individual-level twin of this talk: the same questions about substitution patterns, endogeneity and counterfactual prices, asked of individual choices rather than market shares. If today's crowd interested you, that chapter shows the people inside it.
+:::
