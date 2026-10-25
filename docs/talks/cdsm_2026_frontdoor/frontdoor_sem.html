@@ -1169,7 +1169,7 @@ display:block!important;
 <p>Two well-identified pieces, <span class="math inline">\(X \to M\)</span> and <span class="math inline">\(M \to Y \mid X\)</span>, are chained together.</p>
 </div>
 </div><div class="column" style="width:55%;">
-<div id="e331453f" class="cell" data-execution_count="2">
+<div id="60ed2c61" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1208,7 +1208,7 @@ display:block!important;
 <p><strong>What is missing is the construction step.</strong></p>
 </div>
 </div><div class="column" style="width:62%;">
-<div id="7f92099e" class="cell" data-execution_count="3">
+<div id="7aa47d93" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1313,7 +1313,7 @@ display:block!important;
 <p>The mechanism is <strong>bivalent</strong>: CTS <em>suppresses</em> a negative construct and <em>raises</em> a positive one.</p>
 </div>
 </div><div class="column" style="width:62%;">
-<div id="19add1a5" class="cell" data-execution_count="4">
+<div id="bc495cbc" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1590,7 +1590,7 @@ display:block!important;
 <h3>Same DAG, easier premises to defend</h3>
 <div class="columns">
 <div class="column" style="width:52%;">
-<div id="7f1433d8" class="cell" data-execution_count="5">
+<div id="e52fbb9c" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1719,9 +1719,171 @@ display:block!important;
 <figcaption>Bayesian Causal Inference (Vincent &amp; Forde), coming soon</figcaption>
 </figure>
 </div>
+<p>See: <a href="See:%20https://bayesian-causal-inference.com/">https://bayesian-causal-inference.com/</a></p>
 </div></div>
+</section>
+<section class="slide level2 smaller center" data-visibility="uncounted">
+<h2>Backup: Where the Confounding Lives</h2>
+<p>Every zero in <span class="math inline">\(\Psi_\zeta\)</span> carries a reason. The argument partitions the unmeasured causes by <strong>what they act on</strong>:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Unmeasured source</th>
+<th>Acts on</th>
+<th>In the model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Workplace-specific</strong>: manager, job quality, coaching culture</td>
+<td>CTS <em>and</em> satisfaction</td>
+<td>the one free covariance <span class="math inline">\(\psi_{sc}\)</span>: the confounding the design survives</td>
+</tr>
+<tr class="even">
+<td><strong>General disposition</strong>: temperament, trait affect</td>
+<td>well-being, dysfunctional thinking → satisfaction</td>
+<td>absorbed by the mediators; no direct path to a domain-specific outcome</td>
+</tr>
+<tr class="odd">
+<td><strong>The premise</strong>: CTS is a <em>learnt strategy</em>, not a trait</td>
+<td></td>
+<td>no covariance between CTS and either mediator</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p><strong>What this argument does not cover:</strong></p>
+<ul>
+<li>a <strong>behavioural route</strong>: constructive thinking → performance → rewards → satisfaction, which bypasses affect entirely;</li>
+<li><strong>shared measurement</strong>: one self-report survey, so method variance is a candidate common cause of everything.</li>
+</ul>
+<p>The remedy for both is the recipe’s: measure the route (performance, perceived support) and build it into the mechanism.</p>
+<aside class="notes">
+<p>If asked why anyone should believe the zero covariances: the argument sorts the unmeasured causes by what they act on. Workplace-specific factors, a good manager, a coaching culture, plausibly shape both how someone thinks at work and how satisfied they are with this job. That’s the one covariance the design leaves free. General dispositions plausibly reach a domain-specific outcome like job satisfaction only through general affect, which is what the two mediators measure, so the mediators absorb them. The premise you have to defend is that constructive thinking is a learnt strategy rather than an expression of temperament; otherwise a disposition would open a back door from CTS into the mediators. Be candid about the two things the argument doesn’t cover: a behavioural route through performance, and shared survey method.</p>
+<style type="text/css">
+span.MJX_Assistive_MathML {
+position:absolute!important;
+clip: rect(1px, 1px, 1px, 1px);
+padding: 1px 0 0 0!important;
+border: 0!important;
+height: 1px!important;
+width: 1px!important;
+overflow: hidden!important;
+display:block!important;
+}</style></aside>
+</div>
+</section>
+<section class="slide level2 smaller center" data-visibility="uncounted">
+<h2>Backup: “The Confounding Is Small. Why Not Just Regress?”</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>The front-door model estimates the treatment–outcome confounding as</p>
+<p><span class="math display">\[\rho(\zeta_{CTS}, \zeta_{Sat}) = 0.09 \quad [-0.05,\ 0.22]\]</span></p>
+<p>(89% interval). It is small, and its interval includes zero.</p>
+<div class="fragment fade-in">
+<ul>
+<li>The front door does not <strong>need</strong> confounding. It is <strong>robust</strong> to it: the estimate is valid whether <span class="math inline">\(\rho\)</span> is zero or not.</li>
+<li>A plain regression is valid only if <span class="math inline">\(\rho\)</span> <strong>is</strong> zero, which is the assumption the front door avoids.</li>
+</ul>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment fade-in">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>And <span class="math inline">\(\rho\)</span> is not a clean measurement</strong></p>
+</div>
+<div class="callout-content">
+<p>The leak simulation showed that a direct path is <strong>absorbed into <span class="math inline">\(\rho\)</span></strong>: as the leak grew, <span class="math inline">\(\rho\)</span> rose from 0.10 to 0.27 while fit stayed flat.</p>
+<p>So <span class="math inline">\(\rho\)</span> is estimated <em>on the assumption</em> of no direct path. The data cannot separate confounding from leakage, which is the talk’s point: <strong>fit cannot arbitrate; the construction must.</strong></p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<aside class="notes">
+<p>This is the sharpest question you’re likely to get. The estimated confounding is small, and its interval includes zero, so why not just regress satisfaction on constructive thinking? Two answers. First, the front door doesn’t need confounding to exist; it’s robust to it. A regression is only valid if the confounding is zero, which is precisely the assumption we didn’t want to make. Second, and more interesting: that rho is not a clean measurement. In the leak simulation, a direct path from CTS to satisfaction was absorbed into rho, which rose as the leak grew while fit didn’t move. So the small rho is itself conditional on there being no direct path. The data cannot tell confounding and leakage apart, which is exactly why the argument has to come from the construction rather than the fit.</p>
+<style type="text/css">
+span.MJX_Assistive_MathML {
+position:absolute!important;
+clip: rect(1px, 1px, 1px, 1px);
+padding: 1px 0 0 0!important;
+border: 0!important;
+height: 1px!important;
+width: 1px!important;
+overflow: hidden!important;
+display:block!important;
+}</style></aside>
+</section>
+<section class="slide level2 smaller center" data-visibility="uncounted">
+<h2>Backup: Where This Sits in the Front-Door Literature</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Work</th>
+<th>Contribution</th>
+<th>Relation to this talk</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pearl (1995), <em>Biometrika</em></td>
+<td>The front-door criterion; the mediator may be a <strong>set</strong></td>
+<td>the starting point</td>
+</tr>
+<tr class="even">
+<td>Kuroki (2000); Kuroki &amp; Cai (2004)</td>
+<td>Front-door identification and variable selection in <strong>linear SEMs</strong></td>
+<td>the algebra we use</td>
+</tr>
+<tr class="odd">
+<td>Glynn &amp; Kashin (2018), <em>JASA</em></td>
+<td><strong>Bias formulas</strong> for front-door adjustment when its assumptions fail; job-training application</td>
+<td>the relaxation curve is a Bayesian analogue: how the answer moves as a direct path is allowed</td>
+</tr>
+<tr class="even">
+<td>Fulcher, Shpitser, Marealle &amp; Tchetgen Tchetgen (2020), <em>JRSS-B</em></td>
+<td><strong>Generalised front door</strong>: with a direct effect, the front-door formula identifies an <em>indirect</em> effect, under an additional cross-world assumption</td>
+<td>reinterprets the leak result: bias of <span class="math inline">\(-\delta\)</span> means the estimate is the mediated effect</td>
+</tr>
+<tr class="odd">
+<td>Bellemare, Bloem &amp; Wexler (2024), <em>Oxford Bull. Econ. Stat.</em></td>
+<td>“The Paper of How”: front door is rarely used because a valid mechanism is <strong>hard to find</strong></td>
+<td>the problem this talk answers by <strong>building</strong> the mechanism</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p><strong>This talk’s contribution:</strong> not new identification theory, but the <strong>construction step</strong> (a mediator set of multi-indicator, opposite-valence constructs) and a Bayesian <strong>audit</strong> of what each zero supplies.</p>
+<aside class="notes">
+<p>If someone asks how this relates to the literature. Pearl’s theorem already allows a set of mediators. Kuroki and Cai worked out front-door identification in linear SEMs, which is the algebra we use. Glynn and Kashin derived bias formulas for front-door adjustment when its assumptions fail; the relaxation curve is a Bayesian analogue, showing how the estimate moves as a direct path is admitted. Fulcher and colleagues showed that with a direct effect, the front-door formula still identifies an indirect effect, under an extra cross-world assumption; that’s how to read the leak result, where the bias is exactly the leak. And Bellemare, Bloem and Wexler asked the same question as my pitch: why is the front door so rarely used? Their answer is that the mechanism is hard to find. Mine is: stop looking for it, and build it.</p>
+<style type="text/css">
+span.MJX_Assistive_MathML {
+position:absolute!important;
+clip: rect(1px, 1px, 1px, 1px);
+padding: 1px 0 0 0!important;
+border: 0!important;
+height: 1px!important;
+width: 1px!important;
+overflow: hidden!important;
+display:block!important;
+}</style></aside>
 
 
+</div>
 </section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">

@@ -687,5 +687,86 @@ It is built."
 :::
 ::: {.column width="45%"}
 ![Bayesian Causal Inference (Vincent & Forde), coming soon](images/bookimage.png){width="70%"}
+
+See: [https://bayesian-causal-inference.com/](See: https://bayesian-causal-inference.com/)
 :::
 ::::
+
+
+## Backup: Where the Confounding Lives {.smaller visibility="uncounted"}
+
+Every zero in $\Psi_\zeta$ carries a reason. The argument partitions the unmeasured causes by **what they act on**:
+
+| Unmeasured source | Acts on | In the model |
+|---|---|---|
+| **Workplace-specific**: manager, job quality, coaching culture | CTS *and* satisfaction | the one free covariance $\psi_{sc}$: the confounding the design survives |
+| **General disposition**: temperament, trait affect | well-being, dysfunctional thinking → satisfaction | absorbed by the mediators; no direct path to a domain-specific outcome |
+| **The premise**: CTS is a *learnt strategy*, not a trait | | no covariance between CTS and either mediator |
+
+. . .
+
+**What this argument does not cover:**
+
+- a **behavioural route**: constructive thinking → performance → rewards → satisfaction, which bypasses affect entirely;
+- **shared measurement**: one self-report survey, so method variance is a candidate common cause of everything.
+
+The remedy for both is the recipe's: measure the route (performance, perceived support) and build it into the mechanism.
+
+::: {.notes}
+If asked why anyone should believe the zero covariances: the argument sorts the unmeasured causes by what they act on. Workplace-specific factors, a good manager, a coaching culture, plausibly shape both how someone thinks at work and how satisfied they are with this job. That's the one covariance the design leaves free. General dispositions plausibly reach a domain-specific outcome like job satisfaction only through general affect, which is what the two mediators measure, so the mediators absorb them. The premise you have to defend is that constructive thinking is a learnt strategy rather than an expression of temperament; otherwise a disposition would open a back door from CTS into the mediators. Be candid about the two things the argument doesn't cover: a behavioural route through performance, and shared survey method.
+:::
+
+
+## Backup: "The Confounding Is Small. Why Not Just Regress?" {.smaller visibility="uncounted"}
+
+::::{.columns}
+:::{.column width="50%"}
+
+The front-door model estimates the treatment–outcome confounding as
+
+$$\rho(\zeta_{CTS}, \zeta_{Sat}) = 0.09 \quad [-0.05,\ 0.22]$$
+
+(89% interval). It is small, and its interval includes zero.
+
+::: {.fragment .fade-in}
+- The front door does not **need** confounding. It is **robust** to it: the estimate is valid whether $\rho$ is zero or not.
+- A plain regression is valid only if $\rho$ **is** zero, which is the assumption the front door avoids.
+:::
+
+:::
+:::{.column width="50%"}
+
+::: {.fragment .fade-in}
+::: {.callout-important}
+## And $\rho$ is not a clean measurement
+The leak simulation showed that a direct path is **absorbed into $\rho$**: as the leak grew, $\rho$ rose from 0.10 to 0.27 while fit stayed flat.
+
+So $\rho$ is estimated *on the assumption* of no direct path. The data cannot separate confounding from leakage, which is the talk's point: **fit cannot arbitrate; the construction must.**
+:::
+:::
+
+:::
+::::
+
+::: {.notes}
+This is the sharpest question you're likely to get. The estimated confounding is small, and its interval includes zero, so why not just regress satisfaction on constructive thinking? Two answers. First, the front door doesn't need confounding to exist; it's robust to it. A regression is only valid if the confounding is zero, which is precisely the assumption we didn't want to make. Second, and more interesting: that rho is not a clean measurement. In the leak simulation, a direct path from CTS to satisfaction was absorbed into rho, which rose as the leak grew while fit didn't move. So the small rho is itself conditional on there being no direct path. The data cannot tell confounding and leakage apart, which is exactly why the argument has to come from the construction rather than the fit.
+:::
+
+
+## Backup: Where This Sits in the Front-Door Literature {.smaller visibility="uncounted"}
+
+| Work | Contribution | Relation to this talk |
+|---|---|---|
+| Pearl (1995), *Biometrika* | The front-door criterion; the mediator may be a **set** | the starting point |
+| Kuroki (2000); Kuroki & Cai (2004) | Front-door identification and variable selection in **linear SEMs** | the algebra we use |
+| Glynn & Kashin (2018), *JASA* | **Bias formulas** for front-door adjustment when its assumptions fail; job-training application | the relaxation curve is a Bayesian analogue: how the answer moves as a direct path is allowed |
+| Fulcher, Shpitser, Marealle & Tchetgen Tchetgen (2020), *JRSS-B* | **Generalised front door**: with a direct effect, the front-door formula identifies an *indirect* effect, under an additional cross-world assumption | reinterprets the leak result: bias of $-\delta$ means the estimate is the mediated effect |
+| Bellemare, Bloem & Wexler (2024), *Oxford Bull. Econ. Stat.* | "The Paper of How": front door is rarely used because a valid mechanism is **hard to find** | the problem this talk answers by **building** the mechanism |
+
+. . .
+
+**This talk's contribution:** not new identification theory, but the **construction step** (a mediator set of multi-indicator, opposite-valence constructs) and a Bayesian **audit** of what each zero supplies.
+
+::: {.notes}
+If someone asks how this relates to the literature. Pearl's theorem already allows a set of mediators. Kuroki and Cai worked out front-door identification in linear SEMs, which is the algebra we use. Glynn and Kashin derived bias formulas for front-door adjustment when its assumptions fail; the relaxation curve is a Bayesian analogue, showing how the estimate moves as a direct path is admitted. Fulcher and colleagues showed that with a direct effect, the front-door formula still identifies an indirect effect, under an extra cross-world assumption; that's how to read the leak result, where the bias is exactly the leak. And Bellemare, Bloem and Wexler asked the same question as my pitch: why is the front door so rarely used? Their answer is that the mechanism is hard to find. Mine is: stop looking for it, and build it.
+:::
