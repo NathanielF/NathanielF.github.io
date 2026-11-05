@@ -7,16 +7,14 @@ about:
   links:
     - text: Writing
       href: blog.qmd 
-    - icon: twitter
-      text: Twitter
-      href: https://twitter.com/forde_nathaniel
     - icon: linkedin
       text: LinkedIn
       href: https://www.linkedin.com/in/nathaniel-forde-2477a265/
     - icon: github
       text: Github
       href: https://github.com/NathanielF
-    - text: Bluesky
+    - icon: bluesky
+      text: Bluesky
       href: https://bsky.app/profile/nathanielforde.bsky.social
 
 ---
