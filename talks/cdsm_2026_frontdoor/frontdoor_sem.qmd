@@ -435,7 +435,7 @@ Before any matrices, the two models we'll compare. Both use the same four constr
 
 | Unmeasured cause | Acts on | In the front-door model |
 |---|---|---|
-| **Workplace-specific**: manager, job quality, coaching culture | CTS *and* satisfaction | the one covariance left open: the confounding the design survives |
+| **Workplace-specific**: manager, job quality, coaching culture | CTS *and* satisfaction | the one covariance left open: the confounding the design survives. Measurable parts can enter as controls; only the residual is left to it |
 | **General disposition**: temperament, trait affect | the two poles → satisfaction | absorbed: whatever its sign, it reaches a job-specific outcome only through affect |
 
 :::
@@ -443,10 +443,6 @@ Before any matrices, the two models we'll compare. Both use the same four constr
 :::
 ::::
 
-
-::: {.notes}
-This is where the warrant for the estimate actually sits, so I want it on screen rather than in a backup. Start with the effect. Think of the two poles as absorbing states. Whatever constructive thinking does to satisfaction, it has to arrive with a sign: either it lifts you, more well-being, or it relieves you, less dysfunctional thinking. A positive pole and a negative pole between them absorb both valences of influence, so there is no third channel for an effect to slip through. That is a much stronger claim than "we found two mediators", and it is one you can argue about. The confounding sorts the same way. Workplace-specific factors, a good manager, a coaching culture, plausibly shape both how someone thinks at work and how satisfied they are with this job. That is the one covariance the design leaves free. General dispositions plausibly reach a domain-specific outcome like job satisfaction only through general affect, so the poles absorb them too. What remains is two premises, and each one licenses a different deletion from the saturated model. First, affect is the only channel from constructive thinking to satisfaction. Absorption catches every affective influence, but it can't catch a route that never touches affect, like performance and rewards. That premise licenses deleting the direct edge. Second, uptake of constructive thinking isn't driven by temperament. Calling it a learnt strategy is the intuition, but what we need is narrower: nothing causes both CTS and the poles. If temperament drove uptake, a disposition would open a back door from CTS into the mechanism. That premise licenses closing the covariances between CTS and the poles. The next slide writes both deletions down as zeros.
-:::
 
 
 ## One Covariance Form, Two Matrices {.smaller}
@@ -712,13 +708,13 @@ See: [https://bayesian-causal-inference.com/](https://bayesian-causal-inference.
 The exhaustiveness argument sorts unmeasured causes into workplace factors (left free in $\psi_{sc}$) and dispositions (absorbed by the mediators). **What it does not cover:**
 
 - a **behavioural route**: constructive thinking → performance → rewards → satisfaction, which bypasses affect entirely;
-- **shared measurement**: one self-report survey, so method variance is a candidate common cause of everything.
+- **shared measurement**: one self-report survey, so method variance is a candidate common cause of everything;
+- **workplace factors that reach the poles**: a good manager can lift well-being as well as satisfaction, opening WB ← manager → Sat, a back door from mediator to outcome that CTS cannot block.
 
-The remedy for both is the recipe's: measure the route (performance, perceived support) and build it into the mechanism. **A2 shows what that looks like.**
+The remedy is the recipe's: measure the route (performance, perceived support) or the confounder (manager, team) and build it into the model. **A2 shows what that looks like.**
 
-::: {.notes}
-If pressed on the exhaustiveness argument, be candid about the two things it doesn't cover. A behavioural route through performance and rewards would bypass affect entirely and leak around both mediators. And one self-report survey means method variance could be a common cause of every indicator. The answer to both is the same move as the talk: measure the route and build it in. The next slide is a worked example.
-:::
+Even unmeasured, manager-level confounding has an architecture: with team identifiers, the **Mundlak device** from Act I absorbs it in team means of CTS.
+
 
 
 ## A2: Building in the Missing Route {.smaller visibility="uncounted"}
