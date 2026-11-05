@@ -23,12 +23,14 @@ website:
         href: talks.qmd
       - text: Consulting
         href: consulting.qmd
+      - text: Bayesian Causal Inference
+        href: https://bayesian-causal-inference.com/
       - text: CV
         href: cv.qmd
       - icon: github
         href: https://github.com/NathanielF
       - icon: twitter
-        href: https://twitter.com/forde_nathaniel
+        href: https://bsky.app/profile/nathanielforde.bsky.social
 
 
   

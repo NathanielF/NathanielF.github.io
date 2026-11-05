@@ -156,9 +156,6 @@ So why does almost nobody use it?
 ::: {.fragment .fade-in}
 **Act III: Auditing the Architecture.** Relaxing the zeros, recovering the parameters, and springing a leak
 :::
-::: {.fragment .fade-in}
-**Coda: A Design Pattern for People Analytics.** The study the recipe asks for
-:::
 
 
 # Act I: The Demand of the Front Door {background-color="#2a3439"}
@@ -643,8 +640,89 @@ With $\delta = 0$ the model **recovers what generated the data**: the total-effe
 - Read with Fulcher et al. (2020), a leaky front door still estimates the **mediated** effect. What it gets wrong is the total.
 :::
 
-## Coda: A Design Pattern for People Analytics {.smaller}
-### Same logic, easier premises to defend
+
+## Conclusion {.smaller}
+### Identification is Built
+
+::::{.columns}
+:::{.column}
+
+> "SEM is an inference engine that takes in two inputs, qualitative causal assumptions and empirical data, and derives two logical consequences of these inputs: quantitative causal conclusions and statistical measures of fit for the testable implications of the assumptions... __[Fitting the data does not "prove" the causal assumptions, but it makes them tentatively more plausible.]{.blue}__"
+
+-- Bollen & Pearl, _Eight Myths about Causality and Structural Equation Models_
+
+:::
+:::{.column}
+
+::: {.fragment .fade-in}
+- The front-door restrictions are not tested by global fit statistics: they are spent entirely on identification.
+:::
+
+::: {.fragment .fade-in}
+- So the warrant for the estimate lives in the **construction**: the choice of constructs, their measurement, and the argument that they exhaust the pathway.
+:::
+
+::: {.fragment .fade-in}
+- Bayesian SEMs make that warrant **auditable**: soften the zeros, simulate the leaks, and report how much of the answer the architecture supplies.
+:::
+
+::: {.fragment .fade-in}
+- **The recipe:** *build* the constructs, *argue* the deletions, *encode* them as zeros, *audit* what each zero supplies.
+:::
+
+:::
+::::
+
+::: {.notes}
+Bollen and Pearl's line is the right one for SEM in general: fit makes assumptions tentatively more plausible. The front-door restrictions are a harder case. Because they trade one-for-one with identification, fit is silent about them. So the warrant sits entirely in the construction. That is not a counsel of despair. It means the argument is about design, which we can state, criticise and stress-test, rather than something we hope the data will certify.
+:::
+
+
+## Resources {.smaller}
+
+:::: {.columns}
+::: {.column width="55%"}
+
+:::{.callout-tip}
+## Resources
+- Companion notebook: [github.com/NathanielF/.../frontdoor_sem_sensitivity.ipynb](https://github.com/NathanielF/NathanielF.github.io/blob/master/talks/cdsm_2026_frontdoor/notebook/frontdoor_sem_sensitivity.ipynb)
+- PyMC: [pymc.io](https://www.pymc.io)
+- Pearl (1995), "Causal Diagrams for Empirical Research," *Biometrika*
+- Kuroki (2000), "Selection of Post-Treatment Variables for Estimating Total Effect," *J. Japan Stat. Soc.*
+- Kuroki & Cai (2004), "Selection of Identifiability Criteria for Total Effects," *UAI*
+- Muthén & Asparouhov (2012), "Bayesian SEM: A More Flexible Representation of Substantive Theory," *Psych. Methods*
+- Houghton & Jinkerson (2007), "Constructive Thought Strategies and Job Satisfaction," *J. Business & Psychology*
+- Bollen & Pearl (2013), "Eight Myths about Causality and SEMs"
+- Glynn & Kashin (2018), "Front-Door Versus Back-Door Adjustment with Unmeasured Confounding," *JASA*
+- Fulcher, Shpitser, Marealle & Tchetgen Tchetgen (2020), "Robust Inference on Population Indirect Causal Effects: The Generalized Front Door Criterion," *JRSS-B*
+- Bellemare, Bloem & Wexler (2024), "The Paper of How: Estimating Treatment Effects Using the Front-Door Criterion," *Oxford Bull. Econ. Stat.*
+:::
+
+:::
+::: {.column width="45%"}
+![Bayesian Causal Inference (Vincent & Forde), coming soon](images/bookimage.png){width="70%"}
+
+See: [https://bayesian-causal-inference.com/](https://bayesian-causal-inference.com/)
+:::
+::::
+
+
+## A1: Where the Argument Is Weakest {.smaller visibility="uncounted"}
+
+The exhaustiveness argument sorts unmeasured causes into workplace factors (left free in $\psi_{sc}$) and dispositions (absorbed by the mediators). **What it does not cover:**
+
+- a **behavioural route**: constructive thinking → performance → rewards → satisfaction, which bypasses affect entirely;
+- **shared measurement**: one self-report survey, so method variance is a candidate common cause of everything.
+
+The remedy for both is the recipe's: measure the route (performance, perceived support) and build it into the mechanism. **A2 shows what that looks like.**
+
+::: {.notes}
+If pressed on the exhaustiveness argument, be candid about the two things it doesn't cover. A behavioural route through performance and rewards would bypass affect entirely and leak around both mediators. And one self-report survey means method variance could be a common cause of every indicator. The answer to both is the same move as the talk: measure the route and build it in. The next slide is a worked example.
+:::
+
+
+## A2: Building in the Missing Route {.smaller visibility="uncounted"}
+### A people-analytics design with the leak measured
 
 ::::{.columns}
 :::{.column width="52%"}
@@ -704,81 +782,5 @@ plt.show()
 ::::
 
 ::: {.notes}
-Here is the study I would actually want, and it's the one people analytics teams can run. The treatment is attending a thought-strategy course: a dated intervention, not a personality trait. After the course you measure the mechanism: the change in constructive thinking, well-being, dysfunctional thinking. Satisfaction comes later. Time order is now built in. The confounding the front door survives is concrete: who gets sent on the course. Keen employees opt in; managers nominate their engaged people; and those same people are more satisfied anyway. That's why you can't just compare attendees with everyone else. The obvious leak in this design is that being sent on a course can make people feel invested in, which raises satisfaction whatever happens to their thinking. The recipe's answer is not to assume that away but to measure it, perceived organisational support, and build it into the mechanism as its own route. If you can randomise enrolment, do that and skip all of this; the front door is for the much more common case where you can't. And to be clear about what this does and doesn't change. Pearl's point stands: if the DAG is right, conditioning does the work of intervention, so the cross-sectional SEM we fitted is already a valid causal argument, conditional on the graph. A course doesn't change that logic. It makes the graph easier to believe: the time order is built in, the treatment is a dated event rather than a trait, and the confounder has a name you can argue about.
-:::
-
-
-## Conclusion {.smaller}
-### Identification is Built
-
-::::{.columns}
-:::{.column}
-
-> "SEM is an inference engine that takes in two inputs, qualitative causal assumptions and empirical data, and derives two logical consequences of these inputs: quantitative causal conclusions and statistical measures of fit for the testable implications of the assumptions... __[Fitting the data does not "prove" the causal assumptions, but it makes them tentatively more plausible.]{.blue}__"
-
--- Bollen & Pearl, _Eight Myths about Causality and Structural Equation Models_
-
-:::
-:::{.column}
-
-::: {.fragment .fade-in}
-- The front-door restrictions are not even *tentatively* tested by fit: they are spent entirely on identification, leaving nothing for fit to test.
-:::
-
-::: {.fragment .fade-in}
-- So the warrant for the estimate lives in the **construction**: the choice of constructs, their measurement, and the argument that they exhaust the pathway.
-:::
-
-::: {.fragment .fade-in}
-- Bayesian SEMs make that warrant **auditable**: soften the zeros, simulate the leaks, and report how much of the answer the architecture supplies.
-:::
-
-:::
-::::
-
-::: {.notes}
-Bollen and Pearl's line is the right one for SEM in general: fit makes assumptions tentatively more plausible. The front-door restrictions are a harder case. Because they trade one-for-one with identification, fit is silent about them. So the warrant sits entirely in the construction. That is not a counsel of despair. It means the argument is about design, which we can state, criticise and stress-test, rather than something we hope the data will certify.
-:::
-
-
-## Resources {.smaller}
-
-:::: {.columns}
-::: {.column width="55%"}
-
-:::{.callout-tip}
-## Resources
-- Companion notebook: [github.com/NathanielF/.../frontdoor_sem_sensitivity.ipynb](https://github.com/NathanielF/NathanielF.github.io/blob/master/talks/cdsm_2026_frontdoor/notebook/frontdoor_sem_sensitivity.ipynb)
-- PyMC: [pymc.io](https://www.pymc.io)
-- Pearl (1995), "Causal Diagrams for Empirical Research," *Biometrika*
-- Kuroki (2000), "Selection of Post-Treatment Variables for Estimating Total Effect," *J. Japan Stat. Soc.*
-- Kuroki & Cai (2004), "Selection of Identifiability Criteria for Total Effects," *UAI*
-- Muthén & Asparouhov (2012), "Bayesian SEM: A More Flexible Representation of Substantive Theory," *Psych. Methods*
-- Houghton & Jinkerson (2007), "Constructive Thought Strategies and Job Satisfaction," *J. Business & Psychology*
-- Bollen & Pearl (2013), "Eight Myths about Causality and SEMs"
-- Glynn & Kashin (2018), "Front-Door Versus Back-Door Adjustment with Unmeasured Confounding," *JASA*
-- Fulcher, Shpitser, Marealle & Tchetgen Tchetgen (2020), "Robust Inference on Population Indirect Causal Effects: The Generalized Front Door Criterion," *JRSS-B*
-- Bellemare, Bloem & Wexler (2024), "The Paper of How: Estimating Treatment Effects Using the Front-Door Criterion," *Oxford Bull. Econ. Stat.*
-:::
-
-:::
-::: {.column width="45%"}
-![Bayesian Causal Inference (Vincent & Forde), coming soon](images/bookimage.png){width="70%"}
-
-See: [https://bayesian-causal-inference.com/](https://bayesian-causal-inference.com/)
-:::
-::::
-
-
-## A1: Where the Argument Is Weakest {.smaller visibility="uncounted"}
-
-The exhaustiveness argument sorts unmeasured causes into workplace factors (left free in $\psi_{sc}$) and dispositions (absorbed by the mediators). **What it does not cover:**
-
-- a **behavioural route**: constructive thinking → performance → rewards → satisfaction, which bypasses affect entirely;
-- **shared measurement**: one self-report survey, so method variance is a candidate common cause of everything.
-
-The remedy for both is the recipe's: measure the route (performance, perceived support) and build it into the mechanism.
-
-::: {.notes}
-If pressed on the exhaustiveness argument, be candid about the two things it doesn't cover. A behavioural route through performance and rewards would bypass affect entirely and leak around both mediators. And one self-report survey means method variance could be a common cause of every indicator. The answer to both is the same move as the talk: measure the route and build it in.
+If the question is "what if there are other routes?", this is the answer in practice: you don't assume them away, you measure them and build them in. It's also the study I would actually want, and one people analytics teams can run. The treatment is attending a thought-strategy course: a dated intervention, not a personality trait. After the course you measure the mechanism: the change in constructive thinking, well-being, dysfunctional thinking. Satisfaction comes later. Time order is now built in. The confounding the front door survives is concrete: who gets sent on the course. Keen employees opt in; managers nominate their engaged people; and those same people are more satisfied anyway. That's why you can't just compare attendees with everyone else. The obvious leak in this design is that being sent on a course can make people feel invested in, which raises satisfaction whatever happens to their thinking. The recipe's answer is not to assume that away but to measure it, perceived organisational support, and build it into the mechanism as its own route. If you can randomise enrolment, do that and skip all of this; the front door is for the much more common case where you can't. And to be clear about what this does and doesn't change. Pearl's point stands: if the DAG is right, conditioning does the work of intervention, so the cross-sectional SEM we fitted is already a valid causal argument, conditional on the graph. A course doesn't change that logic. It makes the graph easier to believe: the time order is built in, the treatment is a dated event rather than a trait, and the confounder has a name you can argue about.
 :::
