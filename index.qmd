@@ -31,6 +31,7 @@ about:
   <div class="mt-3">
     <a href="opensource.qmd" class="btn btn-primary btn-lg">View My Work</a>
     <a href="blog.qmd" class="btn btn-outline-light btn-lg">Read My Blog</a>
+    <a href="https://bayesian-causal-inference.com/" class="btn btn-outline-light btn-lg" target="_blank" rel="noopener"><i class="bi bi-book"></i> Bayesian Causal Inference</a>
   </div>
 </div>
 ```
@@ -55,9 +56,9 @@ about:
     <div class="col-md-4 fade-in">
       <div class="card highlight-card">
         <div class="card-body">
-          <h5 class="card-title">Variational Auto-Encoders and Latent Structure with PyTorch and PyMC</h5>
-          <p class="card-text"> Missing data is prevalent in job satisfaction surveys which present a problem for HR SaaS analytics. We compare different approaches to solving this problem.</p>
-          <a href="posts/post-with-code/PyTorch_Amortized_Bayes/amortized_bayes.qmd" class="btn btn-primary">Read More</a>
+          <h5 class="card-title">Building the Mechanism: Front-Door Identification with Bayesian SEMs</h5>
+          <p class="card-text">My talk for the Causal Data Science Meeting 2026. The front-door criterion identifies causal effects despite unmeasured confounding, but only if the mediator carries the whole effect. I argue the mediator should be built, not found, and show how to audit that construction with Bayesian SEMs in PyMC.</p>
+          <a href="talks/cdsm_2026_frontdoor/frontdoor_sem.qmd" class="btn btn-primary">View Slides</a>
         </div>
       </div>
     </div>
