@@ -10,7 +10,7 @@ import arviz as az  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from sfm import export  # noqa: E402
+from sfm import export, ppc  # noqa: E402
 from sfm.fetch import PROJECT  # noqa: E402
 
 IDATA, WEB = PROJECT / "idata", PROJECT / "web"
@@ -50,6 +50,10 @@ if __name__ == "__main__":
     for name, obj in out.items():
         size = export.write_json(obj, WEB / f"{name}.json")
         print(f"web/{name}.json  {size / 1e6:.2f} MB")
+
+    checks = ppc.build_ppc(idata, rows, [str(n) for n in idata.posterior.player.values])
+    size = export.write_json(checks, WEB / "ppc.json")
+    print(f"web/ppc.json  {size / 1e6:.2f} MB")
 
     thin = export.thinned_idata(idata)
     thin.to_netcdf(IDATA / "sfm_skills.nc")

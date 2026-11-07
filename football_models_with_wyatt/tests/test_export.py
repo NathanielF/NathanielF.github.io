@@ -22,7 +22,7 @@ def web():
 
 
 def test_all_files_present(web):
-    assert {"players", "draws", "curves", "skill_corr", "model_card", "wyatt_guesses"} <= set(web)
+    assert {"players", "draws", "curves", "skill_corr", "model_card", "wyatt_guesses", "ppc"} <= set(web)
 
 
 def test_players_schema_and_order(web):
@@ -98,3 +98,17 @@ def test_thinned_idata():
     idata = az.from_netcdf(path)
     assert idata.posterior.sizes["draw"] == 1000
     assert "z" not in idata.posterior and "alpha" in idata.posterior
+
+
+def test_ppc_structure(web):
+    ppc = web["ppc"]
+    for v, d in ppc["distributions"].items():
+        assert len(d["observed"]) == len(d["edges"]) - 1
+        assert len(d["replicates"]) == ppc["n_replicates"]
+        assert all(len(r) == len(d["observed"]) for r in d["replicates"])
+        assert sum(ppc["pit"][v]["counts"]) == ppc["pit"][v]["n"]
+        assert 0.5 < ppc["coverage83"][v] <= 1
+    assert len(ppc["careers"]) == len(web["players"])
+    for name, rows in ppc["groups"].items():
+        for r in rows:
+            assert r["lo83"] <= r["mean"] <= r["hi83"], (name, r)
