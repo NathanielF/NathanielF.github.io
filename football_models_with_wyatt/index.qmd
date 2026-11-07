@@ -13,7 +13,7 @@ resources:
 ::: {.fw-banner}
 **This is a fun, exploratory project** that I'm doing with my son Wyatt, who is six. We want to find out (a) which parts of football skill can be measured, and (b) how the **Soccer Factor Model** works. It comes from [Andorra & Göbel (2024), *Unveiling True Talent*](https://arxiv.org/abs/2412.05911).
 
-The model is a real Bayesian model, fitted to 593 forwards across ten seasons (2014/15–2023/24) of the Premier League, La Liga, Bundesliga, Serie A and Ligue 1. But treat the rankings as conversation starters, not verdicts. **[How the model works →](model.qmd)**
+The model is fitted to 593 forwards across ten seasons (2014/15–2023/24) of the Premier League, La Liga, Bundesliga, Serie A and Ligue 1. Its rankings are uncertain, and the intervals show by how much. **[How the model works →](model.qmd)**
 :::
 
 ```{ojs}
@@ -36,6 +36,8 @@ LEAGUE = ({EPL: "Premier League", La_liga: "La Liga", Bundesliga: "Bundesliga", 
 COLOR_A = "#2a78d6"
 COLOR_B = "#eb6834"
 
+ownLift = new Map(players.map(p => [p.i, mean(draws.goals90_actual[p.i]) - mean(draws.goals90_level[p.i])]))
+ownLiftStars = { const v = [...ownLift.values()].sort((a, b) => a - b); return new Map([...ownLift].map(([i, x]) => [i, Math.min(5, Math.max(1, Math.ceil(5 * (v.indexOf(x) + 0.5) / v.length)))])); }
 nSeasons = new Map(players.map(p => [p.i, new Set(p.seasons.filter(s => s.minutes >= 270).map(s => s.season)).size]))
 bySAR = [...players].sort((a, b) => b.SAR.mean - a.SAR.mean)
 byName = new Map(players.map(p => [p.name, p]))
@@ -70,10 +72,10 @@ function poisson(lambda) {   // Knuth; fine for the small rates here
 }
 function skillSays(k, p) {
   const m = Math.exp(p.skills[k].mean), st = p.skills[k].stars;
-  if (k === "shoot")  return m >= 1.05 ? `Takes ${m.toFixed(1)}× as many shots as a typical striker.` : m <= 0.95 ? `Takes fewer shots than a typical striker (${m.toFixed(1)}×).` : "Takes about as many shots as a typical striker.";
-  if (k === "fox")    return m >= 1.05 ? `His chances are ${m.toFixed(1)}× as good as a typical striker's: he finds the right spot.` : m <= 0.95 ? `Shoots from harder places than a typical striker (${m.toFixed(1)}×).` : "Gets chances about as good as a typical striker's.";
-  if (k === "sniper") return st >= 4 ? "Scores more often than his chances say he should!" : st <= 2 ? "Scores a little less often than his chances say." : "Scores about as often as his chances say. (Most strikers do!)";
-  if (k === "create") return m >= 1.05 ? `Sets up ${m.toFixed(1)}× as many shots for team-mates as a typical striker.` : m <= 0.95 ? `Sets up fewer shots for team-mates than a typical striker (${m.toFixed(1)}×).` : "Sets up about as many shots as a typical striker.";
+  if (k === "shoot")  return m >= 1.05 ? `On an average team, he'd take ${m.toFixed(1)}× as many shots as a typical forward.` : m <= 0.95 ? `On an average team, he'd take fewer shots than a typical forward (${m.toFixed(1)}×).` : "On an average team, he'd take about as many shots as a typical forward.";
+  if (k === "fox")    return m >= 1.05 ? `He finds better spots: on an average team his chances would be ${m.toFixed(1)}× as good as a typical forward's.` : m <= 0.95 ? `He shoots from harder places than a typical forward (${m.toFixed(1)}×).` : "His chances are about as good as a typical forward's.";
+  if (k === "sniper") return st >= 4 ? "Scores a bit more often than his chances say he should." : st <= 2 ? "Once we count how good his teams were, his finishing looks normal or a tiny bit below." : "Scores about as often as his chances say. Most forwards do.";
+  if (k === "create") return m >= 1.05 ? `Sets up ${m.toFixed(1)}× as many shots for team-mates as a typical forward.` : m <= 0.95 ? `Sets up fewer shots for team-mates than a typical forward (${m.toFixed(1)}×).` : "Sets up about as many shots as a typical forward.";
 }
 ```
 
@@ -115,7 +117,7 @@ cardPlayer = findPlayer(cardName, "Erling Haaland")
       <div class="fw-skill-emoji" aria-hidden="true">⚽</div>
       <div class="fw-skill-name">Goal power</div>
       ${starsHTML(p.SAR.stars)}
-      <div class="fw-skill-says">If every team were equally good, he'd score about <b>${per10} goals every 10 games</b> (not counting penalties).</div>
+      <div class="fw-skill-says">If every team were equally good, he'd score about <b>${per10} goals every 10 full games</b> (not counting penalties).</div>
     </div>
   </div>`;
 }
@@ -142,7 +144,7 @@ race = {
     const dots = Array.from({length: 100}, (_, k) => html`<div class="fw-dot ${res[k] ?? ""}"></div>`);
     let verdict = "";
     if (done) {
-      verdict = nA === nB ? "It's a draw overall!" : `${nA > nB ? A.name : B.name} scored more in more matches.`;
+      verdict = Math.abs(nA - nB) < 10 ? "Too close to call! Press again and it might come out the other way." : `${nA > nB ? A.name : B.name} scored more in more matches.`;
       if (nT > 60) verdict += " Lots of ties: scoring goals is hard, even for great players!";
     }
     return html`<div class="fw-race">
@@ -175,7 +177,7 @@ Why are the results different every time you press the button? Because football 
 
 ### 3. Is the team helping?
 
-Good players on great teams get more chances. The model works out how many goals a player would score **on his own**, if his team were just average, and how many he scored **with his real team**.
+Good players on great teams get more chances. The model works out how many goals a player would score **on an average team**, and how many it expects **with his real teams**.
 
 ```{ojs}
 viewof teamName = picker("Player", "Robert Lewandowski")
@@ -190,20 +192,20 @@ viewof teamName = picker("Player", "Robert Lewandowski")
     return html`<span class="fw-balls">${"⚽".repeat(full)}${part ? html`<span class="ghost">⚽</span>` : ""}</span>`;
   };
   const diff = act - lvl;
-  const msg = diff > 0.2 ? `His teams helped him: about ${diff.toFixed(1)} extra goals every 10 games!`
-            : diff < -0.2 ? `His teams made it harder: on an average team he'd score about ${(-diff).toFixed(1)} more goals every 10 games!`
+  const msg = diff > 0.2 ? `His teams helped him: about ${diff.toFixed(1)} extra goals every 10 full games.`
+            : diff < -0.2 ? `His teams made it harder: on an average team he'd score about ${(-diff).toFixed(1)} more goals every 10 full games.`
             : "His teams didn't change much: what you see is mostly him.";
   return html`<div>
-    <div class="fw-team-row"><div class="fw-team-label">On his own (average team): ${lvl.toFixed(1)} goals every 10 games</div>${balls(lvl)}</div>
-    <div class="fw-team-row"><div class="fw-team-label">With his real teams (${p.teams.slice(0, 3).join(", ")}${p.teams.length > 3 ? "…" : ""}): ${act.toFixed(1)} goals every 10 games</div>${balls(act)}</div>
+    <div class="fw-team-row"><div class="fw-team-label">On an average team: ${lvl.toFixed(1)} goals every 10 full games</div>${balls(lvl)}</div>
+    <div class="fw-team-row"><div class="fw-team-label">With his real teams (${p.teams.slice(0, 3).join(", ")}${p.teams.length > 3 ? "…" : ""}): ${act.toFixed(1)} goals every 10 full games</div>${balls(act)}</div>
     <p><b>${msg}</b></p>
   </div>`;
 }
 ```
 
-### 4. When are strikers at their best?
+### 4. When are forwards at their best?
 
-The line shows how a forward's goal scoring changes over his seasons, averaged over all 593 players. The thin lines are other possible answers the model thinks could be true.
+The line shows the usual pattern of goal scoring across a forward's seasons, for all 593 players. The thin lines are other possible answers the model thinks could be true.
 
 ```{ojs}
 viewof careerName = picker("Show a player's seasons", "Harry Kane")
@@ -240,7 +242,7 @@ careerData = {
 ```
 
 ::: {.fw-section-note}
-Strikers tend to get a little better for their first few seasons, then slowly score a bit less. The change is small, only a few percent. "Season 1" means a player's first season in our data, which starts in 2014, so for older players like Messi it isn't really their first season.
+Forwards tend to score a little more in their first few seasons in our data, then slowly a bit less. The change is small, only a few percent. "Season 1" means a player's first season in our data, which starts in 2014, so for older players like Messi it isn't really their first season.
 :::
 
 ### 5. The question jar
@@ -249,15 +251,15 @@ Pick a question, and the model answers with its top 10.
 
 ```{ojs}
 QUESTIONS = [
-  {q: "Who's the best goal scorer?", key: p => p.SAR.mean, say: p => `${(p.goals90_level.mean * 10).toFixed(1)} goals every 10 games on an average team`, stars: p => p.SAR.stars},
-  {q: "Who shoots the most?", key: p => p.skills.shoot.mean, say: p => `${Math.exp(p.skills.shoot.mean).toFixed(1)}× a typical striker's shots`, stars: p => p.skills.shoot.stars},
+  {q: "Who's the best goal scorer?", key: p => p.SAR.mean, say: p => `${(p.goals90_level.mean * 10).toFixed(1)} goals every 10 full games on an average team`, stars: p => p.SAR.stars},
+  {q: "Who shoots the most?", key: p => p.skills.shoot.mean, say: p => `${Math.exp(p.skills.shoot.mean).toFixed(1)}× a typical forward's shots`, stars: p => p.skills.shoot.stars},
   {q: "Who finds the best chances?", key: p => p.skills.fox.mean, say: p => `chances ${Math.exp(p.skills.fox.mean).toFixed(1)}× as good as typical`, stars: p => p.skills.fox.stars},
   {q: "Who's the best finisher?", key: p => p.skills.sniper.mean, say: p => `scores ${Math.round((Math.exp(p.skills.sniper.mean) - 1) * 100)}% more than his chances say`, stars: p => p.skills.sniper.stars},
-  {q: "Who sets up the most shots?", key: p => p.skills.create.mean, say: p => `${Math.exp(p.skills.create.mean).toFixed(1)}× a typical striker's set-ups`, stars: p => p.skills.create.stars},
-  {q: "Whose team helped him most?", key: p => p.team_lift.mean, say: p => `+${(p.team_lift.mean * 10).toFixed(1)} goals every 10 games from his teams`, stars: p => p.team_lift.stars}
+  {q: "Who sets up the most shots?", key: p => p.skills.create.mean, say: p => `${Math.exp(p.skills.create.mean).toFixed(1)}× a typical forward's set-ups`, stars: p => p.skills.create.stars},
+  {q: "Whose team helped him most?", key: p => ownLift.get(p.i), say: p => `+${(ownLift.get(p.i) * 10).toFixed(1)} goals every 10 full games from his teams`, stars: p => ownLiftStars.get(p.i)}
 ]
 viewof question = Inputs.radio(QUESTIONS, {format: d => d.q, value: QUESTIONS[0]})
-viewof jarEstablished = Inputs.toggle({label: "Only players with 3 or more seasons", value: false})
+viewof jarEstablished = Inputs.toggle({label: "Only players with 3 or more seasons", value: true})
 ```
 
 ```{ojs}
@@ -303,7 +305,7 @@ viewof reveal = Inputs.toggle({label: "Show what the model thinks", value: false
       <td>${p.name}</td><td class="num">${k + 1}</td><td class="num">${modelOrder.indexOf(p) + 1}${modelOrder.indexOf(p) === k ? " ✅" : ""}</td>
       <td class="num">${Math.round(100 * best[k] / nd)}%</td></tr>`)}</tbody>
   </table>
-  <p class="fw-section-note">The last column shows how sure the model is. Even the model isn't certain, and that's what "Bayesian" means: it keeps track of how sure it is.</p>`;
+  <p class="fw-section-note">The last column shows how sure the model is. The model keeps track of how sure it is. Here it often isn't very sure.</p>`;
 }
 ```
 
@@ -317,21 +319,23 @@ Each forward $p$ has four correlated skills, $\alpha_p = (\alpha^{\text{shoot}},
 
 $$\eta_{k,r} = \mu_k + \lambda_{k,\text{league}(r)} + \beta_k\,\text{TS}_r + h_k(N^S_r) + \alpha_{p(r),k}$$
 
-Here TS is the team's season points per game minus the league average: the paper's **team factor**, whose job is to separate the player from his team. $h_k$ is a Matérn-5/2 HSGP **maturity curve** over seasons observed. The likelihoods are:
+Here TS is the team's season points per game minus the league average: the paper's team factor, whose job is to separate the player from his team. $h_k$ is a Matérn-5/2 HSGP maturity curve over seasons observed. The likelihoods are:
 
-* **Shooting:** non-penalty shots $\sim$ NegBin$(\tfrac{\text{min}}{90} e^{\eta_\text{shoot}})$
-* **Fox:** $\log(\text{npxG}/\text{shot}) \sim N(\eta_\text{fox}, \sigma/\sqrt{\text{shots}})$
-* **Sniper:** non-penalty goals $\sim$ Poisson$(\text{npxG}\, e^{\eta_\text{sniper}})$
-* **Creating:** key passes $\sim$ NegBin$(\tfrac{\text{min}}{90} e^{\eta_\text{create}})$
+| Skill | Data | Likelihood |
+|---|---|---|
+| Shooting | non-penalty shots | NegBin$(\tfrac{\text{min}}{90} e^{\eta_\text{shoot}})$ |
+| Fox | npxG per shot | $\log(\text{npxG}/\text{shot}) \sim N(\eta_\text{fox}, \sigma/\sqrt{\text{shots}})$ |
+| Sniper | non-penalty goals | Poisson$(\text{npxG}\, e^{\eta_\text{sniper}})$ |
+| Creating | key passes | NegBin$(\tfrac{\text{min}}{90} e^{\eta_\text{create}})$ |
 
-Shots/90 × xG/shot × goals/xG = goals/90, so the first three skills multiply into expected non-penalty goals per 90. **SAR** is that rate with the team factor set to zero (a level field), minus the replacement pool's rate. **PAR** keeps each player's real team strength. **Team lift** = PAR − SAR. All intervals are 83%, as in the paper.
+Shots/90 × xG/shot × goals/xG = goals/90, so the first three skills multiply into expected non-penalty goals per 90. SAR is that rate with the team factor set to zero (a level field), minus the replacement pool's rate. PAR keeps each player's real team strength. PAR − SAR is his team lift relative to the pool's. All intervals are 83%, as in the paper.
 
 ### Ranking ladder
 
 ```{ojs}
 DIMS = [
   {key: "SAR", label: "SAR: goals/90 above replacement (level field)", neutral: 0, fmt: d3.format("+.2f")},
-  {key: "team_lift", label: "Team lift: goals/90 added by his teams (PAR − SAR)", neutral: 0, fmt: d3.format("+.2f")},
+  {key: "team_lift", label: "PAR − SAR: team lift relative to the replacement pool (goals/90)", neutral: 0, fmt: d3.format("+.2f")},
   {key: "shoot", label: "Shooting: shots/90 multiplier", neutral: 1, fmt: d => `${d.toFixed(2)}×`},
   {key: "fox", label: "Fox: xG/shot multiplier", neutral: 1, fmt: d => `${d.toFixed(2)}×`},
   {key: "sniper", label: "Sniper: goals/xG multiplier", neutral: 1, fmt: d => `${d.toFixed(2)}×`},
@@ -495,7 +499,7 @@ viewof h2hBName = picker("Player B", "Cristiano Ronaldo")
 ```
 
 ::: {.fw-section-note}
-These are posterior correlations of the player skills from the LKJ prior, with 83% intervals. The clearest pattern is that **players who get very good chances tend to create less**. Finishing barely varies between players: its spread is about a sixth of the other skills'. So its correlations are uncertain, and Sniper stars only move away from 3 when the 83% interval excludes zero.
+These are posterior correlations between the skills, with 83% intervals; an LKJ distribution is their prior. The most precisely estimated pattern is that players who get very good chances tend to create less. Finishing barely varies between players: its spread is about a sixth of the other skills'. So its correlations are uncertain, and Sniper stars only move away from 3 when the 83% interval excludes zero.
 :::
 
 ### Maturity curves
@@ -520,13 +524,13 @@ These are posterior correlations of the player skills from the LKJ prior, with 8
 ```
 
 ::: {.fw-section-note}
-Population HSGP curves, with the multiplier shown relative to the average player-season. Over a career, players shoot a little less but take better chances. "Seasons observed" counts from 2014/15, so it is left-censored for veterans.
+Population HSGP curves, with the multiplier shown relative to the average player-season. Across their seasons in the window, forwards shoot a little less but take better chances. "Seasons observed" counts from 2014/15, so it is left-censored for veterans.
 :::
 
 ### Model card
 
 ```{ojs}
-md`**Fit.** ${card.fit.chains} chains × ${card.fit.draws_per_chain} draws (${card.fit.sampler}); ${card.fit.divergences} divergences; max R-hat = ${card.fit.max_r_hat}; min bulk ESS = ${card.fit.min_ess_bulk}. **Posterior predictive 83% coverage:** shots ${card.ppc_coverage_83.np_shots}, key passes ${card.ppc_coverage_83.key_passes}, xG/shot ${card.ppc_coverage_83.log_xg_per_shot}, goals ${card.ppc_coverage_83.npg}. Total non-penalty goals: observed ${card.ppc_coverage_83.npg_total_observed.toLocaleString()}, predicted ${card.ppc_coverage_83.npg_total_predicted.toLocaleString()}. Before the real fit, the model recovered known skills from simulated data, with 83% intervals covering 78–83% of the true values. The [posterior predictive checks](model.html#posterior-predictive-checks) compare replicated data with the observed distributions, team-strength bands, leagues and career totals.
+md`**Fit.** ${card.fit.chains} chains × ${card.fit.draws_per_chain} draws (${card.fit.sampler}); ${card.fit.divergences} divergences; max R-hat = ${card.fit.max_r_hat}; min bulk ESS = ${card.fit.min_ess_bulk}. **Posterior predictive 83% coverage:** shots ${card.ppc_coverage_83.np_shots}, key passes ${card.ppc_coverage_83.key_passes}, xG/shot ${card.ppc_coverage_83.log_xg_per_shot}, goals ${card.ppc_coverage_83.npg}. Total non-penalty goals: observed ${card.ppc_coverage_83.npg_total_observed.toLocaleString()}, predicted ${card.ppc_coverage_83.npg_total_predicted.toLocaleString()}. Before the real fit, the model recovered known skills from simulated data, with 83% intervals covering 78–83% of the true values. Finishing was the hardest to recover: posterior means correlated 0.56 with the true values, against 0.95 for the other skills. The [posterior predictive checks](model.html#posterior-predictive-checks) compare replicated data with the observed distributions, team-strength bands, leagues and career totals.
 
 **Data.** ${card.data.player_seasons.toLocaleString()} player-seasons (≥ ${card.data.min_row_minutes} minutes) for ${card.data.players} players, ${card.data.window}. Sources: ${card.data.sources.join("; ")}.
 
