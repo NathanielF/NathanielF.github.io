@@ -11,3 +11,7 @@ dependencies:
   - nutpie
   - arviz
   - pytest
+  - matplotlib
+  - ipykernel
+  - nbformat
+  - nbclient

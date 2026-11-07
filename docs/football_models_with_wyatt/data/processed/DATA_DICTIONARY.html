@@ -369,6 +369,10 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>6 of Wyatt’s picks</strong> (<code>pool_reason = wyatt_pick</code>): players named in <code>data/maps/wyatt_picks.csv</code> with at least 2,500 minutes, in any position. Currently Palmer, Kvaratskhelia, Núñez, Højlund, Bellingham and Musiala. With fewer minutes, their skill estimates will be noticeably less certain.</li>
 </ul>
 <p><code>display_name</code> applies the overrides in <code>data/maps/display_names.csv</code> (for example, Understat’s “Kylian Mbappe-Lottin” becomes “Kylian Mbappé”). The file has career totals plus per-90 rates (<code>npg_p90</code>, <code>npxG_p90</code>, <code>np_shots_p90</code>, <code>key_passes_p90</code>), shot quality (<code>npxG_per_shot</code>), <code>npg_minus_npxG</code> and <code>fw_share</code>.</p>
+</section>
+<section id="model_table.csv" class="level2">
+<h2 class="anchored" data-anchor-id="model_table.csv">../model_table.csv</h2>
+<p>The one table <code>reproduce.ipynb</code> needs (written by <code>scripts/07_model_table.py</code>). One row per player-season the model uses (3,950 rows): <code>player_id</code>, <code>player</code>, <code>league</code>, <code>season</code>, <code>team</code>, <code>minutes</code>, <code>season_index</code>, <code>team_strength</code> (the pre-match factor above), <code>np_shots</code>, <code>npxG</code>, <code>npg</code>, <code>key_passes</code>, and three finishing statistics over the season’s non-penalty shots: <code>fin_goals</code>, <code>fin_xg</code> (sum of xG) and <code>fin_var</code> (sum of p(1 − p), with p each shot’s xG).</p>
 
 
 </section>

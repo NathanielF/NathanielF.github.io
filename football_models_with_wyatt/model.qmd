@@ -345,7 +345,9 @@ Age in place of seasons observed would fix the career curves. Curves for individ
 
 ## Reproducing it
 
-From `football_models_with_wyatt/`, with the conda environment in `environment.yml`:
+The quickest route is [`reproduce.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/football_models_with_wyatt/reproduce.ipynb). It fits the model in plain PyMC from a single 0.4 MB table, `data/model_table.csv`, and runs the prior check, the fit, SAR and a parameter-recovery test with `pm.do`.
+
+The full pipeline, from `football_models_with_wyatt/` with the conda environment in `environment.yml`:
 
 ```bash
 python scripts/01_fetch.py odds          # football-data.co.uk CSVs
@@ -356,6 +358,7 @@ python scripts/04_fit_skills.py recovery # simulation recovery -> results/
 python scripts/04_fit_skills.py real     # the fit -> idata/
 python scripts/05_sar.py
 python scripts/06_export_web.py          # web/*.json, including the predictive checks
+python scripts/07_model_table.py         # data/model_table.csv for reproduce.ipynb
 python -m pytest tests -q
 ```
 

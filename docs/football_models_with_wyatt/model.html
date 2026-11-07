@@ -842,7 +842,8 @@ window.Quarto = {
 </section>
 <section id="reproducing-it" class="level2">
 <h2 class="anchored" data-anchor-id="reproducing-it">Reproducing it</h2>
-<p>From <code>football_models_with_wyatt/</code>, with the conda environment in <code>environment.yml</code>:</p>
+<p>The quickest route is <a href="https://github.com/NathanielF/NathanielF.github.io/blob/master/football_models_with_wyatt/reproduce.ipynb"><code>reproduce.ipynb</code></a>. It fits the model in plain PyMC from a single 0.4 MB table, <code>data/model_table.csv</code>, and runs the prior check, the fit, SAR and a parameter-recovery test with <code>pm.do</code>.</p>
+<p>The full pipeline, from <code>football_models_with_wyatt/</code> with the conda environment in <code>environment.yml</code>:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/01_fetch.py odds          <span class="co"># football-data.co.uk CSVs</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/02_team_matches.py        <span class="co"># team factors</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/03_build_panel.py         <span class="co"># player tables (needs the Kaggle Understat dump in data/understats/)</span></span>
@@ -851,7 +852,8 @@ window.Quarto = {
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/04_fit_skills.py real     <span class="co"># the fit -&gt; idata/</span></span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/05_sar.py</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/06_export_web.py          <span class="co"># web/*.json, including the predictive checks</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pytest tests <span class="at">-q</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/07_model_table.py         <span class="co"># data/model_table.csv for reproduce.ipynb</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pytest tests <span class="at">-q</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Andorra, A. and Göbel, M. (2024). <em>Unveiling True Talent: The Soccer Factor Model for Skill Evaluation.</em> <a href="https://arxiv.org/abs/2412.05911">arXiv:2412.05911</a>.</p>
 
 

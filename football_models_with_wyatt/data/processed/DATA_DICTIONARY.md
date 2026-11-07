@@ -84,3 +84,7 @@ The player pool has 593 players:
 - **6 of Wyatt's picks** (`pool_reason = wyatt_pick`): players named in `data/maps/wyatt_picks.csv` with at least 2,500 minutes, in any position. Currently Palmer, Kvaratskhelia, Núñez, Højlund, Bellingham and Musiala. With fewer minutes, their skill estimates will be noticeably less certain.
 
 `display_name` applies the overrides in `data/maps/display_names.csv` (for example, Understat's "Kylian Mbappe-Lottin" becomes "Kylian Mbappé"). The file has career totals plus per-90 rates (`npg_p90`, `npxG_p90`, `np_shots_p90`, `key_passes_p90`), shot quality (`npxG_per_shot`), `npg_minus_npxG` and `fw_share`.
+
+## ../model_table.csv
+
+The one table `reproduce.ipynb` needs (written by `scripts/07_model_table.py`). One row per player-season the model uses (3,950 rows): `player_id`, `player`, `league`, `season`, `team`, `minutes`, `season_index`, `team_strength` (the pre-match factor above), `np_shots`, `npxG`, `npg`, `key_passes`, and three finishing statistics over the season's non-penalty shots: `fin_goals`, `fin_xg` (sum of xG) and `fin_var` (sum of p(1 − p), with p each shot's xG).
