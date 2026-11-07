@@ -268,6 +268,17 @@ def enrich_player_seasons(ps: pd.DataFrame, events: pd.DataFrame, team_map: pd.D
         return round(float(np.mean(vals)), 4) if vals else np.nan
 
     ps["team_ppg"] = ps.apply(team_ppg, axis=1)
+
+    # Pre-match strength, as in the paper: the team's average points-per-game gap to
+    # its opponents, each gap measured before kickoff (0 for a team's first match).
+    pre = team_matches.groupby(["league", "season", "team"]).ppg_diff_pre.mean()
+
+    def team_pre(row):
+        vals = [pre.get((row.league, row.season, lut.get((row.league, t.strip())))) for t in str(row.team_title).split(",")]
+        vals = [v for v in vals if v is not None]
+        return round(float(np.mean(vals)), 4) if vals else np.nan
+
+    ps["team_strength_pre"] = ps.apply(team_pre, axis=1)
     league_avg = team_matches.groupby(["league", "season"]).points.mean().rename("league_ppg")
     ps = ps.merge(league_avg, on=["league", "season"], how="left")
     ps["team_strength"] = (ps.team_ppg - ps.league_ppg).round(4)

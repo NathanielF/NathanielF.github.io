@@ -74,7 +74,7 @@ function skillSays(k, p) {
   const m = Math.exp(p.skills[k].mean), st = p.skills[k].stars;
   if (k === "shoot")  return m >= 1.05 ? `On an average team, he'd take ${m.toFixed(1)}× as many shots as a typical forward.` : m <= 0.95 ? `On an average team, he'd take fewer shots than a typical forward (${m.toFixed(1)}×).` : "On an average team, he'd take about as many shots as a typical forward.";
   if (k === "fox")    return m >= 1.05 ? `He finds better spots: on an average team his chances would be ${m.toFixed(1)}× as good as a typical forward's.` : m <= 0.95 ? `He shoots from harder places than a typical forward (${m.toFixed(1)}×).` : "His chances are about as good as a typical forward's.";
-  if (k === "sniper") return st >= 4 ? "Scores a bit more often than his chances say he should." : st <= 2 ? "Once we count how good his teams were, his finishing looks normal or a tiny bit below." : "Scores about as often as his chances say. Most forwards do.";
+  if (k === "sniper") return st >= 4 ? "Scores a bit more often than his chances say he should." : st <= 2 ? "Scores a little less often than his chances say, even counting his teams." : "Scores about as often as his chances say. Most forwards do.";
   if (k === "create") return m >= 1.05 ? `Sets up ${m.toFixed(1)}× as many shots for team-mates as a typical forward.` : m <= 0.95 ? `Sets up fewer shots for team-mates than a typical forward (${m.toFixed(1)}×).` : "Sets up about as many shots as a typical forward.";
 }
 ```
@@ -315,17 +315,17 @@ viewof reveal = Inputs.toggle({label: "Show what the model thinks", value: false
 
 ### What is being estimated
 
-Each forward $p$ has four correlated skills, $\alpha_p = (\alpha^{\text{shoot}}, \alpha^{\text{fox}}, \alpha^{\text{sniper}}, \alpha^{\text{create}}) \sim \text{MVN}(0, \Sigma)$, with an LKJ prior on the correlations. For each player-season $r$, every skill $k$ gets its own linear predictor:
+Each forward $p$ has four correlated effects, $\alpha_p = (\alpha^{\text{shoot}}, \alpha^{\text{fox}}, \alpha^{\text{sniper}}, \alpha^{\text{create}}) \sim \text{MVN}(0, \Sigma)$, with an LKJ prior on the correlations. For each player-season $r$, every skill $k$ gets its own linear predictor:
 
-$$\eta_{k,r} = \mu_k + \lambda_{k,\text{league}(r)} + \beta_k\,\text{TS}_r + h_k(N^S_r) + \alpha_{p(r),k}$$
+$$\eta_{k,r} = \mu_k + \lambda_{k,\text{league}(r)} + \beta_k\,\text{TS}_r + \gamma_k\,\overline{\text{TS}}_{p(r)} + h_k(N^S_r) + \alpha_{p(r),k}$$
 
-Here TS is the team's season points per game minus the league average: the paper's team factor, whose job is to separate the player from his team. $h_k$ is a Matérn-5/2 HSGP maturity curve over seasons observed. The likelihoods are:
+TS is the paper's team factor, measured before kickoff: the team's points-per-game gap to each opponent, averaged over its season. $\overline{\text{TS}}_p$ is the player's average TS across his seasons, a Mundlak term. Better forwards tend to play for better teams, and this term absorbs that link, so $\beta_k$ measures the effect of a stronger team on the same player. A player's skill is $\theta_{p,k} = \alpha_{p,k} + \gamma_k \overline{\text{TS}}_p$. $h_k$ is a Matérn-5/2 HSGP maturity curve over seasons observed. The likelihoods are:
 
 | Skill | Data | Likelihood |
 |---|---|---|
 | Shooting | non-penalty shots | NegBin$(\tfrac{\text{min}}{90} e^{\eta_\text{shoot}})$ |
 | Fox | npxG per shot | $\log(\text{npxG}/\text{shot}) \sim N(\eta_\text{fox}, \sigma/\sqrt{\text{shots}})$ |
-| Sniper | non-penalty goals | Poisson$(\text{npxG}\, e^{\eta_\text{sniper}})$ |
+| Sniper | each non-penalty shot | Bernoulli$(\text{logit}^{-1}(\text{logit}\,\text{xG}_i + \eta_\text{sniper}))$, fitted through a second-order approximation |
 | Creating | key passes | NegBin$(\tfrac{\text{min}}{90} e^{\eta_\text{create}})$ |
 
 Shots/90 × xG/shot × goals/xG = goals/90, so the first three skills multiply into expected non-penalty goals per 90. SAR is that rate with the team factor set to zero (a level field), minus the replacement pool's rate. PAR keeps each player's real team strength. PAR − SAR is his team lift relative to the pool's. All intervals are 83%, as in the paper.
@@ -364,7 +364,7 @@ rlp = {
 function dimDraws(key, i) {
   if (key === "SAR") return draws.goals90_level[i].map((v, d) => v - rlp.lvl[d]);
   if (key === "team_lift") return draws.goals90_actual[i].map((v, d) => (v - rlp.act[d]) - (draws.goals90_level[i][d] - rlp.lvl[d]));
-  return draws.alpha[key][i].map(Math.exp);
+  return draws.skill[key][i].map(Math.exp);
 }
 summaries = new Map(DIMS.map(dim => [dim.key, players.map(p => {
   const x = dimDraws(dim.key, p.i);
@@ -499,7 +499,7 @@ viewof h2hBName = picker("Player B", "Cristiano Ronaldo")
 ```
 
 ::: {.fw-section-note}
-These are posterior correlations between the skills, with 83% intervals; an LKJ distribution is their prior. The most precisely estimated pattern is that players who get very good chances tend to create less. Finishing barely varies between players: its spread is about a sixth of the other skills'. So its correlations are uncertain, and Sniper stars only move away from 3 when the 83% interval excludes zero.
+These are posterior correlations between the skills, with 83% intervals; an LKJ distribution is their prior. The most precisely estimated pattern is that players who get very good chances tend to create less. Finishing varies about half as much as the other skills and is the hardest to estimate for any one player, so Sniper stars only move away from 3 when the 83% interval excludes zero.
 :::
 
 ### Maturity curves
@@ -530,7 +530,7 @@ Population HSGP curves, with the multiplier shown relative to the average player
 ### Model card
 
 ```{ojs}
-md`**Fit.** ${card.fit.chains} chains × ${card.fit.draws_per_chain} draws (${card.fit.sampler}); ${card.fit.divergences} divergences; max R-hat = ${card.fit.max_r_hat}; min bulk ESS = ${card.fit.min_ess_bulk}. **Posterior predictive 83% coverage:** shots ${card.ppc_coverage_83.np_shots}, key passes ${card.ppc_coverage_83.key_passes}, xG/shot ${card.ppc_coverage_83.log_xg_per_shot}, goals ${card.ppc_coverage_83.npg}. Total non-penalty goals: observed ${card.ppc_coverage_83.npg_total_observed.toLocaleString()}, predicted ${card.ppc_coverage_83.npg_total_predicted.toLocaleString()}. Before the real fit, the model recovered known skills from simulated data, with 83% intervals covering 78–83% of the true values. Finishing was the hardest to recover: posterior means correlated 0.56 with the true values, against 0.95 for the other skills. The [posterior predictive checks](model.html#posterior-predictive-checks) compare replicated data with the observed distributions, team-strength bands, leagues and career totals.
+md`**Fit.** 4 chains × 1,500 draws (nutpie); ${card.fit.divergences} divergence${card.fit.divergences === 1 ? "" : "s"}; max R-hat = ${card.fit.max_r_hat.toFixed(3)}; min bulk ESS = ${Math.round(card.fit.min_ess_bulk)}. **83% coverage, leave-one-out:** shots ${Math.round(card.ppc_coverage_83.np_shots.loo * 100)}%, key passes ${Math.round(card.ppc_coverage_83.key_passes.loo * 100)}%, xG/shot ${Math.round(card.ppc_coverage_83.log_xg_per_shot.loo * 100)}%, goals given shots ${Math.round(card.ppc_coverage_83.goals.loo * 100)}%. Before the real fit, the model recovered known skills from simulated data, with 83% intervals covering ${Math.round(Math.min(...Object.values(card.recovery.skill_coverage83)) * 100)}–${Math.round(Math.max(...Object.values(card.recovery.skill_coverage83)) * 100)}% of the true values. Finishing was the hardest to recover: posterior means correlated ${card.recovery.skill_corr_with_truth.sniper.toFixed(2)} with the true values, against about 0.95 for the other skills. The [posterior predictive checks](model.html#posterior-predictive-checks) compare replicated data with the observed distributions, team-strength bands, leagues and career totals.
 
 **Data.** ${card.data.player_seasons.toLocaleString()} player-seasons (≥ ${card.data.min_row_minutes} minutes) for ${card.data.players} players, ${card.data.window}. Sources: ${card.data.sources.join("; ")}.
 

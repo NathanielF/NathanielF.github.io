@@ -1,0 +1,76 @@
+{
+  "seconds": 163,
+  "diagnostics": {
+    "divergences": 0,
+    "max_r_hat": 1.0066,
+    "max_r_hat_param": "chol_cholesky-cov-packed__[8]",
+    "min_ess_bulk": 219.5842,
+    "min_ess_bulk_param": "chol_cholesky-cov-packed__[8]",
+    "skill_max_r_hat": 1.0057872164588866,
+    "skill_min_ess_bulk": 4064.5739781011657
+  },
+  "skill_coverage83": {
+    "shoot": 0.809,
+    "fox": 0.853,
+    "sniper": 0.804,
+    "create": 0.833
+  },
+  "skill_corr_with_truth": {
+    "shoot": 0.955,
+    "fox": 0.945,
+    "sniper": 0.552,
+    "create": 0.959
+  },
+  "alpha_sd_true": [
+    0.3,
+    0.25,
+    0.13,
+    0.35
+  ],
+  "alpha_sd_est": [
+    0.292,
+    0.244,
+    0.121,
+    0.355
+  ],
+  "alpha_corr_true": [
+    0.2,
+    -0.1,
+    -0.2,
+    -0.3,
+    -0.5,
+    0.2
+  ],
+  "alpha_corr_est": [
+    0.2,
+    -0.09,
+    -0.15,
+    -0.25,
+    -0.46,
+    0.08
+  ],
+  "beta_true": {
+    "shoot": 0.1,
+    "fox": 0.15,
+    "sniper": 0.03,
+    "create": 0.12
+  },
+  "beta_est": {
+    "shoot": 0.096,
+    "fox": 0.152,
+    "sniper": 0.038,
+    "create": 0.131
+  },
+  "gamma_true": {
+    "shoot": 0.15,
+    "fox": 0.2,
+    "sniper": 0.02,
+    "create": 0.1
+  },
+  "gamma_est": {
+    "shoot": 0.151,
+    "fox": 0.216,
+    "sniper": 0.023,
+    "create": 0.098
+  }
+}

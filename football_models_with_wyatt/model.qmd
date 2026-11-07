@@ -31,7 +31,7 @@ The paper follows 144 strikers in England, Germany, Italy and Spain from 2000/01
 
 The outcome is goals per player per match. Only 1.5% of player-matches produce three goals or more, so the authors cap the count at three. That leaves four ordered categories, 0, 1, 2 and 3+. They model these with an ordered logistic likelihood, which turns a single latent score into a probability for each category by way of a set of cutpoints. The first cutpoint is fixed so that the model is identified.
 
-Two factors stand for team strength. One marks home games. The other is the gap in league points between the player's team and its opponent so far that season. Both are known before kickoff, so no later information leaks into the prediction. The authors tried more factors and found that the points gap had already absorbed them. Adding correlated factors would only have muddied the coefficients.
+Two factors stand for team strength. One marks home games. The other is the gap in league points between the player's team and its opponent so far that season. Both are known before kickoff. The authors tried more factors and found that the points gap had already absorbed them.
 
 Skill in the paper has three parts:
 
@@ -41,9 +41,9 @@ The first part is talent: a common level $\mu_b$ plus a player effect $\delta_{b
 
 Each curve is a Gaussian process. An exact Gaussian process slows to a crawl with tens of thousands of matches. The paper therefore uses a Hilbert-space approximation, or HSGP, which builds each curve from a fixed set of basis functions under a Matérn-5/2 kernel.
 
-To compare players, the authors borrow baseball's wins above replacement. Performance above replacement, PAR, sets a player's predicted goals against those of a pool of ordinary forwards. Skill above replacement, SAR, makes the same comparison with every team factor set to zero, as though all teams were equally strong. The difference, SAR − PAR, measures how far the team inflated or deflated the player's numbers.
+To compare players, the authors borrow baseball's wins above replacement. Performance above replacement, PAR, sets a player's predicted goals against those of a hand-picked pool of ordinary strikers. Skill above replacement, SAR, makes the same comparison with every team factor set to zero, as though all teams were equally strong. The difference, SAR − PAR, measures how far the team inflated or deflated the player's numbers.
 
-Messi comes out as the most skilled striker of the period. Haaland's estimate is high and very uncertain, because his career is short. The three most skilled players, Messi, Haaland and Ronaldo, also gained most from their teams. Skill peaks about four seasons into a career. In leave-one-out cross-validation, the full model predicts better than two simpler versions of itself.
+Messi comes out as the most skilled striker of the period. Haaland's estimate is high and very uncertain, because his career is short. The three most skilled players, Messi, Haaland and Ronaldo, also gained most from their teams. Skill peaks about four seasons into a career. In leave-one-out cross-validation the full model predicts better than two simpler versions of itself, though the authors call its overall predictive performance "not outstanding".
 
 ## What we changed
 
@@ -59,71 +59,85 @@ $$\frac{\text{goals}}{90} = \frac{\text{shots}}{90}\times\frac{\text{xG}}{\text{
 
 Expected goals, or xG, is the probability that a shot like the one taken goes in. We treat each ratio as a separate ability, though each also carries the team's influence and luck. The first counts how often a forward gets a shot away. Wyatt calls a forward who is good at this a Shooter. The second measures where the shots come from: the Fox. The third asks whether he scores more than an average player would from the same chances: the Sniper. We added a fourth skill, the Playmaker, which counts the shots a forward sets up for team-mates. It adds nothing to his own goals, but it is plainly part of a forward's game.
 
-Each player $p$ has four correlated skills, with an LKJ prior on their correlations:
+### The team factor, and why it needs help
+
+For each player-season we measure team strength as the paper does, before kickoff. For every league match we take the gap in points per game between the team and its opponent, using only earlier matches that season. We then average those gaps over the team's season. Call the result TS. A side that sits about one point per game clear of its opponents on average, roughly the strongest team in a league, has TS near 1.
+
+A season-level measure brings a problem the paper does not face in the same form. Good forwards do not land at clubs at random. The best of them play for the best teams. If the model assumes a forward's skill is unrelated to the strength of his teams, it cannot tell "this team makes forwards score" from "this team hires forwards who score". The team coefficient then absorbs part of the players' skill, and the best players' skill is understated.
+
+We deal with this using a device from panel econometrics, the Mundlak term. For each player we also include his average team strength across all his seasons, $\overline{\text{TS}}_p$. The average soaks up the systematic link between a player and the kind of team he plays for. What is left for the team coefficient comes from changes within a career: the same forward on a stronger or weaker team in different seasons. That is the comparison we want, because the player's ability is held fixed in it.
+
+For player-season $r$ and skill $k$, the linear predictor is
+
+$$\eta_{k,r} = \mu_k + \lambda_{k,\ell(r)} + \beta_k\,\text{TS}_r + \gamma_k\,\overline{\text{TS}}_{p(r)} + h_k(N^S_r) + \alpha_{p(r),k}.$$
+
+Here $\lambda_{k,\ell}$ is a league effect, and the five league effects sum to zero. $\beta_k$ is the within-player team effect. $\gamma_k$ is the extra association between a player's skill and the strength of the teams he plays for. $h_k$ is a Matérn-5/2 HSGP over seasons observed. The four $\alpha$s are correlated, with an LKJ prior on their correlations:
 
 $$\alpha_p \sim \text{MVN}(0, \Sigma), \qquad \Sigma = \text{diag}(\sigma)\,\Omega\,\text{diag}(\sigma), \quad \Omega \sim \text{LKJ}(2).$$
 
-For player-season $r$ and skill $k$, the model forms a linear predictor. It does the work of the paper's $g(\cdot)$:
+A player's skill is everything about him that does not change with his team in a given season: $\theta_{p,k} = \alpha_{p,k} + \gamma_k\,\overline{\text{TS}}_p$. That is the quantity the explorer shows and the one SAR is built on.
 
-$$\eta_{k,r} = \mu_k + \lambda_{k,\ell(r)} + \beta_k\,\text{TS}_r + h_k(N^S_r) + \alpha_{p(r),k}.$$
-
-Here $\lambda_{k,\ell}$ is a league effect, and the five league effects sum to zero. $\text{TS}_r$ is the team factor: the team's points per game that season, less the league average. $h_k$ is a Matérn-5/2 HSGP over seasons observed. Each skill has its own likelihood:
+### Likelihoods
 
 | Skill | Data | Likelihood |
 |---|---|---|
 | Shooter | non-penalty shots | $\text{NegBin}\big(\tfrac{\text{min}}{90}e^{\eta_\text{shoot}},\ \phi_s\big)$ |
 | Fox | non-penalty xG per shot | $\log(\text{xG}/\text{shot}) \sim N\big(\eta_\text{fox},\ \sigma_f/\sqrt{\text{shots}}\big)$ |
-| Sniper | non-penalty goals | $\text{Poisson}\big(\text{npxG}\cdot e^{\eta_\text{sniper}}\big)$ |
+| Sniper | each non-penalty shot | $\text{Bernoulli}\big(\text{logit}^{-1}(\text{logit}\,\text{xG}_i + \eta_\text{sniper})\big)$ |
 | Playmaker | key passes | $\text{NegBin}\big(\tfrac{\text{min}}{90}e^{\eta_\text{create}},\ \phi_c\big)$ |
 
-The standard deviation for the Fox shrinks with the square root of the number of shots. A season of 120 shots counts for more than a season of 12. The Sniper uses the season's xG as its baseline, which makes the skill a ratio of goals to xG.
+The standard deviation for the Fox shrinks with the square root of the number of shots. A season of 120 shots counts for more than a season of 12.
 
-Multiplying the first three skills gives a forward's scoring rate on a level field. The league is average, the team is average, and he is at the average point of a career:
+The Sniper works shot by shot. Each shot goes in with its own xG, shifted on the log-odds scale by the player's finishing. Fitting 182,391 shots one at a time made each fit take close to an hour, so we use an approximation. Expanding a season's log-likelihood to second order in $\eta_\text{sniper}$ gives
 
-$$\text{rate}^{\text{level}}_p = e^{\mu_\text{shoot}+\alpha_{p,\text{shoot}}}\,e^{\mu_\text{fox}+\alpha_{p,\text{fox}}}\,e^{\mu_\text{sniper}+\alpha_{p,\text{sniper}}}$$
+$$(G - \textstyle\sum_i p_i)\,\eta - \tfrac{1}{2}\textstyle\sum_i p_i(1-p_i)\,\eta^2,$$
 
-Adding $\beta_k\,\text{TS}$ for each of his real seasons, weighted by minutes, gives his rate with his own teams. SAR and PAR subtract the same rates for the replacement pool, which holds the forwards between the 40th and 60th percentiles of level-field skill. The explorer lets you choose a different pool. League and career stage stay at their averages in both measures. SAR − PAR therefore differs only through the team factor, as in the paper.
+where $G$ is the season's goals and $p_i$ the xG of each shot. This is a Gaussian likelihood centred on goals minus xG, scaled by $\sum p_i(1-p_i)$, the variance of a season's goals given its chances. For finishing effects of ±0.2 it differs from the exact likelihood by about 0.002 nats per season, and by about 0.02 at ±0.4. A fit now takes under five minutes. The predictive checks below use the exact shot-by-shot model.
+
+Multiplying the first three skills gives a forward's scoring rate on a level field: an average league, an average team ($\text{TS} = 0$), and the average point of a career. Finishing shifts each shot's log-odds, so its effect on goals per xG depends on the mix of chances. We measure it against the mix of all 182,391 shots in the data. Adding $\beta_k\,\text{TS}$ for each of a forward's real seasons, weighted by minutes, gives his rate with his own teams. SAR and PAR subtract the same rates for the replacement pool, which holds the forwards between the 40th and 60th percentiles of level-field skill. The explorer lets you choose a different pool. League and career stage stay at their averages in both measures, so SAR − PAR differs only through the team factor, as in the paper.
 
 The table sets out where we depart from the paper.
 
 | | Paper | Here |
 |---|---|---|
 | Unit | player-match | player-season (no public lineups) |
-| Outcome | goals, ordered logistic | shots, xG/shot, goals/xG, key passes |
-| Skill | one $\alpha$ per player | four correlated $\alpha$s (LKJ) |
-| Team factor | home + pre-match points gap | season points per game vs league average (includes the player's own contribution) |
+| Outcome | goals, ordered logistic | shots, xG/shot, goals given each shot's xG, key passes |
+| Skill | one $\alpha$ per player | four correlated skills (LKJ prior) |
+| Player effects | sum to zero | correlated, MVN with mean zero |
+| Team factor | home + pre-match points gap | pre-match points-per-game gap, averaged over the season, plus a Mundlak term |
 | Career curves | per player, within- and cross-season HSGPs | one population HSGP per skill, over seasons |
 | Penalties | included | excluded |
-| Player effects | sum to zero | correlated, MVN with mean zero |
 | Players | 144 hand-picked strikers | 593 forwards: any player Understat lists at F for most of his minutes, ≥ 6,000 minutes, plus a few of Wyatt's picks |
 | Replacement pool | 102 hand-picked strikers | forwards between the 40th and 60th percentile of level-field skill |
 
 ## Checking the model
 
-We checked the priors before fitting. Seasons simulated from the priors alone had a median of 39 shots, against 42 in the data. Their 90% range ran from 6 to 169, against 10 to 100. Weak priors should be wider than the data and on the same scale, and these were.
+We checked the priors before fitting. Seasons simulated from the priors alone had a median of 39 shots, against 42 in the data, with a 90% range of 6 to 176 against 10 to 100. Key passes and xG per shot looked the same: the right scale, wider than the data. Weak priors should behave like that.
 
-Next we simulated a whole dataset from the model, with known skills, correlations, team effects and a humped career curve, and fitted the model to it. The first fit produced 498 divergences. The intercepts $\mu_k$ could trade off against the overall level of each career curve, so the sampler wandered along a ridge. Centring each curve's basis functions over the data removed the ridge, and divergences fell to 16.
+Next we simulated a whole dataset from the model and fitted the model to it. The simulation had known skills, correlations, team effects, Mundlak terms and a humped career curve. We set the true spreads near the real estimates, including 0.13 for finishing. The fit produced no divergences. The 83% intervals covered 81% of the true Shooter values, 85% for the Fox, 80% for the Sniper and 83% for the Playmaker. The spreads came back within 0.01 of the truth. The team and Mundlak coefficients came back within 0.02.
 
-The 83% intervals then covered 80% of the true Shooter values, 82% for the Fox, 78% for the Sniper and 83% for the Playmaker. The skill spreads came back within 0.01 of their true values (0.35, 0.20, 0.12 and 0.40), and the correlations within 0.1. Finishing was the exception. Its posterior means correlated only 0.56 with the true values, against 0.95 for each of the other skills. The simulation told us, before we saw real data, that finishing would be hard to measure. It flattered the Sniper even so: we simulated a spread of 0.12, and the real data suggest less than half that.
+Finishing was again the hardest skill to recover. Its posterior means correlated 0.55 with the true values, against about 0.95 for each of the other skills. An earlier run with a smaller finishing spread, 0.05, did worse: a correlation of 0.17. A forward's finishing shows only in a few dozen goals a season, and the model sees that.
 
-The real fit ran 4 chains of 1,500 draws in nutpie, with `target_accept = 0.95`. It produced no divergences. The largest $\hat R$, 1.028, belongs to an element of the Cholesky factor behind the skill correlations. The Sniper–Playmaker correlation it feeds has $\hat R$ 1.023 and an effective sample size of about 80. Everything else mixed well.
+The real fit ran 4 chains of 1,500 draws in nutpie, with `target_accept = 0.95`. It produced one divergence in 6,000 draws. The largest $\hat R$ was 1.007, and the smallest effective sample size 368, both on an element of the Cholesky factor behind the skill correlations. The skills themselves have $\hat R$ at most 1.004 and effective sample sizes above 3,900.
 
 ### Posterior predictive checks
 
-Convergence shows that the sampler explored the posterior. It says nothing about whether the model fits. For each check we draw replicated datasets from the posterior predictive distribution and set them beside what the players actually did. These checks use the same data the model was fitted on, so they can expose misfit but cannot prove the model predicts new seasons well.
+Convergence shows that the sampler explored the posterior. It says nothing about whether the model fits. For each check we draw replicated data from the posterior predictive distribution and set them beside what the players did.
+
+Checks on the data a model was fitted to flatter it, so for calibration we use leave-one-out versions. Pareto-smoothed importance sampling reweights the posterior draws as if each player-season had been left out. For each outcome, at most six of the 3,950 seasons have weights too unstable to trust (Pareto $k$ above 0.7).
 
 ```{ojs}
 //| echo: false
 //| output: false
 ppc = FileAttachment("web/ppc.json").json()
-OUT = ["np_shots", "key_passes", "log_xg_per_shot", "npg"]
+OUT = ["np_shots", "key_passes", "log_xg_per_shot", "goals"]
 INK = "#0b0b0b"
 REP = "#2a78d6"
 FLAG = "#eb6834"
 panelW = Math.max(260, Math.min(420, (width - 24) / (width > 640 ? 2 : 1)))
 ```
 
-The first check compares whole distributions. The grey bars show the observed player-seasons. Each thin blue line is one of 40 datasets the model generated.
+The first check compares whole distributions. The grey bars show the observed player-seasons. Each thin blue line is one of 40 datasets the model generated. For goals, the replicates keep each season's real shots and redraw which of them went in.
 
 ```{ojs}
 //| echo: false
@@ -147,7 +161,7 @@ html`<div style="display:flex;flex-wrap:wrap;gap:12px">${OUT.map(v => {
 
 The replicated datasets match the observed distributions for all four outcomes, including the long right tails of shots and goals.
 
-The second check asks whether each observed season looks like a typical draw from its own predictive distribution. For every player-season we compute the share of replicated values below the observed one, the probability integral transform, or PIT. A well-calibrated model gives PIT values spread evenly between 0 and 1. If the predictions are too narrow, values pile up at the ends. If they are too wide, values thin out at the ends. The dashed line marks a perfectly even spread, and the band shows how far a calibrated model would wander from it by chance.
+The second check asks whether each season looks like a typical draw from its own leave-one-out prediction. For every player-season we compute the share of predicted values below the observed one, the probability integral transform, or PIT. A calibrated model gives PIT values spread evenly between 0 and 1. If the predictions are too narrow, values pile up at the ends. If they are too wide, the ends thin out. The dashed line marks an even spread, and the band shows how far a calibrated model would wander from it by chance.
 
 ```{ojs}
 //| echo: false
@@ -155,7 +169,7 @@ html`<div style="display:flex;flex-wrap:wrap;gap:12px">${OUT.map(v => {
   const d = ppc.pit[v], k = d.counts.length, e = d.n / k, sd = Math.sqrt(e * (1 - 1 / k));
   const bars = d.counts.map((c, i) => ({x1: i / k, x2: (i + 1) / k, c}));
   return Plot.plot({
-    width: panelW, height: 170, marginLeft: 44, title: `${d.label}: PIT`,
+    width: panelW, height: 170, marginLeft: 44, title: `${d.label}: leave-one-out PIT`,
     x: {domain: [0, 1], label: null, ticks: 5},
     y: {label: "↑ seasons", grid: true, domain: [0, Math.max(e + 3 * sd, ...d.counts) * 1.05]},
     marks: [
@@ -168,14 +182,23 @@ html`<div style="display:flex;flex-wrap:wrap;gap:12px">${OUT.map(v => {
 })}</div>`
 ```
 
-All four histograms are flat through the middle and thin at the ends, and the top bin is thinner than the bottom one. The predictive intervals are wider than they need to be for these seasons: the 83% intervals hold 89% to 94% of them. Part of that is the in-sample flattery mentioned above. For goals, part of it is the Poisson likelihood, which allows more variation than goals scored from a known set of chances can show.
+```{ojs}
+//| echo: false
+{
+  const lab = {np_shots: "Shots", key_passes: "Key passes", log_xg_per_shot: "xG per shot", goals: "Goals, given shots"};
+  return html`<table class="fw-prob-table"><thead><tr><th>Share of seasons inside the 83% interval</th><th>In-sample</th><th>Leave-one-out</th></tr></thead>
+  <tbody>${OUT.map(v => html`<tr><td>${lab[v]}</td><td class="num">${Math.round(ppc.coverage83[v].in_sample * 100)}%</td><td class="num">${Math.round(ppc.coverage83[v].loo * 100)}%</td></tr>`)}</tbody></table>`;
+}
+```
 
-The third check looks for patterns the model leaves behind across team strength, leagues and stages of a career. Each panel compares observed non-penalty goals per 90 (dark dots) with the model's 83% predictive interval (blue bars). The replicated goals are drawn given each season's observed xG, so these panels test the Sniper part of the model. They do not test how team strength raises the number and quality of shots.
+The leave-one-out histograms sit mostly inside the band. Shots, key passes and xG per shot are well calibrated: their 83% leave-one-out intervals hold 83% to 86% of seasons. The in-sample figures are four to six points higher, which is the flattery the leave-one-out version removes. Goals are slightly over-covered, at about 90%. There are a few more low PIT values than an even spread allows, so some seasons scored fewer goals than the model expected from their chances.
+
+The third check looks for patterns the model leaves behind across team strength, leagues and stages of a career. Here goals are simulated through the whole chain: a replicated number of shots, then a replicated average xG per shot, then replicated goals. This tests how team strength raises the number and quality of chances as well as their conversion. To keep it fast, the chain draws goals as a binomial with the season's average xG, ignoring the spread of chance quality within a season. Each panel compares observed non-penalty goals per 90 (dark dots) with the model's 83% predictive interval (blue bars).
 
 ```{ojs}
 //| echo: false
 {
-  const panels = [["team_strength", "By team strength (season points per game vs league)"], ["league", "By league"], ["season_index", "By season observed"]];
+  const panels = [["team_strength", "By team strength (pre-match points-per-game gap)"], ["league", "By league"], ["season_index", "By season observed"]];
   return html`<div style="display:flex;flex-wrap:wrap;gap:12px">${panels.map(([key, title]) => {
     const g = ppc.groups[key];
     return Plot.plot({
@@ -192,9 +215,16 @@ The third check looks for patterns the model leaves behind across team strength,
 }
 ```
 
-Scoring doubles from the weakest fifth of teams (0.20 goals per 90) to the strongest (0.43). Given each season's xG, the model reproduces goals per 90 in every team-strength fifth and every league. It misses one season band narrowly: in players' third season the observed rate, 0.295, sits just above the interval of 0.278 to 0.293.
+```{ojs}
+//| echo: false
+{
+  const g = ppc.groups.team_strength, all = Object.values(ppc.groups).flat();
+  const inside = all.filter(r => r.observed >= r.lo83 && r.observed <= r.hi83).length;
+  return md`Scoring doubles from the weakest fifth of teams (${g[0].observed.toFixed(2)} goals per 90) to the strongest (${g[g.length - 1].observed.toFixed(2)}). The full chain reproduces the gradient: ${inside} of the ${all.length} observed rates across team strength, league and season fall inside their intervals.`;
+}
+```
 
-The last check looks at players one by one. For each forward we add up his replicated goals across all his seasons and compare the result with his actual career total. Points on the diagonal match exactly. The grey bars are 83% intervals, and orange marks a player whose total falls outside his.
+The last check looks at players one by one. For each forward we add up his replicated goals across all his seasons, again through the whole chain, and compare the result with his actual career total. Points on the diagonal match exactly. The grey bars are 83% intervals, and orange marks a player whose total falls outside his.
 
 ```{ojs}
 //| echo: false
@@ -219,53 +249,55 @@ The last check looks at players one by one. For each forward we add up his repli
 
 ```{ojs}
 //| echo: false
-md`Of the ${ppc.careers.length} forwards, ${Math.round(ppc.career_coverage83 * 100)}% have career totals inside their 83% interval. The model shrinks each player's skill towards the average, so it should miss in both directions. It does. Harry Kane scored more than his interval allows: 208 goals against a prediction of 164 to 205. The model also has no career curves for individual players, so it cannot follow one forward's rise and fall. It reproduces the scoring of the typical forward better than the scoring of any single one.`
+md`Of the ${ppc.careers.length} forwards, ${Math.round(ppc.career_coverage83 * 100)}% have career totals inside their 83% interval. That is too many for an 83% interval. Through the whole chain the intervals are wide, because they carry uncertainty about shots, chance quality and finishing at once, and they are in-sample. Most of the misses are fringe forwards whose few goals sit at the edge of a wide interval.`
 ```
 
-The checks found no large misfit in the data the model was fitted to. Its intervals run wide, and within single careers it is coarse, because one skill score per player cannot track a decade of change. None of these checks tests predictions for new seasons.
+The checks found no large misfit. Shots, key passes and chance quality are well calibrated out of sample, and goals given shots are slightly over-covered. The full chain reproduces scoring across team strength, leagues and career stage, with intervals that run wide.
 
 ## Findings
 
-### Finishing hardly varies
+### How much the team matters
 
-The spread of each skill across forwards, as the posterior mean of $\sigma_k$ on the log scale:
+These are the team coefficients for a team one point per game clear of its opponents before kickoff, with 83% intervals. $\beta$ is the within-player effect. $\gamma$ is the Mundlak term.
+
+| Skill | $\beta$ (within player) | $\gamma$ (Mundlak) |
+|---|---|---|
+| Shooter | 0.087 [0.073, 0.101] | 0.167 [0.119, 0.214] |
+| Fox | 0.166 [0.150, 0.182] | −0.007 [−0.057, 0.043] |
+| Sniper | 0.096 [0.062, 0.129] | 0.059 [0.009, 0.108] |
+| Playmaker | 0.093 [0.076, 0.110] | 0.313 [0.260, 0.365] |
+
+The Mundlak term matters for shooting and creating. Forwards who shoot and create a lot cluster at strong clubs, and without the term the model would have credited that to the clubs. An earlier version of this model, without it and with the season's final points as the team factor, put the shooting coefficient at 0.150 and the creating coefficient at 0.173. Within a player's own career both are a little over half that.
+
+Chance quality is different. Its Mundlak term is close to zero, so better teams do not hire forwards who find better chances. The same forward gets better chances on a better team.
+
+Put together, a forward moving to a team one point per game stronger scores about 1.37 times as many non-penalty goals. Chance quality accounts for about half of that, shot volume for under a third, finishing for the rest. These are still associations. Our pre-match measure, like the paper's, includes the player's own goals in earlier matches that season. The Mundlak term also assumes that a player's skill relates to team strength only through his career average.
+
+### Skill spreads
+
+The spread of each skill across forwards (the standard deviation of $\theta$ on the log or log-odds scale):
 
 | Shooter | Fox | Sniper | Playmaker |
 |---|---|---|---|
-| 0.29 | 0.29 | 0.05 | 0.32 |
+| 0.29 | 0.30 | 0.14 | 0.33 |
 
-Once you know how many shots a forward takes and where he takes them from, his finishing adds little. A forward one standard deviation above average at finishing scores about 5% more than his xG. A forward one standard deviation above average at shooting takes about 33% more shots. This fits the common view that finishing above xG is mostly noise, though the Poisson likelihood may make finishing look noisier than it is.
+A forward one standard deviation above average at shooting takes about 33% more shots. One standard deviation above average at finishing scores about 9% more goals than his chances would give an average forward. Finishing varies less than the other skills, but it is not negligible. An earlier version of this model put its spread at 0.05. Its Poisson likelihood allowed more random variation in goals than a set of chances can produce, and blamed that variation on luck.
 
-The explorer therefore gives a forward three Sniper stars unless his 83% interval excludes zero. Haaland scored 103 non-penalty goals from 94.9 xG. The model still rates his finishing slightly below average, with an interval of −0.11 to −0.01 on the log scale. His strong teams account for the surplus. And forwards who get chances as good as his tend to convert them a little below their xG, as the next section shows.
+The model is still unsure about most individual finishers. The explorer gives a forward three Sniper stars unless his 83% interval excludes zero, and 536 of the 593 keep three. Messi and Son Heung-min get five. Harry Kane gets four. Haaland scored 103 non-penalty goals from 94.9 xG and keeps three: his interval runs from −0.14 to 0.11.
 
 ### Skills that go together
 
-Posterior correlations between player skills, with 83% intervals:
+Posterior correlations between the player skills $\theta$, with 83% intervals:
 
 | | Fox | Sniper | Playmaker |
 |---|---|---|---|
-| **Shooter** | +0.21 [+0.15, +0.27] | −0.19 [−0.39, +0.01] | −0.17 [−0.23, −0.10] |
-| **Fox** | | −0.66 [−0.82, −0.48] | −0.61 [−0.65, −0.56] |
-| **Sniper** | | | +0.66 [+0.48, +0.83] |
+| **Shooter** | +0.23 [+0.20, +0.26] | −0.07 [−0.17, +0.03] | −0.12 [−0.15, −0.10] |
+| **Fox** | | −0.40 [−0.49, −0.30] | −0.57 [−0.60, −0.55] |
+| **Sniper** | | | +0.45 [+0.36, +0.54] |
 
-Creators take worse shots. The correlation between Fox and Playmaker, −0.61, is the most precisely estimated in the table. A penalty-box striker lives on tap-ins and sets up little. A forward who drops deep to create shoots from further out.
+Creators take worse shots. The correlation between Fox and Playmaker, −0.57, is the most precisely estimated in the table. A penalty-box striker lives on tap-ins and sets up little. A forward who drops deep to create shoots from further out.
 
-Forwards with very good chances convert slightly below their xG. Perhaps that is a real pattern of skill. Perhaps Understat's xG slightly overrates very good chances. A season-level model cannot tell which.
-
-The correlation between Sniper and Playmaker deserves the least trust. Finishing varies so little that the model has little to go on, and this correlation is its worst-estimated quantity. Long-range specialists such as Payet and Suso, who both create and finish above their xG, probably drive it.
-
-### The team factor
-
-Take a team one point per game above its league average, roughly a title contender. Its forwards' rates are higher on every measure:
-
-| Skill | Effect ($\beta_k$, 83% interval) | Multiplier |
-|---|---|---|
-| Shooter | 0.150 [0.135, 0.166] | ×1.16 shots |
-| Fox | 0.241 [0.224, 0.257] | ×1.27 xG per shot |
-| Sniper | 0.095 [0.074, 0.116] | ×1.10 goals per xG |
-| Playmaker | 0.173 [0.154, 0.192] | ×1.19 key passes |
-
-Forwards on such teams score at about 1.6 times the rate their estimated skill implies on an average team. Chance quality accounts for about half of that, shot volume for under a third. These coefficients are associations. The team factor is the team's final points per game, which includes the player's own goals. The model also assumes a player's skill is unrelated to the strength of his teams, though the best forwards cluster at the best clubs. Both push the coefficients up and the best forwards' skill down.
+Forwards with very good chances convert slightly below their xG, and creators convert slightly above it. Both patterns could be skill. They could also come from Understat's xG model, if it rates very good chances a little too high and long shots a little too low. A season-level model cannot tell which. The best-rated finishers include James Rodríguez, Suso and Ruslan Malinovskiy, all creators who often shoot from distance.
 
 ### The most skilled forwards
 
@@ -273,20 +305,22 @@ The top of the SAR ranking, in non-penalty goals per 90 above the replacement po
 
 | | SAR | 83% interval | SAR − PAR |
 |---|---|---|---|
-| Darwin Núñez | 0.29 | 0.18 – 0.41 | −0.17 |
-| Cristiano Ronaldo | 0.26 | 0.20 – 0.31 | −0.23 |
-| Erling Haaland | 0.24 | 0.17 – 0.31 | −0.21 |
-| Robert Lewandowski | 0.23 | 0.18 – 0.28 | −0.28 |
-| Kylian Mbappé | 0.22 | 0.17 – 0.29 | −0.25 |
-| Pierre-Emerick Aubameyang | 0.22 | 0.17 – 0.28 | −0.07 |
-| Charlie Austin | 0.22 | 0.14 – 0.32 | +0.11 |
-| Lionel Messi | 0.22 | 0.17 – 0.27 | −0.26 |
+| Erling Haaland | 0.33 | 0.24 – 0.44 | −0.16 |
+| Lionel Messi | 0.31 | 0.25 – 0.38 | −0.20 |
+| Kylian Mbappé | 0.31 | 0.23 – 0.39 | −0.20 |
+| Darwin Núñez | 0.31 | 0.18 – 0.45 | −0.11 |
+| Cristiano Ronaldo | 0.31 | 0.24 – 0.37 | −0.18 |
+| Robert Lewandowski | 0.30 | 0.24 – 0.37 | −0.21 |
+| Sergio Agüero | 0.28 | 0.21 – 0.37 | −0.17 |
+| Luis Suárez | 0.27 | 0.20 – 0.35 | −0.18 |
 
-From second to tenth the intervals overlap almost completely. Read the table as a group of about ten elite forwards. The order within it is mostly noise. Núñez comes first on fewer than 4,000 minutes, and his interval is the widest in the table. The paper made the same point about Haaland: a short career earns a wide interval.
+The intervals overlap almost completely. Read the table as a group of elite forwards. The order within it is mostly noise. Núñez's interval is the widest, because he played fewer than 4,000 minutes. The paper made the same point about Haaland: a short career earns a wide interval.
 
-Lewandowski, Messi, Mbappé, Suárez and Ronaldo have the largest team lift, 0.23 to 0.28 goals per 90. They also played for the strongest teams. Team strength multiplies the scoring rate, so the same team adds more goals to a better forward; the model builds that in. At the other end, the model attributes the shortfall of Charlie Austin, Teemu Pukki, Simy and Aleksandar Mitrović to weak teams.
+The Mundlak term moved this table. The model no longer credits these forwards' teams with part of their skill. Haaland, Messi and Ronaldo, the paper's top three, are all now in the top five.
 
-Three differences probably explain why Messi ranks lower here than in the paper. We leave out penalties. His creating, the best among the top ten at 1.9 times a typical forward's, adds nothing to his goals. And our window includes his two seasons at Paris Saint-Germain, at 34 and 35. The model has no individual career curves to set those seasons apart.
+Lewandowski, Mbappé, Messi, Suárez and Ronaldo have the largest team lift, 0.18 to 0.21 goals per 90. They also played for the strongest teams. Team strength multiplies the scoring rate, so the same team adds more goals to a better forward; the model builds that in. At the other end, the model attributes the shortfall of Simy, Charlie Austin, Aleksandar Mitrović and Jermain Defoe to weak teams.
+
+Messi's creating, 2.0 times a typical forward's, adds nothing to his goals, and we leave out penalties. Both count against him here. Our window also includes his two seasons at Paris Saint-Germain, at 34 and 35. The model has no individual career curves to set those seasons apart.
 
 ### Careers
 
@@ -294,12 +328,12 @@ The average multiplier for each skill, by season observed. Season 1 is a player'
 
 | | Season 1 | Season 3 | Season 5 | Season 10 |
 |---|---|---|---|---|
-| Shooter | 1.04 | 1.02 | 1.00 | 0.94 |
-| Fox | 0.94 | 0.98 | 1.02 | 1.07 |
-| Sniper | 1.03 | 1.03 | 0.99 | 0.93 |
-| Playmaker | 1.00 | 1.00 | 1.00 | 1.02 |
+| Shooter | 1.04 | 1.02 | 1.00 | 0.93 |
+| Fox | 0.95 | 0.98 | 1.02 | 1.05 |
+| Sniper | 1.04 | 1.05 | 0.98 | 0.87 |
+| Playmaker | 1.00 | 1.00 | 1.00 | 1.01 |
 
-Across their seasons in the window, forwards shoot less often and from better places. Their scoring peaks around the third season observed, about 3% above average, and ends about 7% below it. The paper found a steeper hump.
+Across their seasons in the window, forwards shoot less often and from better places, and their finishing fades. Scoring peaks around the third season observed, about 3% above average, and ends about 11% below it.
 
 The curve has a flaw. Seasons are counted from the start of our window, so Messi's first season is 2014/15, his eleventh as a professional. The curves show how forwards changed over one decade. They are not age curves.
 
@@ -307,20 +341,21 @@ The curve has a flaw. Seasons are counted from the start of our window, so Messi
 
 Understat's per-match lineups would let us fit the paper's model as written: goals per match, an ordered logistic likelihood, the home and pre-match points factors, and form within the season. We already hold the match ids we would need.
 
-Age in place of seasons observed would fix the career curves. Curves for individual players would stop a veteran's decline years from dragging down his estimated skill. That was the paper's main reason for fitting them. We have not yet repeated the paper's cross-validation against simpler models. And the Fox and Sniper skills rest on Understat's xG model, so they inherit its errors, possibly including the negative correlation between them.
+Age in place of seasons observed would fix the career curves. Curves for individual players would stop a veteran's decline years from dragging down his estimated skill. That was the paper's main reason for fitting them. We have not yet repeated the paper's cross-validation against simpler models, though the saved log-likelihood now makes that straightforward. And the Fox and Sniper skills rest on Understat's xG model, so they inherit its errors, possibly including the correlations between them.
 
 ## Reproducing it
 
 From `football_models_with_wyatt/`, with the conda environment in `environment.yml`:
 
 ```bash
-python scripts/01_fetch.py odds        # football-data.co.uk CSVs
-python scripts/02_team_matches.py      # team factors
-python scripts/03_build_panel.py       # player tables (needs the Kaggle Understat dump in data/understats/)
-python scripts/04_fit_skills.py recovery
-python scripts/04_fit_skills.py real
+python scripts/01_fetch.py odds          # football-data.co.uk CSVs
+python scripts/02_team_matches.py        # team factors
+python scripts/03_build_panel.py         # player tables (needs the Kaggle Understat dump in data/understats/)
+python scripts/04_fit_skills.py prior    # prior predictive summary -> results/
+python scripts/04_fit_skills.py recovery # simulation recovery -> results/
+python scripts/04_fit_skills.py real     # the fit -> idata/
 python scripts/05_sar.py
-python scripts/06_export_web.py
+python scripts/06_export_web.py          # web/*.json, including the predictive checks
 python -m pytest tests -q
 ```
 

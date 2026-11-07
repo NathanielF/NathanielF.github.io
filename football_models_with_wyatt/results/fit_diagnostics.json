@@ -1,0 +1,10 @@
+{
+  "seconds": 275,
+  "divergences": 1,
+  "max_r_hat": 1.0071,
+  "max_r_hat_param": "chol_cholesky-cov-packed__[8]",
+  "min_ess_bulk": 367.8611,
+  "min_ess_bulk_param": "chol_cholesky-cov-packed__[8]",
+  "skill_max_r_hat": 1.0042895001914902,
+  "skill_min_ess_bulk": 3963.103596146982
+}

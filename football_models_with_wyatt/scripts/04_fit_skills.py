@@ -1,12 +1,11 @@
 """Fit the four-skill SFM.
 
-    python scripts/04_fit_skills.py recovery   # fit to simulated data with known skills
-    python scripts/04_fit_skills.py real       # fit to the real player-season panel
-
-Posteriors are written to idata/ (full-size files are gitignored; export.py
-writes the thinned, committed versions).
+    python scripts/04_fit_skills.py prior      # prior predictive summary -> results/prior_predictive.json
+    python scripts/04_fit_skills.py recovery   # fit simulated data with known skills -> results/recovery.json
+    python scripts/04_fit_skills.py real       # fit the real panel -> idata/ (gitignored)
 """
 
+import json
 import sys
 import time
 from pathlib import Path
@@ -23,73 +22,100 @@ from sfm.fetch import PROJECT  # noqa: E402
 
 PROC = PROJECT / "data" / "processed"
 IDATA = PROJECT / "idata"
-SAMPLE_KW = dict(draws=1500, tune=1500, chains=4, target_accept=0.95, nuts_sampler="nutpie", random_seed=2024, progressbar=False)
+RESULTS = PROJECT / "results"
+SAMPLE_KW = dict(draws=1500, tune=1500, chains=4, target_accept=0.95, nuts_sampler="nutpie",
+                 random_seed=2024, progressbar=False)
+SEASON_VARS = ["np_shots", "key_passes", "log_xg_per_shot"]
 
 
 def load():
     ps = pd.read_csv(PROC / "player_seasons.csv")
     players = pd.read_csv(PROC / "players.csv")
-    return models.prepare(ps, players)
+    shots = pd.read_parquet(PROC / "shots.parquet")
+    return models.prepare(ps, players, shots)
 
 
-def summarise_fit(idata, label):
-    div = int(idata.sample_stats.diverging.sum())
-    summ = az.summary(idata, var_names=["~z", "~hsgp_w", "~alpha", "~chol"], round_to=3)
-    alpha_rhat = az.rhat(idata, var_names=["alpha"]).alpha.max().item()
-    alpha_ess = az.ess(idata, var_names=["alpha"]).alpha.min().item()
-    print(f"[{label}] divergences={div}  max r_hat={summ.r_hat.max():.3f} (alpha {alpha_rhat:.3f})  "
-          f"min bulk ESS={summ.ess_bulk.min():.0f} (alpha {alpha_ess:.0f})")
-    return summ
+def write_result(name, obj):
+    RESULTS.mkdir(exist_ok=True)
+    (RESULTS / f"{name}.json").write_text(json.dumps(obj, indent=2))
+    print(json.dumps(obj, indent=2))
+
+
+def diagnostics(idata) -> tuple[dict, pd.DataFrame]:
+    summ = az.summary(idata, var_names=["~z", "~hsgp_w", "~alpha", "~skill_theta", "~chol"], round_to=4)
+    th_rhat = float(az.rhat(idata, var_names=["skill_theta"]).skill_theta.max())
+    th_ess = float(az.ess(idata, var_names=["skill_theta"]).skill_theta.min())
+    return {"divergences": int(idata.sample_stats.diverging.sum()),
+            "max_r_hat": float(summ.r_hat.max()), "max_r_hat_param": str(summ.r_hat.idxmax()),
+            "min_ess_bulk": float(summ.ess_bulk.min()), "min_ess_bulk_param": str(summ.ess_bulk.idxmin()),
+            "skill_max_r_hat": th_rhat, "skill_min_ess_bulk": th_ess}, summ
+
+
+def prior():
+    d, coords, shots = load()
+    with models.build_skill_model(d, coords, shots):
+        pp = pm.sample_prior_predictive(500, var_names=SEASON_VARS, random_seed=1)
+    out = {}
+    for v in ["np_shots", "key_passes"]:
+        x = pp.prior_predictive[v].values.ravel()
+        out[v] = {"prior_median": float(np.median(x)), "prior_90": [float(q) for q in np.quantile(x, [0.05, 0.95])],
+                  "data_median": float(np.median(d[v])), "data_90": [float(q) for q in np.quantile(d[v], [0.05, 0.95])]}
+    x = np.exp(pp.prior_predictive["log_xg_per_shot"].values.ravel())
+    obs = (d.npxG / d.np_shots.clip(lower=1))[d.np_shots > 0]
+    out["xg_per_shot"] = {"prior_median": float(np.median(x)), "prior_90": [float(q) for q in np.quantile(x, [0.05, 0.95])],
+                          "data_median": float(np.median(obs)), "data_90": [float(q) for q in np.quantile(obs, [0.05, 0.95])]}
+    write_result("prior_predictive", out)
 
 
 def recovery():
-    d, coords = load()
-    sim, alpha_true = models.simulate(d, n_players=len(coords["player"]), seed=7)
-    model = models.build_skill_model(sim, coords)
+    d, coords, shots = load()
+    n_p = len(coords["player"])
+    sim, sim_shots, alpha_true, theta_true = models.simulate(d, shots, n_players=n_p, seed=7)
     t0 = time.time()
-    with model:
+    with models.build_skill_model(sim, coords, sim_shots):
         idata = pm.sample(**SAMPLE_KW)
-    print(f"sampled in {time.time() - t0:.0f}s")
-    summ = summarise_fit(idata, "recovery")
-    print(summ.sort_values("r_hat").tail(6)[["mean", "sd", "ess_bulk", "r_hat"]])
-
+    diag, _ = diagnostics(idata)
     post = idata.posterior
-    a = post.alpha.stack(s=("chain", "draw")).transpose("player", "skill", "s").values
-    lo, hi = np.quantile(a, [0.085, 0.915], axis=-1)  # central 83% interval
-    cover = ((alpha_true >= lo) & (alpha_true <= hi)).mean(axis=0)
-    corr_mean = np.array([np.corrcoef(a[:, k, :].mean(-1), alpha_true[:, k])[0, 1] for k in range(4)])
-    print("alpha 83% coverage by skill:", dict(zip(models.SKILLS, cover.round(3))))
-    print("corr(posterior mean, truth):", dict(zip(models.SKILLS, corr_mean.round(3))))
-    sd_est = post.skill_sd.mean(("chain", "draw")).values
-    print("skill sd  true:", models.TRUE_PARAMS["sd"], " est:", sd_est.round(3))
-    corr_est = post.skill_corr.mean(("chain", "draw")).values
-    print("skill corr true vs est (upper triangle):")
+    th = post.skill_theta.stack(s=("chain", "draw")).transpose("player", "skill", "s").values
+    lo, hi = np.quantile(th, [0.085, 0.915], axis=-1)
+    cover = ((theta_true >= lo) & (theta_true <= hi)).mean(axis=0)
+    corr_mean = [float(np.corrcoef(th[:, k, :].mean(-1), theta_true[:, k])[0, 1]) for k in range(4)]
+    tp = models.TRUE_PARAMS
     iu = np.triu_indices(4, 1)
-    print("  true", models.TRUE_PARAMS["corr"][iu].round(2), "\n  est ", corr_est[iu].round(2))
-    for s in models.SKILLS:
-        print(f"  beta_{s}: true {models.TRUE_PARAMS['beta'][s]:+.2f}  est {post[f'beta_{s}'].mean().item():+.3f}"
-              f"  mu_{s}: true {models.TRUE_PARAMS['mu'][s]:+.3f} est {post[f'mu_{s}'].mean().item():+.3f}")
-    true_curve = models.hump(models.SEASON_GRID, 0.15)
-    est_curve = post.curve_shoot.mean(("chain", "draw")).values
-    print("shoot curve (true, centred):", (true_curve - true_curve.mean()).round(3))
-    print("shoot curve (est,  centred):", (est_curve - est_curve.mean()).round(3))
+    out = {
+        "seconds": round(time.time() - t0),
+        "diagnostics": diag,
+        "skill_coverage83": dict(zip(models.SKILLS, np.round(cover, 3).tolist())),
+        "skill_corr_with_truth": dict(zip(models.SKILLS, np.round(corr_mean, 3).tolist())),
+        "alpha_sd_true": tp["sd"].tolist(),
+        "alpha_sd_est": np.round(post.alpha_sd.mean(("chain", "draw")).values, 3).tolist(),
+        "alpha_corr_true": tp["corr"][iu].round(2).tolist(),
+        "alpha_corr_est": post.alpha_corr.mean(("chain", "draw")).values[iu].round(2).tolist(),
+        "beta_true": tp["beta"], "beta_est": {k: round(float(post[f"beta_{k}"].mean()), 3) for k in models.SKILLS},
+        "gamma_true": tp["gamma"],
+        "gamma_est": dict(zip(models.SKILLS, np.round(post.gamma.mean(("chain", "draw")).values, 3).tolist())),
+    }
+    write_result("recovery", out)
 
 
 def real():
-    d, coords = load()
-    model = models.build_skill_model(d, coords)
+    d, coords, shots = load()
+    model = models.build_skill_model(d, coords, shots)
     t0 = time.time()
     with model:
-        idata = pm.sample(**SAMPLE_KW, idata_kwargs={"log_likelihood": True})
-        pm.sample_posterior_predictive(idata, extend_inferencedata=True, random_seed=2024, progressbar=False)
+        idata = pm.sample(**SAMPLE_KW)
+        pm.sample_posterior_predictive(idata, var_names=SEASON_VARS, extend_inferencedata=True,
+                                       random_seed=2024, progressbar=False)
+        pm.compute_log_likelihood(idata, var_names=SEASON_VARS, extend_inferencedata=True, progressbar=False)
     print(f"sampled in {time.time() - t0:.0f}s")
-    summ = summarise_fit(idata, "real")
     IDATA.mkdir(exist_ok=True)
-    idata.to_netcdf(IDATA / "sfm_skills_full.nc")
+    idata.to_netcdf(IDATA / "sfm_skills_full.nc")   # save before anything else can fail
+    diag, summ = diagnostics(idata)
     summ.to_csv(IDATA / "sfm_skills_summary.csv")
     d.to_csv(IDATA / "sfm_skills_rows.csv", index=False)
-    print(summ.loc[[i for i in summ.index if not i.startswith(("curve", "league"))]].to_string())
+    shots.to_parquet(IDATA / "sfm_skills_shots.parquet", index=False)
+    write_result("fit_diagnostics", {"seconds": round(time.time() - t0), **diag})
 
 
 if __name__ == "__main__":
-    {"recovery": recovery, "real": real}[sys.argv[1]]()
+    {"prior": prior, "recovery": recovery, "real": real}[sys.argv[1]]()

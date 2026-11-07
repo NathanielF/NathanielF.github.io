@@ -54,8 +54,8 @@ def test_sniper_stars_follow_intervals(web):
 def test_draw_arrays_shape(web):
     d, n = web["draws"], len(web["players"])
     for k in SKILLS:
-        assert len(d["alpha"][k]) == n
-        assert all(len(row) == d["n_draws"] for row in d["alpha"][k])
+        assert len(d["skill"][k]) == n
+        assert all(len(row) == d["n_draws"] for row in d["skill"][k])
     assert len(d["goals90_level"]) == n and len(d["goals90_actual"]) == n
     assert all(len(row) == d["n_draws"] for row in d["goals90_level"])
 
@@ -78,7 +78,7 @@ def test_sar_matches_sar_table(web):
 
 def test_web_draw_skills_match_summaries(web):
     for k in SKILLS:
-        draws = np.array(web["draws"]["alpha"][k]).mean(axis=1)
+        draws = np.array(web["draws"]["skill"][k]).mean(axis=1)
         means = np.array([p["skills"][k]["mean"] for p in web["players"]])
         assert np.corrcoef(draws, means)[0, 1] > 0.99
 
@@ -97,7 +97,7 @@ def test_thinned_idata():
     assert path.stat().st_size < 50e6
     idata = az.from_netcdf(path)
     assert idata.posterior.sizes["draw"] == 1000
-    assert "z" not in idata.posterior and "alpha" in idata.posterior
+    assert "z" not in idata.posterior and "skill_theta" in idata.posterior
 
 
 def test_ppc_structure(web):
@@ -107,7 +107,8 @@ def test_ppc_structure(web):
         assert len(d["replicates"]) == ppc["n_replicates"]
         assert all(len(r) == len(d["observed"]) for r in d["replicates"])
         assert sum(ppc["pit"][v]["counts"]) == ppc["pit"][v]["n"]
-        assert 0.5 < ppc["coverage83"][v] <= 1
+        for kind in ("in_sample", "loo"):
+            assert 0.5 < ppc["coverage83"][v][kind] <= 1
     assert len(ppc["careers"]) == len(web["players"])
     for name, rows in ppc["groups"].items():
         for r in rows:

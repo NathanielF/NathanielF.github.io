@@ -14,8 +14,10 @@ from sfm.fetch import PROJECT  # noqa: E402
 if __name__ == "__main__":
     idata = az.from_netcdf(PROJECT / "idata" / "sfm_skills_full.nc")
     rows = pd.read_csv(PROJECT / "idata" / "sfm_skills_rows.csv")
+    shots = pd.read_parquet(PROJECT / "idata" / "sfm_skills_shots.parquet")
+    curve = sar.conversion_curve(shots.logit_xg.to_numpy())
     players = pd.read_csv(PROJECT / "data" / "processed" / "players.csv")
-    tab = sar.sar_table(idata.posterior, rows, players)
+    tab = sar.sar_table(idata.posterior, rows, players, curve)
     tab.round(4).to_csv(PROJECT / "idata" / "sar_table.csv", index=False)
     print(f"replacement pool: {tab.is_replacement.sum()} players, "
           f"level-field goals/90 {tab[tab.is_replacement].goals90_level.min():.3f}-{tab[tab.is_replacement].goals90_level.max():.3f}")

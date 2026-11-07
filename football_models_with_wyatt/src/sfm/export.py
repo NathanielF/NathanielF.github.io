@@ -25,7 +25,7 @@ SKILL_BLURBS = {
 }
 N_WEB_DRAWS = 200
 N_NC_DRAWS = 1000
-KEEP_VARS = ["alpha", "skill_corr", "skill_sd", "phi_shoot", "phi_create", "sigma_fox"] + [
+KEEP_VARS = ["skill_theta", "gamma", "alpha_corr", "alpha_sd", "phi_shoot", "phi_create", "sigma_fox"] + [
     f"{v}_{k}" for k in models.SKILLS for v in ("mu", "beta", "league", "curve", "ell", "amp")
 ]
 
@@ -69,15 +69,15 @@ def thinned_idata(idata, n: int = N_NC_DRAWS) -> az.InferenceData:
 
 
 def build_exports(idata, rows: pd.DataFrame, players: pd.DataFrame, player_seasons: pd.DataFrame,
-                  ppc: dict, fit_stats: dict) -> dict:
+                  curve, results: dict) -> dict:
     post = idata.posterior
-    alpha = _flat(post, "alpha")  # (player, skill, s)
+    alpha = _flat(post, "skill_theta")  # (player, skill, s): each player's skill, theta
     n_s = alpha.shape[-1]
     web_idx = _thin_index(n_s, N_WEB_DRAWS)
     ids = rows.drop_duplicates("p_idx").sort_values("p_idx").player_id.to_numpy()
     names = list(post.player.values)
 
-    level, actual = sar.goals_per90(post, rows)
+    level, actual = sar.goals_per90(post, rows, curve)
     rlp = sar.replacement_pool(level)
     S, P = sar.above_replacement(level, rlp), sar.above_replacement(actual, rlp)
     team_lift = P - S  # goals/90 added by the player's teams (positive = boosted)
@@ -89,7 +89,7 @@ def build_exports(idata, rows: pd.DataFrame, players: pd.DataFrame, player_seaso
             {"season": int(r.season), "league": r.league, "team": r.team_title, "minutes": int(r.minutes),
              "season_index": int(r.season_index), "npg": int(r.npg), "np_shots": int(r.np_shots),
              "npxG": round(float(r.npxG), 2), "key_passes": int(r.key_passes),
-             "team_strength": round(float(r.team_strength), 3)}
+             "team_strength": round(float(r.team_strength_pre), 3)}
             for r in g.sort_values(["season", "league"]).itertuples()
         ]
         for pid, g in ps.groupby("player_id")
@@ -138,9 +138,9 @@ def build_exports(idata, rows: pd.DataFrame, players: pd.DataFrame, player_seaso
     draws = {
         "n_draws": N_WEB_DRAWS,
         "skills": models.SKILLS,
-        "note": "Per player (index i in players.json): alpha[skill] log-scale skill draws, and expected "
+        "note": "Per player (index i in players.json): skill[skill] log-scale skill (theta) draws, and expected "
                 "non-penalty goals per 90 on a level field (goals90_level) and with his teams (goals90_actual).",
-        "alpha": {k: [_round(alpha[i, j, web_idx], 3) for i in range(len(ids))] for j, k in enumerate(models.SKILLS)},
+        "skill": {k: [_round(alpha[i, j, web_idx], 3) for i in range(len(ids))] for j, k in enumerate(models.SKILLS)},
         "goals90_level": [_round(level[i, web_idx], 4) for i in range(len(ids))],
         "goals90_actual": [_round(actual[i, web_idx], 4) for i in range(len(ids))],
     }
@@ -153,9 +153,14 @@ def build_exports(idata, rows: pd.DataFrame, players: pd.DataFrame, player_seaso
         curves[k] = {"mean": _round(c.mean(-1), 4), "lo83": _round(lo, 4), "hi83": _round(hi, 4),
                      "draws": [_round(c[:, j], 4) for j in _thin_index(n_s, 20)]}
 
-    corr = _flat(post, "skill_corr")
+    # correlations and spreads of the skills themselves (theta), across players, in each draw
+    thin = _thin_index(n_s, 1000)
+    corr = np.stack([np.corrcoef(alpha[:, :, j].T) for j in thin], axis=-1)
     lo, hi = sar.hdi83(corr)
-    skill_corr = {"skills": models.SKILLS, "mean": _round(corr.mean(-1), 3), "lo83": _round(lo, 3), "hi83": _round(hi, 3)}
+    skill_corr = {"skills": models.SKILLS, "of": "player skills theta (alpha plus the Mundlak term), across players",
+                  "mean": _round(corr.mean(-1), 3), "lo83": _round(lo, 3), "hi83": _round(hi, 3)}
+    theta_sd = alpha.std(axis=0)                     # (skill, s)
+    sd_lo, sd_hi = sar.hdi83(theta_sd)
 
     def scalar(v):
         x = _flat(post, v)
@@ -178,18 +183,29 @@ def build_exports(idata, rows: pd.DataFrame, players: pd.DataFrame, player_seaso
                             "finishing skill barely varies and percentiles would exaggerate tiny gaps"},
         "replacement_pool": {"rule": "players between the 40th and 60th percentile of level-field goals/90",
                              "n_players": int(rlp.sum())},
-        "fit": fit_stats,
-        "ppc_coverage_83": ppc,
+        "fit": results.get("fit_diagnostics", {}),
+        "prior_predictive": results.get("prior_predictive", {}),
+        "recovery": results.get("recovery", {}),
+        "ppc_coverage_83": results.get("ppc_coverage", {}),
         "params": {**{f"mu_{k}": scalar(f"mu_{k}") for k in models.SKILLS},
                    **{f"beta_{k}": scalar(f"beta_{k}") for k in models.SKILLS},
                    **{f"league_{k}": scalar(f"league_{k}") for k in models.SKILLS},
-                   "skill_sd": scalar("skill_sd")},
+                   "gamma": scalar("gamma"),
+                   "alpha_sd": scalar("alpha_sd"),
+                   "alpha_corr": scalar("alpha_corr"),
+                   "skill_sd": {"mean": _round(theta_sd.mean(-1), 4), "lo83": _round(sd_lo, 4), "hi83": _round(sd_hi, 4)}},
         "departures_from_paper": [
             "Season-level outcomes rather than per-match goals: the Kaggle Understat dump has no per-match lineups.",
             "Four correlated skills (shooting, chance quality, finishing, creating) instead of a single goals alpha; "
             "the first three multiply into expected non-penalty goals per 90, on which SAR/PAR are computed.",
-            "Team strength is the team's season points per game minus the league average (paper: pre-match points gap); "
-            "no home factor at season level.",
+            "Team strength is the team's season average of its pre-match points-per-game gap to opponents, the paper's "
+            "factor averaged over a season; no home factor at season level.",
+            "A Mundlak term (each player's average team strength) separates within-player team effects from the "
+            "tendency of better forwards to play for better teams.",
+            "Finishing is a log-odds shift on each shot's xG (Bernoulli per shot), not a goals count.",
+            "Player effects are correlated (MVN with an LKJ prior) rather than summing to zero.",
+            "The forward pool is any player Understat lists at F for most of his minutes, with at least 6,000 minutes; the "
+            "replacement pool is the 40th-60th percentile of level-field skill (paper: hand-picked strikers).",
             "One population HSGP career curve per skill over seasons observed in the window (paper: per-player "
             "within- and cross-season HSGPs).",
             "Penalties excluded throughout.",

@@ -72,6 +72,7 @@ One row per player, league and season (27,025). It is **complete**, including mi
 | np_shots | non-penalty shots (from the shot table) |
 | shot_matches, zero_shot_games | matches with at least one shot, and `games - shot_matches` |
 | team_ppg, team_strength | the team's points per game that season, and that minus the league average |
+| team_strength_pre | the team's pre-match points-per-game gap to each opponent, averaged over its season; the team factor the model uses (the paper's factor, known before each kickoff) |
 | season_index | N^S: the number of seasons the player has been observed **in this window** up to and including this one. This is left-censored, so Messi's 2014/15 is season 1. |
 | first_season | first season observed in the window |
 
