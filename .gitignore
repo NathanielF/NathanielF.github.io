@@ -23,3 +23,9 @@ football_models_with_wyatt/idata/*_full.nc
 # Python caches
 __pycache__/
 .pytest_cache/
+
+# football_models_with_wyatt: posteriors and processed tables are rebuilt by the scripts
+football_models_with_wyatt/idata/
+football_models_with_wyatt/data/processed/*.csv
+football_models_with_wyatt/data/processed/*.parquet
+football_models_with_wyatt/paper/
