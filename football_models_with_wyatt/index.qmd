@@ -36,6 +36,7 @@ LEAGUE = ({EPL: "Premier League", La_liga: "La Liga", Bundesliga: "Bundesliga", 
 COLOR_A = "#2a78d6"
 COLOR_B = "#eb6834"
 
+nSeasons = new Map(players.map(p => [p.i, new Set(p.seasons.filter(s => s.minutes >= 270).map(s => s.season)).size]))
 bySAR = [...players].sort((a, b) => b.SAR.mean - a.SAR.mean)
 byName = new Map(players.map(p => [p.name, p]))
 names = players.map(p => p.name).sort((a, b) => a.localeCompare(b))
@@ -256,11 +257,13 @@ QUESTIONS = [
   {q: "Whose team helped him most?", key: p => p.team_lift.mean, say: p => `+${(p.team_lift.mean * 10).toFixed(1)} goals every 10 games from his teams`, stars: p => p.team_lift.stars}
 ]
 viewof question = Inputs.radio(QUESTIONS, {format: d => d.q, value: QUESTIONS[0]})
+viewof jarEstablished = Inputs.toggle({label: "Only players with 3 or more seasons", value: false})
 ```
 
 ```{ojs}
 {
-  const top = [...players].sort((a, b) => question.key(b) - question.key(a)).slice(0, 10);
+  const top = players.filter(p => !jarEstablished || nSeasons.get(p.i) >= 3)
+    .sort((a, b) => question.key(b) - question.key(a)).slice(0, 10);
   const medal = i => ["🥇", "🥈", "🥉"][i] ?? `${i + 1}`;
   return html`<ol class="fw-ladder">${top.map((p, i) => html`<li>
     <span class="fw-rank">${medal(i)}</span>
@@ -361,7 +364,7 @@ function dimDraws(key, i) {
 }
 summaries = new Map(DIMS.map(dim => [dim.key, players.map(p => {
   const x = dimDraws(dim.key, p.i);
-  return {i: p.i, name: p.name, mean: mean(x), lo: q(x, 0.085), hi: q(x, 0.915), leagues: p.leagues, minutes: p.minutes};
+  return {i: p.i, name: p.name, mean: mean(x), lo: q(x, 0.085), hi: q(x, 0.915), leagues: p.leagues, minutes: p.minutes, seasons: nSeasons.get(p.i)};
 })]))
 ```
 
@@ -369,14 +372,16 @@ summaries = new Map(DIMS.map(dim => [dim.key, players.map(p => {
 viewof ladderDim = Inputs.select(DIMS, {label: "Rank by", format: d => d.label})
 viewof ladderLeagues = Inputs.checkbox(Object.keys(LEAGUE), {label: "Leagues", format: d => LEAGUE[d], value: Object.keys(LEAGUE)})
 viewof ladderMin = Inputs.range([2500, 20000], {label: "Min. minutes", step: 500, value: 6000})
+viewof ladderSeasons = Inputs.range([1, 10], {label: "Min. seasons", step: 1, value: 1})
+viewof ladderSort = Inputs.radio(["Posterior mean", "Lower end of the 83% interval (surest first)"], {label: "Order by", value: "Posterior mean"})
 viewof ladderN = Inputs.range([10, 60], {label: "Show top", step: 5, value: 25})
 ```
 
 ```{ojs}
 {
   const rows = summaries.get(ladderDim.key)
-    .filter(r => r.minutes >= ladderMin && r.leagues.some(l => ladderLeagues.includes(l)))
-    .sort((a, b) => b.mean - a.mean).slice(0, ladderN);
+    .filter(r => r.minutes >= ladderMin && r.seasons >= ladderSeasons && r.leagues.some(l => ladderLeagues.includes(l)))
+    .sort(ladderSort.startsWith("Lower") ? (a, b) => b.lo - a.lo : (a, b) => b.mean - a.mean).slice(0, ladderN);
   return Plot.plot({
     width: Math.min(width, 860), height: 40 + rows.length * 20, marginLeft: 170,
     x: {label: ladderDim.label + " →", grid: true, tickFormat: ladderDim.fmt},
@@ -386,14 +391,14 @@ viewof ladderN = Inputs.range([10, 60], {label: "Show top", step: 5, value: 25})
       Plot.ruleY(rows, {y: "name", x1: "lo", x2: "hi", stroke: COLOR_A, strokeWidth: 2, strokeOpacity: 0.55}),
       Plot.dot(rows, {y: "name", x: "mean", r: 4.5, fill: COLOR_A, stroke: "white", strokeWidth: 1.5}),
       Plot.tip(rows, Plot.pointerY({y: "name", x: "mean",
-        title: r => `${r.name}\n${ladderDim.fmt(r.mean)}  (83%: ${ladderDim.fmt(r.lo)} to ${ladderDim.fmt(r.hi)})\n${r.minutes.toLocaleString()} minutes`}))
+        title: r => `${r.name}\n${ladderDim.fmt(r.mean)}  (83%: ${ladderDim.fmt(r.lo)} to ${ladderDim.fmt(r.hi)})\n${r.minutes.toLocaleString()} minutes, ${r.seasons} season${r.seasons === 1 ? "" : "s"}`}))
     ]
   });
 }
 ```
 
 ```{ojs}
-md`<span class="fw-section-note">Dots are posterior means and bars are 83% intervals. SAR and team lift are measured against a replacement pool of ${rlp.n} players. Changing the pool moves every SAR value by the same amount in each draw, so the ranking stays the same but the zero line moves.</span>`
+md`<span class="fw-section-note">Dots are posterior means and bars are 83% intervals. SAR and team lift are measured against a replacement pool of ${rlp.n} players. Changing the pool moves every SAR value by the same amount in each draw, so the ranking stays the same but the zero line moves. Each player has one skill, averaged over his seasons in the window. A two-season player is measured over those two seasons alone, while a nine-season veteran's estimate includes his late-career decline. "Min. seasons" restricts the ladder to established players, and "surest first" ranks players by how high the model is confident they reach.</span>`
 ```
 
 ### Cross-cutting two skills
