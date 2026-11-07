@@ -1,0 +1,533 @@
+---
+title: "Football Skills with Wyatt"
+subtitle: "A father-and-son exploration of what football skill is, and how a Bayesian model measures it"
+description: "Interactive explorer for a four-skill version of the Soccer Factor Model (Andorra & Göbel, 2024), fitted to ten seasons of Understat data from Europe's top five leagues."
+page-layout: article
+toc: false
+echo: false
+css: wyatt.css
+resources:
+  - web/*.json
+---
+
+::: {.fw-banner}
+**This is a fun, exploratory project** that I'm doing with my son Wyatt, who is six. We want to find out (a) which parts of football skill can be measured, and (b) how the **Soccer Factor Model** works. It comes from [Andorra & Göbel (2024), *Unveiling True Talent*](https://arxiv.org/abs/2412.05911).
+
+The model is a real Bayesian model, fitted to 593 forwards across ten seasons (2014/15–2023/24) of the Premier League, La Liga, Bundesliga, Serie A and Ligue 1. But treat the rankings as conversation starters, not verdicts. **[How the model works →](model.qmd)**
+:::
+
+```{ojs}
+//| output: false
+players = FileAttachment("web/players.json").json()
+draws = FileAttachment("web/draws.json").json()
+curves = FileAttachment("web/curves.json").json()
+skillCorr = FileAttachment("web/skill_corr.json").json()
+card = FileAttachment("web/model_card.json").json()
+guessFile = FileAttachment("web/wyatt_guesses.json").json()
+
+SKILLS = ["shoot", "fox", "sniper", "create"]
+KID = ({
+  shoot:  {name: "Shooter",   emoji: "🚀", what: "shots"},
+  fox:    {name: "Fox",       emoji: "🦊", what: "good chances"},
+  sniper: {name: "Sniper",    emoji: "🎯", what: "finishing"},
+  create: {name: "Playmaker", emoji: "🎁", what: "set-ups"}
+})
+LEAGUE = ({EPL: "Premier League", La_liga: "La Liga", Bundesliga: "Bundesliga", Serie_A: "Serie A", Ligue_1: "Ligue 1"})
+COLOR_A = "#2a78d6"
+COLOR_B = "#eb6834"
+
+bySAR = [...players].sort((a, b) => b.SAR.mean - a.SAR.mean)
+byName = new Map(players.map(p => [p.name, p]))
+names = players.map(p => p.name).sort((a, b) => a.localeCompare(b))
+norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+
+function findPlayer(q, fallback) {
+  if (q && byName.has(q)) return byName.get(q);
+  if (q && q.trim().length >= 2) {
+    const n = norm(q.trim());
+    const hit = bySAR.find(p => norm(p.name).includes(n));
+    if (hit) return hit;
+  }
+  return byName.get(fallback);
+}
+function picker(label, value) {
+  return Inputs.text({label, value, datalist: names, placeholder: "Type a player's name…", autocomplete: "off", spellcheck: false});
+}
+function starsHTML(n) {
+  return html`<span class="fw-stars" aria-label="${n} out of 5 stars">${"★".repeat(n)}<span class="off">${"★".repeat(5 - n)}</span></span>`;
+}
+function initials(name) {
+  const parts = name.split(/\s+/).filter(Boolean);
+  return (parts.length === 1 ? parts[0].slice(0, 2) : parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+q = (arr, p) => { const s = [...arr].sort((a, b) => a - b); const h = (s.length - 1) * p, lo = Math.floor(h); return s[lo] + (s[Math.min(lo + 1, s.length - 1)] - s[lo]) * (h - lo); }
+mean = arr => arr.reduce((a, b) => a + b, 0) / arr.length
+function poisson(lambda) {   // Knuth; fine for the small rates here
+  const L = Math.exp(-lambda); let k = 0, p = 1;
+  do { k++; p *= Math.random(); } while (p > L);
+  return k - 1;
+}
+function skillSays(k, p) {
+  const m = Math.exp(p.skills[k].mean), st = p.skills[k].stars;
+  if (k === "shoot")  return m >= 1.05 ? `Takes ${m.toFixed(1)}× as many shots as a typical striker.` : m <= 0.95 ? `Takes fewer shots than a typical striker (${m.toFixed(1)}×).` : "Takes about as many shots as a typical striker.";
+  if (k === "fox")    return m >= 1.05 ? `His chances are ${m.toFixed(1)}× as good as a typical striker's: he finds the right spot.` : m <= 0.95 ? `Shoots from harder places than a typical striker (${m.toFixed(1)}×).` : "Gets chances about as good as a typical striker's.";
+  if (k === "sniper") return st >= 4 ? "Scores more often than his chances say he should!" : st <= 2 ? "Scores a little less often than his chances say." : "Scores about as often as his chances say. (Most strikers do!)";
+  if (k === "create") return m >= 1.05 ? `Sets up ${m.toFixed(1)}× as many shots for team-mates as a typical striker.` : m <= 0.95 ? `Sets up fewer shots for team-mates than a typical striker (${m.toFixed(1)}×).` : "Sets up about as many shots as a typical striker.";
+}
+```
+
+::: {.panel-tabset}
+
+## ⚽ Wyatt mode
+
+::: {.fw-kid}
+
+### 1. Pick a player
+
+Type a name. Each player gets **stars** for four football skills. The stars compare him with the other 592 forwards.
+
+```{ojs}
+viewof cardName = picker("Player", "Erling Haaland")
+```
+
+```{ojs}
+cardPlayer = findPlayer(cardName, "Erling Haaland")
+{
+  const p = cardPlayer;
+  const seasons = p.first_season === p.last_season ? `${p.first_season}/${(p.first_season + 1) % 100}` : `${p.first_season}/${String((p.first_season + 1) % 100).padStart(2, "0")}–${p.last_season}/${String((p.last_season + 1) % 100).padStart(2, "0")}`;
+  const per10 = (p.goals90_level.mean * 10).toFixed(1);
+  return html`<div class="fw-card">
+    <div class="fw-card-head">
+      <div class="fw-badge" aria-hidden="true">${initials(p.name)}</div>
+      <div>
+        <div class="fw-card-name">${p.name}${p.pool_reason === "wyatt_pick" ? html`<span class="fw-pick-tag">Wyatt's pick</span>` : ""}</div>
+        <div class="fw-card-sub">${p.teams.join(" · ")}<br>${p.leagues.map(l => LEAGUE[l]).join(", ")} · ${seasons} · ${p.games} games</div>
+      </div>
+    </div>
+    ${SKILLS.map(k => html`<div class="fw-skill-row">
+      <div class="fw-skill-emoji" aria-hidden="true">${KID[k].emoji}</div>
+      <div class="fw-skill-name">${KID[k].name}</div>
+      ${starsHTML(p.skills[k].stars)}
+      <div class="fw-skill-says">${skillSays(k, p)}</div>
+    </div>`)}
+    <div class="fw-skill-row">
+      <div class="fw-skill-emoji" aria-hidden="true">⚽</div>
+      <div class="fw-skill-name">Goal power</div>
+      ${starsHTML(p.SAR.stars)}
+      <div class="fw-skill-says">If every team were equally good, he'd score about <b>${per10} goals every 10 games</b> (not counting penalties).</div>
+    </div>
+  </div>`;
+}
+```
+
+### 2. Who's better? Play 100 pretend matches
+
+Pick two players. The computer plays **100 pretend matches**, with both players in equally good teams. Each dot is one match: a blue dot means the first player scored more, an orange dot means the second player did, and a grey dot means a tie.
+
+```{ojs}
+viewof raceAName = picker("Blue player", "Lionel Messi")
+viewof raceBName = picker("Orange player", "Cristiano Ronaldo")
+viewof play = Inputs.button("⚽ Play 100 matches!")
+```
+
+```{ojs}
+raceA = findPlayer(raceAName, "Lionel Messi")
+raceB = findPlayer(raceBName, "Cristiano Ronaldo")
+race = {
+  const A = raceA, B = raceB;
+  const la = draws.goals90_level[A.i], lb = draws.goals90_level[B.i];
+  const render = (res, done) => {
+    const nA = res.filter(r => r === "a").length, nB = res.filter(r => r === "b").length, nT = res.filter(r => r === "t").length;
+    const dots = Array.from({length: 100}, (_, k) => html`<div class="fw-dot ${res[k] ?? ""}"></div>`);
+    let verdict = "";
+    if (done) {
+      verdict = nA === nB ? "It's a draw overall!" : `${nA > nB ? A.name : B.name} scored more in more matches.`;
+      if (nT > 60) verdict += " Lots of ties: scoring goals is hard, even for great players!";
+    }
+    return html`<div class="fw-race">
+      <div class="fw-dots" role="img" aria-label="${nA} blue, ${nB} orange, ${nT} ties">${dots}</div>
+      <div class="fw-tally">
+        <div class="fw-tally-row"><span class="fw-key" style="background:${COLOR_A}"></span><b>${nA}</b> ${A.name} scored more</div>
+        <div class="fw-tally-row"><span class="fw-key" style="background:${COLOR_B}"></span><b>${nB}</b> ${B.name} scored more</div>
+        <div class="fw-tally-row"><span class="fw-key" style="background:var(--fw-tie)"></span><b>${nT}</b> ties</div>
+        <p style="margin-top:0.8rem">${done ? verdict : play === 0 ? "Press the button to play!" : "Playing…"}</p>
+      </div>
+    </div>`;
+  };
+  if (play === 0) { yield render([], false); return; }
+  const res = [];
+  for (let m = 0; m < 100; m++) {
+    const j = Math.floor(Math.random() * la.length);   // a random posterior draw for each match
+    const ga = poisson(la[j]), gb = poisson(lb[j]);
+    res.push(ga > gb ? "a" : gb > ga ? "b" : "t");
+  }
+  for (let k = 0; k <= 100; k += 2) {
+    yield render(res.slice(0, k), k === 100);
+    await Promises.delay(45);
+  }
+}
+```
+
+::: {.fw-section-note}
+Why are the results different every time you press the button? Because football is full of luck, and because the model isn't 100% sure exactly how good each player is.
+:::
+
+### 3. Is the team helping?
+
+Good players on great teams get more chances. The model works out how many goals a player would score **on his own**, if his team were just average, and how many he scored **with his real team**.
+
+```{ojs}
+viewof teamName = picker("Player", "Robert Lewandowski")
+```
+
+```{ojs}
+{
+  const p = findPlayer(teamName, "Robert Lewandowski");
+  const lvl = mean(draws.goals90_level[p.i]) * 10, act = mean(draws.goals90_actual[p.i]) * 10;
+  const balls = (x, ghost) => {
+    const full = Math.floor(x), part = x - full >= 0.5 ? 1 : 0;
+    return html`<span class="fw-balls">${"⚽".repeat(full)}${part ? html`<span class="ghost">⚽</span>` : ""}</span>`;
+  };
+  const diff = act - lvl;
+  const msg = diff > 0.2 ? `His teams helped him: about ${diff.toFixed(1)} extra goals every 10 games!`
+            : diff < -0.2 ? `His teams made it harder: on an average team he'd score about ${(-diff).toFixed(1)} more goals every 10 games!`
+            : "His teams didn't change much: what you see is mostly him.";
+  return html`<div>
+    <div class="fw-team-row"><div class="fw-team-label">On his own (average team): ${lvl.toFixed(1)} goals every 10 games</div>${balls(lvl)}</div>
+    <div class="fw-team-row"><div class="fw-team-label">With his real teams (${p.teams.slice(0, 3).join(", ")}${p.teams.length > 3 ? "…" : ""}): ${act.toFixed(1)} goals every 10 games</div>${balls(act)}</div>
+    <p><b>${msg}</b></p>
+  </div>`;
+}
+```
+
+### 4. When are strikers at their best?
+
+The line shows how a forward's goal scoring changes over his seasons, averaged over all 593 players. The thin lines are other possible answers the model thinks could be true.
+
+```{ojs}
+viewof careerName = picker("Show a player's seasons", "Harry Kane")
+```
+
+```{ojs}
+careerData = {
+  const nd = curves.shoot.draws.length;
+  const rows = [];
+  for (let d = 0; d < nd; d++) curves.season_index.forEach((s, t) => rows.push({draw: d, season: s,
+    goals: Math.exp(curves.shoot.draws[d][t] + curves.fox.draws[d][t] + curves.sniper.draws[d][t])}));
+  const meanLine = curves.season_index.map((s, t) => ({season: s,
+    goals: Math.exp(curves.shoot.mean[t] + curves.fox.mean[t] + curves.sniper.mean[t])}));
+  return {rows, meanLine};
+}
+{
+  const p = findPlayer(careerName, "Harry Kane");
+  const idx = [...new Set(p.seasons.filter(s => s.minutes >= 270).map(s => s.season_index))];
+  const marks = careerData.meanLine.filter(r => idx.includes(r.season));
+  return Plot.plot({
+    width: Math.min(width, 720), height: 300, marginLeft: 56,
+    x: {label: "Season in our data →", ticks: 10, tickFormat: d => `${d}`},
+    y: {label: "↑ Goals compared with average", tickFormat: d => `${Math.round((d - 1) * 100)}%`, grid: true},
+    marks: [
+      Plot.ruleY([1], {stroke: "#8a8983"}),
+      Plot.line(careerData.rows, {x: "season", y: "goals", z: "draw", stroke: "#2a78d6", strokeOpacity: 0.15, strokeWidth: 1}),
+      Plot.line(careerData.meanLine, {x: "season", y: "goals", stroke: "#2a78d6", strokeWidth: 3}),
+      Plot.dot(marks, {x: "season", y: "goals", r: 8, fill: "#eb6834", stroke: "white", strokeWidth: 2}),
+      Plot.text(marks.slice(-1), {x: "season", y: "goals", text: () => p.name, dy: -16, fontWeight: 700, fill: "#0b0b0b"}),
+      Plot.tip(careerData.meanLine, Plot.pointerX({x: "season", y: "goals", title: d => `Season ${d.season}: ${d.goals >= 1 ? "+" : ""}${Math.round((d.goals - 1) * 100)}% goals`}))
+    ]
+  });
+}
+```
+
+::: {.fw-section-note}
+Strikers tend to get a little better for their first few seasons, then slowly score a bit less. The change is small, only a few percent. "Season 1" means a player's first season in our data, which starts in 2014, so for older players like Messi it isn't really their first season.
+:::
+
+### 5. The question jar
+
+Pick a question, and the model answers with its top 10.
+
+```{ojs}
+QUESTIONS = [
+  {q: "Who's the best goal scorer?", key: p => p.SAR.mean, say: p => `${(p.goals90_level.mean * 10).toFixed(1)} goals every 10 games on an average team`, stars: p => p.SAR.stars},
+  {q: "Who shoots the most?", key: p => p.skills.shoot.mean, say: p => `${Math.exp(p.skills.shoot.mean).toFixed(1)}× a typical striker's shots`, stars: p => p.skills.shoot.stars},
+  {q: "Who finds the best chances?", key: p => p.skills.fox.mean, say: p => `chances ${Math.exp(p.skills.fox.mean).toFixed(1)}× as good as typical`, stars: p => p.skills.fox.stars},
+  {q: "Who's the best finisher?", key: p => p.skills.sniper.mean, say: p => `scores ${Math.round((Math.exp(p.skills.sniper.mean) - 1) * 100)}% more than his chances say`, stars: p => p.skills.sniper.stars},
+  {q: "Who sets up the most shots?", key: p => p.skills.create.mean, say: p => `${Math.exp(p.skills.create.mean).toFixed(1)}× a typical striker's set-ups`, stars: p => p.skills.create.stars},
+  {q: "Whose team helped him most?", key: p => p.team_lift.mean, say: p => `+${(p.team_lift.mean * 10).toFixed(1)} goals every 10 games from his teams`, stars: p => p.team_lift.stars}
+]
+viewof question = Inputs.radio(QUESTIONS, {format: d => d.q, value: QUESTIONS[0]})
+```
+
+```{ojs}
+{
+  const top = [...players].sort((a, b) => question.key(b) - question.key(a)).slice(0, 10);
+  const medal = i => ["🥇", "🥈", "🥉"][i] ?? `${i + 1}`;
+  return html`<ol class="fw-ladder">${top.map((p, i) => html`<li>
+    <span class="fw-rank">${medal(i)}</span>
+    <span><span class="who">${p.name}</span>${p.pool_reason === "wyatt_pick" ? html`<span class="fw-pick-tag">Wyatt's pick</span>` : ""}<br><span class="what">${question.say(p)}</span></span>
+    ${starsHTML(question.stars(p))}
+  </li>`)}</ol>`;
+}
+```
+
+### 6. Wyatt's guesses vs the model
+
+Before looking at the model, choose up to five players and put them in order, from the best goal scorer (1) down. Then see what the model thinks.
+
+```{ojs}
+defaultGuesses = (guessFile.players ?? []).concat(["", "", "", "", ""]).slice(0, 5)
+viewof guesses = Inputs.form(defaultGuesses.map((g, i) => picker(`${i + 1}.`, g)))
+viewof reveal = Inputs.toggle({label: "Show what the model thinks", value: false})
+```
+
+```{ojs}
+{
+  const chosen = guesses.map(g => g && g.trim() ? findPlayer(g, null) : null).filter(Boolean);
+  const unique = chosen.filter((p, i) => chosen.findIndex(c => c.i === p.i) === i);
+  if (unique.length < 2) return html`<p class="fw-section-note">Type at least two players to compare.</p>`;
+  if (!reveal) return html`<p class="fw-section-note">${unique.length} players chosen. Switch on "Show what the model thinks" when you're ready!</p>`;
+  const nd = draws.n_draws;
+  const best = unique.map(() => 0);
+  for (let d = 0; d < nd; d++) {
+    let bi = 0;
+    unique.forEach((p, k) => { if (draws.goals90_level[p.i][d] > draws.goals90_level[unique[bi].i][d]) bi = k; });
+    best[bi]++;
+  }
+  const modelOrder = [...unique].sort((a, b) => b.SAR.mean - a.SAR.mean);
+  return html`<table class="fw-guess-table">
+    <thead><tr><th>Player</th><th class="num">Wyatt's rank</th><th class="num">Model's rank</th><th class="num">Chance he's the best of these</th></tr></thead>
+    <tbody>${unique.map((p, k) => html`<tr>
+      <td>${p.name}</td><td class="num">${k + 1}</td><td class="num">${modelOrder.indexOf(p) + 1}${modelOrder.indexOf(p) === k ? " ✅" : ""}</td>
+      <td class="num">${Math.round(100 * best[k] / nd)}%</td></tr>`)}</tbody>
+  </table>
+  <p class="fw-section-note">The last column shows how sure the model is. Even the model isn't certain, and that's what "Bayesian" means: it keeps track of how sure it is.</p>`;
+}
+```
+
+:::
+
+## 📊 Grown-up mode
+
+### What is being estimated
+
+Each forward $p$ has four correlated skills, $\alpha_p = (\alpha^{\text{shoot}}, \alpha^{\text{fox}}, \alpha^{\text{sniper}}, \alpha^{\text{create}}) \sim \text{MVN}(0, \Sigma)$, with an LKJ prior on the correlations. For each player-season $r$, every skill $k$ gets its own linear predictor:
+
+$$\eta_{k,r} = \mu_k + \lambda_{k,\text{league}(r)} + \beta_k\,\text{TS}_r + h_k(N^S_r) + \alpha_{p(r),k}$$
+
+Here TS is the team's season points per game minus the league average: the paper's **team factor**, whose job is to separate the player from his team. $h_k$ is a Matérn-5/2 HSGP **maturity curve** over seasons observed. The likelihoods are:
+
+* **Shooting:** non-penalty shots $\sim$ NegBin$(\tfrac{\text{min}}{90} e^{\eta_\text{shoot}})$
+* **Fox:** $\log(\text{npxG}/\text{shot}) \sim N(\eta_\text{fox}, \sigma/\sqrt{\text{shots}})$
+* **Sniper:** non-penalty goals $\sim$ Poisson$(\text{npxG}\, e^{\eta_\text{sniper}})$
+* **Creating:** key passes $\sim$ NegBin$(\tfrac{\text{min}}{90} e^{\eta_\text{create}})$
+
+Shots/90 × xG/shot × goals/xG = goals/90, so the first three skills multiply into expected non-penalty goals per 90. **SAR** is that rate with the team factor set to zero (a level field), minus the replacement pool's rate. **PAR** keeps each player's real team strength. **Team lift** = PAR − SAR. All intervals are 83%, as in the paper.
+
+### Ranking ladder
+
+```{ojs}
+DIMS = [
+  {key: "SAR", label: "SAR: goals/90 above replacement (level field)", neutral: 0, fmt: d3.format("+.2f")},
+  {key: "team_lift", label: "Team lift: goals/90 added by his teams (PAR − SAR)", neutral: 0, fmt: d3.format("+.2f")},
+  {key: "shoot", label: "Shooting: shots/90 multiplier", neutral: 1, fmt: d => `${d.toFixed(2)}×`},
+  {key: "fox", label: "Fox: xG/shot multiplier", neutral: 1, fmt: d => `${d.toFixed(2)}×`},
+  {key: "sniper", label: "Sniper: goals/xG multiplier", neutral: 1, fmt: d => `${d.toFixed(2)}×`},
+  {key: "create", label: "Creating: key passes/90 multiplier", neutral: 1, fmt: d => `${d.toFixed(2)}×`}
+]
+POOLS = [
+  {label: "Middle 20% of forwards (40th–60th percentile), the default", lo: 0.4, hi: 0.6},
+  {label: "Middle half (25th–75th percentile)", lo: 0.25, hi: 0.75},
+  {label: "Bottom half (0–50th percentile)", lo: 0, hi: 0.5},
+  {label: "Everyone (the pool average)", lo: 0, hi: 1}
+]
+viewof pool = Inputs.select(POOLS, {label: "Replacement pool", format: d => d.label})
+```
+
+```{ojs}
+//| output: false
+rlp = {
+  const m = players.map(p => p.goals90_level.mean), s = [...m].sort((a, b) => a - b);
+  const lo = q(s, pool.lo), hi = q(s, pool.hi);
+  const inPool = players.filter((p, i) => m[i] >= lo && m[i] <= hi).map(p => p.i);
+  const nd = draws.n_draws;
+  const lvl = Array.from({length: nd}, (_, d) => mean(inPool.map(i => draws.goals90_level[i][d])));
+  const act = Array.from({length: nd}, (_, d) => mean(inPool.map(i => draws.goals90_actual[i][d])));
+  return {n: inPool.length, lvl, act};
+}
+function dimDraws(key, i) {
+  if (key === "SAR") return draws.goals90_level[i].map((v, d) => v - rlp.lvl[d]);
+  if (key === "team_lift") return draws.goals90_actual[i].map((v, d) => (v - rlp.act[d]) - (draws.goals90_level[i][d] - rlp.lvl[d]));
+  return draws.alpha[key][i].map(Math.exp);
+}
+summaries = new Map(DIMS.map(dim => [dim.key, players.map(p => {
+  const x = dimDraws(dim.key, p.i);
+  return {i: p.i, name: p.name, mean: mean(x), lo: q(x, 0.085), hi: q(x, 0.915), leagues: p.leagues, minutes: p.minutes};
+})]))
+```
+
+```{ojs}
+viewof ladderDim = Inputs.select(DIMS, {label: "Rank by", format: d => d.label})
+viewof ladderLeagues = Inputs.checkbox(Object.keys(LEAGUE), {label: "Leagues", format: d => LEAGUE[d], value: Object.keys(LEAGUE)})
+viewof ladderMin = Inputs.range([2500, 20000], {label: "Min. minutes", step: 500, value: 6000})
+viewof ladderN = Inputs.range([10, 60], {label: "Show top", step: 5, value: 25})
+```
+
+```{ojs}
+{
+  const rows = summaries.get(ladderDim.key)
+    .filter(r => r.minutes >= ladderMin && r.leagues.some(l => ladderLeagues.includes(l)))
+    .sort((a, b) => b.mean - a.mean).slice(0, ladderN);
+  return Plot.plot({
+    width: Math.min(width, 860), height: 40 + rows.length * 20, marginLeft: 170,
+    x: {label: ladderDim.label + " →", grid: true, tickFormat: ladderDim.fmt},
+    y: {domain: rows.map(r => r.name), label: null},
+    marks: [
+      Plot.ruleX([ladderDim.neutral], {stroke: "#8a8983", strokeDasharray: "3,3"}),
+      Plot.ruleY(rows, {y: "name", x1: "lo", x2: "hi", stroke: COLOR_A, strokeWidth: 2, strokeOpacity: 0.55}),
+      Plot.dot(rows, {y: "name", x: "mean", r: 4.5, fill: COLOR_A, stroke: "white", strokeWidth: 1.5}),
+      Plot.tip(rows, Plot.pointerY({y: "name", x: "mean",
+        title: r => `${r.name}\n${ladderDim.fmt(r.mean)}  (83%: ${ladderDim.fmt(r.lo)} to ${ladderDim.fmt(r.hi)})\n${r.minutes.toLocaleString()} minutes`}))
+    ]
+  });
+}
+```
+
+```{ojs}
+md`<span class="fw-section-note">Dots are posterior means and bars are 83% intervals. SAR and team lift are measured against a replacement pool of ${rlp.n} players. Changing the pool moves every SAR value by the same amount in each draw, so the ranking stays the same but the zero line moves.</span>`
+```
+
+### Cross-cutting two skills
+
+```{ojs}
+viewof xDim = Inputs.select(DIMS, {label: "x", format: d => d.label, value: DIMS[2]})
+viewof yDim = Inputs.select(DIMS, {label: "y", format: d => d.label, value: DIMS[3]})
+viewof highlightText = Inputs.text({label: "Highlight", placeholder: "Comma-separated names, e.g. Messi, Haaland, Kane", value: "Messi, Haaland, Kane, Mbappé, Salah"})
+```
+
+```{ojs}
+{
+  const xs = summaries.get(xDim.key), ys = summaries.get(yDim.key);
+  const rows = players.map(p => ({name: p.name, x: xs[p.i].mean, xlo: xs[p.i].lo, xhi: xs[p.i].hi, y: ys[p.i].mean, ylo: ys[p.i].lo, yhi: ys[p.i].hi, minutes: p.minutes}));
+  const wanted = highlightText.split(",").map(s => s.trim()).filter(s => s.length >= 2).map(s => findPlayer(s, null)).filter(Boolean).map(p => p.name);
+  const hi = rows.filter(r => wanted.includes(r.name));
+  return Plot.plot({
+    width: Math.min(width, 860), height: 520, marginLeft: 60, marginBottom: 44,
+    x: {label: xDim.label + " →", tickFormat: xDim.fmt, grid: true},
+    y: {label: "↑ " + yDim.label, tickFormat: yDim.fmt, grid: true},
+    marks: [
+      Plot.ruleX([xDim.neutral], {stroke: "#8a8983", strokeDasharray: "3,3"}),
+      Plot.ruleY([yDim.neutral], {stroke: "#8a8983", strokeDasharray: "3,3"}),
+      Plot.dot(rows, {x: "x", y: "y", r: 2.8, fill: "#9b9a94", fillOpacity: 0.55}),
+      Plot.ruleY(hi, {y: "y", x1: "xlo", x2: "xhi", stroke: COLOR_B, strokeWidth: 2}),
+      Plot.ruleX(hi, {x: "x", y1: "ylo", y2: "yhi", stroke: COLOR_B, strokeWidth: 2}),
+      Plot.dot(hi, {x: "x", y: "y", r: 5.5, fill: COLOR_B, stroke: "white", strokeWidth: 2}),
+      Plot.text(hi, {x: "x", y: "y", text: "name", dx: 9, dy: -9, textAnchor: "start", fontWeight: 600, fill: "#0b0b0b", stroke: "white", strokeWidth: 3, paintOrder: "stroke"}),
+      Plot.tip(rows, Plot.pointer({x: "x", y: "y", title: r => `${r.name}\nx: ${xDim.fmt(r.x)}\ny: ${yDim.fmt(r.y)}\n${r.minutes.toLocaleString()} minutes`}))
+    ]
+  });
+}
+```
+
+::: {.fw-section-note}
+Grey dots are posterior means for all 593 forwards. Highlighted players also show their 83% intervals in both directions. The dashed lines mark a typical forward (×1) or the replacement level (0).
+:::
+
+### Head to head
+
+```{ojs}
+viewof h2hAName = picker("Player A", "Lionel Messi")
+viewof h2hBName = picker("Player B", "Cristiano Ronaldo")
+```
+
+```{ojs}
+{
+  const A = findPlayer(h2hAName, "Lionel Messi"), B = findPlayer(h2hBName, "Cristiano Ronaldo");
+  const rows = DIMS.map(dim => {
+    const a = dimDraws(dim.key, A.i), b = dimDraws(dim.key, B.i);
+    const pA = mean(a.map((v, d) => v > b[d] ? 1 : 0));
+    return {dim, a: mean(a), b: mean(b), pA};
+  });
+  const diff = draws.goals90_level[A.i].map((v, d) => v - draws.goals90_level[B.i][d]);
+  const pDiff = mean(diff.map(v => v > 0 ? 1 : 0));
+  const table = html`<table class="fw-prob-table">
+    <thead><tr><th>Dimension</th><th style="color:${COLOR_A}">${A.name}</th><th style="color:${COLOR_B}">${B.name}</th><th>P(A higher)</th></tr></thead>
+    <tbody>${rows.map(r => html`<tr><td>${r.dim.label}</td><td class="num">${r.dim.fmt(r.a)}</td><td class="num">${r.dim.fmt(r.b)}</td><td class="num"><b>${Math.round(r.pA * 100)}%</b></td></tr>`)}</tbody>
+  </table>`;
+  const chart = Plot.plot({
+    width: Math.min(width, 720), height: 220, marginLeft: 50,
+    x: {label: `Level-field goals/90: ${A.name} minus ${B.name} →`, tickFormat: "+.2f"},
+    y: {label: "↑ Posterior draws", grid: true},
+    marks: [
+      Plot.rectY(diff, Plot.binX({y: "count"}, {x: d => d, fill: d => d > 0 ? COLOR_A : COLOR_B, thresholds: 30, inset: 1})),
+      Plot.ruleX([0], {stroke: "#0b0b0b"}),
+      Plot.ruleY([0])
+    ]
+  });
+  return html`${table}<p style="margin-top:1rem">The posterior says <b>${A.name}</b> is the more skilled scorer, on a level field, with probability <b>${Math.round(pDiff * 100)}%</b>.</p>${chart}`;
+}
+```
+
+### How the skills go together
+
+```{ojs}
+{
+  const lab = k => KID[k].name;
+  const cells = [];
+  skillCorr.skills.forEach((r, i) => skillCorr.skills.forEach((c, j) => cells.push({
+    row: lab(r), col: lab(c), v: skillCorr.mean[i][j], lo: skillCorr.lo83[i][j], hi: skillCorr.hi83[i][j], diag: i === j})));
+  const order = skillCorr.skills.map(lab);
+  return Plot.plot({
+    width: Math.min(width, 520), height: 380, marginLeft: 90, marginBottom: 40, padding: 0.04,
+    x: {domain: order, label: null, axis: "top"}, y: {domain: order, label: null},
+    color: {type: "linear", domain: [-1, 0, 1], range: [COLOR_B, "#f1f0ee", COLOR_A], legend: true, label: "Correlation"},
+    marks: [
+      Plot.cell(cells, {x: "col", y: "row", fill: d => d.diag ? null : d.v, stroke: "#e4e3df", rx: 4}),
+      Plot.text(cells.filter(d => !d.diag), {x: "col", y: "row", text: d => `${d.v.toFixed(2)}\n[${d.lo.toFixed(2)}, ${d.hi.toFixed(2)}]`, fill: "#0b0b0b", fontSize: 11, lineHeight: 1.2}),
+      Plot.tip(cells.filter(d => !d.diag), Plot.pointer({x: "col", y: "row", title: d => `${d.row} × ${d.col}\n${d.v.toFixed(2)} (83%: ${d.lo.toFixed(2)} to ${d.hi.toFixed(2)})`}))
+    ]
+  });
+}
+```
+
+::: {.fw-section-note}
+These are posterior correlations of the player skills from the LKJ prior, with 83% intervals. The clearest pattern is that **players who get very good chances tend to create less**. Finishing barely varies between players: its spread is about a sixth of the other skills'. So its correlations are uncertain, and Sniper stars only move away from 3 when the 83% interval excludes zero.
+:::
+
+### Maturity curves
+
+```{ojs}
+{
+  const rows = [];
+  SKILLS.forEach(k => curves.season_index.forEach((s, t) => rows.push({skill: `${KID[k].emoji} ${KID[k].name}`, season: s,
+    m: Math.exp(curves[k].mean[t]), lo: Math.exp(curves[k].lo83[t]), hi: Math.exp(curves[k].hi83[t])})));
+  return Plot.plot({
+    width: Math.min(width, 860), height: 260, marginLeft: 50,
+    fx: {label: null}, x: {label: "Seasons observed →", ticks: 5},
+    y: {label: "↑ Multiplier", tickFormat: d => `${d.toFixed(2)}×`, grid: true},
+    marks: [
+      Plot.ruleY([1], {stroke: "#8a8983"}),
+      Plot.areaY(rows, {fx: "skill", x: "season", y1: "lo", y2: "hi", fill: COLOR_A, fillOpacity: 0.18}),
+      Plot.line(rows, {fx: "skill", x: "season", y: "m", stroke: COLOR_A, strokeWidth: 2}),
+      Plot.tip(rows, Plot.pointerX({fx: "skill", x: "season", y: "m", title: d => `${d.skill}, season ${d.season}: ${d.m.toFixed(3)}× (83%: ${d.lo.toFixed(3)}–${d.hi.toFixed(3)})`}))
+    ]
+  });
+}
+```
+
+::: {.fw-section-note}
+Population HSGP curves, with the multiplier shown relative to the average player-season. Over a career, players shoot a little less but take better chances. "Seasons observed" counts from 2014/15, so it is left-censored for veterans.
+:::
+
+### Model card
+
+```{ojs}
+md`**Fit.** ${card.fit.chains} chains × ${card.fit.draws_per_chain} draws (${card.fit.sampler}); ${card.fit.divergences} divergences; max R-hat = ${card.fit.max_r_hat}; min bulk ESS = ${card.fit.min_ess_bulk}. **Posterior predictive 83% coverage:** shots ${card.ppc_coverage_83.np_shots}, key passes ${card.ppc_coverage_83.key_passes}, xG/shot ${card.ppc_coverage_83.log_xg_per_shot}, goals ${card.ppc_coverage_83.npg}. Total non-penalty goals: observed ${card.ppc_coverage_83.npg_total_observed.toLocaleString()}, predicted ${card.ppc_coverage_83.npg_total_predicted.toLocaleString()}. Before the real fit, the model recovered known skills from simulated data, with 83% intervals covering 78–83% of the true values.
+
+**Data.** ${card.data.player_seasons.toLocaleString()} player-seasons (≥ ${card.data.min_row_minutes} minutes) for ${card.data.players} players, ${card.data.window}. Sources: ${card.data.sources.join("; ")}.
+
+**Where this departs from the paper:**
+
+${card.departures_from_paper.map(d => `- ${d}`).join("\n")}`
+```
+
+:::

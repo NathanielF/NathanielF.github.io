@@ -15,3 +15,11 @@ posts/post-with-code/discrete_choice_mlogit
 *.jupyter_cache/
 /notes/certain_things/*
 /docs/notes/certain_things/*
+# football_models_with_wyatt: raw scrape cache stays local
+football_models_with_wyatt/data/raw/
+football_models_with_wyatt/data/understats/
+football_models_with_wyatt/idata/*_full.nc
+
+# Python caches
+__pycache__/
+.pytest_cache/

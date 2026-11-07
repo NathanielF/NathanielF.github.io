@@ -1,0 +1,116 @@
+/* Football skills with Wyatt: page styles */
+:root {
+  --fw-a: #2a78d6;          /* player A / series 1 */
+  --fw-b: #eb6834;          /* player B / series 2 */
+  --fw-tie: #c9c8c3;
+  --fw-ink: #0b0b0b;
+  --fw-ink-2: #52514e;
+  --fw-ink-3: #8a8983;
+  --fw-surface: #fcfcfb;
+  --fw-card: #ffffff;
+  --fw-line: #e4e3df;
+  --fw-star: #eda100;
+  --fw-pitch: #1f6f43;
+}
+
+.fw-banner {
+  background: linear-gradient(135deg, #1f6f43, #2c5364);
+  color: #fff;
+  border-radius: 14px;
+  padding: 1.1rem 1.3rem;
+  margin: 0.5rem 0 1.5rem;
+}
+.fw-banner p { margin: 0.3rem 0; }
+.fw-banner a { color: #fff; text-decoration: underline; }
+
+.fw-kid { font-size: 1.12rem; }
+.fw-kid h2 { margin-top: 2.2rem; }
+
+.fw-section-note { color: var(--fw-ink-2); font-size: 0.95rem; }
+
+/* player card */
+.fw-card {
+  background: var(--fw-card);
+  border: 1px solid var(--fw-line);
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+  padding: 1.1rem 1.2rem 1.2rem;
+  max-width: 560px;
+}
+.fw-card-head { display: flex; gap: 0.9rem; align-items: center; margin-bottom: 0.8rem; }
+.fw-badge {
+  flex: 0 0 64px; height: 64px; border-radius: 50%;
+  background: var(--fw-pitch); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.4rem; letter-spacing: 0.04em;
+}
+.fw-card-name { font-size: 1.45rem; font-weight: 700; line-height: 1.15; }
+.fw-card-sub { color: var(--fw-ink-2); font-size: 0.9rem; }
+.fw-pick-tag {
+  display: inline-block; background: #fff4d6; color: #6b4a00; border-radius: 999px;
+  padding: 0 0.55rem; font-size: 0.78rem; margin-left: 0.3rem; vertical-align: middle;
+}
+.fw-skill-row {
+  display: grid; grid-template-columns: 2.1rem 1fr auto; gap: 0.2rem 0.6rem;
+  align-items: center; padding: 0.45rem 0; border-top: 1px solid var(--fw-line);
+}
+.fw-skill-emoji { font-size: 1.5rem; text-align: center; }
+.fw-skill-name { font-weight: 700; }
+.fw-skill-says { grid-column: 2 / 4; color: var(--fw-ink-2); font-size: 0.92rem; }
+.fw-stars { color: var(--fw-star); font-size: 1.25rem; letter-spacing: 0.08em; white-space: nowrap; }
+.fw-stars .off { color: #dcdad3; }
+
+/* 100 pretend matches */
+.fw-race { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: flex-start; }
+.fw-dots { display: grid; grid-template-columns: repeat(10, 22px); gap: 5px; }
+.fw-dot { width: 22px; height: 22px; border-radius: 50%; background: #f0efec; transition: background 0.2s; }
+.fw-dot.a { background: var(--fw-a); }
+.fw-dot.b { background: var(--fw-b); }
+.fw-dot.t { background: var(--fw-tie); }
+.fw-tally { min-width: 220px; }
+.fw-tally-row { display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; margin: 0.35rem 0; }
+.fw-key { width: 16px; height: 16px; border-radius: 50%; display: inline-block; flex: 0 0 16px; }
+.fw-tally-row b { font-size: 1.5rem; min-width: 2.2ch; text-align: right; }
+
+/* team helping */
+.fw-balls { font-size: 1.6rem; line-height: 1.5; word-break: break-all; }
+.fw-balls .ghost { opacity: 0.25; }
+.fw-team-row { margin: 0.4rem 0 0.9rem; }
+.fw-team-label { font-weight: 700; }
+
+/* question jar */
+.fw-jar form { flex-wrap: wrap; }
+.fw-jar label { font-size: 1rem; }
+.fw-ladder { list-style: none; padding: 0; margin: 0.6rem 0; max-width: 620px; }
+.fw-ladder li {
+  display: grid; grid-template-columns: 2.2rem 1fr auto; gap: 0.6rem; align-items: center;
+  padding: 0.4rem 0.2rem; border-bottom: 1px solid var(--fw-line);
+}
+.fw-rank { font-size: 1.3rem; text-align: center; }
+.fw-ladder .who { font-weight: 600; }
+.fw-ladder .what { color: var(--fw-ink-2); font-size: 0.88rem; }
+
+/* guesses */
+.fw-guess-table { border-collapse: collapse; margin-top: 0.6rem; }
+.fw-guess-table th, .fw-guess-table td { padding: 0.35rem 0.7rem; border-bottom: 1px solid var(--fw-line); text-align: left; }
+.fw-guess-table td.num, .fw-guess-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* grown-up */
+.fw-prob-table { border-collapse: collapse; font-size: 0.95rem; }
+.fw-prob-table th, .fw-prob-table td { padding: 0.3rem 0.7rem; border-bottom: 1px solid var(--fw-line); }
+.fw-prob-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.fw-legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.9rem; color: var(--fw-ink-2); margin: 0.3rem 0; }
+.fw-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+
+@media (max-width: 600px) {
+  .fw-kid { font-size: 1.02rem; }
+  .fw-dots { grid-template-columns: repeat(10, 18px); gap: 4px; }
+  .fw-dot { width: 18px; height: 18px; }
+  .fw-card-name { font-size: 1.25rem; }
+}
+
+/* long-form page: wide equations, tables and code scroll inside themselves on phones */
+.fw-longform mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.fw-longform table { display: block; overflow-x: auto; max-width: 100%; }
+.fw-longform div.sourceCode, .fw-longform pre { overflow-x: auto; max-width: 100%; }
+.fw-longform div.sourceCode code { white-space: pre; }

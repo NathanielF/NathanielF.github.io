@@ -1,0 +1,13 @@
+name: football-wyatt
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pandas>=2.2
+  - pyarrow
+  - numpy
+  - requests
+  - pymc>=5.16
+  - nutpie
+  - arviz
+  - pytest
