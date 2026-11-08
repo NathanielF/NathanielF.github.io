@@ -25,6 +25,7 @@
       "/talks/pycon_ireland_causalpy/pycon_2024.html",
       "/talks/stem_talk_junior_infants/working_in_stem.html",
       "/talks/missing_data/missing_data_causal.html",
+      "/talks/utility_and_choice/discrete_choice_and_utility.html",
       "/talks/lbs_non_param_causal/non_param_causal.html",
       "/talks/survival_regression/time_to_attrition.html",
       "/talks/pycon_ireland/pycon_ireland_discrete.html",
@@ -49,6 +50,7 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/football_wyatt/football_skills.html",
       "/oss/pymc/bayesian_experimentation_triptych.html",
       "/oss/pymc_marketing/bayesian_blp.html",
       "/oss/pymc_marketing/consideration_set.html",
