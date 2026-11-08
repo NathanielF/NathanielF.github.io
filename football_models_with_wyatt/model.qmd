@@ -88,13 +88,70 @@ A player's skill is everything about him that does not change with his team in a
 
 The standard deviation for the Fox shrinks with the square root of the number of shots. A season of 120 shots counts for more than a season of 12.
 
-The Sniper works shot by shot. Each shot goes in with its own xG, shifted on the log-odds scale by the player's finishing. Fitting 182,391 shots one at a time made each fit take close to an hour, so we use an approximation. Expanding a season's log-likelihood to second order in $\eta_\text{sniper}$ gives
+### Finishing from three numbers a season
 
-$$(G - \textstyle\sum_i p_i)\,\eta - \tfrac{1}{2}\textstyle\sum_i p_i(1-p_i)\,\eta^2,$$
+The Sniper likelihood works shot by shot. Shot $i$ has xG $p_i$, and it goes in with probability $\text{logit}^{-1}(\text{logit}\,p_i + \eta)$, where $\eta$ is the forward's finishing in that season on the log-odds scale. At $\eta = 0$ the forward converts exactly at xG. At $\eta = 0.1$ a 10% chance becomes a 10.9% chance.
 
-where $G$ is the season's goals and $p_i$ the xG of each shot. This is a Gaussian likelihood centred on goals minus xG, scaled by $\sum p_i(1-p_i)$, the variance of a season's goals given its chances. For finishing effects of ±0.2 it differs from the exact likelihood by about 0.002 nats per season, and by about 0.02 at ±0.4. A fit now takes under five minutes. The predictive checks below use the exact shot-by-shot model.
+Summed over a season's shots, with $y_i = 1$ for a goal, the log-likelihood is
 
-Multiplying the first three skills gives a forward's scoring rate on a level field: an average league, an average team ($\text{TS} = 0$), and the average point of a career. Finishing shifts each shot's log-odds, so its effect on goals per xG depends on the mix of chances. We measure it against the mix of all 182,391 shots in the data. Adding $\beta_k\,\text{TS}$ for each of a forward's real seasons, weighted by minutes, gives his rate with his own teams. SAR and PAR subtract the same rates for the replacement pool, which holds the forwards between the 40th and 60th percentiles of level-field skill. The explorer lets you choose a different pool. League and career stage stay at their averages in both measures, so SAR − PAR differs only through the team factor, as in the paper.
+$$\ell(\eta) = G\,\eta - \sum_i \log\!\big(1 + e^{\,\text{logit}\,p_i + \eta}\big) + \text{const}, \qquad G = \sum_i y_i .$$
+
+The outcomes enter only through $G$, the season's goals. Which shots went in makes no difference once the xG of every shot is known. The xGs still matter, through the sum of logs, and that sum is what made the exact fit slow. It has a term for each of 182,391 shots, and the sampler evaluates it thousands of times. A fit took close to an hour.
+
+The first derivative of the sum at $\eta = 0$ is $X = \sum_i p_i$, the season's xG. The second is $V = \sum_i p_i(1-p_i)$. Expanding to second order gives
+
+$$\ell(\eta) \approx (G - X)\,\eta - \tfrac{1}{2}\,V\,\eta^2 + \text{const}.$$
+
+A season now needs three numbers: goals $G$, xG $X$ and $V$. They are the columns `fin_goals`, `fin_xg` and `fin_var` in the model table, and they replace the shot list. A fit takes under five minutes.
+
+Completing the square shows what the approximation says. It is the likelihood of a single normal observation,
+
+$$z = \frac{G - X}{V} \sim N\!\big(\eta,\ 1/\sqrt{V}\big).$$
+
+So $z$ is the finishing that one season would suggest on its own, and $1/\sqrt{V}$ is its standard error. Messi in 2016/17 scored 31 non-penalty goals from 21.7 xG, with $V = 14.9$: $z = 0.63$, with a standard error of 0.26. Haaland in 2022/23 scored 29 from 27.4, with $V = 16.3$: $z = 0.10$, standard error 0.25. The model does not take either number at face value. It pools each forward's seasons into one skill, and pulls that skill toward the average of all forwards, the more so when $V$ is small.
+
+$V$ measures how much a season can say about finishing. Each shot adds $p(1-p)$ to it. A 50% chance adds 0.25, a 90% tap-in 0.09, a 5% shot from distance 0.05. Over all shots in the data, $V$ is 0.66 of the xG. It is lower for a forward whose xG comes from close range: about 0.6 in Haaland's seasons against 0.67 in Messi's. A goal expected from a tap-in says less about finishing than a goal expected from a harder chance, because a tap-in is scored by nearly everyone.
+
+$V$ also explains an error in an earlier version of the model. That version gave goals a Poisson likelihood with xG as the exposure. A Poisson takes the variance of a season's goals to be $X$. The shots themselves imply $V$, about two-thirds as much. The Poisson model expected more luck than the shots could produce, and it put the real differences between finishers down to luck. It estimated the spread of finishing skill at 0.05. The model here puts it at 0.14.
+
+For a typical season of about 40 shots, the approximation differs from the exact likelihood by about 0.002 nats at a finishing effect of ±0.2, and by about 0.02 at ±0.4. The error grows with the number of shots. In the busiest seasons, around 130 shots, it reaches about 0.008 and 0.06. Adding the third-order term would be more accurate near zero, but the resulting likelihood rises without limit for large $\eta$, so it cannot be used. The predictive checks below use the exact shot-by-shot likelihood. In the pipeline the quadratic enters the model as a `pm.Potential`. The [notebook](https://github.com/NathanielF/NathanielF.github.io/blob/master/football_models_with_wyatt/reproduce.ipynb) writes it as the normal observation of $z$. That has the same dependence on $\eta$ and lets PyMC simulate data from the model.
+
+### Skill above replacement
+
+SAR asks one question of each forward. How many more non-penalty goals per 90 minutes would he score than an ordinary forward, if both played in an average league, for an average team, at an average point in their careers? Answering it takes three steps: a scoring rate on that level field, a replacement level, and the difference between them.
+
+**The level-field rate.** Set the league effect, team strength and career curve to zero. What is left of each skill's linear predictor is $\mu_k + \theta_{p,k}$, and the rate is
+
+$$\text{rate}_p = \underbrace{e^{\mu_\text{shoot} + \theta_{p,\text{shoot}}}}_{\text{shots per 90}} \times \underbrace{e^{\mu_\text{fox} + \theta_{p,\text{fox}}}}_{\text{xG per shot}} \times \underbrace{c\big(\mu_\text{sniper} + \theta_{p,\text{sniper}}\big)}_{\text{goals per xG}} .$$
+
+The first two factors follow from the likelihoods. The third needs a choice. Finishing shifts each shot's log-odds, and the same shift adds more goals per xG to long shots than to tap-ins. So goals per xG depends on the kind of chances taken. We fix one mix of chances for every forward: all the non-penalty shots in the data. Then
+
+$$c(\eta) = \frac{\text{mean}_i\ \text{logit}^{-1}(\text{logit}\,p_i + \eta)}{\text{mean}_i\ p_i} \approx 1 + \frac{V}{X}\,\eta = 1 + 0.66\,\eta ,$$
+
+and the linear form is the same second-order approximation as before. A finishing skill of +0.1 is worth about 7% more goals per xG. Fixing the mix values finishing the same way for every forward. The chances a forward actually takes are counted once, in the Fox.
+
+The table takes the rate apart for three forwards and for the replacement pool, using posterior means.
+
+| | Shots per 90 | xG per shot | Goals per xG | Goals per 90 |
+|---|---|---|---|---|
+| Erling Haaland | 3.14 | 0.191 | 0.98 | 0.59 |
+| Lionel Messi | 4.73 | 0.107 | 1.12 | 0.57 |
+| Harry Kane | 3.70 | 0.132 | 1.08 | 0.53 |
+| Replacement pool | 2.33 | 0.114 | 0.99 | 0.26 |
+
+Haaland and Messi reach almost the same rate by different routes. Haaland takes fewer shots from much better places and finishes them at about xG. Messi shoots half as often again from ordinary places and converts 12% above xG. (The last column is the mean of the product over posterior draws, so it can differ slightly from the product of the means.)
+
+**The replacement level.** The pool holds the 119 forwards whose level-field rates fall between the 40th and 60th percentiles of the 593. Their average rate is 0.255 goals per 90. The paper chose its replacement strikers by hand; we chose ours by rule. Every forward in the data has at least 6,000 minutes in a top-five league, so "replacement" here means a typical regular forward in those leagues, not a fringe player. Against a weaker pool every SAR would be larger. A different pool moves every forward's SAR by the same amount in each draw, so it does not change the order. The explorer lets you choose another pool.
+
+**The difference.** $\text{SAR}_p = \text{rate}_p - \overline{\text{rate}}_\text{pool}$, computed draw by draw, so the interval carries uncertainty about the forward and about the pool. For Haaland it is 0.59 − 0.26 = 0.33 goals per 90. Over 34 full matches, about a season for a regular starter, that is 11 non-penalty goals more than a replacement forward would score on the same field.
+
+SAR leaves out penalties, creating chances for others, and the forward's real league, teams and age. It measures skill at scoring from open play, not a forward's whole value.
+
+**PAR and the team's share.** PAR replaces the level field with the forward's own teams. For each of his seasons we add $\beta_k\,\text{TS}$ to the three scoring skills, compute the rate, and average the rates by minutes. League and career stage stay at their averages, so the team factor is the only difference from SAR, as in the paper. The pool's rate is recomputed the same way, with its own teams. The team lift is the difference between the two rates: for Haaland, 0.75 − 0.59 = 0.16 goals per 90. The pool's average lift is 0.007, because its forwards played for teams close to average. So
+
+$$\text{SAR} - \text{PAR} = -\big(\text{lift}_p - \overline{\text{lift}}_\text{pool}\big),$$
+
+and a negative value means a forward's teams helped him more than the pool's teams helped them. Haaland's is −0.16.
 
 The table sets out where we depart from the paper.
 
@@ -281,7 +338,7 @@ The spread of each skill across forwards (the standard deviation of $\theta$ on 
 |---|---|---|---|
 | 0.29 | 0.30 | 0.14 | 0.33 |
 
-A forward one standard deviation above average at shooting takes about 33% more shots. One standard deviation above average at finishing scores about 9% more goals than his chances would give an average forward. Finishing varies less than the other skills, but it is not negligible. An earlier version of this model put its spread at 0.05. Its Poisson likelihood allowed more random variation in goals than a set of chances can produce, and blamed that variation on luck.
+A forward one standard deviation above average at shooting takes about 33% more shots. One standard deviation above average at finishing scores about 9% more goals than his chances would give an average forward. Finishing varies less than the other skills, but it is not negligible. The Poisson version of the model, described above, put its spread at 0.05.
 
 The model is still unsure about most individual finishers. The explorer gives a forward three Sniper stars unless his 83% interval excludes zero, and 536 of the 593 keep three. Messi and Son Heung-min get five. Harry Kane gets four. Haaland scored 103 non-penalty goals from 94.9 xG and keeps three: his interval runs from −0.14 to 0.11.
 
@@ -301,7 +358,7 @@ Forwards with very good chances convert slightly below their xG, and creators co
 
 ### The most skilled forwards
 
-The top of the SAR ranking, in non-penalty goals per 90 above the replacement pool on a level field:
+The top of the SAR ranking, in non-penalty goals per 90 above the replacement pool on a level field. SAR − PAR is minus the team's share, as defined above.
 
 | | SAR | 83% interval | SAR − PAR |
 |---|---|---|---|
