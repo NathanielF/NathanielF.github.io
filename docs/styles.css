@@ -132,10 +132,22 @@ body {
 .small-right-img {
   float: right;       /* pushes image to the right */
   width: 450px;       /* small size */
+  max-width: 45%;     /* never wider than the column, so it can't stretch the page */
   height: auto;       /* maintain aspect ratio */
   margin-left: 1rem;  /* space between text and image */
   margin-bottom: 1rem; /* optional spacing */
   border-radius: 0.25rem;
+}
+
+/* phones: stack the image full width above the text instead of floating it */
+@media (max-width: 767px) {
+  .small-right-img {
+    float: none;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 1rem 0;
+  }
 }
 /* Bluesky icon: Quarto's bundled Bootstrap Icons (v1.11.1) predates bi-bluesky,
    so draw it from the v1.11.3 path as a mask that takes the text colour. */
