@@ -226,16 +226,33 @@ destinations.
 
 {{< embed notebooks/04_funnels_markov_chains.ipynb#fig-funnel-matrix >}}
 
-The quantity of interest is often the probability that a session starting on the landing page ends in a purchase. Split
-the transition matrix into moves between transient states, $Q$, and moves into the absorbing states, $R$. The matrix
-$(I - Q)^{-1}$ gives the expected number of visits to each state, counting return trips, and the absorption
-probabilities are $B = (I - Q)^{-1} R$. Multiplying the forward step rates instead counts only sessions that go straight
-through, and gives less than half the true purchase probability.
+The quantity of interest is often the probability that a session starting on the landing page ends in a purchase. Order
+the states with the four transient states first and the two absorbing states (purchase, exit) last. The transition
+matrix then has the block form
 
-The same matrix shows which step is worth improving. Moving 5 percentage points from exit to a step changes the purchase
-probability by about the expected visits to the step's starting state, times 0.05, times the purchase probability from
-its destination. In the simulation, improving product → cart is worth about four times as much as improving checkout →
-purchase, because product pages are visited far more often than checkout.
+$$
+P = \begin{pmatrix} Q & R \\ 0 & I \end{pmatrix},
+$$
+
+where $Q$ holds the moves between transient states and $R$ the moves into purchase or exit. Entry $(i, j)$ of $Q^k$ is
+the probability of being in transient state $j$ after $k$ steps from state $i$. Summing over $k$ gives the expected
+number of visits to each state, return trips included:
+
+$$
+N = I + Q + Q^2 + \dots = (I - Q)^{-1}.
+$$
+
+A session is absorbed into purchase from some transient state it visits, so the absorption probabilities are
+$B = NR$. Only checkout leads to purchase, so the purchase probability is the expected number of checkout visits
+times the checkout conversion rate. Multiplying the forward step rates instead keeps only the term of the series for
+a session that goes straight through, and gives less than half the true purchase probability.
+
+The same algebra shows which step is worth improving. Moving $\delta$ of probability from exit to the step $i \to j$
+changes the purchase probability by approximately $\delta\, N_{1i} B_{j,\text{purchase}}$: expected visits to state $i$,
+times $\delta$, times the purchase probability from $j$. The notebook computes $N$, $B$ and the exact effect of each
+change inside the model with `pt.linalg.inv`, so their posteriors come straight from the sampler. Improving
+product → cart is worth about four times as much as improving checkout → purchase, because product pages are visited
+far more often than checkout.
 
 {{< embed notebooks/04_funnels_markov_chains.ipynb#fig-funnel-whatif >}}
 

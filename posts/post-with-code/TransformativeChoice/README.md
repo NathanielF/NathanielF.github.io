@@ -4,8 +4,18 @@ A discrete choice model in which each household's utility function is allowed to
 pivot at a latent moment in its own purchase sequence, plus the simulation
 harness needed to find out whether such a pivot can actually be detected.
 
-> **Orientation.** `transformative_choice.qmd` is the published post and is
-> self-contained: it writes its own model and simulator inline and imports only
+> **Current post (November 2026).** `transformative_choice.qmd` no longer uses the
+> change point. It compares three models of what a known, dated event changes: a
+> shifted utility function, a two-state hidden Markov model whose transition
+> matrix changes at the event, and a Markov chain on observed brand switching
+> fitted to transition counts (sufficient statistics). Each is fitted to two
+> simulated worlds (a permanent shift, and a change in how people move between
+> preference states). The post imports only `ALTS`, `PRICE_IDX` and
+> `prepare_panel` from `choice_panel.py`. Everything below describes the earlier
+> change-point version and the archival harness, kept for reference.
+>
+> **Orientation (change-point version).** The earlier post was
+> self-contained: it wrote its own model and simulator inline and imported only
 > data plumbing from `choice_panel.py`. `_harness/` is the archival full-budget
 > test rig that produced `results/`; it is not what the post runs, and it keeps
 > its original parameter names. Two were renamed for the post, because the old
