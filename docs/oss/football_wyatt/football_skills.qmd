@@ -1,0 +1,19 @@
+---
+title: "Football Skills with Wyatt"
+author: "Nathaniel Forde"
+date: "2026-11-07"
+categories: ["hierarchical models", "gaussian processes", "sports analytics", "pymc"]
+image: "sar_ladder.png"
+abstract: "A Four-Skill Soccer Factor Model, Built with a Six-Year-Old"
+---
+
+# Separating a forward's skill from his team
+
+This is a project I made with my son Wyatt. It adapts the Soccer Factor Model of Andorra and Göbel ([2024](https://arxiv.org/abs/2412.05911)) to ten seasons of public data from Europe's top five leagues, 2014/15 to 2023/24. Each of 593 forwards gets four correlated skills: how often he shoots, where he shoots from, how well he finishes, and how many chances he creates. A Mundlak term separates the forward's skill from the strength of the teams he plays for. The model is fitted in PyMC.
+
+- [The explorer](../../football_models_with_wyatt/index.qmd): player cards, head-to-head comparisons and a question jar for Wyatt, with rankings, correlations and career curves for grown-ups.
+- [How it works](../../football_models_with_wyatt/model.qmd): the paper's model, what we changed and why, posterior predictive checks, and findings.
+- [Reproduction notebook](https://github.com/NathanielF/NathanielF.github.io/blob/master/football_models_with_wyatt/reproduce.ipynb): the whole model in plain PyMC from one 0.4 MB table, with a parameter-recovery test.
+- [Code](https://github.com/NathanielF/NathanielF.github.io/tree/master/football_models_with_wyatt): the data pipeline, model, exports and tests.
+
+![Skill above replacement for the top twelve forwards](sar_ladder.png)

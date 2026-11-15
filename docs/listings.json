@@ -37,6 +37,7 @@
     "listing": "/archive.html",
     "items": [
       "/posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html",
+      "/posts/post-with-code/SufficientStatistics/sufficient_statistics.html",
       "/posts/post-with-code/ReflectionOnDatascience/good_datascience.html",
       "/posts/post-with-code/AI_Workflow/ai_workflow.html",
       "/posts/post-with-code/Consideration_Sets_Attention/attention.html",
@@ -50,7 +51,6 @@
   {
     "listing": "/opensource.html",
     "items": [
-      "/oss/football_wyatt/football_skills.html",
       "/oss/pymc/bayesian_experimentation_triptych.html",
       "/oss/pymc_marketing/bayesian_blp.html",
       "/oss/pymc_marketing/consideration_set.html",
@@ -81,7 +81,7 @@
     "listing": "/blog.html",
     "items": [
       "/posts/post-with-code/CFA_AND_SEM/CFA_AND_SEM.html",
-      "/posts/post-with-code/TransformativeChoice/transformative_choice.html",
+      "/posts/post-with-code/SufficientStatistics/sufficient_statistics.html",
       "/posts/post-with-code/ReflectionOnDatascience/good_datascience.html",
       "/posts/post-with-code/AI_Workflow/ai_workflow.html",
       "/posts/post-with-code/Consideration_Sets_Attention/attention.html",

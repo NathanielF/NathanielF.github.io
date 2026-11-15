@@ -1,0 +1,255 @@
+---
+title: "Fewer Rows, Same Posterior: Sufficient Statistics in PyMC"
+subtitle: "A catalogue of likelihoods that can be fitted to summaries instead of rows"
+categories: ["bayesian", "pymc", "computation", "experimentation", "survival analysis"]
+keep-ipynb: true
+self-contained: true
+draft: false
+toc: true
+execute:
+  freeze: auto
+image: 'images/thumbnail.png'
+author:
+    - url: https://nathanielf.github.io/
+    - affiliation: PyMC dev
+citation: true
+notebook-links: false
+date: 2026-11-15
+---
+
+Many models in applied work have likelihoods that depend on the data only through a few summary numbers. When that
+holds, you can fit the model to the summaries instead of the rows and get the same posterior. The fit is faster, often
+by one or two orders of magnitude, because the sampler no longer touches every row on every step.
+
+This post collects the cases I have found useful. Each case has its own notebook. Every notebook fits the same model
+twice, once on the raw rows and once on the summary, checks that the posteriors agree, and times both fits. The figures
+and tables below are taken from those notebooks.
+
+## Why sufficiency saves computation
+
+Suppose the likelihood factors as
+
+$$p(y \mid \theta) = h(y)\, g\big(T(y) \mid \theta\big).$$
+
+The factor $h(y)$ does not depend on $\theta$, so it cancels in Bayes' rule. The posterior is then
+$p(\theta \mid y) \propto p(\theta)\, g(T(y) \mid \theta)$, and it depends on the data only through $T(y)$. This is the
+Fisher–Neyman factorisation. A statistic $T$ with this property is called **sufficient**.
+
+The computational gain comes from how Hamiltonian Monte Carlo works. Each leapfrog step evaluates the log-likelihood and
+its gradient. A likelihood written over $N$ rows costs $N$ row evaluations per step, and a fit takes thousands of steps
+per chain. A likelihood written over $T(y)$ costs only as much as $T(y)$ is large.
+
+Exponential families always have such a statistic. Their densities take the form
+$h(y)\exp\{\eta(\theta)^\top T(y) - A(\theta)\}$, and the sum of $T$ over independent observations is sufficient,
+with a dimension that does not grow with $n$. The Pitman–Koopman–Darmois theorem gives the converse. If the support of
+the distribution does not depend on $\theta$, only exponential families have a sufficient statistic of fixed dimension.
+Binomial, Poisson, Normal and multinomial models qualify. Student-$t$ errors and mixtures do not.
+
+For computation, sufficiency for $y$ is not quite enough. In a logistic regression the outcome enters the
+log-likelihood only through $X^\top y$, so $X^\top y$ is sufficient for the coefficients. But the log-likelihood also
+contains the term $\sum_i \log(1 + e^{x_i^\top\beta})$, which needs every row's covariates. What we need is a
+fixed-size summary of the whole likelihood as a function of the parameters. There are two common ways to get one:
+
+1. **Shared covariates.** If rows fall into cells with identical covariates, the likelihood depends on each cell only
+   through a few counts. The Binomial, Poisson and multinomial cases below work this way.
+2. **A quadratic log-likelihood.** In the Gaussian linear model the log-likelihood is quadratic in the coefficients, so
+   the covariates enter only through cross-products. The linear regression case works this way.
+
+The last case in the catalogue fits neither pattern. There the summary is an approximation.
+
+## What compression gives up
+
+The posterior is unchanged, but the individual rows are gone. Any check that needs the rows is no longer possible.
+If user-level conversions become $(n, k)$, you cannot check whether conversions cluster within users. If revenue
+becomes $(n, \bar y, SS)$, you cannot see a large share of zero-revenue users that a Normal model ignores. Run these
+checks on the raw data, or on a sample of it, before you compress.
+
+The covariates decide how much compression is possible. Each categorical covariate multiplies the number of cells.
+A continuous covariate usually gives each row its own cell, which removes the gain. Linear regression is the exception,
+for the algebraic reason above. A random effect at the row level, such as a user's frailty, makes rows in the same cell
+no longer interchangeable, so the counts stop being sufficient.
+
+## A/B tests: counts and moments
+
+In a conversion test each user is a Bernoulli trial. The likelihood for an arm is $p^k(1-p)^{n-k}$, so the number of
+users $n$ and the number of conversions $k$ are sufficient. A `pm.Binomial` on two rows replaces a `pm.Bernoulli` on
+800,000.
+
+For a continuous outcome under a Normal model, the count, mean and sum of squared deviations $(n, \bar y, SS)$ are
+sufficient for $(\mu, \sigma)$. The notebook writes the exact Normal log-likelihood in terms of these three numbers and
+adds it with `pm.Potential`. A `Potential` adds a term to the model's log-density without declaring an observed
+variable.
+
+The left panel below also shows the exact Beta posterior, which conjugacy gives without sampling. All three posteriors
+for the conversion lift agree.
+
+{{< embed notebooks/01_ab_tests_counts_and_moments.ipynb#fig-ab-equiv >}}
+
+{{< embed notebooks/01_ab_tests_counts_and_moments.ipynb#tbl-ab-speed >}}
+
+*Notebook: [`01_ab_tests_counts_and_moments.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/01_ab_tests_counts_and_moments.ipynb)*
+
+## Sequential tests: running counts
+
+Checking a fixed-sample test repeatedly as data arrive inflates its false-positive rate. Lindon and Malek,
+*Anytime-Valid Inference for Multinomial Count Data* (NeurIPS 2022), give a test that can be checked after every event
+while keeping the type-I error below the nominal level. Such a test is called anytime-valid. Their test statistic is a
+Dirichlet–multinomial Bayes factor. By their Eq. 3, it depends on the event stream only through $\mathbf S_n$, the
+running count of events in each arm.
+
+This has two practical consequences. First, updating the test after an event means adding one to one count. Second, a
+shared time-varying baseline does not need to be modelled. Suppose each arm's events arrive as a Poisson process with
+rate equal to an arm-specific multiplier times a common baseline $\lambda(t)$. Given that an event occurred, the arm it
+came from is a multinomial draw whose probabilities do not involve $\lambda(t)$. In the simulation the baseline has a
+daily cycle and a two-day promotion, and the test ignores both.
+
+{{< embed notebooks/02_sequential_multinomial.ipynb#fig-seq-path >}}
+
+Because the statistic depends only on running counts, its error rate is cheap to check by simulation. In 1,000
+simulated A/A tests, where all arms are identical, the anytime-valid test checked after every event rejected 3.8% of
+the time. A chi-square test re-run every 250 events rejected 31% of the time. For estimation, one `pm.Multinomial` on
+the final counts gives the same posterior as the event-level model and the conjugate Dirichlet.
+
+{{< embed notebooks/02_sequential_multinomial.ipynb#fig-seq-equiv >}}
+
+{{< embed notebooks/02_sequential_multinomial.ipynb#tbl-seq-speed >}}
+
+*Notebook: [`02_sequential_multinomial.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/02_sequential_multinomial.ipynb)*
+
+## Survival: events and exposure
+
+A discrete-time survival model is fitted to a person-period table. It has one row for each subject in each period they
+are at risk, with a 0/1 flag for the event. With categorical covariates, all rows in a cell defined by period and
+covariate pattern share one hazard. The cell then reduces to its number of events and number at risk, $(d, r)$. This is
+the life table. The notebook uses the complementary log-log link, $h = 1 - \exp(-e^{\eta})$, which makes the discrete
+model a grouped form of a proportional-hazards model.
+
+The continuous-time version is the piecewise-exponential model. Each subject contributes their time at risk in each
+interval, and each cell reduces to its events and total exposure, $(d, E)$. Its likelihood is proportional to a Poisson
+likelihood with a log-exposure offset. That is why Poisson regression with an exposure offset can be used as a survival
+model. I used the same aggregation in the
+[discrete-time survival notebook for Bambi](https://nathanielf.github.io/oss/bambi/survival_discrete_time_notebook.html)
+on historical child-mortality data.
+
+The cloglog and piecewise-exponential models are different models, so they need not agree with each other. Each
+compressed fit agrees with its own raw-row fit.
+
+{{< embed notebooks/03_survival_person_period.ipynb#fig-surv-equiv >}}
+
+{{< embed notebooks/03_survival_person_period.ipynb#tbl-surv-speed >}}
+
+*Notebook: [`03_survival_person_period.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/03_survival_person_period.ipynb)*
+
+## Markov chains and funnels: transition counts
+
+A user session is a sequence of states, such as landing page, product page, cart, checkout, then purchase or exit. In a
+first-order Markov chain the next state depends only on the current one. The likelihood of a set of sessions is then
+$\prod_{ij} P_{ij}^{N_{ij}}$, where $N_{ij}$ counts the transitions from state $i$ to state $j$. The count matrix is
+sufficient. Each row of the transition matrix gets a multinomial likelihood and a Dirichlet prior.
+
+The quantity of interest is often the probability that a session starting on the landing page ends in a purchase. Split
+the transition matrix into moves between transient states, $Q$, and moves into the absorbing states, $R$. The absorption
+probabilities are $B = (I - Q)^{-1} R$. The notebook computes $B$ as a deterministic, so its posterior reflects the
+uncertainty in every transition.
+
+A funnel is a special case in which a user can only advance one stage or leave. Each stage then becomes a binomial on
+head-counts: the number who reached stage $k+1$ out of the number who reached stage $k$. The notebook lets step
+conversion vary by weekly cohort with a hierarchical prior. The compressed model has 36 rows.
+
+{{< embed notebooks/04_funnels_markov_chains.ipynb#fig-funnel-equiv >}}
+
+{{< embed notebooks/04_funnels_markov_chains.ipynb#tbl-funnel-speed >}}
+
+*Notebook: [`04_funnels_markov_chains.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/04_funnels_markov_chains.ipynb)*
+
+## Linear regression: the Gram matrix
+
+The Gaussian linear model compresses without grouping rows. Expand the residual sum of squares:
+
+$$\lVert y - X\beta\rVert^2 = y^\top y - 2\beta^\top X^\top y + \beta^\top X^\top X\beta.$$
+
+The likelihood for $(\beta, \sigma)$ needs only $n$, $X^\top X$, $X^\top y$ and $y^\top y$. $X^\top X$ is the Gram
+matrix of cross-products between predictors. The predictors can be continuous. In the notebook, one million rows and ten
+predictors reduce to 112 numbers.
+
+These summaries add across subsets of the data. You can compute them on separate chunks, partitions or days and sum
+the results. The notebook builds them in ten chunks.
+
+{{< embed notebooks/05_linear_regression_gram.ipynb#fig-lm-equiv >}}
+
+{{< embed notebooks/05_linear_regression_gram.ipynb#tbl-lm-speed >}}
+
+*Notebook: [`05_linear_regression_gram.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/05_linear_regression_gram.ipynb)*
+
+## Approximate sufficiency: logistic regression with offsets
+
+The [football factor model](https://nathanielf.github.io/football_models_with_wyatt/) I built with Wyatt includes a
+logistic regression with a per-shot offset. Each shot has a pre-shot goal probability $p_i$ from an expected-goals
+model. A player's finishing skill $\eta$ shifts the log-odds of every shot they take. Goals $G = \sum_i y_i$ are
+sufficient for $\eta$, but the normalising term sums over every shot's offset, so neither exact route applies.
+
+A second-order expansion of the log-likelihood around $\eta = 0$ gives
+
+$$\ell(\eta) \approx \ell(0) + (G - X)\,\eta - \tfrac12 V \eta^2,$$
+
+with $X = \sum_i p_i$ (expected goals) and $V = \sum_i p_i(1 - p_i)$. Three numbers per player replace the shots.
+Completing the square gives a Gaussian pseudo-observation, $(G - X)/V \sim \mathcal N(\eta, 1/\sqrt V)$. This is the
+same form as the eight-schools meta-analysis, where each unit contributes an estimate and a standard error. It can be
+fitted with an ordinary `pm.Normal`.
+
+The figure shows the exact and approximate log-likelihood for one player. They agree closely within about 0.3 log-odds
+units of zero, which covers plausible finishing effects.
+
+{{< embed notebooks/06_approximate_sufficiency.ipynb#fig-approx-curve >}}
+
+The notebook also tests a case where skill varies far more than is realistic. Expanded around zero, the approximation
+overstates the skill of the most extreme players. Expanding each player around a one-step estimate of their own skill
+removes the error. This requires one more pass over the shots.
+
+{{< embed notebooks/06_approximate_sufficiency.ipynb#fig-approx-equiv >}}
+
+{{< embed notebooks/06_approximate_sufficiency.ipynb#tbl-approx-speed >}}
+
+*Notebook: [`06_approximate_sufficiency.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/06_approximate_sufficiency.ipynb)*
+
+## Timings
+
+| Model family | Raw rows | Sufficient statistic | PyMC likelihood | Speed-up in notebook |
+|---|---|---|---|---|
+| Conversion test | Bernoulli per user | $(n, k)$ per arm | `Binomial` | 38× (46s → 1.2s) |
+| Normal outcome | value per user | $(n, \bar y, SS)$ per arm | `Potential` | 10× (11s → 1.1s) |
+| Sequential multinomial | arm label per event | running counts $\mathbf S_n$ | `Multinomial` / closed form | 3× (6.4s → 2.2s) |
+| Discrete-time survival | person-period rows | $(d, r)$ per cell | `Binomial` (cloglog) | 51× (87s → 1.7s) |
+| Piecewise exponential | person-interval rows | $(d, E)$ per cell | `Poisson` with exposure | 20× (35s → 1.7s) |
+| Markov chain | transitions | counts $N_{ij}$ | `Multinomial` per row | 24× (186s → 7.9s) |
+| Funnel | user × stage rows | stage head-counts | `Binomial` | 12× (13s → 1.1s) |
+| Linear regression | $n \times p$ design | $(n, X^\top X, X^\top y, y^\top y)$ | `Potential` | 76× (189s → 2.5s) |
+| Logistic with offsets | shots | $(G, X, V)$, approximate | `Normal` pseudo-obs | 57× (80s → 1.4s) |
+
+Each speed-up is the wall time of the raw-row fit divided by the wall time of the compressed fit. Both include
+compilation, and both use the same sampler settings on a laptop. The ratios depend on how many rows each notebook
+simulates. The general point is that computing the summaries takes one pass over the data, and after that the cost of
+sampling does not depend on the number of rows.
+
+## Practical notes
+
+Run row-level posterior predictive checks before compressing. Compression removes the rows those checks need. You can
+keep a raw-data model, fitted to a sample, for diagnostics.
+
+Use an observed distribution rather than `pm.Potential` when one exists. `Binomial`, `Multinomial`, `Poisson` and the
+Gaussian pseudo-observation all keep a pointwise log-likelihood, so leave-one-out cross-validation still works. It now
+works at the level of the cell rather than the individual.
+
+Counts, exposures and Gram matrices are additive. They can be summed across days, partitions or machines. This makes
+them well suited to streaming data and to data held in a warehouse, where the summaries can be computed in SQL.
+
+Approximate summaries depend on their expansion point. They are accurate near that point and less accurate far from it.
+Summaries computed around different expansion points cannot be added together.
+
+Each summary also states an assumption of the model. Writing down $(n, k)$ says which users are interchangeable.
+Writing down $(d, r)$ says which covariates define a risk set. Writing down $N_{ij}$ says that the next step depends only
+on the current state. If one of those statements is false for your data, the compressed model is wrong in the same way
+the full model is, and it is cheaper to find out by checking the statement directly.
+
+The notebooks are in the [project folder](https://github.com/NathanielF/NathanielF.github.io/tree/master/posts/post-with-code/SufficientStatistics).
+I plan to add more cases.
