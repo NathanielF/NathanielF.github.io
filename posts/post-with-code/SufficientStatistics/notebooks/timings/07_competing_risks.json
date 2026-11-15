@@ -1,0 +1,34 @@
+[
+ {
+  "case": "Competing risks, piecewise exp.",
+  "kind": "raw",
+  "model": "piecewise-exp, person-period rows",
+  "rows": 91483,
+  "wall_s": 40.33,
+  "min_ess_per_s": 55.1
+ },
+ {
+  "case": "Competing risks, piecewise exp.",
+  "kind": "compressed",
+  "model": "piecewise-exp, (E, d_k) per cell",
+  "rows": 48,
+  "wall_s": 2.08,
+  "min_ess_per_s": 1039.1
+ },
+ {
+  "case": "Competing risks, discrete time",
+  "kind": "raw",
+  "model": "multinomial logit, person-period rows",
+  "rows": 91483,
+  "wall_s": 54.12,
+  "min_ess_per_s": 38.6
+ },
+ {
+  "case": "Competing risks, discrete time",
+  "kind": "compressed",
+  "model": "multinomial logit, (r, d_k) per cell",
+  "rows": 48,
+  "wall_s": 3.24,
+  "min_ess_per_s": 764.7
+ }
+]

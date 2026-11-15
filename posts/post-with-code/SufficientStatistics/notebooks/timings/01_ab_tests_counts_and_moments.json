@@ -1,0 +1,34 @@
+[
+ {
+  "case": "Conversion test",
+  "kind": "raw",
+  "model": "Bernoulli, raw rows",
+  "rows": 800000,
+  "wall_s": 42.37,
+  "min_ess_per_s": 97.6
+ },
+ {
+  "case": "Conversion test",
+  "kind": "compressed",
+  "model": "Binomial, (n, k) per arm",
+  "rows": 2,
+  "wall_s": 0.56,
+  "min_ess_per_s": 6846.8
+ },
+ {
+  "case": "Normal outcome",
+  "kind": "raw",
+  "model": "Normal, raw rows",
+  "rows": 400000,
+  "wall_s": 9.78,
+  "min_ess_per_s": 596.9
+ },
+ {
+  "case": "Normal outcome",
+  "kind": "compressed",
+  "model": "Normal + Gamma on (n, \u0233, SS)",
+  "rows": 2,
+  "wall_s": 0.72,
+  "min_ess_per_s": 7790.0
+ }
+]

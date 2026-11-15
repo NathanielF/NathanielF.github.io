@@ -1,0 +1,34 @@
+[
+ {
+  "case": "Markov chain",
+  "kind": "raw",
+  "model": "Markov: log P per transition",
+  "rows": 58669,
+  "wall_s": 16.35,
+  "min_ess_per_s": 160.8
+ },
+ {
+  "case": "Markov chain",
+  "kind": "compressed",
+  "model": "Markov: Multinomial on N_ij",
+  "rows": 8,
+  "wall_s": 7.41,
+  "min_ess_per_s": 379.4
+ },
+ {
+  "case": "Funnel",
+  "kind": "raw",
+  "model": "Funnel: Bernoulli per user-step",
+  "rows": 42096,
+  "wall_s": 14.6,
+  "min_ess_per_s": 31.0
+ },
+ {
+  "case": "Funnel",
+  "kind": "compressed",
+  "model": "Funnel: Binomial on head-counts",
+  "rows": 36,
+  "wall_s": 1.4,
+  "min_ess_per_s": 311.5
+ }
+]

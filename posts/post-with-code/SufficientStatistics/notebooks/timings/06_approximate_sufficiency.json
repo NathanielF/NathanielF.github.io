@@ -1,0 +1,47 @@
+[
+ {
+  "case": "Logistic with offsets",
+  "kind": "raw",
+  "model": "realistic: Bernoulli per shot",
+  "rows": 68675,
+  "wall_s": 61.19,
+  "min_ess_per_s": 23.4,
+  "divergences": 0
+ },
+ {
+  "case": "Logistic with offsets",
+  "kind": "compressed",
+  "model": "realistic: (G, X, V) around 0",
+  "rows": 400,
+  "wall_s": 1.01,
+  "min_ess_per_s": 1341.6,
+  "divergences": 0
+ },
+ {
+  "case": "Logistic with offsets (stress test)",
+  "kind": "raw",
+  "model": "stress: Bernoulli per shot",
+  "rows": 63867,
+  "wall_s": 58.97,
+  "min_ess_per_s": 12.0,
+  "divergences": 0
+ },
+ {
+  "case": "Logistic with offsets (stress test)",
+  "kind": "compressed",
+  "model": "stress: (G, X, V) around 0",
+  "rows": 400,
+  "wall_s": 1.21,
+  "min_ess_per_s": 743.6,
+  "divergences": 0
+ },
+ {
+  "case": "Logistic with offsets (stress test)",
+  "kind": "compressed (re-centred)",
+  "model": "stress: (G, X, V) around \u03b70",
+  "rows": 400,
+  "wall_s": 0.82,
+  "min_ess_per_s": 852.7,
+  "divergences": 0
+ }
+]

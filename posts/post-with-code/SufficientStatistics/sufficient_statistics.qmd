@@ -8,6 +8,7 @@ draft: false
 toc: true
 execute:
   freeze: auto
+jupyter: bayesian_causal_book
 image: 'images/thumbnail.png'
 author:
     - url: https://nathanielf.github.io/
@@ -18,12 +19,16 @@ date: 2026-11-15
 ---
 
 Many models in applied work have likelihoods that depend on the data only through a few summary numbers. When that
-holds, you can fit the model to the summaries instead of the rows and get the same posterior. The fit is faster, often
-by one or two orders of magnitude, because the sampler no longer touches every row on every step.
+holds, you can fit the model to the summaries instead of the rows and get the same posterior. The fit is faster
+because the sampler no longer touches every row on every step. In the notebooks below the gain ranges from about
+two times to a few hundred times, depending on how many rows the summaries replace.
 
-This post collects the cases I have found useful. Each case has its own notebook. Every notebook fits the same model
-twice, once on the raw rows and once on the summary, checks that the posteriors agree, and times both fits. The figures
-and tables below are taken from those notebooks.
+This post collects the cases I have found useful. Each case has its own notebook. Every notebook does two things.
+It shows what the model's output is used for, and it fits the same model twice, once on the raw rows and once on
+the summary, to check that the posteriors agree and to time both fits. The figures below are taken from those
+notebooks. In every figure, colour marks the category (arm, cause, source), a filled histogram or band is the
+raw-row fit, a solid line is the compressed fit, black dashed is an exact answer and thin grey is the true value.
+Intervals are 89%.
 
 ## Why sufficiency saves computation
 
@@ -60,32 +65,38 @@ The last case in the catalogue fits neither pattern. There the summary is an app
 ## What compression gives up
 
 The posterior is unchanged, but the individual rows are gone. Any check that needs the rows is no longer possible.
-If user-level conversions become $(n, k)$, you cannot check whether conversions cluster within users. If revenue
-becomes $(n, \bar y, SS)$, you cannot see a large share of zero-revenue users that a Normal model ignores. Run these
-checks on the raw data, or on a sample of it, before you compress.
+If revenue becomes $(n, \bar y, SS)$, you cannot see a large share of zero-revenue users that a Normal model ignores.
+If sessions become transition counts, you cannot see whether the next step depends on more than the current page.
+Run these checks on the raw data, or on a sample of it, before you compress. Several notebooks below show such a check.
 
 The covariates decide how much compression is possible. Each categorical covariate multiplies the number of cells.
 A continuous covariate usually gives each row its own cell, which removes the gain. Linear regression is the exception,
-for the algebraic reason above. A random effect at the row level, such as a user's frailty, makes rows in the same cell
-no longer interchangeable, so the counts stop being sufficient.
+for the algebraic reason above. A random effect shared by several rows, such as a user's frailty across the periods
+they are observed, makes rows in the same cell no longer interchangeable, so the counts stop being sufficient.
 
 ## A/B tests: counts and moments
 
 In a conversion test each user is a Bernoulli trial. The likelihood for an arm is $p^k(1-p)^{n-k}$, so the number of
-users $n$ and the number of conversions $k$ are sufficient. A `pm.Binomial` on two rows replaces a `pm.Bernoulli` on
-800,000.
+users $n$ and the number of conversions $k$ are sufficient. With a Beta prior the posterior is a Beta distribution in
+closed form, and the decision quantities follow directly: the probability that treatment is better, and the
+expected loss of shipping it, $E[\max(p_C - p_T, 0)]$. Because $(n, k)$ adds across days, both can be recomputed
+each day from running totals.
+
+{{< embed notebooks/01_ab_tests_counts_and_moments.ipynb#fig-ab-use >}}
 
 For a continuous outcome under a Normal model, the count, mean and sum of squared deviations $(n, \bar y, SS)$ are
-sufficient for $(\mu, \sigma)$. The notebook writes the exact Normal log-likelihood in terms of these three numbers and
-adds it with `pm.Potential`. A `Potential` adds a term to the model's log-density without declaring an observed
-variable.
-
-The left panel below also shows the exact Beta posterior, which conjugacy gives without sampling. All three posteriors
-for the conversion lift agree.
+sufficient for $(\mu, \sigma)$. The notebook fits them with two observed distributions: $\bar y \sim \mathcal N(\mu, \sigma/\sqrt n)$,
+with standard deviation $\sigma/\sqrt n$, and $SS \sim \text{Gamma}\big((n-1)/2, \text{rate} = 1/(2\sigma^2)\big)$. Their
+product is proportional to the full Normal likelihood. A `pm.Bernoulli` on 800,000 rows becomes a `pm.Binomial` on
+two, and a `pm.Normal` on 400,000 rows becomes two small observed variables. The posteriors match.
 
 {{< embed notebooks/01_ab_tests_counts_and_moments.ipynb#fig-ab-equiv >}}
 
-{{< embed notebooks/01_ab_tests_counts_and_moments.ipynb#tbl-ab-speed >}}
+The three numbers $(n, \bar y, SS)$ describe a Normal sample completely and nothing else. The notebook constructs a
+zero-inflated revenue sample and a Normal sample with identical $(n, \bar y, SS)$; a model fitted to the summaries
+cannot tell them apart.
+
+{{< embed notebooks/01_ab_tests_counts_and_moments.ipynb#fig-ab-moments >}}
 
 *Notebook: [`01_ab_tests_counts_and_moments.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/01_ab_tests_counts_and_moments.ipynb)*
 
@@ -105,14 +116,22 @@ daily cycle and a two-day promotion, and the test ignores both.
 
 {{< embed notebooks/02_sequential_multinomial.ipynb#fig-seq-path >}}
 
-Because the statistic depends only on running counts, its error rate is cheap to check by simulation. In 1,000
-simulated A/A tests, where all arms are identical, the anytime-valid test checked after every event rejected 3.8% of
-the time. A chi-square test re-run every 250 events rejected 31% of the time. For estimation, one `pm.Multinomial` on
-the final counts gives the same posterior as the event-level model and the conjugate Dirichlet.
+Because the statistic depends only on running counts, its behaviour is cheap to simulate. In 1,000 simulated A/A
+tests, where all arms are identical, the anytime-valid test checked after every event rejected 3.8% of the time. A
+chi-square test re-run every 250 events rejected 31% of the time. The figure shows 100 of those experiments.
+
+{{< embed notebooks/02_sequential_multinomial.ipynb#fig-seq-aa >}}
+
+The same simulation gives the distribution of stopping times for a range of true effects, and shows how the choice of
+Dirichlet mixing distribution changes them. The type-I guarantee holds for any choice.
+
+{{< embed notebooks/02_sequential_multinomial.ipynb#fig-seq-stop >}}
+
+For estimation, one `pm.Multinomial` on the final counts gives the same posterior as a categorical likelihood over every
+event and as the conjugate Dirichlet. The counts discard when events happened. To ask whether the effect changed during
+the promotion, keep the counts per day; the notebook does this.
 
 {{< embed notebooks/02_sequential_multinomial.ipynb#fig-seq-equiv >}}
-
-{{< embed notebooks/02_sequential_multinomial.ipynb#tbl-seq-speed >}}
 
 *Notebook: [`02_sequential_multinomial.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/02_sequential_multinomial.ipynb)*
 
@@ -131,34 +150,109 @@ model. I used the same aggregation in the
 [discrete-time survival notebook for Bambi](https://nathanielf.github.io/oss/bambi/survival_discrete_time_notebook.html)
 on historical child-mortality data.
 
-The cloglog and piecewise-exponential models are different models, so they need not agree with each other. Each
-compressed fit agrees with its own raw-row fit.
+The fitted model gives survival curves for each stratum. Overlaying Kaplan–Meier estimates from the raw subjects is a
+check of the model. A one-number summary of a treatment effect on survival is the difference in **restricted mean
+survival time** (RMST): the expected event-free time up to a horizon, which is the area under the survival curve.
+
+{{< embed notebooks/03_survival_person_period.ipynb#fig-surv-use >}}
+
+The cloglog and piecewise-exponential models are different models, but with censoring at period boundaries they
+estimate nearly the same hazards here. Each compressed fit agrees with its own raw-row fit. If subjects can be censored
+part-way through a period, the discrete model counts them as surviving that period, which biases its hazard down. The
+actuarial correction counts them as at risk for half the period, $r - c/2$. The piecewise-exponential model handles
+this exactly through the exposure.
 
 {{< embed notebooks/03_survival_person_period.ipynb#fig-surv-equiv >}}
 
-{{< embed notebooks/03_survival_person_period.ipynb#tbl-surv-speed >}}
-
 *Notebook: [`03_survival_person_period.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/03_survival_person_period.ipynb)*
+
+## Competing risks: one event count per cause
+
+In a competing-risks problem each subject can fail from one of $K$ causes, and failure from one cause ends the risk
+of the others. The standard approach models a cause-specific hazard $\lambda_k$ for each cause. Under a
+piecewise-exponential model the likelihood is
+
+$$\prod_c \prod_k \lambda_{k,c}^{\,d_{k,c}} \exp(-\lambda_{k,c} E_c).$$
+
+Each cell reduces to its total exposure and one event count per cause, $(E_c, d_{1,c}, \dots, d_{K,c})$. The likelihood
+is one Poisson term per cause, and all causes share the same exposures. In discrete time, each person-period row has
+$K+1$ outcomes: no event, or an event of one of the causes. A cell reduces to its number at risk and its event counts,
+$(r, d_1, \dots, d_K)$, and the likelihood is a multinomial.
+
+The quantity usually reported is the **cumulative incidence function** (CIF) of each cause: the probability of an event
+of that cause by time $t$, with all causes acting. In each period it adds the probability of being event-free at the
+start of the period, times the probability of an event during it, times the share of the total hazard that belongs to
+the cause. Event-free survival and the CIFs add to one at every time.
+
+A common shortcut treats events of the other cause as censored and reports $1 - \text{KM}$ for each cause. That answers a
+different question: the risk of one cause in a world where the other did not exist. In that world patients who would
+have relapsed stay at risk of dying, so the naive curve for death is too high, and the naive curves for the two causes
+add up to more than the probability of any event.
+
+{{< embed notebooks/07_competing_risks.ipynb#fig-cr-naive >}}
+
+The cause-specific hazards are proportional between arms. The CIFs are not, because each depends on both hazards. The
+stacked panels show where subjects are at each time.
+
+{{< embed notebooks/07_competing_risks.ipynb#fig-cr-mechanism >}}
+
+Treatment lowers relapse incidence and raises death incidence. It raises death incidence by two routes: directly,
+through the higher death hazard, and indirectly, because preventing relapse keeps more subjects at risk of dying. Setting
+one treatment coefficient to zero at a time, in every posterior draw, separates the routes. In the simulation they
+contribute about equally.
+
+{{< embed notebooks/07_competing_risks.ipynb#fig-cr-effect >}}
+
+The piecewise-exponential and multinomial-logit models have coefficients on different scales, but give nearly the same
+cumulative incidences. Each compressed fit matches its raw-row fit.
+
+{{< embed notebooks/07_competing_risks.ipynb#fig-cr-models >}}
+
+{{< embed notebooks/07_competing_risks.ipynb#fig-cr-equiv >}}
+
+Two common extensions do not compress. Fine–Gray subdistribution hazards keep subjects who failed from another cause in
+the risk set, and with censoring those subjects need weights that vary by person and time. A shared frailty across
+causes makes rows within a cell no longer interchangeable.
+
+*Notebook: [`07_competing_risks.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/07_competing_risks.ipynb)*
 
 ## Markov chains and funnels: transition counts
 
 A user session is a sequence of states, such as landing page, product page, cart, checkout, then purchase or exit. In a
 first-order Markov chain the next state depends only on the current one. The likelihood of a set of sessions is then
 $\prod_{ij} P_{ij}^{N_{ij}}$, where $N_{ij}$ counts the transitions from state $i$ to state $j$. The count matrix is
-sufficient. Each row of the transition matrix gets a multinomial likelihood and a Dirichlet prior.
+sufficient. Each row of the transition matrix gets a multinomial likelihood and a Dirichlet prior over its allowed
+destinations.
+
+{{< embed notebooks/04_funnels_markov_chains.ipynb#fig-funnel-matrix >}}
 
 The quantity of interest is often the probability that a session starting on the landing page ends in a purchase. Split
-the transition matrix into moves between transient states, $Q$, and moves into the absorbing states, $R$. The absorption
-probabilities are $B = (I - Q)^{-1} R$. The notebook computes $B$ as a deterministic, so its posterior reflects the
-uncertainty in every transition.
+the transition matrix into moves between transient states, $Q$, and moves into the absorbing states, $R$. The matrix
+$(I - Q)^{-1}$ gives the expected number of visits to each state, counting return trips, and the absorption
+probabilities are $B = (I - Q)^{-1} R$. Multiplying the forward step rates instead counts only sessions that go straight
+through, and gives less than half the true purchase probability.
 
-A funnel is a special case in which a user can only advance one stage or leave. Each stage then becomes a binomial on
-head-counts: the number who reached stage $k+1$ out of the number who reached stage $k$. The notebook lets step
-conversion vary by weekly cohort with a hierarchical prior. The compressed model has 36 rows.
+The same matrix shows which step is worth improving. Moving 5 percentage points from exit to a step changes the purchase
+probability by about the expected visits to the step's starting state, times 0.05, times the purchase probability from
+its destination. In the simulation, improving product → cart is worth about four times as much as improving checkout →
+purchase, because product pages are visited far more often than checkout.
+
+{{< embed notebooks/04_funnels_markov_chains.ipynb#fig-funnel-whatif >}}
+
+The counts are sufficient only if the chain is first-order, and the raw sessions can test that before compressing. The
+notebook checks whether the probability of moving from cart to checkout depends on the state before the cart, and
+whether session lengths simulated from the posterior match the observed ones.
+
+{{< embed notebooks/04_funnels_markov_chains.ipynb#fig-funnel-check >}}
+
+A funnel is the chain with no back-edges or repeats: a user can only advance one stage or leave. Each stage then becomes
+a binomial on head-counts, the number who reached stage $k+1$ out of the number who reached stage $k$. The notebook lets
+step conversion vary by weekly cohort with a hierarchical prior, which pulls each cohort's rates toward the population
+mean. The compressed model has 36 rows.
+
+{{< embed notebooks/04_funnels_markov_chains.ipynb#fig-funnel-cohorts >}}
 
 {{< embed notebooks/04_funnels_markov_chains.ipynb#fig-funnel-equiv >}}
-
-{{< embed notebooks/04_funnels_markov_chains.ipynb#tbl-funnel-speed >}}
 
 *Notebook: [`04_funnels_markov_chains.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/04_funnels_markov_chains.ipynb)*
 
@@ -170,14 +264,16 @@ $$\lVert y - X\beta\rVert^2 = y^\top y - 2\beta^\top X^\top y + \beta^\top X^\to
 
 The likelihood for $(\beta, \sigma)$ needs only $n$, $X^\top X$, $X^\top y$ and $y^\top y$. $X^\top X$ is the Gram
 matrix of cross-products between predictors. The predictors can be continuous. In the notebook, one million rows and ten
-predictors reduce to 112 numbers.
+predictors reduce to 112 stored numbers. The model is written with `pm.Potential`, because no standard distribution has
+these summaries as its observed value.
 
-These summaries add across subsets of the data. You can compute them on separate chunks, partitions or days and sum
-the results. The notebook builds them in ten chunks.
+With a flat prior the posterior covariance of $\beta$ is $\hat\sigma^2 (X^\top X)^{-1}$, so the Gram matrix is, up to
+$\hat\sigma^2$, the posterior precision. The summaries also add across subsets of the data: they can be computed on
+separate chunks, partitions or days and summed. The right panel shows the estimates after each of ten chunks.
+
+{{< embed notebooks/05_linear_regression_gram.ipynb#fig-lm-use >}}
 
 {{< embed notebooks/05_linear_regression_gram.ipynb#fig-lm-equiv >}}
-
-{{< embed notebooks/05_linear_regression_gram.ipynb#tbl-lm-speed >}}
 
 *Notebook: [`05_linear_regression_gram.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/05_linear_regression_gram.ipynb)*
 
@@ -193,52 +289,84 @@ A second-order expansion of the log-likelihood around $\eta = 0$ gives
 $$\ell(\eta) \approx \ell(0) + (G - X)\,\eta - \tfrac12 V \eta^2,$$
 
 with $X = \sum_i p_i$ (expected goals) and $V = \sum_i p_i(1 - p_i)$. Three numbers per player replace the shots.
-Completing the square gives a Gaussian pseudo-observation, $(G - X)/V \sim \mathcal N(\eta, 1/\sqrt V)$. This is the
-same form as the eight-schools meta-analysis, where each unit contributes an estimate and a standard error. It can be
-fitted with an ordinary `pm.Normal`.
-
-The figure shows the exact and approximate log-likelihood for one player. They agree closely within about 0.3 log-odds
-units of zero, which covers plausible finishing effects.
+Completing the square gives a Gaussian pseudo-observation: $(G - X)/V$ is normally distributed with mean $\eta$ and
+standard deviation $1/\sqrt V$. This is the same form as the eight-schools meta-analysis, where each unit contributes an
+estimate and a standard error. It can be fitted with an ordinary `pm.Normal`. The quadratic matches the exact
+log-likelihood closely within about 0.3 log-odds units of zero, which covers realistic finishing effects.
 
 {{< embed notebooks/06_approximate_sufficiency.ipynb#fig-approx-curve >}}
 
-The notebook also tests a case where skill varies far more than is realistic. Expanded around zero, the approximation
-overstates the skill of the most extreme players. Expanding each player around a one-step estimate of their own skill
-removes the error. This requires one more pass over the shots.
+The raw estimate of a player's skill, goals minus expected goals, is noisy for players with few shots. The hierarchical
+model pulls each estimate toward zero in proportion to how little data the player has, and its estimates are closer to
+the true skills.
+
+{{< embed notebooks/06_approximate_sufficiency.ipynb#fig-approx-use >}}
+
+The notebook also tests a setting where skill varies far more than is realistic: two players four standard deviations
+apart differ by an odds ratio of about 25. Expanded around zero, the approximation overstates skill at both ends.
+Expanding each player around a one-step estimate of their own skill removes the error, at the cost of one more pass
+over the shots.
 
 {{< embed notebooks/06_approximate_sufficiency.ipynb#fig-approx-equiv >}}
 
-{{< embed notebooks/06_approximate_sufficiency.ipynb#tbl-approx-speed >}}
-
 *Notebook: [`06_approximate_sufficiency.ipynb`](https://github.com/NathanielF/NathanielF.github.io/blob/master/posts/post-with-code/SufficientStatistics/notebooks/06_approximate_sufficiency.ipynb)*
+
+## Summary of cases
+
+| Model family | Raw rows | Sufficient statistic | PyMC likelihood |
+|---|---|---|---|
+| Conversion test | Bernoulli per user | $(n, k)$ per arm | `Binomial` |
+| Normal outcome | value per user | $(n, \bar y, SS)$ per arm | `Normal` on $\bar y$ + `Gamma` on $SS$ |
+| Sequential multinomial | arm label per event | running counts $\mathbf S_n$ | `Multinomial` / closed form |
+| Discrete-time survival | person-period rows | $(d, r)$ per cell | `Binomial` (cloglog) |
+| Piecewise exponential | person-interval rows | $(d, E)$ per cell | `Poisson` with exposure |
+| Competing risks, piecewise exp. | person-interval rows | $(E, d_1, \dots, d_K)$ per cell | `Poisson` per cause |
+| Competing risks, discrete time | person-period rows | $(r, d_1, \dots, d_K)$ per cell | `Multinomial` |
+| Markov chain | transitions | counts $N_{ij}$ | `Multinomial` per row |
+| Funnel | user × stage rows | stage head-counts | `Binomial` |
+| Linear regression | $n \times p$ design | $(n, X^\top X, X^\top y, y^\top y)$ | `Potential` |
+| Logistic with offsets | shots | $(G, X, V)$, approximate | `Normal` pseudo-observation |
 
 ## Timings
 
-| Model family | Raw rows | Sufficient statistic | PyMC likelihood | Speed-up in notebook |
-|---|---|---|---|---|
-| Conversion test | Bernoulli per user | $(n, k)$ per arm | `Binomial` | 38× (46s → 1.2s) |
-| Normal outcome | value per user | $(n, \bar y, SS)$ per arm | `Potential` | 10× (11s → 1.1s) |
-| Sequential multinomial | arm label per event | running counts $\mathbf S_n$ | `Multinomial` / closed form | 3× (6.4s → 2.2s) |
-| Discrete-time survival | person-period rows | $(d, r)$ per cell | `Binomial` (cloglog) | 51× (87s → 1.7s) |
-| Piecewise exponential | person-interval rows | $(d, E)$ per cell | `Poisson` with exposure | 20× (35s → 1.7s) |
-| Markov chain | transitions | counts $N_{ij}$ | `Multinomial` per row | 24× (186s → 7.9s) |
-| Funnel | user × stage rows | stage head-counts | `Binomial` | 12× (13s → 1.1s) |
-| Linear regression | $n \times p$ design | $(n, X^\top X, X^\top y, y^\top y)$ | `Potential` | 76× (189s → 2.5s) |
-| Logistic with offsets | shots | $(G, X, V)$, approximate | `Normal` pseudo-obs | 57× (80s → 1.4s) |
+The table is built from timing files that each notebook writes when it runs. Wall time includes compilation and uses
+the same sampler settings (nutpie, 4 chains, 1,000 tuning and 1,000 sampling iterations). Wall times vary by tens of
+percent between runs on the same laptop, so the effective samples per second, which measure sampling efficiency
+directly, are shown alongside. The ratios also depend on how many rows each notebook simulates. The general point is
+that computing the summaries takes one pass over the data, and after that the cost of sampling does not depend on the
+number of rows.
 
-Each speed-up is the wall time of the raw-row fit divided by the wall time of the compressed fit. Both include
-compilation, and both use the same sampler settings on a laptop. The ratios depend on how many rows each notebook
-simulates. The general point is that computing the summaries takes one pass over the data, and after that the cost of
-sampling does not depend on the number of rows.
+```{python}
+#| echo: false
+#| output: asis
+import json
+from pathlib import Path
+
+import pandas as pd
+
+rows = []
+for f in sorted(Path("notebooks/timings").glob("*.json")):
+    rows += json.loads(f.read_text())
+df = pd.DataFrame(rows)
+lines = ["| Case | Rows → summary | Wall time | Speed-up | Min ESS/s |", "|---|---|---|---|---|"]
+for case, g in df.groupby("case", sort=False):
+    raw = g[g.kind == "raw"].iloc[0]
+    for _, comp in g[g.kind != "raw"].iterrows():
+        label = case if comp.kind == "compressed" else f"{case}, re-centred"
+        lines.append(f"| {label} | {raw.rows:,} → {comp.rows:,} | {raw.wall_s:.1f}s → {comp.wall_s:.1f}s | "
+                     f"{raw.wall_s / comp.wall_s:.0f}× | {raw.min_ess_per_s:,.0f} → {comp.min_ess_per_s:,.0f} |")
+print("\n".join(lines))
+```
 
 ## Practical notes
 
-Run row-level posterior predictive checks before compressing. Compression removes the rows those checks need. You can
-keep a raw-data model, fitted to a sample, for diagnostics.
+Run row-level checks before compressing. Compression removes the rows those checks need. You can keep a raw-data
+model, fitted to a sample, for diagnostics.
 
-Use an observed distribution rather than `pm.Potential` when one exists. `Binomial`, `Multinomial`, `Poisson` and the
-Gaussian pseudo-observation all keep a pointwise log-likelihood, so leave-one-out cross-validation still works. It now
-works at the level of the cell rather than the individual.
+Use an observed distribution rather than `pm.Potential` when one exists. `Binomial`, `Multinomial`, `Poisson`, the
+Normal–Gamma pair for $(\bar y, SS)$ and the Gaussian pseudo-observation all keep a pointwise log-likelihood, so
+leave-one-out cross-validation still works. It now works at the level of the cell rather than the individual. The
+Gram-matrix model is the one case here that needs a `Potential`.
 
 Counts, exposures and Gram matrices are additive. They can be summed across days, partitions or machines. This makes
 them well suited to streaming data and to data held in a warehouse, where the summaries can be computed in SQL.

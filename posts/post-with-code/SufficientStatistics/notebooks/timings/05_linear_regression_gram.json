@@ -1,0 +1,18 @@
+[
+ {
+  "case": "Linear regression",
+  "kind": "raw",
+  "model": "Normal, 1M raw rows",
+  "rows": 1000000,
+  "wall_s": 186.44,
+  "min_ess_per_s": 22.7
+ },
+ {
+  "case": "Linear regression",
+  "kind": "compressed",
+  "model": "Potential on (n, X'X, X'y, y'y)",
+  "rows": 1,
+  "wall_s": 0.67,
+  "min_ess_per_s": 6379.2
+ }
+]

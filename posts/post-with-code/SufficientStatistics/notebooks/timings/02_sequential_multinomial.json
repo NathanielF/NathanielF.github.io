@@ -1,0 +1,18 @@
+[
+ {
+  "case": "Sequential multinomial",
+  "kind": "raw",
+  "model": "Categorical, every event",
+  "rows": 106072,
+  "wall_s": 5.15,
+  "min_ess_per_s": 409.9
+ },
+ {
+  "case": "Sequential multinomial",
+  "kind": "compressed",
+  "model": "Multinomial, S_n",
+  "rows": 1,
+  "wall_s": 0.95,
+  "min_ess_per_s": 2115.4
+ }
+]
