@@ -171,7 +171,44 @@ This is why the crowd is worth the trouble. I take the shares from the last slid
 # Act II: Integration All the Way Down {background-color="#2a3439"}
 
 
-## Integration Is Averaging {.smaller}
+## Who Are the Units? {.smaller}
+### From mixed logit to BLP
+
+::::{.columns}
+:::{.column width="50%"}
+
+**Mixed logit: we see the people**
+
+$$\beta_i = \beta + \sigma\,\nu_i, \qquad \nu_i \sim N(0, 1)$$
+
+- $i$ indexes a **real respondent**.
+- $\nu_i$ is a random effect, one per person, learned from that person's repeated choices.
+
+:::
+:::{.column width="50%"}
+
+::: {.fragment .fade-in}
+**BLP: we see only shares**
+
+$$\beta_r = \beta + \sigma\,\nu_r, \qquad r = 1, \dots, R$$
+
+- No individuals, so no $\nu_i$ to learn.
+- $r$ indexes a **stand-in**: a fixed, standardised consumer who holds the place a random effect would.
+:::
+
+:::
+::::
+
+::: {.fragment .fade-in}
+Nothing is learned about any one stand-in. What we infer moves up a level: from each unit's effect to the **distribution they are drawn from**, $(\alpha, \sigma)$. That distribution is the crowd's composition.
+:::
+
+::: {.notes}
+Before any numerics, a question of representation. If you've fitted a mixed logit on survey or panel data, you know this equation. Each respondent gets their own taste, the population mean plus a personal deviation, and because we watch that person choose many times, the model can learn their deviation. It is a random effect indexed to a real unit. Market shares take the units away. There is nobody to index. So BLP does something quietly radical: it invents the units. A fixed panel of standardised stand-in consumers takes the slot that real respondents would occupy. We never learn anything about stand-in number 37; they are not estimated. What the data speak to is the distribution they're drawn from: the average taste and the spread. That is the object I mean by the crowd's composition, and it's the latent variable for the rest of the talk.
+:::
+
+
+## Choosing the Stand-ins {.smaller}
 
 ::::{.columns}
 :::{.column width="40%"}
@@ -180,7 +217,7 @@ This is why the crowd is worth the trouble. I take the shares from the last slid
 
 $$\int f(\nu)\, dF(\nu) \approx \frac{1}{R}\sum_{r=1}^{R} f(\nu_r)$$
 
-Each point $\nu_r$ is one **synthetic consumer**. Scrambled Halton points spread out on purpose; random draws clump.
+Each point $\nu_r$ is one **stand-in consumer**. A good panel represents the population evenly: scrambled Halton points are a stratified sample of standard tastes; random draws clump.
 
 :::
 :::{.column width="60%"}
@@ -188,14 +225,14 @@ Each point $\nu_r$ is one **synthetic consumer**. Scrambled Halton points spread
 ![](images/integration_convergence.png)
 
 ::: {.fragment .fade-in}
-On a three-dimensional share integral, a crowd of 8,192 Halton consumers is about **33× more accurate** than a random one of the same size.
+Represent the population well and the share integral follows: on a three-dimensional integral, 8,192 Halton stand-ins are about **33× more accurate** than a random panel of the same size.
 :::
 
 :::
 ::::
 
 ::: {.notes}
-How do we compute that integral? An integral against a distribution is an expectation, and an expectation is approximated by an average over points. The question is which points. Random draws clump in some places and leave holes in others. Scrambled Halton sequences fill the space evenly. On the right, a real three-dimensional share integral: random crowds improve at the familiar one over root R; Halton crowds much faster, about thirty times more accurate at eight thousand consumers. For a model that evaluates this integral at every step of the sampler, that decides whether it's practical.
+So which stand-ins? If they're meant to represent a population of tastes, we want them spread across it the way a well-designed survey sample is stratified, not clumped by chance. That's what a scrambled Halton sequence gives you. And because the share is an average over the stand-ins, an integral against the taste distribution, a representative panel is also an accurate one. Random draws clump in some places and leave holes in others; Halton fills the space evenly. On the right, a real three-dimensional share integral: random crowds improve at the familiar one over root R; Halton crowds much faster, about thirty times more accurate at eight thousand consumers. For a model that evaluates this integral at every step of the sampler, that decides whether it's practical.
 :::
 
 
@@ -243,7 +280,7 @@ This is how economists estimate it. The classical estimator wraps one optimisati
 
 | Classical device | Bayesian counterpart |
 |---|---|
-| Simulation draws to approximate the share integral | A **fixed synthetic crowd**: Halton consumers as data |
+| Fixed draws, with $\sigma$ a point estimate | The **same stand-ins**, but $\alpha + \sigma\nu_r$ has a posterior: **each draw is a different crowd** |
 | Contraction mapping to invert shares for $\delta$ | **No inversion**: $\xi_{jm}$ is sampled as a latent variable |
 | GMM moment conditions $\mathbb{E}[z\,\xi] = 0$ | A **joint model** of the price equation and $\xi$ (a control function) |
 | Standard errors by the delta method | **Posterior integration**: every quantity is averaged over the posterior |
@@ -253,7 +290,7 @@ This is how economists estimate it. The classical estimator wraps one optimisati
 Jiang, Manchanda & Rossi (2009) gave BLP a Bayesian likelihood but still ran the contraction **inside every MCMC step**. Sampling $\xi$ directly removes the inner loop, in the spirit of Dubé, Fox & Su's MPEC: unknowns become parameters, not a fixed point.
 
 ::: {.notes}
-This is the reframing in one table. Each piece of computational machinery in classical BLP corresponds to something natural in a generative model. The simulation draws become a population of synthetic consumers the model carries around as data. The moment conditions become a joint model of how prices were set. And uncertainty is not an afterthought: it is the posterior. A note on history: Jiang, Manchanda and Rossi gave BLP a proper Bayesian likelihood, but they still invert the shares with the contraction mapping at every MCMC step. The version in PyMC-Marketing samples xi directly as a latent variable, so there is no inner loop at all. It's the same idea as Dubé, Fox and Su's MPEC: stop solving for the unknowns in an inner loop and make them parameters.
+This is the reframing in one table. Each piece of computational machinery in classical BLP corresponds to something natural in a generative model. The stand-ins don't change: both approaches carry the same fixed panel. What changes is that the map from stand-in to actual taste is uncertain, so every posterior draw dresses the same panel as a different crowd. The moment conditions become a joint model of how prices were set. And uncertainty is not an afterthought: it is the posterior. A note on history: Jiang, Manchanda and Rossi gave BLP a proper Bayesian likelihood, but they still invert the shares with the contraction mapping at every MCMC step. The version in PyMC-Marketing samples xi directly as a latent variable, so there is no inner loop at all. It's the same idea as Dubé, Fox and Su's MPEC: stop solving for the unknowns in an inner loop and make them parameters.
 :::
 
 
@@ -262,16 +299,16 @@ This is the reframing in one table. Each piece of computational machinery in cla
 ::::{.columns}
 :::{.column width="35%"}
 
-Everything so far assumed $\alpha$ and $\sigma$ were known. They aren't.
+In Act I we fixed $\alpha$ and $\sigma$ by hand. In practice they are what we want to learn.
 
 ::: {.fragment .fade-in}
-- The Halton points are **fixed**, standardised people $\nu_r$.
+- The stand-ins are **fixed**, standardised people $\nu_r$.
 - Priors on $(\alpha, \sigma, \beta, \xi)$; the posterior moves the crowd $\alpha + \sigma\nu_r$.
 - **Each posterior draw is a different crowd.**
 :::
 
 ::: {.fragment .fade-in}
-*The licence:* shoppers are exchangeable **given their market and taste profile**, so de Finetti's theorem says their choices are draws given a latent parameter with a prior. The crowd's composition is that parameter.
+*The licence:* within a market we cannot tell shoppers apart, so their tastes are **exchangeable**. De Finetti's theorem says they are then iid draws from some distribution $F_\theta$, with a prior over $\theta$. That distribution is the crowd's composition.
 :::
 
 :::
@@ -283,7 +320,7 @@ Everything so far assumed $\alpha$ and $\sigma$ were known. They aren't.
 ::::
 
 ::: {.notes}
-The third integral is the Bayesian one. We never know the crowd. The Halton points never change; they are standardised people. What the posterior moves is the mapping from those standard tastes to actual price sensitivities. Each teal curve is one posterior draw: one complete, plausible crowd. The dashed orange curve is the crowd that actually generated the data, and a homogeneous logit sees only the dotted line. Why is this legitimate? Shoppers are not identical, but once you fix their market and their taste profile they are interchangeable. De Finetti's representation theorem then says their choices can be modelled as draws given a latent parameter, with a prior over it. The crowd's composition is that parameter.
+The third integral is the Bayesian one. In Act One I set the crowd's spread by hand; in practice it's what we're trying to learn. The stand-ins never change; they are the standardised people from a few slides ago. What the posterior moves is the mapping from those standard tastes to actual price sensitivities. Each teal curve is one posterior draw: one complete, plausible crowd. The dashed orange curve is the crowd that actually generated the data, and a homogeneous logit sees only the dotted line. Why is this legitimate? Shoppers are not identical, but within a market we have no way to tell them apart, so their tastes are exchangeable. De Finetti's representation theorem then says those tastes behave as independent draws from some distribution, with a prior over that distribution. It's the same move as the mixed logit's random effects, one level up: the distribution the stand-ins are drawn from is the crowd's composition, and that is what we infer.
 :::
 
 
@@ -552,15 +589,6 @@ Bernardo's summary of de Finetti is the licence for everything in this talk. If 
 :::
 
 
-## {background-color="black"}
-
-::: {style="color: white; font-size: 1.6em; font-weight: bold; text-align: center; margin-top: 150px;"}
-"The crowd is not a numerical trick.
-
-Its shape is what we infer."
-:::
-
-
 ## Resources {.smaller}
 
 :::: {.columns}
@@ -581,7 +609,9 @@ Its shape is what we infer."
 
 :::
 ::: {.column width="40%"}
-![Coming soon: *Bayesian Causal Inference* (Vincent & Forde). Its discrete-choice chapter works through the individual-level counterpart of this talk.](images/bookimage.png){fig-align="center" width="62%"}
+![In Preparation: *Bayesian Causal Inference* (Vincent & Forde). Its discrete-choice chapter works through the individual-level counterpart of this talk.](images/bookimage.png){fig-align="center" width="62%"}
+
+- Online version: [https://bayesian-causal-inference.com/](https://bayesian-causal-inference.com/)
 :::
 ::::
 
