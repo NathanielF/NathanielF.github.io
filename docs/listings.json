@@ -50,6 +50,8 @@
   {
     "listing": "/opensource.html",
     "items": [
+      "/oss/pymc_marketing/endogenous_budget.html",
+      "/oss/football_wyatt/football_skills.html",
       "/oss/pymc/bayesian_experimentation_triptych.html",
       "/oss/pymc_marketing/bayesian_blp.html",
       "/oss/pymc_marketing/consideration_set.html",

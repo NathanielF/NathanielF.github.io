@@ -402,7 +402,7 @@
         "that computing the summaries takes one pass over the data, and after that the cost of sampling does not depend on the\n",
         "number of rows.\n"
       ],
-      "id": "2ebff625"
+      "id": "bc567032"
     },
     {
       "cell_type": "code",
@@ -428,7 +428,7 @@
         "                     f\"{raw.wall_s / comp.wall_s:.0f}× | {raw.min_ess_per_s:,.0f} → {comp.min_ess_per_s:,.0f} |\")\n",
         "print(\"\\n\".join(lines))"
       ],
-      "id": "5abfb420",
+      "id": "86262968",
       "execution_count": null,
       "outputs": []
     },
@@ -460,7 +460,7 @@
         "The notebooks are in the [project folder](https://github.com/NathanielF/NathanielF.github.io/tree/master/posts/post-with-code/SufficientStatistics).\n",
         "I plan to add more cases."
       ],
-      "id": "5af3af92"
+      "id": "bb53fab0"
     }
   ],
   "metadata": {

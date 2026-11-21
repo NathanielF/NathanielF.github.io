@@ -1,0 +1,82 @@
+---
+title: "Endogenous Budget Models for MMM in PyMC Marketing"
+author: "Nathaniel Forde"
+date: "2026-11-21"
+categories: ["marketing mix models", "causal inference", "endogeneity", "control functions"]
+abstract: "Separating Designed from Chosen Spend: Control Functions and Lift-Test Designs for Confounded Media Budgets"
+image: "endogenous_budget.png"
+---
+
+# Endogenous Budgets in Marketing Mix Models
+
+An MMM regresses sales on spend, but the causal meaning of that regression depends on how spend was assigned. Marketing teams rarely set budgets at random. They spend more when they expect a busy season, when a planner's forecast looks strong, or when last week's sales fell short of plan. If that expectation carries information about demand the model cannot see, spend and the sales error share a cause, and the MMM credits each channel with the demand its budget followed.
+
+Lift tests are the usual remedy, added to the MMM as an extra likelihood term. But that term has to argue with the whole confounded history, which keeps pulling the other way. This contribution takes a complementary route: model how budgets are set jointly with sales, add a *control function* that absorbs the demand carried by unexplained budget moves, and use the lift test's **known designed spend change** as the exogenous variation that separates the response curve from that demand. The control-function coefficient then doubles as a diagnostic of whether spend was exogenous in the first place. The implementation can be found in pymc-marketing [here](https://www.pymc-marketing.io/en/latest/notebooks/mmm/mmm_endogenous_budget.html).
+
+## The Model
+
+**Spend equation** for each channel $c$, driven by the same observed demand drivers the MMM already controls for:
+
+$$
+\text{spend}_{c,t} = \underbrace{a_c + \psi_c^\top \text{controls}_t + \phi_c^\top \text{Fourier}_t}_{m_{c,t}} + v_{c,t},
+\qquad v_{c,t} \sim \mathcal{N}(0, s_c)
+$$
+
+The *budget surprise* $v_{c,t}$ mixes allocation noise, which is unrelated to demand, with whatever unrecorded view of demand the planners acted on.
+
+**Sales equation** with a control function, linear in current and lagged surprises:
+
+$$
+\mu_t = \text{MMM}_t + \sum_c \gamma_c\, v_{c,t} + \sum_c \gamma_{c,1}\, v_{c,t-1}
+$$
+
+If the surprises and the sales error are jointly Gaussian, the sales error splits into a part explained by the surprises and a remainder independent of them. Demand shocks persist, so last week's surprise carries information about this week's demand too.
+
+## Identification by Design
+
+The control function removes the confounding but uses up variation: once $v_{c,t}$ enters the sales equation, what is left in spend is $m_{c,t}$, built from drivers that already enter sales directly. The lift test supplies the missing variation. Its spend change is set by design, independently of demand, so it is subtracted *before* computing the surprise:
+
+- `mode="shift"`: spend moved by a known `delta_x` relative to what would otherwise have been chosen.
+- `mode="set"`: the experiment fixed spend outright (e.g. a holdout at zero), so those cells carry no demand information and are masked out of the spend equation.
+
+The test weeks then enter the sales likelihood as ordinary data, with no separate lift likelihood.
+
+## Implementation
+
+```{.python}
+from pymc_marketing.mmm import MMM, BudgetModelEffect, GeometricAdstock, LogisticSaturation
+from pymc_marketing.mmm.budget_model import exogeneity_summary
+
+mmm = MMM(
+    date_column="date",
+    channel_columns=["tv", "digital"],
+    control_columns=["inflation", "unemployment"],   # shared by spend and sales equations
+    target_column="y",
+    yearly_seasonality=4,
+    adstock=GeometricAdstock(l_max=8),
+    saturation=LogisticSaturation(),
+)
+
+budget = BudgetModelEffect(
+    design=design,        # one row per experiment: channel, dates, mode, delta_x
+    surprise_lags=1,      # lagged surprise for persistent demand shocks
+)
+mmm.add_mu_effect(budget)
+mmm.fit(X, y, target_accept=0.95)
+
+# Bayesian analogue of the Durbin-Wu-Hausman endogeneity test, per channel
+exogeneity_summary(mmm)
+```
+
+## Does It Work?
+
+![Error in TV's marginal return (estimate minus truth) across six simulated markets where budgets follow an unrecorded demand forecast. Dots are posterior means, thick bars 50% and thin bars 94% intervals; an interval crossing the dashed line covers the truth.](endogenous_budget.png){fig-align="center" width="90%"}
+
+Both plain fits overstate TV in every market, and neither interval ever covers the truth: the lift likelihood narrows the estimate without removing the bias. The budget model covers the truth in five of six markets, at the honest price of wider intervals.
+
+## Key Design Choices
+
+- **No accidental instruments**: by default the spend equation's regressors sit inside the sales equation's. Any regressor in spend but not sales acts as an instrument for the response curve, so seasonal terms in spend alone would identify the curve from seasonal demand. Recorded demand proxies belong in `control_columns`; only genuine cost shifters belong in `instruments`.
+- **Interventions are never surprises**: surprises are computed from a stored copy of the chosen spend, so counterfactuals and the budget optimizer change the media response while holding the control-function term at its factual value. On future dates the surprise is zero; `surprise_out_of_sample="observed"` reads realised spend instead, for scoring held-out weeks.
+- **$\gamma$ as an exogeneity check**: if spend were exogenous every $\gamma_c$ would be zero. `exogeneity_summary` reports posterior intervals, prior-to-posterior contraction, and whether a design identified each coefficient, flagging untested channels whose $\gamma$ rests on functional form and priors alone.
+- **Honest about where it helps**: across 50 simulated markets with forecast-driven budgets, the design-plus-one-lag model covers TV's true marginal return in 94% of markets, against 22% for lift-likelihood calibration and 4% for a plain MMM. The tutorial also shows the cases that qualify this: target-chasing budgets that bias the MMM the other way, capped search spend that strains a linear correction, and a negative control where the correction costs accuracy because the controls already closed the backdoor.
