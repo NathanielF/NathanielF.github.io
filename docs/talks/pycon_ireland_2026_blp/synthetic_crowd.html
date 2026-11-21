@@ -1108,21 +1108,25 @@ Nathaniel Forde
 </div>
 </div>
 </section>
-<section class="slide level2 center">
+<section class="slide level2 smaller center">
 <h2>The Pitch</h2>
+<h3>Everyone wants a synthetic crowd</h3>
 <p>How much would sales of Corn Flakes fall if a competitor cut prices by <strong>10%</strong>?</p>
-<div class="fragment">
-<p>Answering needs a demand model, and real markets are full of things nobody observes:</p>
-<ul>
-<li>how much each <strong>individual</strong> cares about price versus quality,</li>
-<li>the unmeasured <strong>appeal</strong> of a product that drives both its price and its sales,</li>
-<li>the <strong>composition</strong> of the customer base itself.</li>
-</ul>
-</div>
-<div class="fragment">
-<p><strong>The argument:</strong> the Berry–Levinsohn–Pakes model is a stack of integrals over a crowd we never see. Treat the <span class="blue"><strong>crowd’s composition as a latent variable</strong></span> and the classical computational tricks become a generative model.</p>
+<p>. . .</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Ask the language model</strong></p>
+<p><em>“You are a 34-year-old parent in Cork. Corn Flakes cost €3.20, Cheerios €2.90. Which do you buy?”</em> Repeat across a thousand personas.</p>
+<p>An LLM is a model of the crowd that <strong>wrote the internet</strong>. Its crowd’s composition is learned from <strong>text</strong>.</p>
+</div><div class="column" style="width:50%;">
+<p><strong>Ask the market</strong></p>
+<p>Shares, prices and characteristics, city by city. No individuals, just the average decision of every shopper.</p>
+<p>BLP is a model of the crowd that <strong>bought the cereal</strong>. Its crowd’s composition is learned from <strong>purchases</strong>.</p>
+</div></div>
+<p>. . .</p>
+<p>Both infer a <strong>latent crowd</strong> and then query it. <strong>The argument:</strong> in BLP the crowd’s composition is an explicit <span class="blue"><strong>latent variable with a prior</strong></span>, so the posterior tells us what the purchases support, and when the crowd is changing the answer.</p>
 <aside class="notes">
-<p>The opening question is the one every pricing team asks. The data they have are market shares: what fraction of shoppers bought each brand, in each city, each quarter. What they need is a model of the people behind those shares. BLP is the standard answer in industrial organisation. My claim today is that the heart of BLP is integration, three integrals nested inside each other, and that once you see that, the Bayesian version writes itself: the composition of the crowd stops being a numerical device and becomes a latent variable in the model.</p>
+<p>The opening question is the one every pricing team asks. And right now there are two very different ways people try to answer it. The fashionable one: ask a language model. Give it a persona, a parent in Cork, show it two prices, ask what it buys, and repeat across a thousand personas. People really do this; Brand, Israeli and Ngwe found GPT produces downward-sloping demand curves and plausible willingness to pay, and Argyle and colleagues called these silicon samples. Why would that work at all? Because a language model is itself a model of a latent crowd: the enormous population of people whose writing it was trained on. The older way is to ask the market. The data are shares: what fraction of shoppers bought each brand, in each city, each quarter. No individuals. BLP, the standard answer in industrial organisation, builds a synthetic crowd of consumers whose average choices reproduce those shares. So both approaches infer a crowd we can’t see and then interrogate it. The difference is what the crowd answers to. The language model’s crowd answers to what people wrote. BLP’s answers to what people paid. My claim today is that once you treat the crowd’s composition as a latent variable with a prior, the classical machinery of BLP becomes a generative model, and the posterior tells you what the purchase data support, including when the crowd matters and when it doesn’t.</p>
 <style type="text/css">
 span.MJX_Assistive_MathML {
 position:absolute!important;
@@ -1134,7 +1138,6 @@ width: 1px!important;
 overflow: hidden!important;
 display:block!important;
 }</style></aside>
-</div>
 </section>
 <section class="slide level2 center">
 <h2>Agenda</h2>
@@ -1838,6 +1841,8 @@ display:block!important;
 <li>Jiang, Manchanda &amp; Rossi (2009), “Bayesian Analysis of Random Coefficient Logit Models Using Aggregate Data,” <em>J. Econometrics</em></li>
 <li>Dubé, Fox &amp; Su (2012), “Improving the Numerical Performance of … Random Coefficients Demand Estimation,” <em>Econometrica</em></li>
 <li>Bernardo (1996), “The Concept of Exchangeability and its Applications,” <em>Far East J. Math. Sci.</em></li>
+<li>Argyle et al. (2023), “Out of One, Many: Using Language Models to Simulate Human Samples,” <em>Political Analysis</em></li>
+<li>Brand, Israeli &amp; Ngwe (2023), “Using GPT for Market Research,” HBS Working Paper</li>
 <li>Train (2009), <em>Discrete Choice Methods with Simulation</em></li>
 </ul>
 </div>

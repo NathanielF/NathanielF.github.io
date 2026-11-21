@@ -58,10 +58,14 @@ Answering needs a demand model, and real markets are full of things nobody obser
 
 . . .
 
+That hidden crowd leaves traces in what people **say** in surveys, what they **write** online, and what they **buy**. BLP reads the crowd from what they buy.
+
+. . .
+
 **The argument:** the Berry–Levinsohn–Pakes model is a stack of integrals over a crowd we never see. Treat the [**crowd's composition as a latent variable**]{.blue} and the classical computational tricks become a generative model.
 
 ::: {.notes}
-The opening question is the one every pricing team asks. The data they have are market shares: what fraction of shoppers bought each brand, in each city, each quarter. What they need is a model of the people behind those shares. BLP is the standard answer in industrial organisation. My claim today is that the heart of BLP is integration, three integrals nested inside each other, and that once you see that, the Bayesian version writes itself: the composition of the crowd stops being a numerical device and becomes a latent variable in the model.
+The opening question is the one every pricing team asks. What they need is a model of the people behind the market, and those people are never directly in view. You can get at their preferences in several ways. Ask them, with a survey or a conjoint study. Read what they write, in reviews or on Reddit. Or watch what they actually buy. Each is evidence about the same hidden population of tastes, and each has its own distortions. Today is about the last one: market shares, what fraction of shoppers bought each brand, in each city, each quarter. It's the thinnest view of individuals, but it's what people did with real money. BLP is the standard way of reading a crowd out of shares in industrial organisation. My claim today is that the heart of BLP is integration, three integrals nested inside each other, and that once you see that, the Bayesian version writes itself: the composition of the crowd stops being a numerical device and becomes a latent variable in the model.
 :::
 
 
@@ -603,8 +607,7 @@ Bernardo's summary of de Finetti is the licence for everything in this talk. If 
 - Nevo (2000), "A Practitioner's Guide to Estimation of Random-Coefficients Logit Models of Demand," *JEMS*
 - Jiang, Manchanda & Rossi (2009), "Bayesian Analysis of Random Coefficient Logit Models Using Aggregate Data," *J. Econometrics*
 - Dubé, Fox & Su (2012), "Improving the Numerical Performance of ... Random Coefficients Demand Estimation," *Econometrica*
-- Bernardo (1996), "The Concept of Exchangeability and its Applications," *Far East J. Math. Sci.*
-- Train (2009), *Discrete Choice Methods with Simulation*
+- Bernardo (1996), "The Concept of Exchangeability and its Applications," *Far East J. Math. Sci.*- Train (2009), *Discrete Choice Methods with Simulation*
 :::
 
 :::
